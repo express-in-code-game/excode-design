@@ -8,11 +8,11 @@
             [ui.subs :as subs]
             [ui.home.view]
             [ui.map.view]
+            [ui.board.view]
             [cljs.core.async :refer [<! timeout]]
             [ui.config :as config]
             [clojure.string :as string]
-            [ui.routes :refer [set-path!]]
-            ))
+            [ui.routes :refer [set-path!]]))
 
 (defn not-found-view
   [path]
@@ -23,6 +23,7 @@
   (case view-name
     :home-view [ui.home.view/view]
     :map-view [ui.map.view/view]
+    :board-view [ui.board.view/view]
     ; nil [:div "loading..."]
     [not-found-view view-name]))
 

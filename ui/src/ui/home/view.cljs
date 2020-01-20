@@ -12,6 +12,7 @@
 (defn view []
   (let []
     [:section
+     [:a {:href "/board"} "/board"]
      [:a {:href "/map"} "/map"]
      #_[:button
       {:on-click (fn [] (rf/dispatch [:ui.evs/set-active-view :map-view]))} "map"]]))

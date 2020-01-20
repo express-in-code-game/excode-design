@@ -15,6 +15,7 @@
 
 (def routes ["/" {""      :home-view
                   "home" :home-view
+                  "board" :board-view
                   "map" :map-view}])
 
 
