@@ -1,0 +1,32 @@
+#!/bin/bash
+
+
+dev(){
+
+  clojure -A:core -m app.main
+
+}
+
+permissions(){
+    sudo chmod -R 777 tmp/ 
+}
+
+
+dock() {
+    docker build -t paradigm.app .
+    docker run --gpus all \
+                --rm \
+                --name paradigm.app \
+                -it \
+                --network paradigm.kafka-stack \
+                -p 7788:7788 \
+                -v "$(pwd)":/opt/app \
+                 paradigm.app \
+                 bash
+}
+
+
+
+
+
+"$@"
