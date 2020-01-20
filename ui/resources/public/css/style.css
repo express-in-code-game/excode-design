@@ -1,0 +1,81 @@
+/* some style */
+
+* {
+  box-sizing: border-box;
+}
+
+
+.grid-cell {
+  width: 48px;
+  height: 48px;
+  color: #bcbcbc;
+  flex: 0 0 auto;
+  /* display: inline-block; */
+  font-size: 10px;
+  border: 1px solid #eeeeee;
+
+  /* background-size: 100% auto; */
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+
+.grid-cell > img {
+  width: 100%;
+}
+
+.grid-row {
+
+  display: flex;
+  flex-direction: row;
+
+}
+
+
+.hero {
+  width: 32px;
+  height: 32px;
+  /* display: inline-block; */
+  background-size: contain;
+  background-repeat: no-repeat;
+  margin: 8px 0 0 8px;
+}
+
+.hero:hover {
+  cursor: pointer;
+}
+
+.metrics {
+  position: fixed;
+  top: 32px;
+  right: 32px;
+  border: 1px solid #cccccc;
+  width: 156px;
+}
+
+.info {
+  position: fixed;
+  top: 156px;
+  right: 32px;
+  border: 1px solid #cccccc;
+  width: 156px;
+}
+
+.dialog {
+  position: fixed;
+  top: 30vh;
+  right: 32px;
+  border: 1px solid #cccccc;
+  width: 256px;
+}
+
+.dialog img {
+  max-width: 100%;
+}
+
+.dialog-option {
+  border: 1px solid #cccccc;
+  width: 128px;
+  cursor: pointer;
+
+}

@@ -1,0 +1,51 @@
+#!/bin/bash
+
+dev(){
+    npm i
+    shadow -A:core watch app
+    # npx shadow-cljs -A:dev:local watch app
+    # yarn dev
+}
+
+clean(){
+    rm -rf .shadow-cljs node_modules .cpcache resources/public/js-out
+}
+
+shadow(){
+    ./node_modules/.bin/shadow-cljs "$@"
+}
+
+prod(){
+    npm i
+    shadow -A:core:prod release app
+}
+
+server(){
+    shadow-cljs -A:core server
+    # yarn server
+}
+
+dock() {
+    docker build -t paradigm.ui .
+    docker run  --rm \
+                --name paradigm.ui \
+                -it \
+                -p 8899:8899 \
+                -p 9500:9500 \
+                -p 9630:9630 \
+                -v "$(pwd)":/opt/app \
+                 paradigm.ui \
+                 bash
+}
+
+link_spaces_game() {
+    SPACE=ui
+    mkdir -p spaces/$SPACE
+    ln -s ../../src/ui spaces/$SPACE/ui
+    ln -s ../../shadow-cljs.edn spaces/$SPACE/shadow-cljs.edn
+    ln -s ../../resources/public/css spaces/$SPACE/css
+    ln -s ../../resources/public/img spaces/$SPACE/img
+    ln -s ../../.vscode spaces/$SPACE/.vscode
+}
+
+"$@"
