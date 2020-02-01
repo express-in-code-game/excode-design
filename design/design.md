@@ -23,6 +23,9 @@
 <br/><br/>
 
 - a tiled map (one or more sectors) 
+
+<img src="./assets/sectors1.png" /><img>
+
 - a player starts in a corner or side and aims to the exit
 - player collects varios items and chooses different options to build a better fleet
 - players can always see all the sectors, can see oppnent moves, but not equipping/combining decisions
