@@ -26,6 +26,7 @@
 
 <img src="./assets/sectors1.png" /><img>
 
+- sectors represent sectors (parts) of the alliance space/territory from where parst fo fleet (crew, ships etc.) can be assembled
 - a player starts in a corner or side and aims to the exit
 - player collects varios items and chooses different options to build a better fleet
 - players can always see all the sectors, can see oppnent moves, but not equipping/combining decisions
