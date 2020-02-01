@@ -28,7 +28,7 @@
 
 - sectors represent sectors (parts) of the alliance space/territory from where parst fo fleet (crew, ships etc.) can be assembled
 - a player starts in a corner or side and aims to the exit
-- player collects varios items and chooses different options to build a better fleet
+- player collects varios items, chooses different options, experiencing effects to build a better fleet
 - players can always see all the sectors, can see oppnent moves, but not equipping/combining decisions
 - maps , items quantities and even qualities are randomized
 - focus is on making decisions of what paths to take on the level, what to collect and what the combininig will result in
