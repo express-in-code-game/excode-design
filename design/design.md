@@ -42,6 +42,7 @@
   - say, every 2 mins or after every sector, players engage in a battle
   - maybe, like in hearthstone battlegrounds, automated
   - so both players get an idea of what can be improved
+  - pre-battles results determine which player makes the first move in final battle simulation
 - players can exchange/trade at any moment
   - player puts out an item and what they would like in exhange
   - oppoent either accepts, or puts an alternative price
