@@ -1,0 +1,45 @@
+
+## gameplay
+
+- other games observations
+  - homm3 
+    - AI battles are repetetive, needed as the role of combining is little: it's all about gathering
+    - graphics is a still dark and eyestraining
+    - simulteneous turns, mirror templates are genius
+  - aoe, starcraft
+    - micro heavy
+  - hearthstone battlegrounds
+    - mode is brilliant
+  - terraria
+    - softer graphics, but still dark
+    - amazing idea and programmer-driven design
+ 
+- lore:
+  - the alliance is threatened by an enemy
+  - two teams (players) are assembled to independently go through a number of levels and assemble a fleet
+  - the better fleet will improve the alliance's chances of defending
+  - like several teams of scientists assembled to solve a problem to provide a better solution
+  - in the final battle simulation, the better fleet is determined
+
+
+- a tiled map (one or more sectors) 
+- a player starts in a corner or side and aims to the exit
+- player collects varios items and chooses different options to build a better fleet
+- players can always see all the sectors, can see oppnent moves, but not equipping/combining decisions
+- maps , items quantities and even qualities are randomized
+- focus is on making decisions of what paths to take on the level, what to collect and what the combininig will result in
+- no AI battles
+- game is values-transparent with little things to learn, provides calculations, more focuss on the picture and decisions, less arithmetics
+- player can see the whole map (one or more sectors) and can think ahead strategically, no unexplored/fog of war
+- no turns mode:
+  - time limit for the map or per sector (for example, 4 sectors 2-4 min each or the whole map in 8-16 minutes)
+  - then turn based final battle simulation (with 5min chess clock)
+  - so the game takes exactly 21 minutes, for example
+- pre-battle test
+  - say, every 2 mins or after every sector, players engage in a battle
+  - maybe, like in hearthstone battlegrounds, automated
+  - so both players get an idea of what can be improved
+- players can exchange/trade at any moment
+  - player puts out an item and what they would like in exhange
+  - oppoent either accepts, or puts an alternative price
+  - automated, no dilaog, realtime at any moment  
