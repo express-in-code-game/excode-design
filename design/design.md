@@ -20,7 +20,7 @@
   - the better fleet will improve the alliance's chances of defending
   - like several teams of scientists assembled to solve a problem to provide a better solution
   - in the final battle simulation, the better fleet is determined
-<br/>
+<br/><br/>
 
 - a tiled map (one or more sectors) 
 - a player starts in a corner or side and aims to the exit
