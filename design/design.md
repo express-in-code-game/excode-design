@@ -48,3 +48,28 @@
   - player puts out an item and what they would like in exhange
   - oppoent either accepts, or puts an alternative price
   - automated, no dilaog, realtime at any moment  
+
+## elements
+
+- civs: terran vitaal plex tribb
+- use droids to collect/assemble in the sector
+- droids
+  - drive types 
+  - research abilities
+  - disttance speed
+- combine ships crew parts compute fields drives etc.
+- research quality
+- captain/crew cobinations
+- compute capabilities
+- accomodation
+- decision making accuracy
+- nanite types combinations
+- within fleet vs fleet simulation
+  - ship posistions
+  - field coverage
+  - shared compute network radii
+  - transmission time
+  - damage
+- resources (basic and other elements)
+- organic materials
+- fleet council
