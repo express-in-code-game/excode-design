@@ -31,6 +31,7 @@
 - player collects varios items, chooses different options, experiencing effects to build a better fleet
 - players can always see all the sectors, can see oppnent moves, but not equipping/combining decisions
 - maps , items quantities and even qualities are randomized
+- randomness on initial generation only
 - focus is on making decisions of what paths to take on the level, what to collect and what the combininig will result in
 - no AI battles
 - game is values-transparent with little things to learn, provides calculations, more focuss on the picture and decisions, less arithmetics
