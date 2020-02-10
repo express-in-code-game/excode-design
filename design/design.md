@@ -51,17 +51,15 @@
 
 ## elements
 
-- civs: terran vitaal plex tribb
+- entities have tags(sets): complex organic discovery etc.
 - use droids to collect/assemble in the sector
 - droids
   - drive types 
   - research abilities
   - disttance speed
-- combine ships crew parts compute fields drives etc.
+- combine ships parts compute fields drives etc.
 - research quality
-- captain/crew cobinations
 - compute capabilities
-- accomodation
 - decision making accuracy
 - nanite types combinations
 - within fleet vs fleet simulation
@@ -72,4 +70,3 @@
   - damage
 - resources (basic and other elements)
 - organic materials
-- fleet council
