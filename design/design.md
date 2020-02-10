@@ -49,6 +49,7 @@
   - player puts out an item and what they would like in exhange
   - oppoent either accepts, or puts an alternative price
   - automated, no dilaog, realtime at any moment  
+- optimal game times ~15 ~30 45-60 60-90 min
 
 ## elements
 
