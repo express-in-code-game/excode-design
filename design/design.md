@@ -75,6 +75,7 @@
 
 ## how
 
+- first, setup CD to the cloud - project must be live
 - keep it simple, data files and fn files, repetetive if needed
 - use repl from the start as it's the most powerful design tool, inform the design
 - consider figwheel main if it's less cpu consuming than shadow-cljs
