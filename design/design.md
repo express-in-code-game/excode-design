@@ -83,3 +83,4 @@
 - gen assets into files, preload, set as sources to tiles
 - if needed, run assets as code (render into svg/canvas) in enetity information window, 
 - point is: assets are code, files are generated
+- https://github.com/localstack/localstack
