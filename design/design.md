@@ -85,3 +85,4 @@
 - if needed, run assets as code (render into svg/canvas) in enetity information window, 
 - point is: assets are code, files are generated
 - https://github.com/localstack/localstack
+- docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
