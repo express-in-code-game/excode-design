@@ -86,3 +86,23 @@
 - point is: assets are code, files are generated
 - https://github.com/localstack/localstack
 - docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
+
+## user experience
+
+- events (tournaments, matches) are at the center, home page contains official events and most upvoted
+  - games have max duration time, so most events have precise start and finish time, they can be easily planned for, no waiting
+  - official events start at X, not when full
+  - users can create events (invite only or public), unset time constraints
+- players have rating, rating can be reset
+- all games are public and can be observed
+- the game opens in a tab, so can be always reopened/reconnected
+- users can
+  - press 'find an opponent' and be auto matched against most equal opponent (or can decline)
+  - enter an event
+  - create an open/invite-only  event
+  - browse events (with a filter)
+  - join a game
+  - create an open/invite-only game (no title, match description has a format)
+  - browse open games (with a filter)
+- no chat
+- user profile has rating and event results (can be reset)
