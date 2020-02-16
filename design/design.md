@@ -120,4 +120,5 @@
   - run kafka
   - seq of users/sessions, invite to a game
   - a tab per player
-  - squared board, players move a circle, end turn
+  - empty squared board, players move a circle, end turn
+  - first palyer to move the circle to the exit wins
