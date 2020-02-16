@@ -104,10 +104,12 @@
 - users can
   - press 'find an opponent' and be auto matched against most equal opponent (or can decline)
   - enter an event
-  - create an open/invite-only  event
+  - create/configure an open/invite-only  event
   - browse events (with a filter)
   - join a game
   - create an open/invite-only game (no title, match description has a format)
   - browse open games (with a filter)
 - no chat
 - user profile has rating and event results (can be reset)
+- official and community map templates and configurable events
+- pre game bans, selections 
