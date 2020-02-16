@@ -113,3 +113,11 @@
 - user profile has rating and event results (can be reset)
 - official and community map templates and configurable events
 - pre game bans, selections 
+
+## drawing board
+
+- ignite
+  - run kafka
+  - seq of users/sessions, invite to a game
+  - a tab per player
+  - squared board, players move a circle, end turn
