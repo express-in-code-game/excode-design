@@ -112,7 +112,9 @@
 - no chat
 - user profile has rating and event results (can be reset)
 - official and community map templates and configurable events
-- pre game bans, selections 
+- pre game bans, selections
+- observing
+  - select templates (simple detailed) for game info/stats [templates are components]
 
 ## drawing board
 
