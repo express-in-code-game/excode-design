@@ -87,7 +87,7 @@
 - docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
 - https://github.com/localstack/localstack
 - persist data in kafka
-- fixed server instance
+- fixed single server instance
   - run kafka stack and system stack separately
   - update the system via pull, up -d
   - ability to repl into production
