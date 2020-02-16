@@ -122,3 +122,5 @@
   - a tab per player
   - empty squared board, players move a circle, end turn
   - first palyer to move the circle to the exit wins
+  - home page simple routes: /events /games 
+  - /games : list of games or create a game
