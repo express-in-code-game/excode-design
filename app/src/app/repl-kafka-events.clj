@@ -1,4 +1,4 @@
-(ns app.kafka-events
+(ns app.repl-kafka-events
   (:require [clojure.pprint :as pp])
   (:import
    org.apache.kafka.common.serialization.Serdes
@@ -20,7 +20,7 @@
 
 (comment
   
-  
+  (create-user)
   
   
   ;
