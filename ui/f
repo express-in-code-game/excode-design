@@ -38,14 +38,4 @@ dock() {
                  bash
 }
 
-link_spaces_game() {
-    SPACE=ui
-    mkdir -p spaces/$SPACE
-    ln -s ../../src/ui spaces/$SPACE/ui
-    ln -s ../../shadow-cljs.edn spaces/$SPACE/shadow-cljs.edn
-    ln -s ../../resources/public/css spaces/$SPACE/css
-    ln -s ../../resources/public/img spaces/$SPACE/img
-    ln -s ../../.vscode spaces/$SPACE/.vscode
-}
-
 "$@"
