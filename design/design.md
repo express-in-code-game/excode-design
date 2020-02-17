@@ -76,6 +76,15 @@
 ## how
 
 - first, setup CD to the cloud - project must be live
+  - fixed single server instance
+    - run kafka stack and system stack separately
+    - update the system via pull, up -d
+    - ability to repl into production
+  - aws
+    - https://aws.amazon.com/ec2/instance-types/
+    - https://aws.amazon.com/blogs/compute/amazon-ecs-and-docker-volume-drivers-amazon-ebs/
+    - https://aws.amazon.com/ec2/pricing/reserved-instances/pricing/
+    - https://aws.amazon.com/ebs/pricing/
 - keep it simple, data files and fn files, repetetive if needed
 - use repl from the start as it's the most powerful design tool, inform the design
 - consider figwheel main if it's less cpu consuming than shadow-cljs
@@ -87,10 +96,7 @@
 - docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
 - https://github.com/localstack/localstack
 - persist data in kafka
-- fixed single server instance
-  - run kafka stack and system stack separately
-  - update the system via pull, up -d
-  - ability to repl into production
+
 
 ## user experience
 
