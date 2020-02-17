@@ -18,7 +18,7 @@ dock() {
                 --rm \
                 --name paradigm.app \
                 -it \
-                --network compute.server \
+                --network paradigm.kafka-stack \
                 -p 7788:7788 \
                 -v "$(pwd)":/opt/app \
                  paradigm.app \
