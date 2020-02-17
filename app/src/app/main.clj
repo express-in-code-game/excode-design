@@ -2,6 +2,7 @@
   (:require [app.nrepl :refer [start-nrepl-server]]
             [app.core]
             [app.streams-example]
+            [app.kafka-events]
    ;
             ))
 
