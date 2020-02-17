@@ -3,7 +3,7 @@
 
 dev(){
 
-  clojure -A:core -m lab.main
+  clojure -A:core -m app.main
 
 }
 
@@ -13,15 +13,15 @@ permissions(){
 
 
 dock() {
-    docker build -t compute.lab .
+    docker build -t paradigm.app .
     docker run --gpus all \
                 --rm \
-                --name lab \
+                --name paradigm.app \
                 -it \
                 --network compute.server \
                 -p 7788:7788 \
                 -v "$(pwd)":/opt/app \
-                 compute.lab \
+                 paradigm.app \
                  bash
 }
 

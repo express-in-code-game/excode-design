@@ -1,7 +1,7 @@
-(ns lab.main
+(ns app.main
   (:require [pad.nrepl.core :refer [start-nrepl-server]]
-            [lab.core]
-            [lab.streams-example]
+            [app.core]
+            [app.streams-example]
    ;
             ))
 

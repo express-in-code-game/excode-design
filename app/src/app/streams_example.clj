@@ -1,4 +1,4 @@
-(ns lab.streams-example
+(ns app.streams-example
   (:require [clojure.pprint :as pp])
   (:import
    org.apache.kafka.common.serialization.Serdes
