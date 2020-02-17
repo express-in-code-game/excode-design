@@ -1,5 +1,5 @@
 (ns app.main
-  (:require [pad.nrepl.core :refer [start-nrepl-server]]
+  (:require [app.nrepl :refer [start-nrepl-server]]
             [app.core]
             [app.streams-example]
    ;

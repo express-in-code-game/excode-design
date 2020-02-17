@@ -8,6 +8,9 @@
          {org.clojure/clojure {:mvn/version "1.10.1"}
           org.apache.kafka/kafka-clients {:mvn/version "2.4.0"}
           org.apache.kafka/kafka-streams {:mvn/version "2.4.0"}
+
+          nrepl {:mvn/version "0.6.0"}
+          cider/cider-nrepl {:mvn/version "0.21.1"}
           }
          }
   }
