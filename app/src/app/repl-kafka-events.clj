@@ -13,6 +13,9 @@
    org.apache.kafka.clients.consumer.KafkaConsumer
    java.util.ArrayList))
 
+; simulate, experiment with events, sequences
+; persist to docker
+
 (defn create-user
   []
   {})
