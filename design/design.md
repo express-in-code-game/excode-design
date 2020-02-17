@@ -115,6 +115,17 @@
 - pre game bans, selections
 - observing
   - select templates (simple detailed) for game info/stats [templates are components]
+- tournament time frames
+  - tounaments preferably have fixed timeframe
+    - once signup ends, bracket is form, countdown to round 1 begins
+    - player sees 'upcoming match in X:X;
+    - game starts automatically or player can decline and take a default loss
+    - once round ends, next countdown begins
+    - players can see the brackets and schedule
+  - tounaments can be configured to have natuaral timeframe
+    - all standard
+    - to observe or play the game user clicks the match in the bracket, gets into the game lobby or game itself
+    - players can mutually agree to nullify the result and re-play
 
 ## drawing board
 
