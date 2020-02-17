@@ -21,7 +21,7 @@ prod(){
 }
 
 server(){
-    shadow-cljs -A:core server
+    shadow -A:core server
     # yarn server
 }
 
