@@ -85,6 +85,7 @@
     - https://aws.amazon.com/blogs/compute/amazon-ecs-and-docker-volume-drivers-amazon-ebs/
     - https://aws.amazon.com/ec2/pricing/reserved-instances/pricing/
     - https://aws.amazon.com/ebs/pricing/
+  - build up to assets, purchase, deploy, gen large seqs, sim gen daily
 - keep it simple, data files and fn files, repetetive if needed
   - game is a seq of events
 - use repl from the start as it's the most powerful design tool, inform the design
