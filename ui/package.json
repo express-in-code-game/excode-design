@@ -22,6 +22,7 @@
     "clean": "rm -rf target; rm -rf resources/public/js"
   },
   "dependencies": {
+    "antd": "4.0.0-rc.5",
     "create-react-class": "15.6.3",
     "highlight.js": "9.15.8",
     "react": "16.9.0",

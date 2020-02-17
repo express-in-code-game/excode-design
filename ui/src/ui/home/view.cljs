@@ -5,15 +5,23 @@
              [re-frame.core :as rf]
              [ui.home.subs :as subs]
              [ui.home.evs :as evs]
-             ))
+             ["antd/lib/button" :default AntButton]
+             ["@ant-design/icons/SmileOutlined" :default AntSmileOutlined]))
 
+(def ant-button (r/adapt-react-class AntButton))
+(def ant-smile-outlined (r/adapt-react-class AntSmileOutlined))
 
 
 (defn view []
   (let []
     [:section
      [:a {:href "/board"} "/board"]
+     [:br]
      [:a {:href "/map"} "/map"]
+     [:br]
+     [ant-button {:value "button" } "button"]
+     [:br]
+     [ant-smile-outlined]
      #_[:button
       {:on-click (fn [] (rf/dispatch [:ui.evs/set-active-view :map-view]))} "map"]]))
 
