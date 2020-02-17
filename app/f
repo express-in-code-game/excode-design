@@ -1,0 +1,32 @@
+#!/bin/bash
+
+
+dev(){
+
+  clojure -A:core -m lab.main
+
+}
+
+permissions(){
+    sudo chmod -R 777 tmp/ 
+}
+
+
+dock() {
+    docker build -t compute.lab .
+    docker run --gpus all \
+                --rm \
+                --name lab \
+                -it \
+                --network compute.server \
+                -p 7788:7788 \
+                -v "$(pwd)":/opt/app \
+                 compute.lab \
+                 bash
+}
+
+
+
+
+
+"$@"

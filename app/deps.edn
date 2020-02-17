@@ -1,0 +1,19 @@
+{:paths ["src"]
+ :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
+             "clojars" {:url "https://clojars.org/repo/"}
+             "hellonico" {:url "https://repository.hellonico.info/repository/hellonico/"}
+             "staging" {:url "https://repository.apache.org/content/repositories/staging"}
+             "snapshots" {:url "https://repository.apache.org/content/repositories/snapshots"}
+             "snapshots2" {:url "https://repository.apache.org/content/groups/snapshots"}
+             }
+ :deps {}
+ :aliases
+ {:core {:extra-deps
+         {org.clojure/clojure {:mvn/version "1.10.1"}
+          org.apache.kafka/kafka-clients {:mvn/version "2.4.0"}
+          org.apache.kafka/kafka-streams {:mvn/version "2.4.0"}
+          github.seeris/util.pad {:git/url "https://github.com/seeris/util.pad"
+                                  :sha "2eb84840ee63ce204fccb93470700d5126616b5f"
+                                  :deps/root "."}}}
+  }
+}

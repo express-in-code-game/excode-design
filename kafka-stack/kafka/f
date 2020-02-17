@@ -1,0 +1,10 @@
+#!/bin/bash
+
+
+start(){
+  bin/kafka-server-start.sh /opt/vol/config/server.properties
+}
+
+
+"$@"
+

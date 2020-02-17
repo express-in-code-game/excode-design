@@ -1,0 +1,52 @@
+version: "3.7"
+
+networks:
+  compute.server:
+    name: compute.server
+
+services:
+
+  zookeeper:
+    image: zookeeper
+    build:
+      context: ./zookeeper
+      dockerfile: ./Dockerfile
+
+  kafka:
+    image: kafka
+    build:
+      context: ./kafka
+      dockerfile: ./Dockerfile
+
+  zoo1:
+    image: zookeeper
+    volumes:
+      - ./volumes/zoo1:/opt/vol
+    networks:
+      - compute.server
+    # user: user
+    # ports:
+    #   - 2181:2181
+    # command: tail -f /dev/null
+    command: bash f start
+    stdin_open: true
+    tty: true
+    depends_on: 
+      - zookeeper
+
+  kafka1:
+    image: kafka
+    volumes:
+      - ./volumes/kafka1:/opt/vol
+    # user: user
+    networks:
+      - compute.server
+    ports:
+      - 9092:9092
+    # command: tail -f /dev/null
+    command: bash f start
+    stdin_open: true
+    tty: true
+    depends_on: 
+      - kafka
+      - zoo1
