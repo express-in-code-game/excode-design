@@ -15,6 +15,7 @@
 
 ; simulate, experiment with events, sequences
 ; persist to docker
+; gen large seqs with clojure.spec
 
 (defn create-user
   []
