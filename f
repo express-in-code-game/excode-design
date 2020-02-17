@@ -7,7 +7,7 @@ link_spaces(){
   ln -s ../../.vscode spaces/ui/.vscode
   ln -s ../../ui/src/ spaces/ui/src
   ln -s ../../ui/resources/ spaces/ui/resources
-  ln -s ../../ui/deps.edn spaces/ui/deps.edn
+  ln -s ../../ui/shadow-cljs.edn spaces/ui/shadow-cljs.edn
 
   ln -s ../../.vscode spaces/app/.vscode
   ln -s ../../app/src/ spaces/app/src

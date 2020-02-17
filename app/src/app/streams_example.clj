@@ -36,7 +36,6 @@
   (.listTopics client)
 
   (def consumer (KafkaConsumer. props))
-
   (count (.listTopics consumer))
   (butlast (.listTopics consumer))
 
