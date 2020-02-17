@@ -310,5 +310,6 @@
     "calva.highlight.commentFormStyle": {"textDecoration": "none; opacity: 1"},
     "explorer.openEditors.visible": 0,
     "calva.highlight.enableBracketColors": true,
-    "calva.sendAsyncOutputTo": "REPL Window"
+    "calva.sendAsyncOutputTo": "REPL Window",
+    "explorer.compactFolders": false
 }
