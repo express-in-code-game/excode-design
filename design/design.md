@@ -17,7 +17,7 @@
  
 #### lore
 
-  - defend starnet, one shot opportunity of preventing launch of netconrol 
+  - defend starnet, one shot opportunity of preventing launch of netconrol
   - search change build a corecompute/coredrive/knowledgeframe and a team
   - planets & teleports, remote controlled drones, ships
   - single map
@@ -27,6 +27,7 @@
   - characters drones start from 0
   
 #### gameplay
+
   - a tiled map
   - player collects varios items, chooses different options, experiencing effects to build a better missionship
   - game is values-transparent with little things to learn, provides calculations, more focuss on the picture and decisions, less arithmetics
@@ -35,7 +36,8 @@
   - optimal game time ~15-90 min
 
 #### elements
-  - entities have tags(sets): complex organic discovery etc.
+
+  - entities have tags(sets): gathering organic discovery etc.
   - droids
     - drive types 
     - research abilities
@@ -71,7 +73,6 @@
 - docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
 - https://github.com/localstack/localstack
 - persist data in kafka
-
 
 ## user experience
 
