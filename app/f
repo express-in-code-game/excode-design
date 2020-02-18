@@ -13,15 +13,15 @@ permissions(){
 
 
 dock() {
-    docker build -t paradigm.app .
+    docker build -t starnet.app .
     docker run --gpus all \
                 --rm \
-                --name paradigm.app \
+                --name starnet.app \
                 -it \
-                --network paradigm.kafka-stack \
+                --network starnet.kafka-stack \
                 -p 7788:7788 \
                 -v "$(pwd)":/opt/app \
-                 paradigm.app \
+                 starnet.app \
                  bash
 }
 

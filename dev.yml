@@ -7,7 +7,7 @@ networks:
 services:
 
   app:
-    image: paradigm.app
+    image: starnet.app
     volumes:
       - ./app:/opt/app
     build:
@@ -29,7 +29,7 @@ services:
           memory: 4096M
 
   ui:
-    image: paradigm.ui
+    image: starnet.ui
     volumes:
       - ./ui:/opt/app
     build:

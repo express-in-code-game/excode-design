@@ -1,8 +1,8 @@
 version: "3.7"
 
 networks:
-  paradigm.kafka-stack:
-    name: paradigm.kafka-stack
+  starnet.kafka-stack:
+    name: starnet.kafka-stack
 
 services:
 
@@ -23,7 +23,7 @@ services:
     volumes:
       - ./volumes/zoo1:/opt/vol
     networks:
-      - paradigm.kafka-stack
+      - starnet.kafka-stack
     # user: user
     # ports:
     #   - 2181:2181
@@ -40,7 +40,7 @@ services:
       - ./volumes/kafka1:/opt/vol
     # user: user
     networks:
-      - paradigm.kafka-stack
+      - starnet.kafka-stack
     ports:
       - 9092:9092
     # command: tail -f /dev/null
