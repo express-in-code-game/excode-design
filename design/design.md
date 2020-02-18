@@ -104,7 +104,8 @@
 ## user experience
 
 - events (tournaments, matches) are at the center, home page contains official events and most upvoted
-  - games have max duration time, so most events have precise start and finish time, they can be easily planned for, no waiting
+  - games tend to have reasonable duration time, so most events have estimatable start and finish time, they can be  planned for
+  - event rounds start at X, no waiting for the opponent
   - official events start at X, not when full
   - users can create events (invite only or public), unset time constraints
 - players have rating, rating can be reset
@@ -125,7 +126,7 @@
 - observing
   - select templates (simple detailed) for game info/stats [templates are components]
 - tournament time frames
-  - tounaments preferably have fixed timeframe
+  - tounaments preferably have estimatable, evening/a day timeframe
     - once signup ends, bracket is form, countdown to round 1 begins
     - player sees 'upcoming match in X:X;
     - game starts automatically or player can decline and take a default loss
