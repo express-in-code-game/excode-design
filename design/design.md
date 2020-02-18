@@ -37,6 +37,7 @@
 
 #### elements
 
+  - goal is game completeness, balance, so complete set of entities, no bloating expansions
   - entities have tags(sets): gathering organic discovery etc.
   - droids
     - drive types 
