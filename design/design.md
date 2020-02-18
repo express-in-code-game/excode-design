@@ -1,9 +1,10 @@
 
 ## game
 
-- other games observations
+#### other games observations
+
   - homm3 
-    - AI battles are repetetive, needed as the role of combining is little: it's all about gathering
+    - AI battles are repetetive, needed as the role of combining is little: focus mostly on collecting
     - graphics is a still dark and eyestraining
     - simulteneous turns, mirror templates are genius
   - aoe, starcraft
@@ -12,7 +13,7 @@
     - mode is brilliant
   - terraria
     - softer graphics, but still dark
-    - amazing idea and programmer-driven design
+    - amazing idea and design
  
 #### lore
 
