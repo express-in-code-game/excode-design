@@ -17,6 +17,10 @@
 ; persist to docker
 ; gen large seqs with clojure.spec - thousands of games, users etc.
 
+; https://kafka-tutorials.confluent.io/
+; https://github.com/perkss/clojure-kafka-examples
+; https://github.com/troy-west/kstream-examples/blob/master/test/troy_west/kstream/examples.clj
+
 (defn create-user
   []
   {})
