@@ -108,7 +108,7 @@
     - https://aws.amazon.com/blogs/compute/amazon-ecs-and-docker-volume-drivers-amazon-ebs/
     - https://aws.amazon.com/ec2/pricing/reserved-instances/pricing/
     - https://aws.amazon.com/ebs/pricing/
-  - build up to assets, purchase, deploy, gen large seqs, sim gen daily
+  - build up to assets, deploy to aws, gen large seqs, sim gen daily
 - keep it simple, data files and fn files, repetetive if needed
   - game is a seq of events
 - use repl from the start as it's the most powerful design tool, inform the design
@@ -122,6 +122,10 @@
 - docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
 - https://github.com/localstack/localstack
 - persist data in kafka
+- v0.1 assets
+  - use s-expressions to gen svg
+  - colors, lines, shapes (for cape, spheres, facilities, skills, fruit tree etc.)
+  - sound effect and better assets will grow
 
 ## user experience
 
