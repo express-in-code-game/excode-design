@@ -41,15 +41,17 @@
   - 1 hero, 3 research drones (represented with a colored sphere)
   - missiondrone is represented with a large sphere (possible made of nanites) and orbiting supporting spheredrones
   - map is visible and open to both opponents equally, 128x128
+  - palyers are not competing for resources, what one can get, the other can as well
   - research, collect, rebalance, by roaming the map
-  - players have limited moves per day, limited days (say, 7)
-  - total time for 7 days - 15min
-  - every 5 mins there is a battle simulation, 30sec per move, so 3rd battle is final
-  - in the battle goal is to disable(defeat) opponent's mission drone
-  - hero and research drones are engaged and support (they also develop skills and abilities)
-  - players choose what to visit and collect, how to balance missiondrone's and team's characteristics
+  - players choose what to visit and collect, make choices, balance the missiondrone's and the team's characterisitics
   - players see each others moves, but not choices (the missiondrone build, team's stats etc.)
   - player can visit a fruit tree to improve certain skills of a hero, for example, or visit and select nanite modules for the missiondrone
+  - players have limited moves per day, limited days (say, 7)
+  - total time for 7 days - 15min
+  - every 5 mins there is an battle simulation, 30sec per move, 3rd battle is final
+  - in the battle goal is to disable(defeat) opponent's mission drone
+  - hero and research drones are engaged and support (they also develop skills and abilities)
+
   - missiondrone attributes
     - compute capabilities
     - data bank
