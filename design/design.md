@@ -51,7 +51,6 @@
   - every 5 mins there is an battle simulation, 30sec per move, 3rd battle is final
   - in the battle goal is to disable(defeat) opponent's mission drone
   - hero and research drones are engaged and support (they also develop skills and abilities)
-
   - missiondrone attributes
     - compute capabilities
     - data bank
