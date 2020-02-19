@@ -17,23 +17,71 @@
  
 #### lore
 
-  - defend starnet, one shot opportunity of preventing launch of netconrol
-  - search change build a corecompute/coredrive/knowledgeframe and a team
+  - defend starnet, one shot opportunity of preventing launch of netconrol (controldrone)
+  - research, change, build, balance a missiondrone and a team (a hero and research drones)
+    - the winner's missiondrone and team will take on the mission of protecting startnet from netcontrol's takeover
   - planets & teleports, remote controlled drones, ships
   - single map
   - start: teleport to the map (a planet)
-  - players play for competing/fighting team, both thinking their mission(drone/ship) and team (beings) will perform betterm so better build wins
+  - players play for competing/fighting team, both thinking their missiondrone and team will perform better than opponents, so better build wins
   - entities vary, sets, tags, combinations: code,warp drives, fields, elements, fruit, self orient time .. etc.
-  - characters drones start from 0
+  - characters, reserach drones start from 0
   
 #### gameplay
 
-  - a tiled map
-  - player collects varios items, chooses different options, experiencing effects to build a better missionship
-  - game is values-transparent with little things to learn, provides calculations, more focuss on the picture and decisions, less arithmetics
-  - maps , items quantities and even qualities are randomized
-  - randomness on initial generation only
-  - optimal game time ~15-90 min
+- a tiled map
+- player collects varios items, chooses different options, experiencing effects to build a better missionship
+- game is values-transparent with little things to learn, provides calculations, more focuss on the picture and decisions, less arithmetics
+- maps , items quantities and even qualities are randomized
+- randomness on initial generation only
+- optimal game time ~15-90 min
+
+- v0.1
+  - players (azure and orange) start on the map, charachter is represented with a cape
+  - 1 hero, 3 research drones (represented with a colored sphere)
+  - missiondrone is represented with a large sphere (possible made of nanites) and orbiting supporting spheredrones
+  - map is visible and open to both opponents equally, 128x128
+  - palyers are not competing for resources, what one can get, the other can as well
+  - research, collect, rebalance, by roaming the map
+  - players choose what to visit and collect, make choices, balance the missiondrone's and the team's characterisitics
+  - players see each others moves, but not choices (the missiondrone build, team's stats etc.)
+  - player can visit a fruit tree to improve certain skills of a hero, for example, or visit and select nanite modules for the missiondrone
+  - players have limited moves per day, limited days (say, 7)
+  - total time for 7 days - 15min
+  - every 5 mins there is an battle simulation, 30sec per move, 3rd battle is final
+  - in the battle goal is to disable(defeat) opponent's mission drone
+  - hero and research drones are engaged and support (they also develop skills and abilities)
+  - missiondrone attributes
+    - compute capabilities
+    - data bank
+    - knowledge bank
+    - independent agent programs (for unpredictability)
+    - fields
+    - networking range
+    - design quility
+    - human interface simplicity
+    - abstraction level (like an age in AoE)
+    - defensive/offensive resources
+    - energy
+    - ...
+  - hero
+    - accuracy
+    - decisionmaking
+    - resolve
+    - drone design 
+    - reach (movement)
+    - creativity(ideas)
+    - endurance (energy)
+    - vision
+  - reserach drone
+    - reach
+    - reserach capabilites
+    - absctraction level
+    - fields
+    - hull
+    - energy
+    - hoisting (carrying) capacity
+
 
 #### elements
 
@@ -60,7 +108,7 @@
     - https://aws.amazon.com/blogs/compute/amazon-ecs-and-docker-volume-drivers-amazon-ebs/
     - https://aws.amazon.com/ec2/pricing/reserved-instances/pricing/
     - https://aws.amazon.com/ebs/pricing/
-  - build up to assets, purchase, deploy, gen large seqs, sim gen daily
+  - build up to assets, deploy to aws, gen large seqs, sim gen daily
 - keep it simple, data files and fn files, repetetive if needed
   - game is a seq of events
 - use repl from the start as it's the most powerful design tool, inform the design
@@ -74,6 +122,10 @@
 - docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
 - https://github.com/localstack/localstack
 - persist data in kafka
+- v0.1 assets
+  - use s-expressions to gen svg
+  - colors, lines, shapes (for cape, spheres, facilities, skills, fruit tree etc.)
+  - sound effect and better assets will grow
 
 ## user experience
 
