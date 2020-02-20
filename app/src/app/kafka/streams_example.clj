@@ -25,7 +25,7 @@
 (comment
 
   ; Streams application: Pipe
-
+  ; https://kafka.apache.org/24/documentation/streams/tutorial#tutorial_code_pipe
 
   (do
     (def props (Properties.))
@@ -128,6 +128,7 @@
 (comment
 
   ; Streams application: Line Split
+  ; https://kafka.apache.org/24/documentation/streams/tutorial#tutorial_code_linesplit
 
   (do
     (def props (Properties.))
@@ -225,6 +226,17 @@
   (.send producer (ProducerRecord.
                    "streams-linesplit-input"
                    (.toString (java.util.UUID/randomUUID)) "all streams lead to kafka"))
+
+  ;
+  )
+
+
+(comment
+
+  ; Streams application: statefull wordcount
+  ; https://kafka.apache.org/24/documentation/streams/tutorial#tutorial_code_wordcount
+
+
 
   ;
   )
