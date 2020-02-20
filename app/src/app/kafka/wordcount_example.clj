@@ -1,4 +1,4 @@
-(ns app.kafka.wordcount
+(ns app.kafka.wordcount-example
   (:require [clojure.pprint :as pp])
   (:import
    org.apache.kafka.clients.consumer.ConsumerConfig
