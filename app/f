@@ -18,7 +18,7 @@ dock() {
                 --rm \
                 --name starnet.app \
                 -it \
-                --network starnet.kafka-stack \
+                --network starnet.kafka \
                 -p 7788:7788 \
                 -v "$(pwd)":/opt/app \
                  starnet.app \

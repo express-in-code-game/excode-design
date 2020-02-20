@@ -121,7 +121,7 @@
 - point is: assets are code, files are generated
 - docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
 - https://github.com/localstack/localstack
-- persist data in kafka
+- persist data in kafka (as event/record store)
 - v0.1 assets
   - use s-expressions to gen svg
   - colors, lines, shapes (for cape, spheres, facilities, skills, fruit tree etc.)
@@ -167,6 +167,11 @@
 
 - ignite
   - run kafka
+    1 the core of the system via repl interface
+    2 http interface
+    3 ui components
+    4 game ui
+    5 iterate
   - seq of users/sessions, invite to a game
   - a tab per player
   - empty squared board, players move a circle, end turn

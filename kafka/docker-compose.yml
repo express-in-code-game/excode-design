@@ -1,8 +1,8 @@
 version: "3.7"
 
 networks:
-  starnet.kafka-stack:
-    name: starnet.kafka-stack
+  starnet.kafka:
+    name: starnet.kafka
 
 services:
 
@@ -12,18 +12,18 @@ services:
       context: ./zookeeper
       dockerfile: ./Dockerfile
 
-  kafka:
-    image: kafka
+  broker:
+    image: broker
     build:
-      context: ./kafka
+      context: ./broker
       dockerfile: ./Dockerfile
 
-  zoo1:
+  zookeeper1:
     image: zookeeper
     volumes:
-      - ./volumes/zoo1:/opt/vol
+      - ./.volumes/zookeeper1:/opt/vol
     networks:
-      - starnet.kafka-stack
+      - starnet.kafka
     # user: user
     # ports:
     #   - 2181:2181
@@ -34,13 +34,13 @@ services:
     depends_on: 
       - zookeeper
 
-  kafka1:
-    image: kafka
+  broker1:
+    image: broker
     volumes:
-      - ./volumes/kafka1:/opt/vol
+      - ./.volumes/broker1:/opt/vol
     # user: user
     networks:
-      - starnet.kafka-stack
+      - starnet.kafka
     ports:
       - 9092:9092
     # command: tail -f /dev/null
@@ -48,5 +48,5 @@ services:
     stdin_open: true
     tty: true
     depends_on: 
-      - kafka
-      - zoo1
+      - broker
+      - zookeeper1
