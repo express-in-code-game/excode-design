@@ -57,35 +57,43 @@
   (.send producer (ProducerRecord. "streams-plaintext-input" "key1" "all streams lead to kafka"))
 
   (do
+    
     (def stream-props (Properties.))
+    
     (.put stream-props StreamsConfig/APPLICATION_ID_CONFIG "streams-wordcount")
     (.put stream-props StreamsConfig/BOOTSTRAP_SERVERS_CONFIG "kafka1:9092")
     (.put stream-props StreamsConfig/CACHE_MAX_BYTES_BUFFERING_CONFIG 0)
     (.put stream-props StreamsConfig/DEFAULT_KEY_SERDE_CLASS_CONFIG (.. Serdes (String) (getClass) (getName)))
     (.put stream-props StreamsConfig/DEFAULT_VALUE_SERDE_CLASS_CONFIG (.. Serdes (String) (getClass) (getName)))
-    (.put stream-props ConsumerConfig/AUTO_OFFSET_RESET_CONFIG "earliest"))
+    (.put stream-props ConsumerConfig/AUTO_OFFSET_RESET_CONFIG "earliest")
 
-  (def streams-builder (StreamsBuilder.))
-  (def source (.stream streams-builder "streams-plaintext-input"))
-  (def counts
-    (-> source
+    (def streams-builder (StreamsBuilder.))
+    (def source (.stream streams-builder "streams-plaintext-input"))
+    (def counts
+      (-> source
         ; https://kafka.apache.org/24/javadoc/org/apache/kafka/streams/kstream/KStream.html
-        (.flatMapValues
+          (.flatMapValues
          ; https://github.com/troy-west/kstream-examples/blob/master/test/troy_west/kstream/examples.clj#L47
          ; https://kafka.apache.org/24/javadoc/org/apache/kafka/streams/kstream/ValueMapper.html
-         (reify ValueMapper
+           (reify ValueMapper
            ; https://stackoverflow.com/questions/34902518/errors-extending-a-java-interface-in-clojure
-           (apply [this vl]
-             (Arrays/asList (-> vl (.toLowerCase (Locale/getDefault)) (.split " "))))))
-        (.groupBy
-         (reify KeyValueMapper
-           (apply [this k vl]
-             vl)))
-        (.count)))
-
-  (do (-> counts
-          (.toStream)
-          (.to "streams-wordcount-output" (Produced/with (Serdes/String) (Serdes/Long)))))
+             (apply [this vl]
+               (.println System/out ".flatMapValues apply call:")
+               (.println System/out vl)
+               (.println System/out (-> vl (.toLowerCase (Locale/getDefault)) (.split " ")))
+               (Arrays/asList (-> vl (.toLowerCase (Locale/getDefault)) (.split " "))))))
+          (.groupBy
+           (reify KeyValueMapper
+             (apply [this k vl]
+               (.println System/out ".groupBy apply call:")
+               (.println System/out vl)
+               vl)))
+          (.count)))
+    
+    (-> counts
+        (.toStream)
+        (.to "streams-wordcount-output" (Produced/with (Serdes/String) (Serdes/Long))))
+    )
 
   (def streams (KafkaStreams. (.build streams-builder) stream-props))
 
@@ -101,18 +109,34 @@
   (try
     (do
       (.start streams)
-      (.await latch))
+      #_(.await latch))
     (catch Exception e (prn (str "caught exception: " (.getMessage e)))))
 
 
-  (def consumer (KafkaConsumer. props))
-  (.subscribe consumer (Arrays/asList (object-array ["streams-wordcount-output"])))
+  (do
+    (def consumer (KafkaConsumer.
+                   {"bootstrap.servers" "kafka1:9092"
+                    "auto.offset.reset" "earliest"
+                    "auto.commit.enable" "false"
+                    "group.id" (.toString (java.util.UUID/randomUUID))
+                    "consumer.timeout.ms" "5000"
+                    "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
+                    "value.deserializer" "org.apache.kafka.common.serialization.LongDeserializer"}))
+
+    (.subscribe consumer (Arrays/asList (object-array ["streams-wordcount-output"])))
+    )
+
+  (def x (atom nil))
   
-  (let [records (.poll consumer 0)]
+  
+  (let [records (.poll consumer 1000)]
+    (.println System/out "polling records:")
     (doseq [rec records]
-      (prn (str "value: " (.value rec))))
-    #_(.commitSync consumer))
-  
+      (reset! x rec)
+      (.println System/out (str "value: " (.value rec)))
+      ))
+
+
 
   ;
   )
