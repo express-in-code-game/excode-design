@@ -1,4 +1,4 @@
-(ns app.repl-kafka-events
+(ns app.kafka.repl-kafka-events
   (:require [clojure.pprint :as pp])
   (:import
    org.apache.kafka.common.serialization.Serdes
