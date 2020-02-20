@@ -141,6 +141,8 @@
   (future-cancel fu)
 
   (.send producer (ProducerRecord. "streams-plaintext-input" "key1" "hello kafka streams"))
+  (.send producer (ProducerRecord. "streams-plaintext-input" "key1" "join kafka summit"))
+
   (.send producer (ProducerRecord. "streams-plaintext-input" "key1" "sequences"))
 
   ;
