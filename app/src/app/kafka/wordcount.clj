@@ -70,8 +70,8 @@
     (.put stream-props ConsumerConfig/AUTO_OFFSET_RESET_CONFIG "earliest")
 
     (def streams-builder (StreamsBuilder.))
-    (def source (.stream streams-builder "streams-plaintext-input"))
-    (def counts
+    (def ^KStream source (.stream streams-builder "streams-plaintext-input"))
+    (def ^KTable  counts
       (-> source
         ; https://kafka.apache.org/24/javadoc/org/apache/kafka/streams/kstream/KStream.html
           (.flatMapValues
