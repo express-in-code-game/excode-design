@@ -22,6 +22,9 @@
 ; https://github.com/perkss/clojure-kafka-examples
 ; https://github.com/troy-west/kstream-examples/blob/master/test/troy_west/kstream/examples.clj
 
+; https://kafka.apache.org/24/javadoc/org/apache/kafka/streams/kstream/KStream.html 
+; https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html
+
 (defn create-user
   []
   {})
