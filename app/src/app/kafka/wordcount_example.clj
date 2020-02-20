@@ -29,24 +29,28 @@
 ; https://github.com/apache/kafka/blob/2.4/streams/examples/src/main/java/org/apache/kafka/streams/examples/wordcount/WordCountDemo.java
 ; https://github.com/apache/kafka/blob/2.4.0/streams/src/main/java/org/apache/kafka/streams/kstream/internals/KStreamImpl.java
 (comment
-  (def props (Properties.))
+  
   (do
+    (def props (Properties.))
+    
     (.setProperty props "bootstrap.servers" "kafka1:9092")
     (.setProperty props "group.id" "test")
     (.setProperty props "enable.auto.commit" "true")
     (.setProperty props "auto.commit.interval.ms" "1000")
     (.setProperty props "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer")
-    (.setProperty props "value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"))
-
-  (def client (AdminClient/create props))
-
-  (def topics (java.util.ArrayList.
-               [(NewTopic. "streams-plaintext-input" 1 (short 1))
-                (NewTopic. "streams-wordcount-output" 1 (short 1))]))
-
-  (.createTopics client topics)
-  #_(.deleteTopics client (java.util.ArrayList. ["streams-plaintext-input"
+    (.setProperty props "value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer")
+    
+    (def client (AdminClient/create props))
+    
+    (.deleteTopics client (java.util.ArrayList. ["streams-plaintext-input"
                                                  "streams-wordcount-output"]))
+    
+    (def topics (java.util.ArrayList.
+                 [(NewTopic. "streams-plaintext-input" 1 (short 1))
+                  (NewTopic. "streams-wordcount-output" 1 (short 1))]))
+    
+    (.createTopics client topics)
+    )
 
   (def consumer (KafkaConsumer. props))
   (.listTopics consumer)
@@ -94,51 +98,65 @@
 
     (-> counts
         (.toStream)
-        (.to "streams-wordcount-output" (Produced/with (Serdes/String) (Serdes/Long)))))
+        (.to "streams-wordcount-output" (Produced/with (Serdes/String) (Serdes/Long))))
+    )
 
   (def streams (KafkaStreams. (.build streams-builder) stream-props))
 
   (def latch (CountDownLatch. 1))
 
   ; https://github.com/perkss/clojure-kafka-examples/blob/4902b07b965c096f93874fb035c10259c4c48dfb/kafka-streams-example/src/kafka_streams_example/core.clj#L23
-  (do
-    (.addShutdownHook (Runtime/getRuntime) (Thread.
-                                            (fn []
-                                              (.close streams)
-                                              (.countDown latch)))))
+  #_(do
+      (.addShutdownHook (Runtime/getRuntime) (Thread.
+                                              (fn []
+                                                (.close streams)
+                                                (.countDown latch)))))
 
-  (try
-    (do
-      (.start streams)
-      #_(.await latch))
-    (catch Exception e (prn (str "caught exception: " (.getMessage e)))))
+  (-> (Runtime/getRuntime)
+      (.addShutdownHook (proxy
+                         [Thread]
+                         ["streams-shutdown-hook"]
+                          (run []
+                            (.println (System/out) "--closing stream")
+                            (.close streams)
+                            (.countDown latch)))))
 
+  (def fu-streams
+    (future-call
+     (fn []
+       (try
+         (do
+           (.start streams)
+           #_(.await latch)) ; .await latch halts
+         (catch Exception e (.println System/out (str "caught e: " (.getMessage e))))))))
 
-
-
-  (def fu (future-call (fn []
-                         (do
-                           (def consumer (KafkaConsumer.
-                                          {"bootstrap.servers" "kafka1:9092"
-                                           "auto.offset.reset" "earliest"
-                                           "auto.commit.enable" "false"
-                                           "group.id" (.toString (java.util.UUID/randomUUID))
-                                           "consumer.timeout.ms" "5000"
-                                           "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
-                                           "value.deserializer" "org.apache.kafka.common.serialization.LongDeserializer"}))
-
-                           (.subscribe consumer (Arrays/asList (object-array ["streams-wordcount-output"]))))
-
-                         (def x (atom nil))
-                         (while true
-                           (let [records (.poll consumer 1000)]
-                             (.println System/out "polling records:")
-                             (doseq [rec records]
-                               (reset! x rec)
-                               (prn (str (.key rec) " " (.value rec)  ))
-                               #_(.println System/out (str "value: " (.value rec)))))))))
+  (future-cancel fu-streams)
+  (.close streams)
   
-  (future-cancel fu)
+  (def fu-consumer
+    (future-call (fn []
+                   (do
+                     (def consumer (KafkaConsumer.
+                                    {"bootstrap.servers" "kafka1:9092"
+                                     "auto.offset.reset" "earliest"
+                                     "auto.commit.enable" "false"
+                                     "group.id" (.toString (java.util.UUID/randomUUID))
+                                     "consumer.timeout.ms" "5000"
+                                     "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
+                                     "value.deserializer" "org.apache.kafka.common.serialization.LongDeserializer"}))
+
+                     (.subscribe consumer (Arrays/asList (object-array ["streams-wordcount-output"]))))
+
+                   (def x (atom nil))
+                   (while true
+                     (let [records (.poll consumer 1000)]
+                       (.println System/out "polling records:")
+                       (doseq [rec records]
+                         (reset! x rec)
+                         (prn (str (.key rec) " " (.value rec)))
+                         #_(.println System/out (str "value: " (.value rec)))))))))
+
+  (future-cancel fu-consumer)
 
   (.send producer (ProducerRecord. "streams-plaintext-input" "key1" "hello kafka streams"))
   (.send producer (ProducerRecord. "streams-plaintext-input" "key1" "join kafka summit"))

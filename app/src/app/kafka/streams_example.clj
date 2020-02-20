@@ -6,88 +6,41 @@
    org.apache.kafka.streams.StreamsBuilder
    org.apache.kafka.streams.StreamsConfig
    org.apache.kafka.streams.Topology
+   org.apache.kafka.streams.kstream.KStream
+   org.apache.kafka.streams.kstream.KTable
    java.util.Properties
    java.util.concurrent.CountDownLatch
    org.apache.kafka.clients.admin.AdminClient
    org.apache.kafka.clients.admin.NewTopic
    org.apache.kafka.clients.consumer.KafkaConsumer
+   org.apache.kafka.clients.producer.KafkaProducer
+   org.apache.kafka.clients.producer.ProducerRecord
    java.util.ArrayList
-   ))
+   java.util.Arrays))
+
+; https://kafka.apache.org/24/documentation/streams/tutorial
 
 (comment
 
-  (def props (Properties.))
+  ; Streams application: Pipe
+
+
   (do
-    (.setProperty props "bootstrap.servers" "kafka1:9092")
-    (.setProperty props "group.id" "test")
-    (.setProperty props "enable.auto.commit" "true")
-    (.setProperty props "auto.commit.interval.ms" "1000")
-    (.setProperty props "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer")
-    (.setProperty props "value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"))
+    (def props (Properties.))
 
-  (def client (AdminClient/create props))
+    (.put props "bootstrap.servers" "kafka1:9092")
+    (.put props "group.id" "test")
+    (.put props "enable.auto.commit" "false")
+    (.put props "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer")
+    (.put props "value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer")
 
-  (def topics (java.util.ArrayList.
-               [(NewTopic. "topic1" 1 (short 1))
-                (NewTopic. "topic2" 1 (short 1))]))
-
-  (.createTopics client topics)
-
-  (.listTopics client)
-
-  (def consumer (KafkaConsumer. props))
-  (count (.listTopics consumer))
-  (butlast (.listTopics consumer))
-
-  (.deleteTopics client (java.util.ArrayList. ["topic1"
-                                               "topic2"
-                                               "streams-plaintext-input1"]))
-  
-  
-  ;
-  )
-
-(comment
-  
-  ; word count
-
-  (def props (Properties.))
-  (do
-    (.setProperty props "bootstrap.servers" "kafka1:9092")
-    (.setProperty props "group.id" "test")
-    (.setProperty props "enable.auto.commit" "true")
-    (.setProperty props "auto.commit.interval.ms" "1000")
-    (.setProperty props "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer")
-    (.setProperty props "value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer")
-    )
-
-  (def client (AdminClient/create props))
-
-  (def topic1 
-    (NewTopic. "streams-plaintext-input" 1 (short 1))
-    )
-  
-  (def topic2
-    (NewTopic. "streams-wordcount-output" 1 (short 1)))
-  
-  (.configs topic2 {"cleanup.policy" "compact"})
-  
-  (.createTopics client (java.util.ArrayList.
-                         [topic1
-                          topic2]))
-  
-  (def consumer (KafkaConsumer. props))
-  
-  (butlast (.listTopics consumer))
-  
-  
-  
-
-  ;
-  )
-
-
-(comment
+    (def client (AdminClient/create props))
+    (.deleteTopics client (java.util.ArrayList. ["streams-pipe-input"
+                                                 "streams-pipe-output"]))
+    (def topics (java.util.ArrayList.
+                 [(NewTopic. "streams-pipe-input" 1 (short 1))
+                  (NewTopic. "streams-pipe-output" 1 (short 1))]))
+    (.createTopics client topics))
 
   (do
     (def props (Properties.))
@@ -98,12 +51,11 @@
     (.put props StreamsConfig/DEFAULT_VALUE_SERDE_CLASS_CONFIG (.. Serdes String getClass))
 
     (def builder (StreamsBuilder.))
-
-    (-> builder
-        (.stream  "streams-plaintext-input")
-        (.to "streams-pipe-output"))
-
+    (def ^KStream source (.stream builder "streams-pipe-input"))
+    (do (.to source "streams-pipe-output"))
     (def topology (.build builder))
+
+    (println (.describe topology))
 
     (def streams (KafkaStreams. topology props))
 
@@ -116,34 +68,52 @@
                             (run []
                               (.println (System/out) "--closing stream")
                               (.close streams)
-                              (.countDown latch)))))
-    )
-  
-  (.println (System/out) "3")
-  
-  (future-call (fn []
-                 (try
-                   (.start streams)
-                   (.await latch)
-                   (catch Exception e
-                     (do
-                       (prn (.getMessage e))
-                       #_(System/exit 1))))
-                 ))
-  
-  (System/exit 0)
-  ;
-  )
+                              (.countDown latch))))))
+  #_(System/exit 0) ; works, streams-shutdown-hook is triggered
 
+  (def fu-streams
+    (future-call
+     (fn []
+       (try
+         (do
+           (.start streams)
+           #_(.await latch)) ; .await latch halts
+         (catch Exception e (.println System/out (str "caught e: " (.getMessage e))))))))
 
+  (future-cancel fu-streams)
+  (.close streams)
 
+  (def fu-consumer
+    (future-call (fn []
+                   (do
+                     (def consumer (KafkaConsumer.
+                                    {"bootstrap.servers" "kafka1:9092"
+                                     "auto.offset.reset" "earliest"
+                                     "auto.commit.enable" "false"
+                                     "group.id" (.toString (java.util.UUID/randomUUID))
+                                     "consumer.timeout.ms" "5000"
+                                     "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
+                                     "value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"}))
 
-(comment
-  
-  
-  
-  
-  
-  
+                     (.subscribe consumer (Arrays/asList (object-array ["streams-pipe-output"]))))
+
+                   (while true
+                     (let [records (.poll consumer 1000)]
+                       (.println System/out "polling records:")
+                       (doseq [rec records]
+                         (prn (str (.key rec) " : " (.value rec)))
+                         ))))))
+
+  (future-cancel fu-consumer)
+
+  (def producer (KafkaProducer.
+                 {"bootstrap.servers" "kafka1:9092"
+                  "value.serializer" "org.apache.kafka.common.serialization.StringSerializer"
+                  "key.serializer" "org.apache.kafka.common.serialization.StringSerializer"}))
+
+  (.send producer (ProducerRecord. 
+                   "streams-pipe-input" 
+                   (.toString (java.util.UUID/randomUUID)) "all streams lead to kafka"))
+
   ;
   )
