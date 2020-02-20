@@ -57,9 +57,9 @@
   (.send producer (ProducerRecord. "streams-plaintext-input" "key1" "all streams lead to kafka"))
 
   (do
-    
+
     (def stream-props (Properties.))
-    
+
     (.put stream-props StreamsConfig/APPLICATION_ID_CONFIG "streams-wordcount")
     (.put stream-props StreamsConfig/BOOTSTRAP_SERVERS_CONFIG "kafka1:9092")
     (.put stream-props StreamsConfig/CACHE_MAX_BYTES_BUFFERING_CONFIG 0)
@@ -89,11 +89,10 @@
                (.println System/out vl)
                vl)))
           (.count)))
-    
+
     (-> counts
         (.toStream)
-        (.to "streams-wordcount-output" (Produced/with (Serdes/String) (Serdes/Long))))
-    )
+        (.to "streams-wordcount-output" (Produced/with (Serdes/String) (Serdes/Long)))))
 
   (def streams (KafkaStreams. (.build streams-builder) stream-props))
 
@@ -113,31 +112,34 @@
     (catch Exception e (prn (str "caught exception: " (.getMessage e)))))
 
 
-  (do
-    (def consumer (KafkaConsumer.
-                   {"bootstrap.servers" "kafka1:9092"
-                    "auto.offset.reset" "earliest"
-                    "auto.commit.enable" "false"
-                    "group.id" (.toString (java.util.UUID/randomUUID))
-                    "consumer.timeout.ms" "5000"
-                    "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
-                    "value.deserializer" "org.apache.kafka.common.serialization.LongDeserializer"}))
 
-    (.subscribe consumer (Arrays/asList (object-array ["streams-wordcount-output"])))
-    )
 
-  (def x (atom nil))
+  (def fu (future-call (fn []
+                         (do
+                           (def consumer (KafkaConsumer.
+                                          {"bootstrap.servers" "kafka1:9092"
+                                           "auto.offset.reset" "earliest"
+                                           "auto.commit.enable" "false"
+                                           "group.id" (.toString (java.util.UUID/randomUUID))
+                                           "consumer.timeout.ms" "5000"
+                                           "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
+                                           "value.deserializer" "org.apache.kafka.common.serialization.LongDeserializer"}))
+
+                           (.subscribe consumer (Arrays/asList (object-array ["streams-wordcount-output"]))))
+
+                         (def x (atom nil))
+                         (while true
+                           (let [records (.poll consumer 1000)]
+                             (.println System/out "polling records:")
+                             (doseq [rec records]
+                               (reset! x rec)
+                               (prn (str (.key rec) " " (.value rec)  ))
+                               #_(.println System/out (str "value: " (.value rec)))))))))
   
-  
-  (let [records (.poll consumer 1000)]
-    (.println System/out "polling records:")
-    (doseq [rec records]
-      (reset! x rec)
-      (prn (str "value: " (.value rec)))
-      #_(.println System/out (str "value: " (.value rec)))
-      ))
+  (future-cancel fu)
 
-
+  (.send producer (ProducerRecord. "streams-plaintext-input" "key1" "hello kafka streams"))
+  (.send producer (ProducerRecord. "streams-plaintext-input" "key1" "sequences"))
 
   ;
   )
