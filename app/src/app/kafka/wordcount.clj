@@ -133,7 +133,8 @@
     (.println System/out "polling records:")
     (doseq [rec records]
       (reset! x rec)
-      (.println System/out (str "value: " (.value rec)))
+      (prn (str "value: " (.value rec)))
+      #_(.println System/out (str "value: " (.value rec)))
       ))
 
 
