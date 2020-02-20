@@ -15,6 +15,8 @@
    org.apache.kafka.clients.consumer.KafkaConsumer
    org.apache.kafka.clients.producer.KafkaProducer
    org.apache.kafka.clients.producer.ProducerRecord
+   org.apache.kafka.streams.kstream.ValueMapper
+   org.apache.kafka.streams.kstream.KeyValueMapper
    java.util.ArrayList
    java.util.Arrays))
 
@@ -35,12 +37,15 @@
     (.put props "value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer")
 
     (def client (AdminClient/create props))
-    (.deleteTopics client (java.util.ArrayList. ["streams-pipe-input"
-                                                 "streams-pipe-output"]))
+    
+    ; async, cannot be executed within do block
+    #_(.deleteTopics client (java.util.ArrayList. ["streams-pipe-input"
+                                                   "streams-pipe-output"]))
     (def topics (java.util.ArrayList.
                  [(NewTopic. "streams-pipe-input" 1 (short 1))
                   (NewTopic. "streams-pipe-output" 1 (short 1))]))
-    (.createTopics client topics))
+    (.createTopics client topics)
+    )
 
   (do
     (def props (Properties.))
@@ -53,6 +58,113 @@
     (def builder (StreamsBuilder.))
     (def ^KStream source (.stream builder "streams-pipe-input"))
     (do (.to source "streams-pipe-output"))
+    (def topology (.build builder))
+
+    (println (.describe topology))
+
+    (def streams (KafkaStreams. topology props))
+
+    (def latch (CountDownLatch. 1))
+
+    (-> (Runtime/getRuntime)
+        (.addShutdownHook (proxy
+                           [Thread]
+                           ["streams-shutdown-hook"]
+                            (run []
+                              (.println (System/out) "--closing stream")
+                              (.close streams)
+                              (.countDown latch)))))
+    )
+  #_(System/exit 0) ; works, streams-shutdown-hook is triggered
+
+  (def fu-streams
+    (future-call
+     (fn []
+       (try
+         (do
+           (.start streams)
+           #_(.await latch)) ; .await latch halts
+         (catch Exception e (.println System/out (str "caught e: " (.getMessage e))))))))
+
+  (future-cancel fu-streams)
+  (.close streams)
+
+  (def fu-consumer
+    (future-call (fn []
+                   (do
+                     (def consumer (KafkaConsumer.
+                                    {"bootstrap.servers" "kafka1:9092"
+                                     "auto.offset.reset" "earliest"
+                                     "auto.commit.enable" "false"
+                                     "group.id" (.toString (java.util.UUID/randomUUID))
+                                     "consumer.timeout.ms" "5000"
+                                     "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
+                                     "value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"}))
+
+                     (.subscribe consumer (Arrays/asList (object-array ["streams-pipe-output"]))))
+
+                   (while true
+                     (let [records (.poll consumer 1000)]
+                       (.println System/out (str "polling records:" (java.time.LocalTime/now)))
+                       (doseq [rec records]
+                         (prn (str (.key rec) " : " (.value rec)))
+                         ))))))
+
+  (future-cancel fu-consumer)
+
+  (def producer (KafkaProducer.
+                 {"bootstrap.servers" "kafka1:9092"
+                  "value.serializer" "org.apache.kafka.common.serialization.StringSerializer"
+                  "key.serializer" "org.apache.kafka.common.serialization.StringSerializer"}))
+
+  (.send producer (ProducerRecord. 
+                   "streams-pipe-input" 
+                   (.toString (java.util.UUID/randomUUID)) "all streams lead to kafka"))
+  
+  ;
+  )
+
+
+(comment
+
+  ; Streams application: Line Split
+
+  (do
+    (def props (Properties.))
+
+    (.put props "bootstrap.servers" "kafka1:9092")
+    (.put props "group.id" "test")
+    (.put props "enable.auto.commit" "false")
+    (.put props "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer")
+    (.put props "value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer")
+
+    (def client (AdminClient/create props))
+    
+    ; async, cannot be executed within do block
+    #_(.deleteTopics client (java.util.ArrayList. ["streams-linesplit-input"
+                                                   "streams-linesplit-output"]))
+    (def topics (java.util.ArrayList.
+                 [(NewTopic. "streams-linesplit-input" 1 (short 1))
+                  (NewTopic. "streams-linesplit-output" 1 (short 1))]))
+    (.createTopics client topics))
+  
+  (do
+    (def props (Properties.))
+
+    (.put props StreamsConfig/APPLICATION_ID_CONFIG "streams-linesplit")
+    (.put props StreamsConfig/BOOTSTRAP_SERVERS_CONFIG "kafka1:9092")
+    (.put props StreamsConfig/DEFAULT_KEY_SERDE_CLASS_CONFIG (.. Serdes String getClass))
+    (.put props StreamsConfig/DEFAULT_VALUE_SERDE_CLASS_CONFIG (.. Serdes String getClass))
+
+    (def builder (StreamsBuilder.))
+    (def ^KStream source (.stream builder "streams-linesplit-input"))
+    (-> source
+        (.flatMapValues
+         (reify ValueMapper
+           (apply [this vl]
+             (Arrays/asList (.split vl "\\W+")))))
+        (.to "streams-linesplit-output"))
+
     (def topology (.build builder))
 
     (println (.describe topology))
@@ -95,14 +207,13 @@
                                      "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
                                      "value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"}))
 
-                     (.subscribe consumer (Arrays/asList (object-array ["streams-pipe-output"]))))
+                     (.subscribe consumer (Arrays/asList (object-array ["streams-linesplit-output"]))))
 
                    (while true
                      (let [records (.poll consumer 1000)]
-                       (.println System/out "polling records:")
+                       (.println System/out (str "polling records:" (java.time.LocalTime/now)))
                        (doseq [rec records]
-                         (prn (str (.key rec) " : " (.value rec)))
-                         ))))))
+                         (prn (str (.key rec) " : " (.value rec)))))))))
 
   (future-cancel fu-consumer)
 
@@ -111,8 +222,8 @@
                   "value.serializer" "org.apache.kafka.common.serialization.StringSerializer"
                   "key.serializer" "org.apache.kafka.common.serialization.StringSerializer"}))
 
-  (.send producer (ProducerRecord. 
-                   "streams-pipe-input" 
+  (.send producer (ProducerRecord.
+                   "streams-linesplit-input"
                    (.toString (java.util.UUID/randomUUID)) "all streams lead to kafka"))
 
   ;

@@ -42,7 +42,8 @@
     
     (def client (AdminClient/create props))
     
-    (.deleteTopics client (java.util.ArrayList. ["streams-plaintext-input"
+    ; async, cannot be executed within do block
+    #_(.deleteTopics client (java.util.ArrayList. ["streams-plaintext-input"
                                                  "streams-wordcount-output"]))
     
     (def topics (java.util.ArrayList.
@@ -150,7 +151,7 @@
                    (def x (atom nil))
                    (while true
                      (let [records (.poll consumer 1000)]
-                       (.println System/out "polling records:")
+                       (.println System/out (str "polling records:" (java.time.LocalTime/now)))
                        (doseq [rec records]
                          (reset! x rec)
                          (prn (str (.key rec) " " (.value rec)))
