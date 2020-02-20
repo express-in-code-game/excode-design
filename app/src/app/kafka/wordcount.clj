@@ -24,6 +24,8 @@
    java.util.Properties
    java.util.concurrent.CountDownLatch))
 
+; https://kafka.apache.org/24/documentation/streams/quickstart
+
 ; https://github.com/apache/kafka/blob/2.4/streams/examples/src/main/java/org/apache/kafka/streams/examples/wordcount/WordCountDemo.java
 ; https://github.com/apache/kafka/blob/2.4.0/streams/src/main/java/org/apache/kafka/streams/kstream/internals/KStreamImpl.java
 (comment
