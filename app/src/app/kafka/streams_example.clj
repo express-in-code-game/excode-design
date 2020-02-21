@@ -254,11 +254,11 @@
   
   (do
     ; async, cannot be executed within do block
-    #_(.deleteTopics client (java.util.ArrayList. ["streams-wordcount-input"
-                                                   "streams-wordcount-output"]))
+    #_(.deleteTopics client (java.util.ArrayList. ["streams-wordcount-stateful-input"
+                                                   "streams-wordcount-stateful-output"]))
     (def topics (java.util.ArrayList.
-                 [(NewTopic. "streams-wordcount-input" 1 (short 1))
-                  (NewTopic. "streams-wordcount-output" 1 (short 1))]))
+                 [(NewTopic. "streams-wordcount-stateful-input" 1 (short 1))
+                  (NewTopic. "streams-wordcount-stateful-output" 1 (short 1))]))
     (.createTopics client topics)
     )
 
@@ -272,7 +272,7 @@
     (.put props StreamsConfig/DEFAULT_VALUE_SERDE_CLASS_CONFIG (.. Serdes String getClass))
 
     (def builder (StreamsBuilder.))
-    (def ^KStream source (.stream builder "streams-wordcount-input"))
+    (def ^KStream source (.stream builder "streams-wordcount-stateful-input"))
     (-> source
         (.flatMapValues
          (reify ValueMapper
@@ -284,7 +284,7 @@
              vl)))
         (.count (Materialized/as "counts-store"))
         (.toStream)
-        (.to "streams-wordcount-output" (Produced/with (Serdes/String) (Serdes/Long))))
+        (.to "streams-wordcount-stateful-output" (Produced/with (Serdes/String) (Serdes/Long))))
 
     (def topology (.build builder))
 
@@ -327,7 +327,7 @@
                                      "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
                                      "value.deserializer" "org.apache.kafka.common.serialization.LongDeserializer"}))
                      
-                     (.subscribe consumer (Arrays/asList (object-array ["streams-wordcount-output"]))))
+                     (.subscribe consumer (Arrays/asList (object-array ["streams-wordcount-stateful-output"]))))
 
                    (while true
                      (let [records (.poll consumer 1000)]
@@ -345,7 +345,7 @@
   ; why takes too long to process ..?
   
   (.send producer (ProducerRecord.
-                   "streams-wordcount-input"
+                   "streams-wordcount-stateful-input"
                    (.toString (java.util.UUID/randomUUID)) "all streams lead to kafka"))
 
 
