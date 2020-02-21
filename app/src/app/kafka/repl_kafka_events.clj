@@ -25,6 +25,8 @@
 ; https://kafka.apache.org/24/javadoc/org/apache/kafka/streams/kstream/KStream.html 
 ; https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html
 
+; https://kafka.apache.org/24/documentation/streams/developer-guide/config-streams
+
 (defn create-user
   []
   {})

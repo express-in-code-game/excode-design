@@ -33,7 +33,7 @@
   (do
     (def props (Properties.))
     
-    (.setProperty props "bootstrap.servers" "kafka1:9092")
+    (.setProperty props "bootstrap.servers" "broker1:9092")
     (.setProperty props "group.id" "test")
     (.setProperty props "enable.auto.commit" "true")
     (.setProperty props "auto.commit.interval.ms" "1000")
@@ -57,7 +57,7 @@
   (.listTopics consumer)
 
   (def producer (KafkaProducer.
-                 {"bootstrap.servers" "kafka1:9092"
+                 {"bootstrap.servers" "broker1:9092"
                   "value.serializer" "org.apache.kafka.common.serialization.StringSerializer"
                   "key.serializer" "org.apache.kafka.common.serialization.StringSerializer"}))
 
@@ -68,7 +68,7 @@
     (def stream-props (Properties.))
 
     (.put stream-props StreamsConfig/APPLICATION_ID_CONFIG "streams-wordcount")
-    (.put stream-props StreamsConfig/BOOTSTRAP_SERVERS_CONFIG "kafka1:9092")
+    (.put stream-props StreamsConfig/BOOTSTRAP_SERVERS_CONFIG "broker1:9092")
     (.put stream-props StreamsConfig/CACHE_MAX_BYTES_BUFFERING_CONFIG 0)
     (.put stream-props StreamsConfig/DEFAULT_KEY_SERDE_CLASS_CONFIG (.. Serdes (String) (getClass) (getName)))
     (.put stream-props StreamsConfig/DEFAULT_VALUE_SERDE_CLASS_CONFIG (.. Serdes (String) (getClass) (getName)))
@@ -138,7 +138,7 @@
     (future-call (fn []
                    (do
                      (def consumer (KafkaConsumer.
-                                    {"bootstrap.servers" "kafka1:9092"
+                                    {"bootstrap.servers" "broker1:9092"
                                      "auto.offset.reset" "earliest"
                                      "auto.commit.enable" "false"
                                      "group.id" (.toString (java.util.UUID/randomUUID))
