@@ -251,7 +251,7 @@
     (.put props "value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer")
 
     (def client (AdminClient/create props)))
-  
+
   (do
     ; async, cannot be executed within do block
     #_(.deleteTopics client (java.util.ArrayList. ["streams-wordcount-stateful-input"
@@ -259,8 +259,7 @@
     (def topics (java.util.ArrayList.
                  [(NewTopic. "streams-wordcount-stateful-input" 1 (short 1))
                   (NewTopic. "streams-wordcount-stateful-output" 1 (short 1))]))
-    (.createTopics client topics)
-    )
+    (.createTopics client topics))
 
 
   (do
@@ -303,6 +302,12 @@
                               (.close streams)
                               (.countDown latch))))))
 
+  ; https://kafka.apache.org/24/documentation/streams/developer-guide/write-streams
+  (.setUncaughtExceptionHandler streams
+                                (reify Thread$UncaughtExceptionHandler
+                                  (uncaughtException [this thred thrwable]
+                                    (prn "This handler is called whenever a stream thread is terminated by an unexpected exception"))))
+
   (def fu-streams
     (future-call
      (fn []
@@ -326,7 +331,7 @@
                                      "consumer.timeout.ms" "5000"
                                      "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
                                      "value.deserializer" "org.apache.kafka.common.serialization.LongDeserializer"}))
-                     
+
                      (.subscribe consumer (Arrays/asList (object-array ["streams-wordcount-stateful-output"]))))
 
                    (while true
@@ -343,7 +348,7 @@
                   "key.serializer" "org.apache.kafka.common.serialization.StringSerializer"}))
 
   ; why takes too long to process ..?
-  
+
   (.send producer (ProducerRecord.
                    "streams-wordcount-stateful-input"
                    (.toString (java.util.UUID/randomUUID)) "all streams lead to kafka"))
