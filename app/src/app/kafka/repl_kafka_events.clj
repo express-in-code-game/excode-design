@@ -44,6 +44,8 @@
   change-email
   list-users
   create-event
+  :event.type/single-elemination-bracket
+  :event/start-ts
   cancel-event
   signin-event
   signout-event
@@ -54,9 +56,8 @@
   list-games
   join-game
   invite-into-game
-  
-  
 
+  ;
   )
 
 
