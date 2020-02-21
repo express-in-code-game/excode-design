@@ -43,6 +43,8 @@
   change-username
   change-email
   list-users
+  list-user-account
+  list-user-ongoing-games
   create-event
   :event.type/single-elemination-bracket
   :event/start-ts
