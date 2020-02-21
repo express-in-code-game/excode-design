@@ -22,7 +22,8 @@
 ; https://github.com/perkss/clojure-kafka-examples
 ; https://github.com/troy-west/kstream-examples/blob/master/test/troy_west/kstream/examples.clj
 
-; https://kafka.apache.org/24/javadoc/org/apache/kafka/streams/kstream/KStream.html 
+; https://kafka.apache.org/24/javadoc/org/apache/kafka/streams/kstream/KStream.html
+; https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
 ; https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html
 
 ; https://kafka.apache.org/24/documentation/streams/developer-guide/config-streams
