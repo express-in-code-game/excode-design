@@ -45,6 +45,7 @@
   list-users
   list-user-account
   list-user-ongoing-games
+  list-user-game-history
   create-event
   :event.type/single-elemination-bracket
   :event/start-ts
