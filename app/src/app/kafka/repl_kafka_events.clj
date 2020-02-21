@@ -62,7 +62,8 @@
   invite-into-game
   connect-to-game
   disconnect-from-game
-  in-game-event
+  ingame-event
+  list-ingame-events-for-game
 
   ;
   )
