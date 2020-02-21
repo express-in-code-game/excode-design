@@ -33,15 +33,29 @@
 ; https://www.confluent.io/blog/building-a-microservices-ecosystem-with-kafka-streams-and-ksql/
 ; https://github.com/confluentinc/kafka-streams-examples/tree/4.0.0-post/src/main/java/io/confluent/examples/streams/microservices
 
-(defn create-user
-  []
-  {})
-
 
 (comment
+
+  create-user
+  delete-account
+  change-username
+  change-email
+  list-users
+  create-event
+  cancel-event
+  signin-event
+  signout-event
+  list-events
+  list-event-signedup-users
+  create-game
+  cancel-game
+  list-games
+  join-game
+  invite-into-game
   
-  (create-user)
   
-  
-  ;
+
+ ; repl interface
   )
+
+
