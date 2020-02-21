@@ -55,9 +55,14 @@
   list-event-signedup-users
   create-game
   cancel-game
+  start-game
+  end-game
   list-games
   join-game
   invite-into-game
+  connect-to-game
+  disconnect-from-game
+  in-game-event
 
   ;
   )
