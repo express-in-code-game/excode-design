@@ -36,6 +36,8 @@
 
 (comment
 
+ ; repl interface
+
   create-user
   delete-account
   change-username
@@ -55,7 +57,6 @@
   
   
 
- ; repl interface
   )
 
 
