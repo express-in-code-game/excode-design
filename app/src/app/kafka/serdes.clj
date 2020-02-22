@@ -48,44 +48,44 @@
 ; https://github.com/apache/kafka/tree/2.4/clients/src/main/java/org/apache/kafka/common/serialization
 
 
-(deftype TransitSerializer
-         [format]
+(deftype TransitJsonSerializer
+         []
   Serializer
   (configure [this _ _])
   (close [this])
   (serialize [this topic data]
     (try
-      (when data (transit-write-bytes format data))
+      (when data (transit-write-bytes :json data))
       (catch IOException e
         (throw (SerializationException. "Error serializing data with TransitSerializer" e))))))
 
-(deftype TransitDeserializer
-         [format]
+(deftype TransitJsonDeserializer
+         []
   Deserializer
   (configure [this _ _])
   (close [this])
   (deserialize [this topic data]
     (try
-      (when data (transit-read-bytes format data))
+      (when data (transit-read-bytes :json data))
       (catch IOException e
         (throw (SerializationException. "Error deserializing data with TransitDeserializer" e))))))
 
 (comment
-  (def se (TransitSerializer. :json))
-  (def de (TransitDeserializer. :json))
-  (.deserialize de "asd" (.serialize t "asd" #{1 2 3}))
+  (def se (TransitJsonSerializer.))
+  (def de (TransitJsonDeserializer.))
+  (.deserialize de "asd" (.serialize se "asd" #{1 2 3}))
   ;
   )
 
-(deftype TransitSerde
-         [format]
+(deftype TransitJsonSerde
+         []
   Serde
   (configure [this _ _])
   (close [this])
   (serializer [this]
-    (TransitSerializer. format))
+    (TransitJsonSerializer.))
   (deserializer [this]
-    (TransitDeserializer. format)))
+    (TransitJsonDeserializer.)))
 
 
 

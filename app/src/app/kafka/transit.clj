@@ -1,9 +1,9 @@
 (ns app.kafka.transit
   (:require [clojure.pprint :as pp])
   (:import
-   app.kafka.serdes.TransitSerializer
-   app.kafka.serdes.TransitDeserializer
-   app.kafka.serdes.TransitSerde
+   app.kafka.serdes.TransitJsonSerializer
+   app.kafka.serdes.TransitJsonDeserializer
+   app.kafka.serdes.TransitJsonSerde
 
    org.apache.kafka.common.serialization.Serdes
    org.apache.kafka.streams.KafkaStreams
@@ -80,7 +80,7 @@
                    "group.id" "test"
                    "enable.auto.commit" "false"
                    "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
-                   "value.deserializer" "app.kafka.serdes.TransitDeserializer"}
+                   "value.deserializer" "app.kafka.serdes.TransitJsonDeserializer"}
              consumer (KafkaConsumer. conf)]
          (.subscribe consumer (Arrays/asList (object-array ["transit.input"])))
          (while true
@@ -88,13 +88,13 @@
              (.println System/out (str "polling records " (java.time.LocalTime/now)))
              (doseq [rec records]
                (prn (str (.key rec) " " (.value rec))))))))))
-
+  
   (future-cancel fu-consumer)
 
   (def producer (KafkaProducer.
                  {"bootstrap.servers" "broker1:9092"
                   "key.serializer" "org.apache.kafka.common.serialization.StringSerializer"
-                  "value.serializer" "app.kafka.serdes.TransitSerializer"}))
+                  "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
 
   (.send producer (ProducerRecord.
                    "transit.input"
