@@ -1,11 +1,11 @@
 (ns app.main
   (:require [app.nrepl :refer [start-nrepl-server]]
             [app.core]
+            [app.kafka.serdes] ; goes first for deftypes to be :imported
             [app.kafka.wordcount-example]
             [app.kafka.streams-example]
-            [app.kafka.queries]
+            [app.kafka.transit]
             [app.kafka.repl-kafka-events]
-            [app.kafka.serdes]
    ;
             ))
 

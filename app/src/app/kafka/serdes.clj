@@ -7,7 +7,8 @@
    org.apache.kafka.common.serialization.Deserializer
    org.apache.kafka.common.serialization.Serde
    org.apache.kafka.common.errors.SerializationException
-   java.io.IOException))
+   java.io.IOException)
+  (:gen-class))
 
 (comment
 

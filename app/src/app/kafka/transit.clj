@@ -1,6 +1,10 @@
-(ns app.kafka.queries
+(ns app.kafka.transit
   (:require [clojure.pprint :as pp])
   (:import
+   app.kafka.serdes.TransitSerializer
+   app.kafka.serdes.TransitDeserializer
+   app.kafka.serdes.TransitSerde
+
    org.apache.kafka.common.serialization.Serdes
    org.apache.kafka.streams.KafkaStreams
    org.apache.kafka.streams.StreamsBuilder
@@ -54,30 +58,20 @@
 (comment
 
   (create-topic {:conf base-conf
-                 :name "queries.users"
+                 :name "transit.input"
                  :num-partitions 1
                  :replication-factor 1})
 
   (create-topic {:conf base-conf
-                 :name "queries.users.view"
+                 :name "transit.output"
                  :num-partitions 1
                  :replication-factor 1})
 
   (list-topics {:conf base-conf})
 
   (delete-topics {:conf base-conf
-                  :names ["queries.users"
-                          "queries.users.view"]})
-
-  (def producer (KafkaProducer.
-                 {"bootstrap.servers" "broker1:9092"
-                  "value.serializer" "org.apache.kafka.common.serialization.StringSerializer"
-                  "key.serializer" "org.apache.kafka.common.serialization.StringSerializer"}))
-
-  (.send producer (ProducerRecord.
-                   "queries.users"
-                   (.toString (java.util.UUID/randomUUID)) "all streams lead to kafka"))
-
+                  :names ["transit.input"
+                          "transit.output"]})
 
   (def fu-consumer
     (future-call
@@ -86,9 +80,9 @@
                    "group.id" "test"
                    "enable.auto.commit" "false"
                    "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
-                   "value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"}
+                   "value.deserializer" "app.kafka.serdes.TransitDeserializer"}
              consumer (KafkaConsumer. conf)]
-         (.subscribe consumer (Arrays/asList (object-array ["queries.users.view"])))
+         (.subscribe consumer (Arrays/asList (object-array ["transit.input"])))
          (while true
            (let [records (.poll consumer 1000)]
              (.println System/out (str "polling records " (java.time.LocalTime/now)))
@@ -96,6 +90,15 @@
                (prn (str (.key rec) " " (.value rec))))))))))
 
   (future-cancel fu-consumer)
+
+  (def producer (KafkaProducer.
+                 {"bootstrap.servers" "broker1:9092"
+                  "key.serializer" "org.apache.kafka.common.serialization.StringSerializer"
+                  "value.serializer" "app.kafka.serdes.TransitSerializer"}))
+
+  (.send producer (ProducerRecord.
+                   "transit.input"
+                   (.toString (java.util.UUID/randomUUID)) {:a 1 :b 2}))
 
   ;
   )
