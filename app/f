@@ -1,10 +1,15 @@
 #!/bin/bash
 
 
+compile(){
+  mkdir -p classes
+  rm -rf classes/*
+  clojure -A:core -m dev.compile
+}
+
 dev(){
-
-  clojure -A:core -m app.main
-
+  compile
+  clj -A:core -m app.main
 }
 
 permissions(){

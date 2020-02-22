@@ -1,4 +1,4 @@
-{:paths ["src"]
+{:paths ["src" "classes"]
  :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
              "clojars" {:url "https://clojars.org/repo/"}
              }
@@ -6,12 +6,13 @@
  :aliases
  {:core {:extra-deps
          {org.clojure/clojure {:mvn/version "1.10.1"}
+
+          com.cognitect/transit-clj {:mvn/version "1.0.324"}
           org.apache.kafka/kafka-clients {:mvn/version "2.4.0"}
           org.apache.kafka/kafka-streams {:mvn/version "2.4.0"}
 
           nrepl {:mvn/version "0.6.0"}
-          cider/cider-nrepl {:mvn/version "0.21.1"}
-          }
+          cider/cider-nrepl {:mvn/version "0.21.1"}}
          }
   }
 }

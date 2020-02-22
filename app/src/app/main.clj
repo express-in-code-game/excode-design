@@ -1,9 +1,11 @@
 (ns app.main
-  (:require [app.nrepl :refer [start-nrepl-server]]
+  (:require [dev.nrepl :refer [start-nrepl-server]]
             [app.core]
             [app.kafka.wordcount-example]
             [app.kafka.streams-example]
-            [app.kafka.repl-kafka-events]
+            [app.kafka.transit-example]
+            [app.kafka.query-example]
+            [app.kafka.repl-interface]
    ;
             ))
 
