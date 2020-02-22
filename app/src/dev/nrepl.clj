@@ -1,4 +1,4 @@
-(ns app.nrepl
+(ns dev.nrepl
   (:require [nrepl.server :refer [start-server stop-server]]
             [clojure.repl :refer :all]
             [cider.nrepl :refer [cider-nrepl-handler]]

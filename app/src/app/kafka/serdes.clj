@@ -10,6 +10,8 @@
    java.io.IOException)
   (:gen-class))
 
+#_(compile 'app.kafka.serdes)
+
 (comment
 
 ; https://github.com/cognitect/transit-clj/blob/d99c1f31eae8972a705d491dfcce604c533221cf/README.md
