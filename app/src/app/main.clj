@@ -3,6 +3,7 @@
             [app.core]
             [app.kafka.wordcount-example]
             [app.kafka.streams-example]
+            [app.kafka.queries]
             [app.kafka.repl-kafka-events]
    ;
             ))
