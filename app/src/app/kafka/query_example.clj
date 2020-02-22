@@ -1,4 +1,4 @@
-(ns app.kafka.transit-example
+(ns app.kafka.query-example
   (:require [clojure.pprint :as pp]
             [app.kafka.serdes])
   (:import
@@ -27,6 +27,10 @@
    java.util.ArrayList
    java.util.Locale
    java.util.Arrays))
+
+; create topic for entities
+; aggregate data into view(s)
+; query to list entites and their current state
 
 (defn create-topic
   [{:keys [conf
@@ -66,25 +70,25 @@
 (comment
 
   (create-topic {:conf base-conf
-                 :name "transit-input"
+                 :name "query.example.users"
                  :num-partitions 1
                  :replication-factor 1})
 
   (create-topic {:conf base-conf
-                 :name "transit-output"
+                 :name "query.example.users.output"
                  :num-partitions 1
                  :replication-factor 1})
 
   (list-topics {:conf base-conf})
 
   (delete-topics {:conf base-conf
-                  :names ["transit-input" "transit-output"]})
+                  :names ["query.example.users" "query.example.users.output"]})
 
   (def topology
     (let [builder (StreamsBuilder.)]
       (-> builder
-          (.stream "transit-input")
-          (.to "transit-output"))
+          (.stream "query.example.users")
+          (.to "query.example.users.output"))
       (.build builder)))
 
   (println (.describe topology))
@@ -92,7 +96,7 @@
   (def streams (KafkaStreams.
                 topology
                 (doto (Properties.)
-                  (.putAll {"application.id" "transit-example"
+                  (.putAll {"application.id" "query-example"
                             "bootstrap.servers" "broker1:9092"
                             "default.key.serde" (.. Serdes String getClass)
                             "default.value.serde" "app.kafka.serdes.TransitJsonSerde"}))))
@@ -121,7 +125,7 @@
                                     "consumer.timeout.ms" "5000"
                                     "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
                                     "value.deserializer" "app.kafka.serdes.TransitJsonDeserializer"})]
-                     (.subscribe consumer (Arrays/asList (object-array ["transit-output"])))
+                     (.subscribe consumer (Arrays/asList (object-array ["query.example.users.output"])))
                      (while true
                        (let [records (.poll consumer 1000)]
                          (.println System/out (str "polling records:" (java.time.LocalTime/now)))
@@ -136,10 +140,17 @@
                   "key.serializer" "org.apache.kafka.common.serialization.StringSerializer"
                   "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
 
+  (.toString (java.util.UUID/randomUUID))
+
+  (def user-uuids {0 (.toString #uuid "73b1899c-e3e5-495f-8497-a302fb2d3016")
+                   1 (.toString #uuid "9cac8f06-208e-4158-b3ed-933baff7e347")
+                   2 (.toString #uuid "6dbee68f-32f2-4056-8241-a5bbfa0648b2")})
+
   (.send producer (ProducerRecord.
-                   "transit-input"
-                   (.toString (java.util.UUID/randomUUID)) {:a 123}))
+                   "query.example.users"
+                   (get user-uuids 2)
+                   {:username "user2"
+                    :email "user2@gmail.com"}))
 
   ;
   )
-
