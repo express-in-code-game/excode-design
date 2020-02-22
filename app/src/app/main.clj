@@ -3,8 +3,8 @@
             [app.core]
             [app.kafka.wordcount-example]
             [app.kafka.streams-example]
-            [app.kafka.transit]
-            [app.kafka.repl-kafka-events]
+            [app.kafka.transit-example]
+            [app.kafka.repl-interface]
    ;
             ))
 

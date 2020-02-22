@@ -1,4 +1,4 @@
-(ns app.kafka.transit
+(ns app.kafka.transit-example
   (:require [clojure.pprint :as pp]
             [app.kafka.serdes])
   (:import
