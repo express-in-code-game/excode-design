@@ -54,6 +54,17 @@
         kfu (.listTopics client)]
     (.. kfu (names) (get))))
 
+(defn add-shutdown-hook
+  [streams latch]
+  (-> (Runtime/getRuntime)
+      (.addShutdownHook (proxy
+                         [Thread]
+                         ["streams-shutdown-hook"]
+                          (run []
+                            (.println (System/out) "--closing stream")
+                            (.close streams)
+                            (.countDown latch))))))
+
 (def base-conf {"bootstrap.servers" "broker1:9092"})
 
 (comment
@@ -63,10 +74,46 @@
                  :num-partitions 1
                  :replication-factor 1})
 
+  (create-topic {:conf base-conf
+                 :name "transit-output"
+                 :num-partitions 1
+                 :replication-factor 1})
+
   (list-topics {:conf base-conf})
 
   (delete-topics {:conf base-conf
-                  :names ["transit-input"]})
+                  :names ["transit-input" "transit-output"]})
+
+  (def topology
+    (let [builder (StreamsBuilder.)]
+      (-> builder
+          (.stream "transit-input")
+          (.to "transit-output"))
+      (.build builder)))
+
+  (println (.describe topology))
+
+  (def streams (KafkaStreams.
+                topology
+                (doto (Properties.)
+                  (.putAll {"application.id" "transit-example"
+                            "bootstrap.servers" "broker1:9092"
+                            "default.key.serde" (.. Serdes String getClass)
+                            "default.value.serde" "app.kafka.serdes.TransitJsonSerde"}))))
+
+  (def latch (CountDownLatch. 1))
+
+  (add-shutdown-hook streams latch)
+
+  (def fu-streams
+    (future-call
+     (fn []
+       (.start streams)
+       #_(.await latch) ; halts
+       )))
+
+  (future-cancel fu-streams)
+  (.close streams)
 
   (def fu-consumer
     (future-call (fn []
@@ -78,13 +125,13 @@
                                     "consumer.timeout.ms" "5000"
                                     "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
                                     "value.deserializer" "app.kafka.serdes.TransitJsonDeserializer"})]
-                     (.subscribe consumer (Arrays/asList (object-array ["transit-input"])))
+                     (.subscribe consumer (Arrays/asList (object-array ["transit-output"])))
                      (while true
                        (let [records (.poll consumer 1000)]
                          (.println System/out (str "polling records:" (java.time.LocalTime/now)))
                          (doseq [rec records]
                            (prn (str (.key rec) " : " (.value rec))))))))))
-  
+
   (future-cancel fu-consumer)
 
   (def producer (KafkaProducer.
@@ -95,7 +142,7 @@
 
   (.send producer (ProducerRecord.
                    "transit-input"
-                   (.toString (java.util.UUID/randomUUID)) {:a 1}))
+                   (.toString (java.util.UUID/randomUUID)) {:a 123}))
 
   ;
   )
