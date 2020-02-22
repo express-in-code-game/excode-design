@@ -4,6 +4,10 @@ networks:
   starnet.kafka:
     name: starnet.kafka
 
+volumes:
+  starnet.kafka:
+    name: starnet.kafka
+
 services:
 
   zookeeper:
@@ -21,7 +25,12 @@ services:
   zookeeper1:
     image: zookeeper
     volumes:
-      - ./.volumes/zookeeper1:/opt/vol
+      - ./.nodes/zookeeper1/:/app/node
+      - type: volume
+        source:  starnet.kafka
+        target: /app/data
+        volume:
+          nocopy: true
     networks:
       - starnet.kafka
     # user: user
@@ -37,7 +46,12 @@ services:
   broker1:
     image: broker
     volumes:
-      - ./.volumes/broker1:/opt/vol
+      - ./.nodes/broker1/:/app/node
+      - type: volume
+        source:  starnet.kafka
+        target: /app/data
+        volume:
+          nocopy: true
     # user: user
     networks:
       - starnet.kafka

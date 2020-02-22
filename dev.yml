@@ -9,7 +9,7 @@ services:
   app:
     image: starnet.app
     volumes:
-      - ./app:/opt/app
+      - ./app:/app/root
     build:
       context: ./app
       dockerfile: ./Dockerfile
@@ -31,7 +31,7 @@ services:
   ui:
     image: starnet.ui
     volumes:
-      - ./ui:/opt/app
+      - ./ui:/app/root
     build:
       context: ./ui
       dockerfile: ./Dockerfile

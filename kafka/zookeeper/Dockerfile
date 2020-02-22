@@ -47,20 +47,20 @@ RUN curl -O https://raw.githubusercontent.com/technomancy/leiningen/${LEIN_VERSI
     lein version
 
 ## zookeeper
-# WORKDIR /opt/
+# WORKDIR /app/
 # RUN wget https://github.com/apache/zookeeper/archive/release-3.5.6.tar.gz && \
 #     tar -xzf release-3.5.6.tar.gz
-# WORKDIR /opt/zookeeper-release-3.5.6/
+# WORKDIR /app/zookeeper-release-3.5.6/
 
-WORKDIR /opt/
+WORKDIR /app/
 RUN wget http://apache-mirror.rbc.ru/pub/apache/zookeeper/zookeeper-3.5.6/apache-zookeeper-3.5.6-bin.tar.gz && \
     tar -xzf apache-zookeeper-3.5.6-bin.tar.gz && \
     mv apache-zookeeper-3.5.6-bin zookeeper
-WORKDIR /opt/zookeeper/
+WORKDIR /app/zookeeper/
 COPY f f
 
 # RUN useradd -u 1000 user
-# RUN chown -R user /opt
+# RUN chown -R user /app
 # USER user
 
 EXPOSE 2181
