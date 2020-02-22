@@ -2,7 +2,7 @@
 
 
 start(){
-  bin/kafka-server-start.sh /opt/vol/config/server.properties
+  bin/kafka-server-start.sh /app/node/config/server.properties
 }
 
 

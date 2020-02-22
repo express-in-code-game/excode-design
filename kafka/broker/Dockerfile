@@ -49,15 +49,15 @@ RUN curl -O https://raw.githubusercontent.com/technomancy/leiningen/${LEIN_VERSI
     lein version
 
 ## kafka
-WORKDIR /opt/
+WORKDIR /app/
 RUN wget http://apache-mirror.rbc.ru/pub/apache/kafka/2.4.0/kafka_2.12-2.4.0.tgz && \
     tar -xzf kafka_2.12-2.4.0.tgz && \
     mv kafka_2.12-2.4.0 kafka
-WORKDIR /opt/kafka/
+WORKDIR /app/kafka/
 COPY f f
 
 # RUN useradd -u 1000 user
-# RUN chown -R user /opt
+# RUN chown -R user /app
 # USER user
 
 EXPOSE 9092 
