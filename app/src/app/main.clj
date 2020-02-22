@@ -5,6 +5,7 @@
             [app.kafka.streams-example]
             [app.kafka.queries]
             [app.kafka.repl-kafka-events]
+            [app.kafka.serdes]
    ;
             ))
 

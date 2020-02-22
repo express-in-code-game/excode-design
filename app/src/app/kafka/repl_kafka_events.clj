@@ -27,7 +27,7 @@
 ; https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html
 
 ; https://github.com/perkss/clojure-kafka-examples
-; https://github.com/troy-west/kstream-examples/blob/master/test/troy_west/kstream/examples.clj
+; https://github.com/troy-west/kstream-examples
 
 ; https://www.confluent.io/blog/event-sourcing-using-apache-kafka/
 ; https://www.confluent.io/blog/building-a-microservices-ecosystem-with-kafka-streams-and-ksql/
