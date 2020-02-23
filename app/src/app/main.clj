@@ -4,8 +4,9 @@
             [app.kafka.wordcount-example]
             [app.kafka.streams-example]
             [app.kafka.transit-example]
-            [app.kafka.query-example]
-            [app.kafka.repl-interface]
+            [app.kafka.ktable-agg-example]
+            [app.kafka.reduce-example]
+            [app.repl-interface.core]
    ;
             ))
 
