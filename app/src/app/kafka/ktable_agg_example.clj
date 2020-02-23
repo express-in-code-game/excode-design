@@ -1,4 +1,4 @@
-(ns app.kafka.query-example
+(ns app.kafka.ktable-agg-example
   (:require [clojure.pprint :as pp]
             [app.kafka.serdes])
   (:import
@@ -24,13 +24,15 @@
    org.apache.kafka.streams.kstream.KeyValueMapper
    org.apache.kafka.streams.kstream.Materialized
    org.apache.kafka.streams.kstream.Produced
+   org.apache.kafka.streams.kstream.Grouped
+   org.apache.kafka.streams.state.QueryableStoreTypes
+   
+   org.apache.kafka.streams.kstream.Initializer
+   org.apache.kafka.streams.kstream.Aggregator
+   
    java.util.ArrayList
    java.util.Locale
    java.util.Arrays))
-
-; create topic for entities
-; aggregate data into view(s)
-; query to list entites and their current state
 
 (defn create-topic
   [{:keys [conf
@@ -70,36 +72,45 @@
 (comment
 
   (create-topic {:conf base-conf
-                 :name "query.example.users"
-                 :num-partitions 1
-                 :replication-factor 1})
-
-  (create-topic {:conf base-conf
-                 :name "query.example.users.output"
+                 :name "ktable-agg-example.wordcount"
                  :num-partitions 1
                  :replication-factor 1})
 
   (list-topics {:conf base-conf})
 
   (delete-topics {:conf base-conf
-                  :names ["query.example.users" "query.example.users.output"]})
+                  :names ["ktable-agg-example.wordcount"
+                          "ktable-agg-example.wordcount.output"
+                          "ktable-agg-example.wordcount-aggregated-stream-store-changelog"]})
+  
+  (def builder (StreamsBuilder.))
 
-  (def topology
-    (let [builder (StreamsBuilder.)]
-      (-> builder
-          (.stream "query.example.users")
-          (.to "query.example.users.output"))
-      (.build builder)))
+  (def kstream (.stream builder "ktable-agg-example.wordcount"))
+
+  (def kgrouped-stream (.groupByKey kstream (Grouped/with (Serdes/String)  (Serdes/Integer))))
+
+  (def ktable (.aggregate kgrouped-stream
+                          (reify Initializer
+                            (apply [this]
+                              (int 0)))
+                          (reify Aggregator
+                            (apply [this k v ag]
+                              (int (+ ag v))))
+                          (-> (Materialized/as "aggregated-stream-store")
+                              (.withKeySerde (Serdes/String))
+                              (.withValueSerde (Serdes/Integer)))))
+
+  (def topology (.build builder))
 
   (println (.describe topology))
 
   (def streams (KafkaStreams.
                 topology
                 (doto (Properties.)
-                  (.putAll {"application.id" "query-example"
+                  (.putAll {"application.id" "ktable-agg-example.wordcount"
                             "bootstrap.servers" "broker1:9092"
                             "default.key.serde" (.. Serdes String getClass)
-                            "default.value.serde" "app.kafka.serdes.TransitJsonSerde"}))))
+                            "default.value.serde" (.. Serdes Integer getClass)}))))
 
   (def latch (CountDownLatch. 1))
 
@@ -115,42 +126,27 @@
   (future-cancel fu-streams)
   (.close streams)
 
-  (def fu-consumer
-    (future-call (fn []
-                   (let [consumer (KafkaConsumer.
-                                   {"bootstrap.servers" "broker1:9092"
-                                    "auto.offset.reset" "earliest"
-                                    "auto.commit.enable" "false"
-                                    "group.id" (.toString (java.util.UUID/randomUUID))
-                                    "consumer.timeout.ms" "5000"
-                                    "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
-                                    "value.deserializer" "app.kafka.serdes.TransitJsonDeserializer"})]
-                     (.subscribe consumer (Arrays/asList (object-array ["query.example.users.output"])))
-                     (while true
-                       (let [records (.poll consumer 1000)]
-                         (.println System/out (str "polling records:" (java.time.LocalTime/now)))
-                         (doseq [rec records]
-                           (prn (str (.key rec) " : " (.value rec))))))))))
-
-  (future-cancel fu-consumer)
-
   (def producer (KafkaProducer.
                  {"bootstrap.servers" "broker1:9092"
                   "auto.commit.enable" "true"
                   "key.serializer" "org.apache.kafka.common.serialization.StringSerializer"
-                  "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
-
-  (.toString (java.util.UUID/randomUUID))
-
-  (def user-uuids {0 (.toString #uuid "73b1899c-e3e5-495f-8497-a302fb2d3016")
-                   1 (.toString #uuid "9cac8f06-208e-4158-b3ed-933baff7e347")
-                   2 (.toString #uuid "6dbee68f-32f2-4056-8241-a5bbfa0648b2")})
+                  "value.serializer" "org.apache.kafka.common.serialization.IntegerSerializer"}))
 
   (.send producer (ProducerRecord.
-                   "query.example.users"
-                   (get user-uuids 2)
-                   {:username "user2"
-                    :email "user2@gmail.com"}))
+                   "ktable-agg-example.wordcount"
+                   "hello"
+                   (int 1)))
+
+  (.send producer (ProducerRecord.
+                   "ktable-agg-example.wordcount"
+                   "world"
+                   (int 1)))
+
+  (def queryableStoreName (.queryableStoreName ktable))
+  (def view (.store streams queryableStoreName (QueryableStoreTypes/keyValueStore)))
+  (.get view "hello")
+  (.get view "world")
+
 
   ;
   )
