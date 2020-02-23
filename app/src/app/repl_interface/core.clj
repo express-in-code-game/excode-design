@@ -1,4 +1,4 @@
-(ns app.kafka.repl-interface
+(ns app.repl-interface.core
   (:require [clojure.pprint :as pp])
   (:import
    org.apache.kafka.common.serialization.Serdes
