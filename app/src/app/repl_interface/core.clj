@@ -113,8 +113,7 @@
                     "event.data"
                     "event.signedup"
                     "game.data"
-                    "ingame.events"
-                    ])
+                    "ingame.events"])
 
   ; users creates a game -> game.data
   ;   browser tab opens
@@ -126,7 +125,18 @@
   ;   all ingame events are sent through ingame.events topic
   ;   if user closes the tab, they can reopen it from 'ongoing games' list -> get current state snapshots from game.data and ingame.events
   ;   game.data and ingame.events may have a lifespan of a day, or later possibly palyers can store up to x unfinshed games
+
+  ; user account data only exists in user.data
+  ; if user deletes their account, it gets removed from user.data
+  ; in the system (event brackets, stats etc.) it get's shown as 'unknown' (only uuid is used in other topics)
+  ; only events history, event placements, user wins/losses are persisted, not all games
   
+  ; build system to 0.1 
+  ;   user identity as email into uuid
+  ; add security (token https wss)
+  ; deploy
+  ; iterate
+
   (create-topics {:conf base-conf
                   :names topic-names
                   :num-partitions 1
@@ -138,7 +148,7 @@
                   :names topic-names})
 
 
-  
-  
+
+
   ;
   )
