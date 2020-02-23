@@ -54,7 +54,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - && \
     sudo apt-get update && sudo apt-get -y install yarn
 
 ## app
-WORKDIR /opt/app
+WORKDIR /app/root
 COPY deps.edn .
 RUN clojure -A:core -Stree
 

@@ -25,7 +25,7 @@ dock() {
                 -it \
                 --network starnet.kafka \
                 -p 7788:7788 \
-                -v "$(pwd)":/opt/app \
+                -v "$(pwd)":/app/root \
                  starnet.app \
                  bash
 }
