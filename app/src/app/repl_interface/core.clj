@@ -69,4 +69,62 @@
   ;
   )
 
+(defn create-topics
+  [{:keys [conf
+           names
+           num-partitions
+           replication-factor] :as opts}]
+  (let [client (KafkaAdminClient/create conf)
+        topics (java.util.ArrayList.
+                (mapv (fn [name]
+                        [(NewTopic. name num-partitions (short replication-factor))]) names))]
+    (.createTopics client topics)))
 
+(defn delete-topics
+  [{:keys [conf
+           names] :as opts}]
+  (let [client  (KafkaAdminClient/create conf)]
+    (.deleteTopics client (java.util.ArrayList. names))))
+
+(defn list-topics
+  [{:keys [conf] :as opts}]
+  (let [client (KafkaAdminClient/create conf)
+        kfu (.listTopics client)]
+    (.. kfu (names) (get))))
+
+(defn add-shutdown-hook
+  [streams latch]
+  (-> (Runtime/getRuntime)
+      (.addShutdownHook (proxy
+                         [Thread]
+                         ["streams-shutdown-hook"]
+                          (run []
+                            (.println (System/out) "--closing stream")
+                            (.close streams)
+                            (.countDown latch))))))
+
+(def base-conf {"bootstrap.servers" "broker1:9092"})
+
+(comment
+
+  (def topic-names ["user.data"
+                    "user.loggedin"
+                    "user.connected"
+                    "event.data"
+                    "event.signedup"
+                    "game.data"
+                    "ingame.events"])
+
+  (create-topics {:conf base-conf
+                  :names topic-names
+                  :num-partitions 1
+                  :replication-factor 1})
+
+  (list-topics {:conf base-conf})
+
+  (delete-topics {:conf base-conf
+                  :names topic-names})
+
+
+  ;
+  )
