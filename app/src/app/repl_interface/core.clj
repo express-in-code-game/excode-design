@@ -113,8 +113,20 @@
                     "event.data"
                     "event.signedup"
                     "game.data"
-                    "ingame.events"])
+                    "ingame.events"
+                    ])
 
+  ; users creates a game -> game.data
+  ;   browser tab opens
+  ;   user changes settings of the game -> game.data
+  ;   once finished, user presses 'invite' or 'game ready' or 'open' -> game.data game becomes visible in the list and joinable
+  ;   opponent joins ( if rating >= specified by the host in settings) -> game.data
+  ;   both press 'ready' -> game.data
+  ;   host presses 'start the game' -> game.data
+  ;   all ingame events are sent through ingame.events topic
+  ;   if user closes the tab, they can reopen it from 'ongoing games' list -> get current state snapshots from game.data and ingame.events
+  ;   game.data and ingame.events may have a lifespan of a day, or later possibly palyers can store up to x unfinshed games
+  
   (create-topics {:conf base-conf
                   :names topic-names
                   :num-partitions 1
@@ -126,5 +138,7 @@
                   :names topic-names})
 
 
+  
+  
   ;
   )
