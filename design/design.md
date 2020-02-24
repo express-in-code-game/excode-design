@@ -199,4 +199,5 @@
       - game.states.store
     - apps
       - streams.app.arbiter
+        - reacts ingame.events , sends events on interval  
       - streams.app.ingame-events-to-state
