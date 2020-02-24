@@ -185,7 +185,6 @@
   - /games : list of games or create a game
 - search used only for events, games, users
 - time
-  - players create game events from ui
-  - server plays as well: processes stream of games, computes neccesserary upadtes and sends events to the games topic
-  - so when palyers lose connection or timer expires, server as arbiter (and equal participant) sends donwstream events
-  - these events trigger same broadcast as player events, so client states get updated
+  - players send events to the game.player-events stream
+  - server emits time and other arbiter-type events to game.player-events
+  - server processes events, updates state in game.states stream, broadcasts
