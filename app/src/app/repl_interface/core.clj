@@ -174,25 +174,14 @@
     (def builder (StreamsBuilder.))
 
     (def ktable (-> builder
-                    (.table "user.data")
-                    (.groupBy (reify KeyValueMapper
-                                (apply [this k v]
-                                  (println k v)
-                                  (KeyValue/pair k v))))
+                    (.stream "user.data")
+                    (.groupByKey)
+                    #_(.groupBy (reify KeyValueMapper
+                                  (apply [this k v]
+                                    (KeyValue/pair k v))))
                     (.reduce (reify Reducer
-                               (apply [this ag vnew]
-                                 (println "adder vnew" vnew)
-                                 (println "adder ag" ag)
-                                 (println "--")
-                                 (merge ag vnew)))
-                             (reify Reducer
-                               (apply [this ag vold]
-                                 (println "substr vold" vold)
-                                 (println "substr ag" ag)
-                                 (println "--")
-                                 (cond
-                                   (nil? vold) nil
-                                   :else ag)))
+                               (apply [this ag v]
+                                 (merge ag v)))
                              (-> (Materialized/as "user.data.streams4.store")
                                  (.withKeySerde (Serdes/String))
                                  (.withValueSerde (TransitJsonSerde.))))))
@@ -206,6 +195,7 @@
                   (doto (Properties.)
                     (.putAll {"application.id" "user.data.streams4"
                               "bootstrap.servers" "broker1:9092"
+                              "auto.offset.reset" "earliest"
                               "default.key.serde" (.. Serdes String getClass)
                               "default.value.serde" "app.kafka.serdes.TransitJsonSerde"}))))
 
@@ -245,11 +235,6 @@
                    (get users 2)
                    {:email "user2@gmail.com"
                     :username "user2"}))
-
-  (.send producer (ProducerRecord.
-                   "user.data"
-                   (get users 2)
-                   nil))
 
   (def view (.store streams "user.data.streams4.store" (QueryableStoreTypes/keyValueStore)))
   (.get view (get users 0))
