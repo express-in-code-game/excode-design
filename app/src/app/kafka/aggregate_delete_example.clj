@@ -1,4 +1,4 @@
-(ns app.repl-interface.core
+(ns app.kafka.aggregate-delete-example
   (:require [clojure.pprint :as pp])
   (:import
    app.kafka.serdes.TransitJsonSerializer
@@ -36,62 +36,6 @@
    java.util.Locale
    java.util.Arrays))
 
-; simulate, experiment with events, sequences
-; persist to docker volumes
-; gen large seqs with clojure.spec - thousands of games, users etc.
-; no ksql
-
-; https://kafka.apache.org/
-; https://kafka-tutorials.confluent.io/
-; https://kafka.apache.org/24/documentation/streams/developer-guide
-
-; https://kafka.apache.org/24/javadoc/org/apache/kafka/streams/kstream/KStream.html
-; https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
-; https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html
-
-; https://github.com/perkss/clojure-kafka-examples
-; https://github.com/troy-west/kstream-examples
-
-; https://www.confluent.io/blog/event-sourcing-using-apache-kafka/
-; https://www.confluent.io/blog/building-a-microservices-ecosystem-with-kafka-streams-and-ksql/
-; https://github.com/confluentinc/kafka-streams-examples/tree/4.0.0-post/src/main/java/io/confluent/examples/streams/microservices
-
-
-(comment
-
- ; repl interface
-
-  create-user
-  delete-account
-  change-username
-  change-email
-  list-users
-  list-user-account
-  list-user-ongoing-games
-  list-user-game-history
-  create-event
-  :event.type/single-elemination-bracket
-  :event/start-ts
-  cancel-event
-  signin-event
-  signout-event
-  list-events
-  list-event-signedup-users
-  create-game
-  cancel-game
-  start-game
-  end-game
-  list-games
-  join-game
-  invite-into-game
-  connect-to-game
-  disconnect-from-game
-  ingame-event
-  list-ingame-events-for-game
-
-  ;
-  )
-
 (defn create-topics
   [{:keys [conf
            names
@@ -122,50 +66,17 @@
                          [Thread]
                          ["streams-shutdown-hook"]
                           (run []
-                               (when (.isRunning (.state streams))
-                                 (.println (System/out))
-                                 (println "; closing" (.get props "application.id"))
-                                 (.close streams))
-                               (.countDown latch))))))
+                            (when (.isRunning (.state streams))
+                              (.println (System/out))
+                              (println "; closing" (.get props "application.id"))
+                              (.close streams))
+                            (.countDown latch))))))
 
 (def base-conf {"bootstrap.servers" "broker1:9092"})
 
 (comment
 
-  ; users creates a game -> game.data
-  ;   browser tab opens
-  ;   user changes settings of the game -> game.data
-  ;   once finished, user presses 'invite' or 'game ready' or 'open' -> game.data game becomes visible in the list and joinable
-  ;   opponent joins ( if rating >= specified by the host in settings) -> game.data
-  ;   both press 'ready' -> game.data
-  ;   host presses 'start the game' -> game.data
-  ;   all ingame events are sent through ingame.events topic
-  ;   if user closes the tab, they can reopen it from 'ongoing games' list -> get current state snapshots from game.data and ingame.events
-  ;   game.data and ingame.events may have a lifespan of a day, or later possibly palyers can store up to x unfinshed games
-
-  ; user account data only exists in user.data
-  ; if user deletes their account, it gets removed from user.data
-  ; in the system (event brackets, stats etc.) it get's shown as 'unknown' (only uuid is used in other topics)
-  ; only events history, event placements, user wins/losses are persisted, not all games
-
-  ; user can create lists
-  ;   of other users
-  ;   of events
-
-  ; build system to 0.1 
-  ;   user identity as email into uuid
-  ; add security (token https wss)
-  ; deploy
-  ; iterate
-
-  (def topic-names ["user.data"
-                    "user.loggedin"
-                    "user.connected"
-                    "user.lists"
-                    "event.data"
-                    "event.signedup"
-                    "game.data"
-                    "ingame.events"])
+  (def topic-names ["aggregate-delete.example"])
 
   (create-topics {:conf base-conf
                   :names topic-names
@@ -181,7 +92,7 @@
     (def builder (StreamsBuilder.))
 
     (def ktable (-> builder
-                    (.stream "user.data")
+                    (.stream "aggregate-delete.example")
                     (.groupByKey)
                     #_(.groupBy (reify KeyValueMapper
                                   (apply [this k v]
@@ -194,7 +105,7 @@
                                     (cond
                                       (= v {:delete true}) nil
                                       :else (merge ag v))))
-                                (-> (Materialized/as "user.data.streams5.store")
+                                (-> (Materialized/as "aggregate-delete.example.streams.store")
                                     (.withKeySerde (Serdes/String))
                                     (.withValueSerde (TransitJsonSerde.))))
                     #_(.reduce (reify Reducer
@@ -202,7 +113,7 @@
                                    (cond
                                      (= v {:delete true}) nil
                                      :else (merge ag v))))
-                               (-> (Materialized/as "user.data.streams5.store")
+                               (-> (Materialized/as "aggregate-delete.example.streams.store")
                                    (.withKeySerde (Serdes/String))
                                    (.withValueSerde (TransitJsonSerde.))))))
 
@@ -211,7 +122,7 @@
     (println (.describe topology))
 
     (def streams-props (doto (Properties.)
-                         (.putAll {"application.id" "user.data.streams5"
+                         (.putAll {"application.id" "aggregate-delete.example.streams"
                                    "bootstrap.servers" "broker1:9092"
                                    "auto.offset.reset" "earliest"
                                    "default.key.serde" (.. Serdes String getClass)
@@ -241,29 +152,29 @@
               2 (.toString #uuid "3a3e2d06-3719-4811-afec-0dffdec35543")})
 
   (.send producer (ProducerRecord.
-                   "user.data"
+                   "aggregate-delete.example"
                    (get users 0)
                    {:email "user0@gmail.com"
                     :username "user0"}))
 
   (.send producer (ProducerRecord.
-                   "user.data"
+                   "aggregate-delete.example"
                    (get users 1)
                    {:email "user1@gmail.com"
                     :username "user1"}))
 
   (.send producer (ProducerRecord.
-                   "user.data"
+                   "aggregate-delete.example"
                    (get users 2)
                    {:email "user2@gmail.com"
                     :username "user2"}))
 
   (.send producer (ProducerRecord.
-                   "user.data"
+                   "aggregate-delete.example"
                    (get users 2)
                    {:delete true}))
 
-  (def readonly-store (.store streams "user.data.streams5.store" (QueryableStoreTypes/keyValueStore)))
+  (def readonly-store (.store streams "aggregate-delete.example.streams.store" (QueryableStoreTypes/keyValueStore)))
 
   (.approximateNumEntries readonly-store)
   (count (iterator-seq (.all readonly-store)))
