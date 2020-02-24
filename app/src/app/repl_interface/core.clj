@@ -21,6 +21,8 @@
    org.apache.kafka.clients.producer.ProducerRecord
    org.apache.kafka.streams.kstream.ValueMapper
    org.apache.kafka.streams.kstream.KeyValueMapper
+   org.apache.kafka.streams.KeyValue
+
    org.apache.kafka.streams.kstream.Materialized
    org.apache.kafka.streams.kstream.Produced
    org.apache.kafka.streams.kstream.Reducer
@@ -168,43 +170,53 @@
   (delete-topics {:conf base-conf
                   :names topic-names})
 
-  (def builder (StreamsBuilder.))
+  (do
+    (def builder (StreamsBuilder.))
 
-  (def ktable (-> builder
-                  (.stream "user.data")
-                  (.groupByKey)
-                  (.reduce (reify
-                             Reducer
-                             (apply [this ag vl]
-                               (merge ag vl)))
-                           (-> (Materialized/as "user.data.store")
-                               (.withKeySerde (Serdes/String))
-                               (.withValueSerde (TransitJsonSerde.))))))
+    (def ktable (-> builder
+                    (.stream "user.data")
+                    (.groupByKey)
+                    #_(.groupBy (reify KeyValueMapper
+                                  (apply [this k v]
+                                    (println k v)
+                                    (KeyValue/pair k v))))
+                    (.reduce (reify Reducer
+                               (apply [this ag vnew]
+                                 (println "adder vnew" vnew)
+                                 (println "adder ag" ag)
+                                 (println "--")
+                                 (merge ag vnew)))
+                             #_(reify Reducer
+                                 (apply [this ag vold]
+                                   (println "substr vold" vold)
+                                   (println "substr ag" ag)
+                                   (println "--")
+                                   (cond
+                                     (nil? vold) nil
+                                     :else ag)))
+                             (-> (Materialized/as "user.data.streams3.store")
+                                 (.withKeySerde (Serdes/String))
+                                 (.withValueSerde (TransitJsonSerde.))))))
 
-  (def topology (.build builder))
+    (def topology (.build builder))
 
-  (println (.describe topology))
+    (println (.describe topology))
 
-  (def streams (KafkaStreams.
-                topology
-                (doto (Properties.)
-                  (.putAll {"application.id" "user.data"
-                            "bootstrap.servers" "broker1:9092"
-                            "default.key.serde" (.. Serdes String getClass)
-                            "default.value.serde" "app.kafka.serdes.TransitJsonSerde"}))))
+    (def streams (KafkaStreams.
+                  topology
+                  (doto (Properties.)
+                    (.putAll {"application.id" "user.data.streams3"
+                              "bootstrap.servers" "broker1:9092"
+                              "default.key.serde" (.. Serdes String getClass)
+                              "default.value.serde" "app.kafka.serdes.TransitJsonSerde"}))))
 
-  (def latch (CountDownLatch. 1))
+    (def latch (CountDownLatch. 1))
 
-  (add-shutdown-hook streams latch)
+    (add-shutdown-hook streams latch)
+    ;
+    )
 
-  (def fu-streams
-    (future-call
-     (fn []
-       (.start streams)
-       #_(.await latch) ; halts
-       )))
-
-  (future-cancel fu-streams)
+  (.start streams)
   (.close streams)
 
   (def producer (KafkaProducer.
@@ -222,7 +234,7 @@
                    (get users 0)
                    {:email "user0@gmail.com"
                     :username "user0"}))
-
+  
   (.send producer (ProducerRecord.
                    "user.data"
                    (get users 1)
@@ -235,12 +247,19 @@
                    {:email "user2@gmail.com"
                     :username "user2"}))
 
-  (def view (.store streams "user.data.store" (QueryableStoreTypes/keyValueStore)))
+  (.send producer (ProducerRecord.
+                   "user.data"
+                   (get users 2)
+                   nil))
+
+  (def view (.store streams "user.data.streams3.store" (QueryableStoreTypes/keyValueStore)))
   (.get view (get users 0))
   (.get view (get users 1))
   (.get view (get users 2))
 
+  (.cleanUp streams)
 
 
-  ;
+
+  ;;
   )

@@ -5,6 +5,7 @@
             [app.kafka.streams-example]
             [app.kafka.transit-example]
             [app.kafka.ktable-agg-example]
+            [app.kafka.reduce-example]
             [app.repl-interface.core]
    ;
             ))
