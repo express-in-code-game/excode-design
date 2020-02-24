@@ -187,7 +187,16 @@
 - time
   - players send events to the ingame.events topic
   - server as well sends events ingame.events (time and other arbiter-type events)
-  - streams.app1 updates a ktable via -> groupByKey reduce materialize.as("game.states.store")
+  - streams.app.ingame-events-to-state updates a ktable via -> groupByKey reduce materialize.as(game.states.store)
     - reduce recomputes a state of a single game
       - so all events in ingame.events topic are keyed with a game's uuid
-  - "game.states.store" is streamed, consumer reads updates, broadcasts to players
+  - game.states.store is streamed to game.states.downstream, consumer reads updates, broadcasts to players
+  - kafka ids
+    - topics
+      - ingame.events
+      - game.states.downstream
+    - stores
+      - game.states.store
+    - apps
+      - streams.app.arbiter
+      - streams.app.ingame-events-to-state
