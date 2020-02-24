@@ -149,7 +149,8 @@
 
   (def users {0 (.toString #uuid "5ada3765-0393-4d48-bad9-fac992d00e62")
               1 (.toString #uuid "179c265a-7f72-4225-a785-2d048d575854")
-              2 (.toString #uuid "3a3e2d06-3719-4811-afec-0dffdec35543")})
+              2 (.toString #uuid "3a3e2d06-3719-4811-afec-0dffdec35543")
+              3 (.toString #uuid "013e2d06-3719-4811-afec-0dffdec35543")})
 
   (.send producer (ProducerRecord.
                    "aggregate-delete.example"
@@ -168,6 +169,12 @@
                    (get users 2)
                    {:email "user2@gmail.com"
                     :username "user2"}))
+  
+  (.send producer (ProducerRecord.
+                   "aggregate-delete.example"
+                   (get users 3)
+                   {:email "user3@gmail.com"
+                    :username "user3"}))
 
   (.send producer (ProducerRecord.
                    "aggregate-delete.example"
@@ -178,6 +185,7 @@
 
   (.approximateNumEntries readonly-store)
   (count (iterator-seq (.all readonly-store)))
+  ; observation: keys ordered alphabetically
   (doseq [x (iterator-seq (.all readonly-store))]
     (println (.key x) (.value x)))
 
