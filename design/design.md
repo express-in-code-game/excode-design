@@ -184,3 +184,8 @@
   - home page simple routes: /events /games 
   - /games : list of games or create a game
 - search used only for events, games, users
+- time
+  - players create game events from ui
+  - server plays as well: processes stream of games, computes neccesserary upadtes and sends events to the games topic
+  - so when palyers lose connection or timer expires, server as arbiter (and equal participant) sends donwstream events
+  - these events trigger same broadcast as player events, so client states get updated
