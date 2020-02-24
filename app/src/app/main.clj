@@ -6,6 +6,7 @@
             [app.kafka.transit-example]
             [app.kafka.ktable-agg-example]
             [app.kafka.reduce-example]
+            [app.kafka.aggregate-delete-example]
             [app.repl-interface.core]
    ;
             ))

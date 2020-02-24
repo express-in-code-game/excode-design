@@ -6,7 +6,7 @@
             ))
 
 (defn start-nrepl-server [host port]
-  (println (str "--started nREPL server on " host ":" port))
+  (println (str "; started nREPL server on " host ":" port))
   (start-server
    :bind host
    :port port
