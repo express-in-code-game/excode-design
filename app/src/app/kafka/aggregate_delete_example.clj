@@ -124,7 +124,7 @@
     (def streams-props (doto (Properties.)
                          (.putAll {"application.id" "aggregate-delete.example.streams"
                                    "bootstrap.servers" "broker1:9092"
-                                   "auto.offset.reset" "earliest"
+                                   "auto.offset.reset" "earliest" #_"latest"
                                    "default.key.serde" (.. Serdes String getClass)
                                    "default.value.serde" "app.kafka.serdes.TransitJsonSerde"})))
 
@@ -169,7 +169,7 @@
                    (get users 2)
                    {:email "user2@gmail.com"
                     :username "user2"}))
-  
+
   (.send producer (ProducerRecord.
                    "aggregate-delete.example"
                    (get users 3)
@@ -194,7 +194,8 @@
   (.get readonly-store (get users 1))
   (.get readonly-store (get users 2))
 
-  (.cleanUp streams)
+  ; https://kafka.apache.org/10/documentation/streams/developer-guide/app-reset-tool.html#streams-developer-guide-reset-local-environment
+  (.cleanUp streams) ; removes /tmp/kafka-streams/<app.id>/*
 
 
 
