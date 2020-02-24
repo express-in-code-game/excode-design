@@ -201,3 +201,9 @@
       - streams.app.arbiter
         - reacts ingame.events , sends events on interval  
       - streams.app.ingame-events-to-state
+    - restoring timeers ont the client after disconnect
+      - game state has server timestamps
+      - on reconnect server sends client the game state
+      - and adds server's current timestamp
+      - client receives the data and recomputes time-left using valid server timestamp
+      - or add server timestamp to every event from the server, in general
