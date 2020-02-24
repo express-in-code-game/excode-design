@@ -151,7 +151,7 @@
   ; user can create lists
   ;   of other users
   ;   of events
-  
+
   ; build system to 0.1 
   ;   user identity as email into uuid
   ; add security (token https wss)
@@ -188,8 +188,10 @@
                                     (KeyValue/pair k v))))
                     (.reduce (reify Reducer
                                (apply [this ag v]
-                                 (merge ag v)))
-                             (-> (Materialized/as "user.data.streams4.store")
+                                 (cond
+                                   (= v {:delete true}) nil
+                                   :else (merge ag v))))
+                             (-> (Materialized/as "user.data.streams5.store")
                                  (.withKeySerde (Serdes/String))
                                  (.withValueSerde (TransitJsonSerde.))))))
 
@@ -198,12 +200,12 @@
     (println (.describe topology))
 
     (def streams-props (doto (Properties.)
-                         (.putAll {"application.id" "user.data.streams4"
+                         (.putAll {"application.id" "user.data.streams5"
                                    "bootstrap.servers" "broker1:9092"
                                    "auto.offset.reset" "earliest"
                                    "default.key.serde" (.. Serdes String getClass)
                                    "default.value.serde" "app.kafka.serdes.TransitJsonSerde"})))
-    
+
 
     (def streams (KafkaStreams. topology streams-props))
 
@@ -245,10 +247,20 @@
                    {:email "user2@gmail.com"
                     :username "user2"}))
 
-  (def view (.store streams "user.data.streams4.store" (QueryableStoreTypes/keyValueStore)))
-  (.get view (get users 0))
-  (.get view (get users 1))
-  (.get view (get users 2))
+  (.send producer (ProducerRecord.
+                   "user.data"
+                   (get users 2)
+                   nil))
+
+  (def readonly-store (.store streams "user.data.streams5.store" (QueryableStoreTypes/keyValueStore)))
+
+  (.approximateNumEntries readonly-store)
+  (doseq [x (iterator-seq (.all readonly-store))]
+    (println (.key x) (.value x)))
+
+  (.get readonly-store (get users 0))
+  (.get readonly-store (get users 1))
+  (.get readonly-store (get users 2))
 
   (.cleanUp streams)
 
