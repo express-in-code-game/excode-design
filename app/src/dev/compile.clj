@@ -4,7 +4,7 @@
 
 (defn -main
   []
-  (prn "compiling..")
+  (println "; compiling")
   #_(alter-var-root #'clojure.core/*compiler-options*
                     #(merge % {; :disable-locals-clearing true
                           ; :elide-meta [:doc :file :line :added]

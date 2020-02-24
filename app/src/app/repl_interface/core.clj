@@ -116,15 +116,17 @@
     (.. kfu (names) (get))))
 
 (defn add-shutdown-hook
-  [streams latch]
+  [props streams latch]
   (-> (Runtime/getRuntime)
       (.addShutdownHook (proxy
                          [Thread]
                          ["streams-shutdown-hook"]
                           (run []
-                            (.println (System/out) "--closing stream")
-                            (.close streams)
-                            (.countDown latch))))))
+                               (when (.isRunning (.state streams))
+                                 (.println (System/out))
+                                 (println "; closing" (.get props "application.id"))
+                                 (.close streams))
+                               (.countDown latch))))))
 
 (def base-conf {"bootstrap.servers" "broker1:9092"})
 
@@ -195,23 +197,25 @@
 
     (println (.describe topology))
 
-    (def streams (KafkaStreams.
-                  topology
-                  (doto (Properties.)
-                    (.putAll {"application.id" "user.data.streams4"
-                              "bootstrap.servers" "broker1:9092"
-                              "auto.offset.reset" "earliest"
-                              "default.key.serde" (.. Serdes String getClass)
-                              "default.value.serde" "app.kafka.serdes.TransitJsonSerde"}))))
+    (def streams-props (doto (Properties.)
+                         (.putAll {"application.id" "user.data.streams4"
+                                   "bootstrap.servers" "broker1:9092"
+                                   "auto.offset.reset" "earliest"
+                                   "default.key.serde" (.. Serdes String getClass)
+                                   "default.value.serde" "app.kafka.serdes.TransitJsonSerde"})))
+    
+
+    (def streams (KafkaStreams. topology streams-props))
 
     (def latch (CountDownLatch. 1))
 
-    (add-shutdown-hook streams latch)
+    (add-shutdown-hook streams-props streams latch)
     ;
     )
 
   (.start streams)
   (.close streams)
+  (.isRunning (.state streams))
 
   (def producer (KafkaProducer.
                  {"bootstrap.servers" "broker1:9092"
