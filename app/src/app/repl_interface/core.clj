@@ -1,17 +1,31 @@
 (ns app.repl-interface.core
   (:require [clojure.pprint :as pp])
   (:import
+   app.kafka.serdes.TransitJsonSerializer
+   app.kafka.serdes.TransitJsonDeserializer
+   app.kafka.serdes.TransitJsonSerde
+
    org.apache.kafka.common.serialization.Serdes
    org.apache.kafka.streams.KafkaStreams
    org.apache.kafka.streams.StreamsBuilder
    org.apache.kafka.streams.StreamsConfig
    org.apache.kafka.streams.Topology
+   org.apache.kafka.streams.kstream.KStream
+   org.apache.kafka.streams.kstream.KTable
    java.util.Properties
    java.util.concurrent.CountDownLatch
-   org.apache.kafka.clients.admin.AdminClient
+   org.apache.kafka.clients.admin.KafkaAdminClient
    org.apache.kafka.clients.admin.NewTopic
    org.apache.kafka.clients.consumer.KafkaConsumer
-   java.util.ArrayList))
+   org.apache.kafka.clients.producer.KafkaProducer
+   org.apache.kafka.clients.producer.ProducerRecord
+   org.apache.kafka.streams.kstream.ValueMapper
+   org.apache.kafka.streams.kstream.KeyValueMapper
+   org.apache.kafka.streams.kstream.Materialized
+   org.apache.kafka.streams.kstream.Produced
+   java.util.ArrayList
+   java.util.Locale
+   java.util.Arrays))
 
 ; simulate, experiment with events, sequences
 ; persist to docker volumes
@@ -107,14 +121,6 @@
 
 (comment
 
-  (def topic-names ["user.data"
-                    "user.loggedin"
-                    "user.connected"
-                    "event.data"
-                    "event.signedup"
-                    "game.data"
-                    "ingame.events"])
-
   ; users creates a game -> game.data
   ;   browser tab opens
   ;   user changes settings of the game -> game.data
@@ -130,12 +136,20 @@
   ; if user deletes their account, it gets removed from user.data
   ; in the system (event brackets, stats etc.) it get's shown as 'unknown' (only uuid is used in other topics)
   ; only events history, event placements, user wins/losses are persisted, not all games
-  
+
   ; build system to 0.1 
   ;   user identity as email into uuid
   ; add security (token https wss)
   ; deploy
   ; iterate
+
+  (def topic-names ["user.data"
+                    "user.loggedin"
+                    "user.connected"
+                    "event.data"
+                    "event.signedup"
+                    "game.data"
+                    "ingame.events"])
 
   (create-topics {:conf base-conf
                   :names topic-names
