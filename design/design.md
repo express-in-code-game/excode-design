@@ -145,6 +145,11 @@
   - join a game
   - create an open/invite-only game (no title, match description has a format)
   - browse open games (with a filter)
+  - create lists of
+    - other users
+    - events
+    - users and events
+    - as there will be no limitations like 'add to friends' 'follow' etc. - user creates their own lookup lists
 - no chat
 - user profile has rating and event results (can be reset)
 - official and community map templates and configurable events
