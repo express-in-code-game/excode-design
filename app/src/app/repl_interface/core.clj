@@ -146,6 +146,10 @@
   ; in the system (event brackets, stats etc.) it get's shown as 'unknown' (only uuid is used in other topics)
   ; only events history, event placements, user wins/losses are persisted, not all games
 
+  ; user can create lists
+  ;   of other users
+  ;   of events
+  
   ; build system to 0.1 
   ;   user identity as email into uuid
   ; add security (token https wss)
@@ -155,6 +159,7 @@
   (def topic-names ["user.data"
                     "user.loggedin"
                     "user.connected"
+                    "user.lists"
                     "event.data"
                     "event.signedup"
                     "game.data"
