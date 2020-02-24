@@ -174,27 +174,26 @@
     (def builder (StreamsBuilder.))
 
     (def ktable (-> builder
-                    (.stream "user.data")
-                    (.groupByKey)
-                    #_(.groupBy (reify KeyValueMapper
-                                  (apply [this k v]
-                                    (println k v)
-                                    (KeyValue/pair k v))))
+                    (.table "user.data")
+                    (.groupBy (reify KeyValueMapper
+                                (apply [this k v]
+                                  (println k v)
+                                  (KeyValue/pair k v))))
                     (.reduce (reify Reducer
                                (apply [this ag vnew]
                                  (println "adder vnew" vnew)
                                  (println "adder ag" ag)
                                  (println "--")
                                  (merge ag vnew)))
-                             #_(reify Reducer
-                                 (apply [this ag vold]
-                                   (println "substr vold" vold)
-                                   (println "substr ag" ag)
-                                   (println "--")
-                                   (cond
-                                     (nil? vold) nil
-                                     :else ag)))
-                             (-> (Materialized/as "user.data.streams3.store")
+                             (reify Reducer
+                               (apply [this ag vold]
+                                 (println "substr vold" vold)
+                                 (println "substr ag" ag)
+                                 (println "--")
+                                 (cond
+                                   (nil? vold) nil
+                                   :else ag)))
+                             (-> (Materialized/as "user.data.streams4.store")
                                  (.withKeySerde (Serdes/String))
                                  (.withValueSerde (TransitJsonSerde.))))))
 
@@ -205,7 +204,7 @@
     (def streams (KafkaStreams.
                   topology
                   (doto (Properties.)
-                    (.putAll {"application.id" "user.data.streams3"
+                    (.putAll {"application.id" "user.data.streams4"
                               "bootstrap.servers" "broker1:9092"
                               "default.key.serde" (.. Serdes String getClass)
                               "default.value.serde" "app.kafka.serdes.TransitJsonSerde"}))))
@@ -234,7 +233,7 @@
                    (get users 0)
                    {:email "user0@gmail.com"
                     :username "user0"}))
-  
+
   (.send producer (ProducerRecord.
                    "user.data"
                    (get users 1)
@@ -252,7 +251,7 @@
                    (get users 2)
                    nil))
 
-  (def view (.store streams "user.data.streams3.store" (QueryableStoreTypes/keyValueStore)))
+  (def view (.store streams "user.data.streams4.store" (QueryableStoreTypes/keyValueStore)))
   (.get view (get users 0))
   (.get view (get users 1))
   (.get view (get users 2))
