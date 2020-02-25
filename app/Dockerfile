@@ -49,6 +49,6 @@ RUN curl -O https://raw.githubusercontent.com/technomancy/leiningen/${LEIN_VERSI
 ## app
 WORKDIR /app/root
 COPY deps.edn .
-RUN clojure -A:core -Stree
+RUN clojure -A:core:dev -Stree
 
 EXPOSE 7788 8080
