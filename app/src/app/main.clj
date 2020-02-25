@@ -6,7 +6,7 @@
             [app.kafka.ktable-agg-example]
             [app.kafka.reduce-example]
             [app.kafka.aggregate-delete-example]
-            [app.kafka.spec-example]
+            [app.spec-example]
             [app.repl-interface.core]
    ;
             ))
