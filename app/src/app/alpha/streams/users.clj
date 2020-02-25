@@ -84,14 +84,15 @@
 
 (defn unmount
   []
-  (.close (:streams (:user-data-app @state&)))
-  (swap! state& assoc :user-data-app nil))
+  (when (:user-data-app @state&)
+    (.close (:streams (:user-data-app @state&)))
+    (swap! state& assoc :user-data-app nil)))
 
 (comment
 
   (mount)
   (unmount)
-  
+
   (def app (:user-data-app @state&))
   (def streams (:streams app))
 

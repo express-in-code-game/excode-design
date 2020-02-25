@@ -1,7 +1,10 @@
 (ns app.alpha.core
   (:require [clojure.pprint :as pp]
             [app.alpha.streams.users :as streams-users]
-            [app.alpha.streams.core :refer [create-topics list-topics]]))
+            [app.alpha.streams.core :refer [create-topics list-topics
+                                            delete-topics]])
+  (:import
+   org.apache.kafka.common.KafkaFuture$BiConsumer))
 
 (comment
 
@@ -68,11 +71,15 @@
 
 (defn mount
   []
-  (create-topics {:props props
-                  :names ["alpha.user.data"]
-                  :num-partitions 1
-                  :replication-factor 1})
-  (streams-users/mount))
+  (-> (create-topics {:props props
+                      :names ["alpha.user.data"]
+                      :num-partitions 1
+                      :replication-factor 1})
+      (.all)
+      (.whenComplete
+       (reify KafkaFuture$BiConsumer
+         (accept [this res err]
+           (streams-users/mount))))))
 
 (defn unmount
   []
@@ -83,8 +90,10 @@
   (mount)
 
   (unmount)
-
+  
   (list-topics {:props props})
+
+  (delete-topics {:props props :names ["alpha.user.data"]})
 
   ;;
   )
