@@ -1,5 +1,7 @@
 (ns app.alpha.core
-  (:require [clojure.pprint :as pp]))
+  (:require [clojure.pprint :as pp]
+            [app.alpha.streams.users :as streams-users]
+            [app.alpha.streams.core :refer [create-topics list-topics]]))
 
 (comment
 
@@ -58,6 +60,31 @@
   ; add security (token https wss)
   ; deploy
   ; iterate
+
+  ;;
+  )
+
+(def props {"bootstrap.servers" "broker1:9092"})
+
+(defn mount
+  []
+  (create-topics {:props props
+                  :names ["alpha.user.data"]
+                  :num-partitions 1
+                  :replication-factor 1})
+  (streams-users/mount))
+
+(defn unmount
+  []
+  (streams-users/unmount))
+
+(comment
+
+  (mount)
+
+  (unmount)
+
+  (list-topics {:props props})
 
   ;;
   )
