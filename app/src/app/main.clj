@@ -1,5 +1,6 @@
 (ns app.main
   (:require [dev.nrepl :refer [start-nrepl-server]]
+            [app.kafka.core]
             [app.kafka.wordcount-example]
             [app.kafka.streams-example]
             [app.kafka.transit-example]
