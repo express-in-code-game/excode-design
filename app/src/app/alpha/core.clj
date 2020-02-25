@@ -1,4 +1,4 @@
-(ns app.repl-interface.core
+(ns app.alpha.core
   (:require [clojure.pprint :as pp]))
 
 (comment

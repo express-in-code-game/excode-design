@@ -8,7 +8,7 @@
             [app.kafka.reduce-example]
             [app.kafka.aggregate-delete-example]
             [app.spec-example]
-            [app.repl-interface.core]
+            [app.alpha.core]
    ;
             ))
 
