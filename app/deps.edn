@@ -6,7 +6,8 @@
  :aliases
  {:core {:extra-deps
          {org.clojure/clojure {:mvn/version "1.10.1"}
-
+          org.clojure/spec.alpha {:mvn/version "0.2.176"}
+          
           com.cognitect/transit-clj {:mvn/version "1.0.324"}
           org.apache.kafka/kafka-clients {:mvn/version "2.4.0"}
           org.apache.kafka/kafka-streams {:mvn/version "2.4.0"}
@@ -14,5 +15,7 @@
           nrepl {:mvn/version "0.6.0"}
           cider/cider-nrepl {:mvn/version "0.21.1"}}
          }
+  :dev {:extra-deps
+        {org.clojure/test.check {:mvn/version "1.0.0"}}}
   }
 }

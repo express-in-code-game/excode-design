@@ -4,18 +4,17 @@
 compile(){
   mkdir -p classes
   rm -rf classes/*
-  clojure -A:core -m dev.compile
+  clojure -A:core:dev -m dev.compile
 }
 
 dev(){
   compile
-  clj -A:core -m app.main
+  clj -A:core:dev -m app.main 
 }
 
 permissions(){
     sudo chmod -R 777 tmp/ 
 }
-
 
 dock() {
     docker build -t starnet.app .
