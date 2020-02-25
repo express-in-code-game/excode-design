@@ -1,6 +1,9 @@
 (ns app.kafka.spec-example
   (:require [clojure.pprint :as pp]
-            [clojure.spec.alpha :as s])
+            [clojure.repl :refer [doc]]
+            [clojure.spec.alpha :as s]
+            [clojure.spec.gen.alpha :as gen]
+            [clojure.spec.test.alpha :as stest])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer
@@ -35,7 +38,8 @@
 
    java.util.ArrayList
    java.util.Locale
-   java.util.Arrays))
+   java.util.Arrays
+   java.util.Date))
 
 (defn create-topics
   [{:keys [conf
@@ -178,8 +182,290 @@
   (.get readonly-store (get users 2))
 
   
-
-
-
+  
+  
+  
   ;;
+  )
+
+
+(comment
+
+  ; clojure.spec
+
+  (s/conform even? 1000)
+  (s/valid? even? 1000)
+
+  (s/valid? nil? nil)
+  (s/valid? string? "abc")
+  (s/valid? #(> % 5) 10)
+  (s/valid? inst? (Date.))
+  (s/valid? #{42} 42)
+
+  (s/def ::inst inst?)
+  (s/valid? ::inst (Date.))
+  (doc ::inst)
+  (s/def ::big-even (s/and int? #(> % 1000)))
+  (doc ::big-even)
+  (s/valid? ::big-even 10000)
+  (s/def ::string-or-int (s/or :string string?
+                               :int int?))
+  (s/valid? ::string-or-int "abc")
+  (s/valid? ::string-or-int 1000)
+  (s/valid? ::string-or-int :foo)
+  (s/conform ::string-or-int "abc")
+  (s/conform ::string-or-int 1000)
+
+  (s/valid? string? nil)
+  (s/valid? (s/nilable string?) nil)
+
+  (s/explain ::big-even 10)
+  (s/explain ::string-or-int :foo)
+  (s/explain-str ::string-or-int :foo)
+  (s/explain-data ::string-or-int :foo)
+
+  (def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
+  (s/def ::email-type (s/and string? #(re-matches email-regex %)))
+
+  (s/def ::acctid int?)
+  (s/def ::username string?)
+  (s/def ::email ::email-type)
+
+  (s/def ::user (s/keys :req [::username ::email]
+                        :opt [::phone]))
+  (s/valid? ::user
+            {::username "user1"
+             ::email "user1@gmail.com"})
+  (s/explain ::user
+             {::username "user1"})
+  (s/explain-str ::user
+                 {::username "user1"
+                  ::email "n/a"})
+
+  (s/def :unq/user
+    (s/keys :req-un [::username ::email]
+            :opt-un [::phone]))
+  (s/valid? :unq/user
+            {:username "user1"
+             :email "user1@gmail.com"})
+  (s/conform  :unq/user
+              {:username "user1"
+               :email "user1@gmail.com"})
+  (s/explain :unq/user
+             {:username "user1"})
+  (s/explain :unq/user
+             {:username "user1"
+              :email "n/a"})
+
+  (s/def ::port number?)
+  (s/def ::host string?)
+  (s/def ::id keyword?)
+  (s/def ::server (s/keys* :req [::id ::host] :opt [::port]))
+  (s/conform ::server [::id :s1 ::host "localhost" ::port 8080])
+
+  (s/def :animal/kind string?)
+  (s/def :animal/says string?)
+  (s/def :animal/common (s/keys :req [:animal/kind :animal/says]))
+  (s/def :dog/tail? boolean?)
+  (s/def :dog/breed string?)
+  (s/def :animal/dog (s/merge :animal/common
+                              (s/keys :req [:dog/tail? :dog/breed])))
+  (s/valid? :animal/dog
+            {:animal/kind "dog"
+             :animal/says "woof"
+             :dog/tail? true
+             :dog/breed "retriever"})
+
+  ; https://clojure.org/guides/spec#_multi_spec
+
+  (s/def :event/timestamp int?)
+  (s/def :search/url string?)
+  (s/def :error/message string?)
+  (s/def :error/code int?)
+
+  (defmulti event-type :event/type)
+  (defmethod event-type :event/search [_]
+    (s/keys :req [:event/type :event/timestamp :search/url]))
+  (defmethod event-type :event/error [_]
+    (s/keys :req [:event/type :event/timestamp :error/message :error/code]))
+
+  (s/def :event/event (s/multi-spec event-type :event/type))
+
+  (s/valid? :event/event
+            {:event/type :event/search
+             :event/timestamp 1463970123000
+             :search/url "https://clojure.org"})
+
+  (s/valid? :event/event
+            {:event/type :event/error
+             :event/timestamp 1463970123000
+             :error/message "Invalid host"
+             :error/code 500})
+
+  (s/explain :event/event
+             {:event/type :event/restart})
+
+  (s/explain :event/event
+             {:event/type :event/search
+              :search/url 200})
+
+  ; collection
+
+  (s/conform (s/coll-of keyword?) [:a :b :c])
+  (s/conform (s/coll-of number?) #{5 10 2})
+
+  (s/def ::vnum3 (s/coll-of number? :kind vector? :count 3 :distinct true :into #{}))
+  (s/conform ::vnum3 [1 2 3])
+  (s/explain ::vnum3 #{1 2 3})
+  (s/explain ::vnum3 [1 1 1])
+  (s/explain ::vnum3 [1 2 :a])
+
+  ; tuple
+
+  (s/def ::point (s/tuple double? double? double?))
+  (s/conform ::point [1.5 2.5 -0.5])
+  (doc s/cat)
+
+  ; map
+
+  (s/def ::scores (s/map-of string? int?))
+  (s/conform ::scores {"Sally" 1000, "Joe" 500})
+
+  ;  sequences
+
+  (s/def ::ingredient (s/cat :quantity number? :unit keyword?))
+  (s/conform ::ingredient [2 :teaspoon])
+  (s/explain ::ingredient [11 "peaches"])
+  (s/explain ::ingredient [2])
+
+  (s/def ::seq-of-keywords (s/* keyword?))
+  (s/conform ::seq-of-keywords [:a :b :c])
+  (s/explain ::seq-of-keywords [10 20])
+
+  (s/def ::odds-then-maybe-even (s/cat :odds (s/+ odd?)
+                                       :even (s/? even?)))
+  (s/conform ::odds-then-maybe-even [1 3 5 100])
+  (s/conform ::odds-then-maybe-even [1])
+  (s/explain ::odds-then-maybe-even [100])
+
+  (s/def ::opts (s/* (s/cat :opt keyword? :val boolean?)))
+  (s/conform ::opts [:silent? false :verbose true])
+
+  (s/def ::config (s/*
+                   (s/cat :prop string?
+                          :val  (s/alt :s string? :b boolean?))))
+  (s/conform ::config ["-server" "foo" "-verbose" true "-user" "joe"])
+
+  (s/describe ::seq-of-keywords)
+  (s/describe ::odds-then-maybe-even)
+  (s/describe ::opts)
+  (s/describe ::config)
+
+  (s/def ::even-strings (s/& (s/* string?) #(even? (count %))))
+  (s/valid? ::even-strings ["a"])  ;; false
+  (s/valid? ::even-strings ["a" "b"])  ;; true
+  (s/valid? ::even-strings ["a" "b" "c"])  ;; false
+  (s/valid? ::even-strings ["a" "b" "c" "d"])  ;; true
+
+  (s/def ::nested
+    (s/cat :names-kw #{:names}
+           :names (s/spec (s/* string?))
+           :nums-kw #{:nums}
+           :nums (s/spec (s/* number?))))
+  (s/conform ::nested [:names ["a" "b"] :nums [1 2 3]])
+
+  (s/def ::unnested
+    (s/cat :names-kw #{:names}
+           :names (s/* string?)
+           :nums-kw #{:nums}
+           :nums (s/* number?)))
+  (s/conform ::unnested [:names "a" "b" :nums 1 2 3])
+
+  ; using spec for validation
+
+  (defn user
+    [user]
+    {:pre [(s/valid? ::user user)]
+     :post [(s/valid? string? %)]}
+    (str (::username user) " " (::email user)))
+  (user 42)
+  (user {::username "user1" ::email "user1_gmail.com"})
+  (user {::username "user1" ::email "user1@gmail.com"})
+
+  (defn user2
+    [user]
+    (let [u (s/assert ::user user)]
+      (str (::username u) " " (::email u))))
+  (s/check-asserts true)
+  (user2 42)
+  (user2 {::username "user1" ::email "user1_gmail.com"})
+  (user2 {::username "user1" ::email "user1@gmail.com"})
+  (doc s/assert)
+
+
+  (defn- set-config [prop val]
+  ;; dummy fn
+    (println "set" prop val))
+
+  (defn configure [input]
+    (let [parsed (s/conform ::config input)]
+      (if (= parsed ::s/invalid)
+        (throw (ex-info "Invalid input" (s/explain-data ::config input)))
+        (for [{prop :prop [_ val] :val} parsed]
+          (set-config (subs prop 1) val)))))
+
+  (configure ["-server" "foo" "-verbose" true "-user" "joe"])
+
+
+  (defn ranged-rand
+    "Returns random int in range start <= rand < end"
+    [start end]
+    (+ start (long (rand (- end start)))))
+
+  (s/fdef ranged-rand
+    :args (s/and (s/cat :start int? :end int?)
+                 #(< (:start %) (:end %)))
+    :ret int?
+    :fn (s/and #(>= (:ret %) (-> % :args :start))
+               #(< (:ret %) (-> % :args :end))))
+  (doc ranged-rand)
+  (ranged-rand 1 3)
+  (ranged-rand 5 1)
+  (stest/instrument `ranged-rand)
+  (ranged-rand 5 1)
+  (stest/unstrument `ranged-rand)
+
+  (defn adder [x] #(+ x %))
+  (s/fdef adder
+    :args (s/cat :x number?)
+    :ret (s/fspec :args (s/cat :y number?)
+                  :ret number?)
+    :fn #(= (-> % :args :x) ((:ret %) 0)))
+
+
+  (s/fdef clojure.core/declare
+    :args (s/cat :names (s/* simple-symbol?))
+    :ret any?)
+  (declare 100)
+
+  (defn hello
+    [name]
+    (str "hello " name))
+  (s/fdef hello
+    :args string?
+    :ret string?)
+  (hello "asd")
+  (hello :asd)
+  (stest/instrument `hello)
+  (hello :asd)
+  (stest/unstrument `hello)
+
+
+  ; generators
+  
+  
+
+
+
+  ;
   )
