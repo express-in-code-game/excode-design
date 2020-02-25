@@ -177,53 +177,119 @@
   (delete-topics {:conf base-conf
                   :names topic-names})
 
-  (do
-    (def builder (StreamsBuilder.))
+  (comment
 
-    (def ktable (-> builder
-                    (.stream "user.data")
-                    (.groupByKey)
-                    #_(.groupBy (reify KeyValueMapper
-                                  (apply [this k v]
-                                    (KeyValue/pair k v))))
-                    (.aggregate (reify Initializer
-                                  (apply [this]
-                                    nil))
-                                (reify Aggregator
-                                  (apply [this k v ag]
-                                    (cond
-                                      (= v {:delete true}) nil
-                                      :else (merge ag v))))
-                                (-> (Materialized/as "user.data.streams5.store")
-                                    (.withKeySerde (Serdes/String))
-                                    (.withValueSerde (TransitJsonSerde.))))
-                    #_(.reduce (reify Reducer
-                                 (apply [this ag v]
-                                   (cond
-                                     (= v {:delete true}) nil
-                                     :else (merge ag v))))
-                               (-> (Materialized/as "user.data.streams5.store")
-                                   (.withKeySerde (Serdes/String))
-                                   (.withValueSerde (TransitJsonSerde.))))))
+    (def topic-names ["user.data"])
 
-    (def topology (.build builder))
+    (create-topics {:conf base-conf
+                    :names topic-names
+                    :num-partitions 1
+                    :replication-factor 1})
 
-    (println (.describe topology))
+    (list-topics {:conf base-conf})
 
-    (def streams-props (doto (Properties.)
-                         (.putAll {"application.id" "user.data.streams5"
-                                   "bootstrap.servers" "broker1:9092"
-                                   "auto.offset.reset" "earliest"
-                                   "default.key.serde" (.. Serdes String getClass)
-                                   "default.value.serde" "app.kafka.serdes.TransitJsonSerde"})))
+    (delete-topics {:conf base-conf
+                    :names topic-names})
+
+    (do
+      (def builder (StreamsBuilder.))
+
+      (def ktable (-> builder
+                      (.stream "user.data")
+                      (.groupByKey)
+                      (.aggregate (reify Initializer
+                                    (apply [this]
+                                      nil))
+                                  (reify Aggregator
+                                    (apply [this k v ag]
+                                      (cond
+                                        (= v {:delete true}) nil
+                                        :else (merge ag v))))
+                                  (-> (Materialized/as "user.data.streams.store")
+                                      (.withKeySerde (Serdes/String))
+                                      (.withValueSerde (TransitJsonSerde.))))))
+
+      (def topology (.build builder))
+      (println (.describe topology))
+
+      (def streams-props (doto (Properties.)
+                           (.putAll {"application.id" "user.data.streams"
+                                     "bootstrap.servers" "broker1:9092"
+                                     "auto.offset.reset" "earliest" #_"latest"
+                                     "default.key.serde" (.. Serdes String getClass)
+                                     "default.value.serde" "app.kafka.serdes.TransitJsonSerde"})))
 
 
-    (def streams (KafkaStreams. topology streams-props))
+      (def streams (KafkaStreams. topology streams-props))
 
-    (def latch (CountDownLatch. 1))
-
-    (add-shutdown-hook streams-props streams latch)
+      (def latch (CountDownLatch. 1))
+      (add-shutdown-hook streams-props streams latch)
     ;
+      )
+
+    (.isRunning (.state streams))
+    (.start streams)
+    (.close streams)
+    (.cleanUp streams)
+
+    (def producer (KafkaProducer.
+                   {"bootstrap.servers" "broker1:9092"
+                    "auto.commit.enable" "true"
+                    "key.serializer" "org.apache.kafka.common.serialization.StringSerializer"
+                    "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
+
+    (def users {0 (.toString #uuid "5ada3765-0393-4d48-bad9-fac992d00e62")
+                1 (.toString #uuid "179c265a-7f72-4225-a785-2d048d575854")
+                2 (.toString #uuid "3a3e2d06-3719-4811-afec-0dffdec35543")
+                3 (.toString #uuid "013e2d06-3719-4811-afec-0dffdec35543")})
+
+    (.send producer (ProducerRecord.
+                     "user.data"
+                     (get users 0)
+                     {:email "user0@gmail.com"
+                      :username "user0"}))
+
+    (.send producer (ProducerRecord.
+                     "user.data"
+                     (get users 1)
+                     {:email "user1@gmail.com"
+                      :username "user1"}))
+
+    (.send producer (ProducerRecord.
+                     "user.data"
+                     (get users 2)
+                     {:email "user2@gmail.com"
+                      :username "user2"}))
+
+    (.send producer (ProducerRecord.
+                     "user.data"
+                     (get users 3)
+                     {:email "user3@gmail.com"
+                      :username "user3"}))
+
+    (.send producer (ProducerRecord.
+                     "user.data"
+                     (get users 2)
+                     {:delete true}))
+
+    (def readonly-store (.store streams "user.data.streams.store" (QueryableStoreTypes/keyValueStore)))
+
+    (.approximateNumEntries readonly-store)
+    (count (iterator-seq (.all readonly-store)))
+    
+    ; observation: keys ordered alphabetically
+    (doseq [x (iterator-seq (.all readonly-store))]
+      (println (.key x) (.value x)))
+
+    (.get readonly-store (get users 0))
+    (.get readonly-store (get users 1))
+    (.get readonly-store (get users 2))
+
+
+
+
+
+  ;;
     )
 
   (.start streams)
