@@ -190,8 +190,11 @@
 
 
 (comment
-
-  ; clojure.spec
+  ; https://github.com/clojure/spec.alpha
+  ; https://clojure.org/about/spec
+  ; https://clojure.org/guides/spec
+  ; https://clojure.github.io/test.check/intro.html
+  ; https://clojure.github.io/test.check/generator-examples.html
 
   (s/conform even? 1000)
   (s/valid? even? 1000)
@@ -230,6 +233,7 @@
   (s/def ::acctid int?)
   (s/def ::username string?)
   (s/def ::email ::email-type)
+  (s/def ::phone string?)
 
   (s/def ::user (s/keys :req [::username ::email]
                         :opt [::phone]))
@@ -460,12 +464,107 @@
   (hello :asd)
   (stest/unstrument `hello)
 
+  (stest/abbrev-result (first (stest/check `ranged-rand)))
+  (-> (stest/enumerate-namespace 'app.kafka.spec-example) stest/check)
+  (stest/check)
+
+
+  (defn invoke-service [service request]
+  ;; invokes remote service
+    )
+
+  (defn run-query [service query]
+    (let [{::keys [result error]} (invoke-service service {::query query})]
+      (or result error)))
+
+  (s/def ::query string?)
+  (s/def ::request (s/keys :req [::query]))
+  (s/def ::result (s/coll-of string? :gen-max 3))
+  (s/def ::error int?)
+  (s/def ::response (s/or :ok (s/keys :req [::result])
+                          :err (s/keys :req [::error])))
+
+  (s/fdef invoke-service
+    :args (s/cat :service any? :request ::request)
+    :ret ::response)
+
+  (s/fdef run-query
+    :args (s/cat :service any? :query string?)
+    :ret (s/or :ok ::result :err ::error))
+  
+  (stest/instrument `invoke-service {:stub #{`invoke-service}})
+  (invoke-service nil {::query "test"})
+  (invoke-service nil {::query "test"})
+  (stest/summarize-results (stest/check `run-query))
+  
 
   ; generators
-  
-  
+
+  (gen/generate (s/gen int?))
+  (gen/generate (s/gen nil?))
+  (gen/sample (s/gen string?))
+  (gen/sample (s/gen #{:club :diamond :heart :spade}))
+  (gen/sample (s/gen (s/cat :k keyword? :ns (s/+ number?))))
+
+  (s/exercise (s/cat :k keyword? :ns (s/+ number?)) 5)
+  (s/exercise (s/or :k keyword? :s string? :n number?) 5)
+
+  (s/exercise-fn `ranged-rand)
+
+
+  (gen/generate (s/gen even?))
+  (gen/generate (s/gen (s/and int? even?)))
+
+  (defn divisible-by [n] #(zero? (mod % n)))
+  (gen/sample (s/gen (s/and int?
+                            #(> % 0)
+                            (divisible-by 3))))
+
+  (gen/sample (s/gen (s/and string? #(clojure.string/includes? % "hello"))))
+
+
+  ; custom generators
+
+  (s/def ::kws (s/and keyword? #(= (namespace %) "my.domain")))
+  (s/valid? ::kws :my.domain/name) ;; true
+  (gen/sample (s/gen ::kws)) ;; unlikely we'll generate useful keywords this way
+
+  (def kw-gen (s/gen #{:my.domain/name :my.domain/occupation :my.domain/id}))
+  (gen/sample kw-gen 5)
+
+  (s/def ::kws (s/with-gen (s/and keyword? #(= (namespace %) "my.domain"))
+                 #(s/gen #{:my.domain/name :my.domain/occupation :my.domain/id})))
+  (s/valid? ::kws :my.domain/name)  ;; true
+  (gen/sample (s/gen ::kws))
+  ;;=> (:my.domain/occupation :my.domain/occupation :my.domain/name  ...)
+
+  (def kw-gen-2 (gen/fmap #(keyword "my.domain" %) (gen/string-alphanumeric)))
+  (gen/sample kw-gen-2 5)
+
+  (def kw-gen-3 (gen/fmap #(keyword "my.domain" %)
+                          (gen/such-that #(not= % "")
+                                         (gen/string-alphanumeric))))
+  (gen/sample kw-gen-3 5)
+
+
+  (s/def ::hello
+    (s/with-gen #(clojure.string/includes? % "hello")
+      #(gen/fmap (fn [[s1 s2]] (str s1 "hello" s2))
+                 (gen/tuple (gen/string-alphanumeric) (gen/string-alphanumeric)))))
+  (gen/sample (s/gen ::hello))
+
+  (s/def ::roll (s/int-in 0 11))
+  (gen/sample (s/gen ::roll))
+
+  (s/def ::the-aughts (s/inst-in #inst "2000" #inst "2010"))
+  (drop 50 (gen/sample (s/gen ::the-aughts) 55))
+
+  (s/def ::dubs (s/double-in :min -100.0 :max 100.0 :NaN? false :infinite? false))
+  (s/valid? ::dubs 2.9)
+  (s/valid? ::dubs Double/POSITIVE_INFINITY)
+  (gen/sample (s/gen ::dubs))
 
 
 
-  ;
+  ;; 
   )
