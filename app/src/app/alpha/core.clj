@@ -72,7 +72,8 @@
 (defn mount
   []
   (-> (create-topics {:props props
-                      :names ["alpha.user.data"]
+                      :names ["alpha.user.data"
+                              "alpha.user.data.changes"]
                       :num-partitions 1
                       :replication-factor 1})
       (.all)
@@ -90,10 +91,11 @@
   (mount)
 
   (unmount)
-  
+
   (list-topics {:props props})
 
-  (delete-topics {:props props :names ["alpha.user.data"]})
+  (delete-topics {:props props :names ["alpha.user.data"
+                                       "alpha.user.data.changes"]})
 
   ;;
   )

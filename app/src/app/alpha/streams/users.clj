@@ -57,7 +57,9 @@
                                      :else (merge ag v))))
                                (-> (Materialized/as "alpha.user.data.streams.store")
                                    (.withKeySerde (Serdes/String))
-                                   (.withValueSerde (TransitJsonSerde.)))))
+                                   (.withValueSerde (TransitJsonSerde.))))
+                   (.toStream)
+                   (.to "alpha.user.data.changes"))
         topology (.build builder)
         props (doto (Properties.)
                 (.putAll {"application.id" "alpha.user.data.streams"
@@ -69,6 +71,7 @@
         latch (CountDownLatch. 1)]
     (do
       (add-shutdown-hook props streams latch)
+      (.cleanUp streams)
       (.start streams))
     {:builder builder
      :ktable ktable
@@ -147,6 +150,25 @@
   (.get readonly-store (get users 0))
   (.get readonly-store (get users 1))
   (.get readonly-store (get users 2))
+
+  (def fu-consumer
+    (future-call (fn []
+                   (let [consumer (KafkaConsumer.
+                                   {"bootstrap.servers" "broker1:9092"
+                                    "auto.offset.reset" "earliest"
+                                    "auto.commit.enable" "false"
+                                    "group.id" (.toString (java.util.UUID/randomUUID))
+                                    "consumer.timeout.ms" "5000"
+                                    "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
+                                    "value.deserializer" "app.kafka.serdes.TransitJsonDeserializer"})]
+                     (.subscribe consumer (Arrays/asList (object-array ["alpha.user.data.changes"])))
+                     (while true
+                       (let [records (.poll consumer 1000)]
+                         (.println System/out (str "; app.alpha.streams.users polling changes:" (java.time.LocalTime/now)))
+                         (doseq [rec records]
+                           (println (str (.key rec) " : " (.value rec))))))))))
+
+  (future-cancel fu-consumer)
 
 
   ;;
