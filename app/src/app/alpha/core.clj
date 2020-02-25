@@ -97,6 +97,11 @@
   (delete-topics {:props props :names ["alpha.user.data"
                                        "alpha.user.data.changes"]})
 
+  ; player 5min games from repl
+  ; emit events for players
+  ; arbiter emits on interval while depending on current game states
+  ; games computes states from game.events
+  ; broadcast prints to the stdout
 
   (def producer (KafkaProducer.
                  {"bootstrap.servers" "broker1:9092"
