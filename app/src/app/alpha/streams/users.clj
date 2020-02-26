@@ -42,7 +42,7 @@
 
 
 (def opts {:base-props {"bootstrap.servers" "broker1:9092"}})
-(def state& (atom {:user-data-app nil}))
+(def state* (atom {:user-data-app nil}))
 
 (defn create-user-data-app
   []
@@ -87,13 +87,13 @@
 (defn mount
   []
   (let [user-data-app (create-user-data-app)]
-    (swap! state& assoc :user-data-app user-data-app)))
+    (swap! state* assoc :user-data-app user-data-app)))
 
 (defn unmount
   []
-  (when (:user-data-app @state&)
-    (.close (:streams (:user-data-app @state&)))
-    (swap! state& assoc :user-data-app nil)))
+  (when (:user-data-app @state*)
+    (.close (:streams (:user-data-app @state*)))
+    (swap! state* assoc :user-data-app nil)))
 
 
 (defn produce-event
@@ -151,7 +151,7 @@
   (mount)
   (unmount)
 
-  (def app (:user-data-app @state&))
+  (def app (:user-data-app @state*))
   (def streams (:streams app))
 
   (println (.describe (:topology app)))
