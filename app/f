@@ -25,6 +25,7 @@ dock() {
                 --network starnet.kafka \
                 -p 7788:7788 \
                 -v "$(pwd)":/app/root \
+                -e "appenv={:optimized false}" \
                  starnet.app \
                  bash
 }

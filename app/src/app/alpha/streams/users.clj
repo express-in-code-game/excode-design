@@ -1,6 +1,9 @@
 (ns app.alpha.streams.users
   (:require [clojure.pprint :as pp]
-            [app.alpha.streams.core :refer [add-shutdown-hook]])
+            [app.alpha.streams.core :refer [add-shutdown-hook]]
+            [clojure.spec.alpha :as s]
+            [app.alpha.spec :as spec]
+            [clojure.spec.test.alpha :as stest])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer
@@ -39,7 +42,7 @@
 
 
 (def opts {:base-props {"bootstrap.servers" "broker1:9092"}})
-(def state& (atom {:user-data-app nil}))
+(def state* (atom {:user-data-app nil}))
 
 (defn create-user-data-app
   []
@@ -56,7 +59,7 @@
                                      (= v {:delete true}) nil
                                      :else (merge ag v))))
                                (-> (Materialized/as "alpha.user.data.streams.store")
-                                   (.withKeySerde (Serdes/String))
+                                   (.withKeySerde (TransitJsonSerde.) #_(Serdes/String))
                                    (.withValueSerde (TransitJsonSerde.))))
                    (.toStream)
                    (.to "alpha.user.data.changes"))
@@ -65,7 +68,8 @@
                 (.putAll {"application.id" "alpha.user.data.streams"
                           "bootstrap.servers" "broker1:9092"
                           "auto.offset.reset" "earliest" #_"latest"
-                          "default.key.serde" (.. Serdes String getClass)
+                          "default.key.serde" "app.kafka.serdes.TransitJsonSerde"
+                          #_(.. Serdes String getClass)
                           "default.value.serde" "app.kafka.serdes.TransitJsonSerde"}))
         streams (KafkaStreams. topology props)
         latch (CountDownLatch. 1)]
@@ -83,20 +87,71 @@
 (defn mount
   []
   (let [user-data-app (create-user-data-app)]
-    (swap! state& assoc :user-data-app user-data-app)))
+    (swap! state* assoc :user-data-app user-data-app)))
 
 (defn unmount
   []
-  (when (:user-data-app @state&)
-    (.close (:streams (:user-data-app @state&)))
-    (swap! state& assoc :user-data-app nil)))
+  (when (:user-data-app @state*)
+    (.close (:streams (:user-data-app @state*)))
+    (swap! state* assoc :user-data-app nil)))
+
+
+(defn produce-event
+  [producer topic key event]
+  (.send producer (ProducerRecord.
+                   topic
+                   key
+                   event)))
+(s/fdef produce-event
+  :args (s/cat :producer some? :topic string? :key uuid? :event :event/event))
+
+(defn create-user
+  [producer event]
+  (produce-event producer
+                 "alpha.user.data"
+                 (:user/uuid event)
+                 event))
+; https://clojuredocs.org/clojure.spec.alpha/fdef#example-5c4b535ce4b0ca44402ef629
+(s/fdef create-user
+  :args (s/cat :producer some? :event :event/create-user))
+
+(comment
+
+  (def producer (KafkaProducer.
+                 {"bootstrap.servers" "broker1:9092"
+                  "auto.commit.enable" "true"
+                  "key.serializer" "app.kafka.serdes.TransitJsonSerializer"
+                  #_"org.apache.kafka.common.serialization.StringSerializer"
+                  "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
+
+  (produce-event producer
+                 "alpha.user.data"
+                 #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+                 {:event/type :event/create-user
+                  :user/uuid #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+                  :user/email "user0@gmail.com"
+                  :user/username "user0"})
+
+  (produce-event producer
+                 "alpha.user.data"
+                 #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+                 {:event/type :event/update-user
+                  :user/username "user0"})
+
+  (create-user producer {:event/type :event/create-user
+                         :user/uuid #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+                         :user/email "user0@gmail.com"
+                         :user/username "user0"})
+
+  ;;
+  )
 
 (comment
 
   (mount)
   (unmount)
 
-  (def app (:user-data-app @state&))
+  (def app (:user-data-app @state*))
   (def streams (:streams app))
 
   (println (.describe (:topology app)))
@@ -109,17 +164,19 @@
   (def producer (KafkaProducer.
                  {"bootstrap.servers" "broker1:9092"
                   "auto.commit.enable" "true"
-                  "key.serializer" "org.apache.kafka.common.serialization.StringSerializer"
+                  "key.serializer" "app.kafka.serdes.TransitJsonSerializer"
+                  #_"org.apache.kafka.common.serialization.StringSerializer"
                   "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
 
-  (def users {0 (.toString #uuid "5ada3765-0393-4d48-bad9-fac992d00e62")
-              1 (.toString #uuid "179c265a-7f72-4225-a785-2d048d575854")
-              2 (.toString #uuid "3a3e2d06-3719-4811-afec-0dffdec35543")})
+  (def users {0 #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+              1 #uuid "179c265a-7f72-4225-a785-2d048d575854"
+              2 #uuid "3a3e2d06-3719-4811-afec-0dffdec35543"})
 
   (.send producer (ProducerRecord.
                    "alpha.user.data"
                    (get users 0)
-                   {:email "user0@gmail.com"
+                   {:uuid #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+                    :email "user0@gmail.com"
                     :username "user0"}))
 
   (.send producer (ProducerRecord.
@@ -139,7 +196,8 @@
                    (get users 2)
                    {:delete true}))
 
-  (def readonly-store (.store streams "alpha.user.data.streams.store" (QueryableStoreTypes/keyValueStore)))
+  (def readonly-store (.store streams "alpha.user.data.streams.store"
+                              (QueryableStoreTypes/keyValueStore)))
 
   (.approximateNumEntries readonly-store)
   (count (iterator-seq (.all readonly-store)))
@@ -150,6 +208,8 @@
   (.get readonly-store (get users 0))
   (.get readonly-store (get users 1))
   (.get readonly-store (get users 2))
+  (type (:uuid (.get readonly-store (get users 0))))
+  (=  #uuid "3a3e2d06-3719-4811-afec-0dffdec35543"  #uuid "3a3e2d06-3719-4811-afec-0dffdec35543")
 
   (def fu-consumer
     (future-call (fn []
@@ -159,14 +219,18 @@
                                     "auto.commit.enable" "false"
                                     "group.id" (.toString (java.util.UUID/randomUUID))
                                     "consumer.timeout.ms" "5000"
-                                    "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
+                                    "key.deserializer"
+                                    "app.kafka.serdes.TransitJsonDeserializer"
+                                    #_"org.apache.kafka.common.serialization.StringDeserializer"
                                     "value.deserializer" "app.kafka.serdes.TransitJsonDeserializer"})]
                      (.subscribe consumer (Arrays/asList (object-array ["alpha.user.data.changes"])))
                      (while true
                        (let [records (.poll consumer 1000)]
                          (.println System/out (str "; app.alpha.streams.users polling changes:" (java.time.LocalTime/now)))
                          (doseq [rec records]
-                           (println (str (.key rec) " : " (.value rec))))))))))
+                           (println ";")
+                           (println (.key rec))
+                           (println (.value rec)))))))))
 
   (future-cancel fu-consumer)
 

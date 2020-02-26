@@ -4,9 +4,9 @@
 reset_example(){
   # https://kafka.apache.org/24/documentation/streams/developer-guide/app-reset-tool.html
   bash /app/kafka/bin/kafka-streams-application-reset.sh \
-  --application-id "aggregate-delete.example.streams" \
+  --application-id "alpha.user.data.streams" \
   --bootstrap-servers "localhost:9092" \
-  --input-topics "aggregate-delete.example"
+  --input-topics "alpha.user.data"
 }
 
 

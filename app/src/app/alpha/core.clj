@@ -1,5 +1,7 @@
 (ns app.alpha.core
   (:require [clojure.pprint :as pp]
+            [app.alpha.spec :as spec]
+            [app.alpha.spec-test :as spec-test]
             [app.alpha.streams.users :as streams-users]
             [app.alpha.streams.core :refer [create-topics list-topics
                                             delete-topics]])
@@ -69,22 +71,30 @@
 
 (def props {"bootstrap.servers" "broker1:9092"})
 
+(defn env-optimized?
+  []
+  (let [appenv (read-string (System/getenv "appenv"))]
+    (:optimized appenv)))
+
 (defn mount
   []
-  (-> (create-topics {:props props
-                      :names ["alpha.user.data"
-                              "alpha.user.data.changes"]
-                      :num-partitions 1
-                      :replication-factor 1})
-      (.all)
-      (.whenComplete
-       (reify KafkaFuture$BiConsumer
-         (accept [this res err]
-           (streams-users/mount))))))
+  (when-not (env-optimized?)
+    (spec-test/instrument))
+  #_(-> (create-topics {:props props
+                        :names ["alpha.user.data"
+                                "alpha.user.data.changes"]
+                        :num-partitions 1
+                        :replication-factor 1})
+        (.all)
+        (.whenComplete
+         (reify KafkaFuture$BiConsumer
+           (accept [this res err]
+             (streams-users/mount))))))
 
 (defn unmount
   []
-  (streams-users/unmount))
+  (spec-test/unstrument)
+  #_(streams-users/unmount))
 
 (comment
 
