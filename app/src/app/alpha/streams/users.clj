@@ -102,7 +102,6 @@
                    topic
                    key
                    event)))
-
 (s/fdef produce-event
   :args (s/cat :producer some? :topic string? :key uuid? :event :event/event))
 
@@ -115,9 +114,6 @@
 ; https://clojuredocs.org/clojure.spec.alpha/fdef#example-5c4b535ce4b0ca44402ef629
 (s/fdef create-user
   :args (s/cat :producer some? :event :event/create-user))
-
-(stest/instrument [`create-user `produce-event])
-#_(stest/unstrument [`create-user `produce-event])
 
 (comment
 

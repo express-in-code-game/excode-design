@@ -252,9 +252,12 @@
   (doc ranged-rand)
   (ranged-rand 1 3)
   (ranged-rand 5 1)
+  (ranged-rand 1 5)
   (stest/instrument `ranged-rand)
   (ranged-rand 5 1)
   (stest/unstrument `ranged-rand)
+  
+  (stest/check `ranged-rand)
 
   (defn adder [x] #(+ x %))
   (s/fdef adder

@@ -8,9 +8,10 @@
             [app.kafka.reduce-example]
             [app.kafka.aggregate-delete-example]
             [app.spec-example]
-            [app.alpha.core]
+            [app.alpha.core :as alpha]
    ;
             ))
 
 (defn -main  [& args]
-  (start-nrepl-server "0.0.0.0" 7788))
+  (start-nrepl-server "0.0.0.0" 7788)
+  (alpha/mount))

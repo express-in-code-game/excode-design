@@ -6,7 +6,6 @@
             [clojure.spec.test.alpha :as stest])
   (:import java.util.Date))
 
-
 (def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
 
 (s/def :user/uuid uuid?)
@@ -26,8 +25,6 @@
                                  #(not-empty (select-keys % [:user/email :user/username]))))
 
 (comment
-
-
 
   (s/valid? :event/create-user
             {:event/type :event/create-user
