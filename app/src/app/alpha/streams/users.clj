@@ -95,25 +95,57 @@
     (.close (:streams (:user-data-app @state&)))
     (swap! state& assoc :user-data-app nil)))
 
+
+(defn produce-event
+  [producer topic key event]
+  (.send producer (ProducerRecord.
+                   topic
+                   key
+                   event)))
+
+(s/fdef produce-event
+  :args (s/cat :producer some? :topic string? :key uuid? :event :event/event))
+
 (defn create-user
   [producer event]
-  #_(.send producer (ProducerRecord.
-                     "alpha.user.data"
-                     (:user/uuid event)
-                     event)))
+  (produce-event producer
+                 "alpha.user.data"
+                 (:user/uuid event)
+                 event))
 ; https://clojuredocs.org/clojure.spec.alpha/fdef#example-5c4b535ce4b0ca44402ef629
 (s/fdef create-user
-  :args (s/cat :producer any? :event :event/create-user))
+  :args (s/cat :producer some? :event :event/create-user))
 
-(stest/instrument [`create-user])
-#_(stest/unstrument [`create-user])
+(stest/instrument [`create-user `produce-event])
+#_(stest/unstrument [`create-user `produce-event])
 
 (comment
 
-  (create-user nil {:event/type :event/create-user
-                    :user/uuid #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-                    :user/email "user0@gmail.com"
-                    :user/username "user0"})
+  (def producer (KafkaProducer.
+                 {"bootstrap.servers" "broker1:9092"
+                  "auto.commit.enable" "true"
+                  "key.serializer" "app.kafka.serdes.TransitJsonSerializer"
+                  #_"org.apache.kafka.common.serialization.StringSerializer"
+                  "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
+
+  (produce-event producer
+                 "alpha.user.data"
+                 #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+                 {:event/type :event/create-user
+                  :user/uuid #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+                  :user/email "user0@gmail.com"
+                  :user/username "user0"})
+
+  (produce-event producer
+                 "alpha.user.data"
+                 #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+                 {:event/type :event/update-user
+                  :user/username "user0"})
+
+  (create-user producer {:event/type :event/create-user
+                         :user/uuid #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+                         :user/email "user0@gmail.com"
+                         :user/username "user0"})
 
   ;;
   )

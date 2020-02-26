@@ -15,6 +15,7 @@
 
 (s/def :user/user (s/keys :req [:user/uuid :user/username :user/email]))
 
+
 (s/def :event/create-user (s/and (s/keys :req [:event/type :user/uuid :user/email :user/username]
                                          :opt [])
                                  #(= (:event/type %) :event/create-user)))
@@ -25,12 +26,15 @@
                                  #(not-empty (select-keys % [:user/email :user/username]))))
 
 (comment
+
+
+
   (s/valid? :event/create-user
             {:event/type :event/create-user
              :user/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
              :user/email "user0@gmail.com"
              :user/username "user0"})
-  
+
   (s/explain :event/update-user
              {:event/type :event/update-user
               :user/email "user0@gmail.com"
@@ -39,15 +43,14 @@
   ;;
   )
 
+
+(defmulti event-type (fn [x] (:event/type x)))
+(defmethod event-type :event/create-user [x] :event/create-user)
+(defmethod event-type :event/update-user [x] :event/update-user)
+(s/def :event/event (s/multi-spec event-type :event/type))
+
 (comment
 
-  (defmulti event-type (fn [x] (:event/type x)))
-  (defmethod event-type :event/create-user [x]
-    (s/keys :req [:event/type :user/uuid :user/email :user/username]))
-  (defmethod event-type :event/update-user [x]
-    (s/keys :opt [:event/type :user/email :user/username]))
-
-  (s/def :event/event (s/multi-spec event-type :event/type))
 
   (s/valid? :event/event
             {:event/type :event/create-user
@@ -75,6 +78,13 @@
             {:event/type :event/update-user
              :user/email "user0@gmail.com"
              :user/username "user0"})
+
+  (s/explain :event/create-user
+             {:event/type :event/create-user
+              :user/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+              :user/email "user0@gmail.com"
+              :user/username "user0"})
+
   ;;
   )
 
