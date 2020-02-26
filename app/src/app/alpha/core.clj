@@ -1,5 +1,6 @@
 (ns app.alpha.core
   (:require [clojure.pprint :as pp]
+            [app.alpha.spec :as spec]
             [app.alpha.streams.users :as streams-users]
             [app.alpha.streams.core :refer [create-topics list-topics
                                             delete-topics]])
