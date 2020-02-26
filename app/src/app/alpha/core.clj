@@ -71,9 +71,15 @@
 
 (def props {"bootstrap.servers" "broker1:9092"})
 
+(defn env-optimized?
+  []
+  (let [appenv (read-string (System/getenv "appenv"))]
+    (:optimized appenv)))
+
 (defn mount
   []
-  (spec-test/instrument)
+  (when-not (env-optimized?)
+    (spec-test/instrument))
   #_(-> (create-topics {:props props
                         :names ["alpha.user.data"
                                 "alpha.user.data.changes"]
