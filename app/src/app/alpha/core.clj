@@ -110,6 +110,8 @@
                                        "alpha.user.data.changes"]})
 
   ; player 5min games from repl
+  ;   game map has a number per tile, palyers step on tiles and eventually get into teleport
+  ;   the player with higher value wins 
   ; emit events for players
   ; arbiter emits on interval while depending on current game states
   ; games computes states from game.events
