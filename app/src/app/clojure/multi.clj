@@ -101,6 +101,9 @@
   (ancestors (class []))
   (ancestors java.lang.String)
   (isa? java.lang.String ::object)
+  
+  ; on arity
+  ; https://stackoverflow.com/questions/10313657/is-it-possible-to-overload-clojure-multi-methods-on-arity
 
   ;;
   )
