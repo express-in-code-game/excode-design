@@ -9,6 +9,7 @@
 (def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
 
 (s/def :user/uuid uuid?)
+(s/def :record/uuid uuid?)
 (s/def :user/username string?)
 (s/def :user/email (s/and string? #(re-matches email-regex %)))
 
@@ -19,10 +20,15 @@
                                          :opt [])
                                  #(= (:event/type %) :event/create-user)))
 
-(s/def :event/update-user (s/and (s/keys :req []
+(s/def :event/update-user (s/and (s/keys :req [:event/type]
                                          :opt [:user/email :user/username])
                                  #(= (:event/type %) :event/update-user)
                                  #(not-empty (select-keys % [:user/email :user/username]))))
+
+(s/def :event/delete-record (s/and (s/keys :req [:event/type ]
+                                           :opt [:record/uuid])
+                                   #(= (:event/type %) :event/delete-record)
+                                   ))
 
 (comment
 
@@ -44,6 +50,7 @@
 (defmulti event-type (fn [x] (:event/type x)))
 (defmethod event-type :event/create-user [x] :event/create-user)
 (defmethod event-type :event/update-user [x] :event/update-user)
+(defmethod event-type :event/delete-record [x] :event/delete-record)
 (s/def :event/event (s/multi-spec event-type :event/type))
 
 (comment
@@ -82,6 +89,12 @@
               :user/email "user0@gmail.com"
               :user/username "user0"})
 
+  (s/explain :event/delete-record
+             {:event/type :event/delete-record
+              :record/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"})
+  (s/explain :event/delete-record
+             {:event/type :event/delete-record})
+
   ;;
   )
 
@@ -90,9 +103,6 @@
   (uuid?  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62")
   (type #uuid "5ada3765-0393-4d48-bad9-fac992d00e62")
   (java.util.UUID/fromString "5ada3765-0393-4d48-bad9-fac992d00e62")
-
-
-
 
   ;;
   )
