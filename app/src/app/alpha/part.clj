@@ -22,6 +22,7 @@
 
   (isa? (class (seq [1])) java.util.Collection)
   (isa? (class {}) java.util.Collection)
+  (isa? 3 3)
 
 
   (defmulti get-state class)
@@ -43,13 +44,14 @@
 (defmulti get-state (fn [ctx part] (class part)))
 (defmethod get-state ::map [ctx part] :a-map )
 (defmethod get-state ::key [ctx part] :a-key)
+#_(defmethod get-state :default [ctx part] :oops)
 
 (comment 
   
   
-  
   (get-state {} {})
   (get-state {} :a-keyword)
+  (get-state {} "as")
   
   ;;
   )
