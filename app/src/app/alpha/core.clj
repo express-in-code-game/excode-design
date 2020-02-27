@@ -109,8 +109,9 @@
   (delete-topics {:props props :names ["alpha.user.data"
                                        "alpha.user.data.changes"]})
 
-  ; player 5min games from repl
-  ;   game map has a number per tile, palyers step on tiles and eventually get into teleport
+  ; player 1min games from repl
+  ;   arbiter sets game duration to 1 min
+  ;   game map has a number per tile, players step on tiles and eventually get into teleport
   ;   the player with higher value wins 
   ; emit events for players
   ; arbiter emits on interval while depending on current game states
