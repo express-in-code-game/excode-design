@@ -117,6 +117,20 @@
   ; arbiter emits on interval while depending on current game states
   ; games computes states from game.events
   ; broadcast prints to the stdout
+  ;   user1 cape is at [x x], total is 123
+  ;   user2 cape is at [y y], total is -123 
+  ; 
+  ; steps:
+  ; create user1, user2
+  ; create a game
+  ; configure game
+  ; invite/join
+  ; start game
+  ; user1 moves their cape to x,x
+  ; user2 moves theier cape to y,y
+  ; ...
+  ; arbiter completes the game in 1 min
+  ; game finished event
 
   (def producer (KafkaProducer.
                  {"bootstrap.servers" "broker1:9092"
