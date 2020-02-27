@@ -19,9 +19,11 @@
 
   (defmulti get-state class)
   (defmethod get-state ::map [x] :a-map)
+  (defmethod get-state java.util.Collection [x] 'java.util.Collection)
   (defmethod get-state :default [x] :oops)
 
   (get-state {})
+  (get-state [])
 
   ;;
   )
