@@ -1,4 +1,4 @@
-(ns app.spec-example
+(ns app.clojure.spec
   (:require [clojure.pprint :as pp]
             [clojure.repl :refer [doc]]
             [clojure.spec.alpha :as s]

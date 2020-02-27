@@ -55,8 +55,9 @@
                                    nil))
                                (reify Aggregator
                                  (apply [this k v ag]
+                                   (println k v)
                                    (cond
-                                     (= v {:delete true}) nil
+                                     (= (get v :event/type) :event/delete-record) nil
                                      :else (merge ag v))))
                                (-> (Materialized/as "alpha.user.data.streams.store")
                                    (.withKeySerde (TransitJsonSerde.) #_(Serdes/String))
@@ -117,37 +118,6 @@
 
 (comment
 
-  (def producer (KafkaProducer.
-                 {"bootstrap.servers" "broker1:9092"
-                  "auto.commit.enable" "true"
-                  "key.serializer" "app.kafka.serdes.TransitJsonSerializer"
-                  #_"org.apache.kafka.common.serialization.StringSerializer"
-                  "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
-
-  (produce-event producer
-                 "alpha.user.data"
-                 #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-                 {:event/type :event/create-user
-                  :user/uuid #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-                  :user/email "user0@gmail.com"
-                  :user/username "user0"})
-
-  (produce-event producer
-                 "alpha.user.data"
-                 #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-                 {:event/type :event/update-user
-                  :user/username "user0"})
-
-  (create-user producer {:event/type :event/create-user
-                         :user/uuid #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-                         :user/email "user0@gmail.com"
-                         :user/username "user0"})
-
-  ;;
-  )
-
-(comment
-
   (mount)
   (unmount)
 
@@ -161,6 +131,12 @@
   (.close streams)
   (.cleanUp streams)
 
+  (def users {0 #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+              1 #uuid "179c265a-7f72-4225-a785-2d048d575854"
+              2 #uuid "3a3e2d06-3719-4811-afec-0dffdec35543"})
+
+  
+  
   (def producer (KafkaProducer.
                  {"bootstrap.servers" "broker1:9092"
                   "auto.commit.enable" "true"
@@ -168,33 +144,41 @@
                   #_"org.apache.kafka.common.serialization.StringSerializer"
                   "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
 
-  (def users {0 #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-              1 #uuid "179c265a-7f72-4225-a785-2d048d575854"
-              2 #uuid "3a3e2d06-3719-4811-afec-0dffdec35543"})
+  (create-user producer {:event/type :event/create-user
+                         :user/uuid (get users 0)
+                         :user/email "user0@gmail.com"
+                         :user/username "user0"})
 
-  (.send producer (ProducerRecord.
-                   "alpha.user.data"
-                   (get users 0)
-                   {:uuid #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-                    :email "user0@gmail.com"
-                    :username "user0"}))
+  (create-user producer {:event/type :event/create-user
+                         :user/uuid (get users 1)
+                         :user/email "user1@gmail.com"
+                         :user/username "user1"})
 
-  (.send producer (ProducerRecord.
-                   "alpha.user.data"
-                   (get users 1)
-                   {:email "user1@gmail.com"
-                    :username "user1"}))
+  (create-user producer {:event/type :event/create-user
+                         :user/uuid (get users 2)
+                         :user/email "user2@gmail.com"
+                         :user/username "user2"})
 
-  (.send producer (ProducerRecord.
-                   "alpha.user.data"
-                   (get users 2)
-                   {:email "user2@gmail.com"
-                    :username "user2"}))
+  (produce-event producer
+                 "alpha.user.data"
+                 (get users 0)
+                 {:event/type :event/update-user
+                  :user/username "user0"})
 
-  (.send producer (ProducerRecord.
-                   "alpha.user.data"
-                   (get users 2)
-                   {:delete true}))
+  (produce-event producer
+                 "alpha.user.data"
+                 (get users 0)
+                 {:event/type :event/delete-record})
+  (produce-event producer
+                 "alpha.user.data"
+                 (get users 1)
+                 {:event/type :event/delete-record})
+  (produce-event producer
+                 "alpha.user.data"
+                 (get users 2)
+                 {:event/type :event/delete-record})
+
+
 
   (def readonly-store (.store streams "alpha.user.data.streams.store"
                               (QueryableStoreTypes/keyValueStore)))
@@ -233,7 +217,6 @@
                            (println (.value rec)))))))))
 
   (future-cancel fu-consumer)
-
 
   ;;
   )

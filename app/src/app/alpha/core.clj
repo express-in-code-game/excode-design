@@ -4,7 +4,9 @@
             [app.alpha.spec-test :as spec-test]
             [app.alpha.streams.users :as streams-users]
             [app.alpha.streams.core :refer [create-topics list-topics
-                                            delete-topics]])
+                                            delete-topics]]
+            [app.alpha.part :as part]
+            [app.alpha.streams.users])
   (:import
    org.apache.kafka.common.KafkaFuture$BiConsumer))
 
@@ -107,11 +109,28 @@
   (delete-topics {:props props :names ["alpha.user.data"
                                        "alpha.user.data.changes"]})
 
-  ; player 5min games from repl
+  ; player 1min games from repl
+  ;   arbiter sets game duration to 1 min
+  ;   game map has a number per tile, players step on tiles and eventually get into teleport
+  ;   the player with higher value wins 
   ; emit events for players
   ; arbiter emits on interval while depending on current game states
   ; games computes states from game.events
   ; broadcast prints to the stdout
+  ;   user1 cape is at [x x], total is 123
+  ;   user2 cape is at [y y], total is -123 
+  ; 
+  ; steps:
+  ; create user1, user2
+  ; create a game
+  ; configure game
+  ; invite/join
+  ; start game
+  ; user1 moves their cape to x,x
+  ; user2 moves theier cape to y,y
+  ; ...
+  ; arbiter completes the game in 1 min
+  ; game finished event
 
   (def producer (KafkaProducer.
                  {"bootstrap.servers" "broker1:9092"

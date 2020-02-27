@@ -56,3 +56,13 @@
 ; https://www.confluent.io/blog/building-a-microservices-ecosystem-with-kafka-streams-and-ksql/
 ; https://github.com/confluentinc/kafka-streams-examples/tree/4.0.0-post/src/main/java/io/confluent/examples/streams/microservices
 
+; configs
+
+; http://kafka.apache.org/documentation.html#configuration
+; http://kafka.apache.org/documentation.html#topicconfigs
+
+; http://kafka.apache.org/documentation.html#producerconfigs
+; https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html
+
+; http://kafka.apache.org/documentation.html#consumerconfigs
+; https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
