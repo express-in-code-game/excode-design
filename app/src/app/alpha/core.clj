@@ -71,20 +71,7 @@
   ;;
   )
 
-(def ctx
-  {:parts {:user-data-app {:part 'app.alpha.streams.users/part
-                           :depends-on [:another-app]}
-           :another-app {:depends-on []}}
-   :state {:some-val 3
-           :another-val (fn [ctx]
-                          :some-logic
-                          )}
-   })
-
 (def props {"bootstrap.servers" "broker1:9092"})
-
-(def state* (atom {}))
-
 
 (defn env-optimized?
   []

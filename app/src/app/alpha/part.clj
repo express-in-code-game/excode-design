@@ -14,6 +14,15 @@
              :app.part/update-state (fn [ctx part])
              :app.part/get-state (fn [ctx part])})
 
+
+  (def ctx
+    {:parts {:user-data-app {:part 'app.alpha.streams.users/part
+                             :depends-on [:another-app]}
+             :another-app {:depends-on []}}
+     :state {:some-val 3
+             :another-val (fn [ctx]
+                            :some-logic)}})
+
   (ns-unmap *ns* 'get-state)
   ;;
   )
