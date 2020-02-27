@@ -135,6 +135,8 @@
               1 #uuid "179c265a-7f72-4225-a785-2d048d575854"
               2 #uuid "3a3e2d06-3719-4811-afec-0dffdec35543"})
 
+  
+  
   (def producer (KafkaProducer.
                  {"bootstrap.servers" "broker1:9092"
                   "auto.commit.enable" "true"
