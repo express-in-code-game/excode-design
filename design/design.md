@@ -156,6 +156,7 @@
 - pre game bans, selections
 - observing
   - select templates (simple detailed) for game info/stats [templates are components]
+  - toggle visibility of a player's entities to better see the position of one player
 - tournament time frames
   - tounaments preferably have estimatable, evening/a day timeframe
     - once signup ends, bracket is form, countdown to round 1 begins
