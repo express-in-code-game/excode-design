@@ -1,7 +1,6 @@
 (ns app.alpha.part
   (:require [clojure.repl :refer [doc]]))
 
-
 (comment
 
   (def part {:app.part/key :app.part.key/user-data
@@ -15,46 +14,25 @@
              :app.part/update-state (fn [ctx part])
              :app.part/get-state (fn [ctx part])})
 
-  (derive java.util.Map ::map)
-  (derive java.util.Collection ::coll)
-  (derive (class :a-keyword) ::key)
-  (isa? (class :asd) ::key)
-
-  (isa? (class (seq [1])) java.util.Collection)
-  (isa? (class {}) java.util.Collection)
-  (isa? 3 3)
-
-
-  (defmulti get-state class)
-  (defmethod get-state ::map [x] :a-map)
-  (defmethod get-state java.util.Collection [x] 'java.util.Collection)
-  (defmethod get-state :default [x] :oops)
-
-  (get-state {})
-  (get-state [])
-
   (ns-unmap *ns* 'get-state)
   ;;
   )
 
+(derive java.lang.Object ::object)
 (derive java.util.Map ::map)
 (derive java.util.Collection ::coll)
 (derive (class :a-keyword) ::key)
 
-(defmulti get-state (fn [ctx part] (class part)))
-(defmethod get-state ::map [ctx part] :a-map )
-(defmethod get-state ::key [ctx part] :a-key)
+(defmulti get-state (fn [ctx part] [(class ctx) (class part)]))
+(defmethod get-state [::map ::map] [ctx part] :map-map)
+(defmethod get-state [::map ::key] [ctx part] :map-key)
+(defmethod get-state [::object ::object] [ctx part] :objects)
+(defmethod get-state [::object java.lang.Comparable] [ctx part] :object-comparable)
+(prefer-method get-state [::object java.lang.Comparable] [::object ::object])
+(prefer-method get-state  [::map ::map] [::object ::object])
 #_(defmethod get-state :default [ctx part] :oops)
 
-(comment 
-  
-  
-  (get-state {} {})
-  (get-state {} :a-keyword)
-  (get-state {} "as")
-  
-  ;;
-  )
+
 
 
 

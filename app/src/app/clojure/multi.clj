@@ -62,6 +62,7 @@
 
   (isa? (class (seq [1])) java.util.Collection)
   (isa? (class {}) java.util.Collection)
+  (ancestors java.util.Collection)
 
 
   (defmulti get-state class)
@@ -72,22 +73,34 @@
   (get-state {})
   (get-state [])
 
+  (ns-unmap *ns* 'get-state)
+
   ;;
   )
 
 (comment
 
+  (derive java.lang.Object ::object)
   (derive java.util.Map ::map)
   (derive java.util.Collection ::coll)
   (derive (class :a-keyword) ::key)
 
-  (defmulti get-state (fn [ctx part] (class part)))
-  (defmethod get-state ::map [ctx part] :a-map)
-  (defmethod get-state ::key [ctx part] :a-key)
-
-  (ns-unmap *ns* 'get-state)
+  (defmulti get-state (fn [ctx part] [(class ctx) (class part)]))
+  (defmethod get-state [::map ::map] [ctx part] :map-map)
+  (defmethod get-state [::map ::key] [ctx part] :map-key)
+  (defmethod get-state [::object ::object] [ctx part] :objects)
+  (defmethod get-state [::object java.lang.Comparable] [ctx part] :object-comparable)
+  (prefer-method get-state [::object java.lang.Comparable] [::object ::object])
+  (prefer-method get-state  [::map ::map] [::object ::object])
+  (defmethod get-state :default [ctx part] :oops)
 
   (get-state {} {})
+  (get-state {} :a-keyword)
+  (get-state {} "as")
+
+  (ancestors (class []))
+  (ancestors java.lang.String)
+  (isa? java.lang.String ::object)
 
   ;;
   )
