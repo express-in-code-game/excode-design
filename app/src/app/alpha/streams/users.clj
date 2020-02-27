@@ -3,7 +3,8 @@
             [app.alpha.streams.core :refer [add-shutdown-hook]]
             [clojure.spec.alpha :as s]
             [app.alpha.spec :as spec]
-            [clojure.spec.test.alpha :as stest])
+            [clojure.spec.test.alpha :as stest]
+            [app.alpha.part :as part])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer

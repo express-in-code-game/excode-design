@@ -4,7 +4,8 @@
             [app.alpha.spec-test :as spec-test]
             [app.alpha.streams.users :as streams-users]
             [app.alpha.streams.core :refer [create-topics list-topics
-                                            delete-topics]])
+                                            delete-topics]]
+            [app.alpha.part :as part])
   (:import
    org.apache.kafka.common.KafkaFuture$BiConsumer))
 
@@ -70,6 +71,9 @@
   )
 
 (def props {"bootstrap.servers" "broker1:9092"})
+
+(def state* (atom {}))
+
 
 (defn env-optimized?
   []
