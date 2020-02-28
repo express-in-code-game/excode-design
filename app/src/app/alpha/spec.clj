@@ -98,40 +98,40 @@
 
 (s/def :u/user (s/keys :req [:u/uuid :u/username :u/email]))
 
-(s/def :ev.user/create (s/and (s/keys :req [:ev/type :u/uuid :u/email :u/username]
+(s/def :ev.u/create (s/and (s/keys :req [:ev/type :u/uuid :u/email :u/username]
                                       :opt [])))
 
-(s/def :ev.user/update (s/and (s/keys :req [:ev/type]
+(s/def :ev.u/update (s/and (s/keys :req [:ev/type]
                                       :opt [:u/email :u/username])
                               #(not-empty (select-keys % [:u/email :u/username]))))
 
-(s/def :ev.core/delete-record (s/and (s/keys :req [:ev/type]
-                                             :opt [:record/uuid])))
+(s/def :ev.c/delete-record (s/and (s/keys :req [:ev/type]
+                                          :opt [:record/uuid])))
 
-(s/def :ev.player/move-cape (s/and (s/keys :req [:ev/type :p/uuid :g/uuid
-                                                 :p/cape])))
+(s/def :ev.p/move-cape (s/and (s/keys :req [:ev/type :p/uuid :g/uuid
+                                            :p/cape])))
 
-(s/def :ev.player/collect-tile-value (s/and (s/keys :req [:ev/type])))
+(s/def :ev.p/collect-tile-value (s/and (s/keys :req [:ev/type])))
 
-(s/def :ev.arbiter/finish-game (s/and (s/keys :req [:ev/type])))
+(s/def :ev.a/finish-game (s/and (s/keys :req [:ev/type])))
 
 (defmulti ev-type (fn [x] (:ev/type x)))
-(defmethod ev-type :ev.user/create [x] :ev.user/create)
-(defmethod ev-type :ev.user/update [x] :ev.user/update)
-(defmethod ev-type :ev.core/delete-record [x] :ev.core/delete-record)
-(defmethod ev-type :ev.player/move-cape [x] :ev.player/move-cape)
-(defmethod ev-type :ev.player/collect-tile-value [x] :ev.player/collect-tile-value)
-(defmethod ev-type :ev.arbiter/finish-game [x] :ev.arbiter/finish-game)
+(defmethod ev-type :ev.u/create [x] :ev.u/create)
+(defmethod ev-type :ev.u/update [x] :ev.u/update)
+(defmethod ev-type :ev.c/delete-record [x] :ev.c/delete-record)
+(defmethod ev-type :ev.p/move-cape [x] :ev.p/move-cape)
+(defmethod ev-type :ev.p/collect-tile-value [x] :ev.p/collect-tile-value)
+(defmethod ev-type :ev.a/finish-game [x] :ev.a/finish-game)
 (s/def :ev/event (s/multi-spec ev-type :ev/type))
 
 (defmulti ev-type-player (fn [x] (:ev/type x)) )
-(defmethod ev-type-player :ev.player/move-cape [x] :ev.player/move-cape)
-(defmethod ev-type-player :ev.player/collect-tile-value [x] :ev.player/collect-tile-value)
-(s/def :ev.player/event (s/multi-spec ev-type-player :ev/type))
+(defmethod ev-type-player :ev.p/move-cape [x] :ev.p/move-cape)
+(defmethod ev-type-player :ev.p/collect-tile-value [x] :ev.p/collect-tile-value)
+(s/def :ev.p/event (s/multi-spec ev-type-player :ev/type))
 
 (defmulti ev-type-arbiter (fn [x] (:ev/type x)))
-(defmethod ev-type-arbiter :ev.arbiter/finish-game [x] :ev.arbiter/finish-game)
-(s/def :ev.arbiter/event (s/multi-spec ev-type-arbiter :ev/type))
+(defmethod ev-type-arbiter :ev.a/finish-game [x] :ev.a/finish-game)
+(s/def :ev.a/event (s/multi-spec ev-type-arbiter :ev/type))
 
 (comment
 
@@ -141,44 +141,44 @@
   (s/def :test/or (s/or :a :test/a-string :b :test/a-keyword))
   (s/explain :test/or ":as")
 
-  (s/valid? :ev.user/create
-            {:ev/type :ev.user/create
+  (s/valid? :ev.u/create
+            {:ev/type :ev.u/create
              :u/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
              :u/email "user0@gmail.com"
              :u/username "user0"})
 
-  (s/explain :ev.user/update
-             {:ev/type :ev.user/update
+  (s/explain :ev.u/update
+             {:ev/type :ev.u/update
               :u/email "user0@gmail.com"
               :u/username "user0"})
 
   (s/conform :ev/event
-             {:ev/type :ev.user/create
+             {:ev/type :ev.u/create
               :u/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
               :u/email "user0@gmail.com"
               :u/username "user0"})
 
-  (s/explain :ev.player/move-cape
-             {:ev/type :ev.player/move-cape
+  (s/explain :ev.p/move-cape
+             {:ev/type :ev.p/move-cape
               :p/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
               :g/uuid (java.util.UUID/randomUUID)
               :p/cape {:g.e/uuid (java.util.UUID/randomUUID)
                        :g.e/type :g.e.type/cape
                        :g.e/pos [1 1]}})
 
-  (s/explain :ev.player/event
-             {:ev/type :ev.player/move-cape
+  (s/explain :ev.p/event
+             {:ev/type :ev.p/move-cape
               :p/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
               :g/uuid (java.util.UUID/randomUUID)
               :p/cape {:g.e/uuid (java.util.UUID/randomUUID)
                        :g.e/type :g.e.type/cape
                        :g.e/pos [1 1]}})
 
-  (s/explain :ev.core/delete-record
-             {:ev/type :ev.core/delete-record
+  (s/explain :ev.c/delete-record
+             {:ev/type :ev.c/delete-record
               :record/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"})
-  (s/explain :ev.core/delete-record
-             {:ev/type :ev.core/delete-record})
+  (s/explain :ev.c/delete-record
+             {:ev/type :ev.c/delete-record})
 
   ;;
   )
