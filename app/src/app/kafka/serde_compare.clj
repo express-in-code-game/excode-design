@@ -90,12 +90,12 @@
                                    nil))
                                (reify Aggregator
                                  (apply [this k v ag]
-                                        v))
+                                   v))
                                (-> (Materialized/as (str app-id ".store"))
                                    (.withKeySerde key-serde)
                                    (.withValueSerde value-serde)))
                    (.toStream)
-                   (.to "alpha.game.events.changes"))
+                   (.to topic-out))
         topology (.build builder)
         props (doto (Properties.)
                 (.putAll {"application.id" app-id
@@ -192,7 +192,7 @@
   (.send producer1 (ProducerRecord.
                     "example.serde-compare.string.in"
                     (-> (get users 0) (.toString))
-                    (str {})))
+                    (str {:a 12})))
 
   (def store1 (.store streams1 "example.serde-compare.string.streams.store" (QueryableStoreTypes/keyValueStore)))
   (doseq [x (iterator-seq (.all store1))]
@@ -210,9 +210,9 @@
                                  :value-serde-str "app.kafka.serdes.TransitJsonSerde"}))
 
   (def streams2 (:streams app2))
+  (.isRunning (.state streams2))
   (.start streams2)
   (.close streams2)
-  (.isRunning (.state streams2))
 
   (def consumer-fu2 (future-call-consumer {:topic "example.serde-compare.transit.out"
                                            :key-des "app.kafka.serdes.TransitJsonDeserializer"
@@ -229,7 +229,7 @@
   (.send producer2 (ProducerRecord.
                     "example.serde-compare.transit.in"
                     (get users 0)
-                    #{}))
+                    #{12}))
 
   (def store2 (.store streams2 "example.serde-compare.transit.streams.store" (QueryableStoreTypes/keyValueStore)))
   (doseq [x (iterator-seq (.all store2))]
