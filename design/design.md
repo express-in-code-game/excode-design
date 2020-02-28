@@ -41,7 +41,8 @@
   - 1 hero, 3 research drones (represented with a colored sphere)
   - missiondrone is represented with a large sphere (possible made of nanites) and orbiting supporting spheredrones
   - map is visible and open to both opponents equally, 128x128
-  - palyers are not competing for resources, what one can get, the other can as well
+  - players are not competing for resources, what one can get, the other can as well
+  - players choose their initial position on the map 
   - research, collect, rebalance, by roaming the map
   - players choose what to visit and collect, make choices, balance the missiondrone's and the team's characterisitics
   - players see each others moves, but not choices (the missiondrone build, team's stats etc.)
