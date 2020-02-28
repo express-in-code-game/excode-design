@@ -115,11 +115,6 @@
 
 (s/def :ev.arbiter/finish-game (s/and (s/keys :req [:ev/type])))
 
-(s/def :ev.player/event (s/or :a :ev.player/move-cape
-                              :b :ev.player/collect-tile-value))
-
-(s/def :ev.arbiter/event (s/or :a :ev.arbiter/finish-game))
-
 (defmulti ev-type (fn [x] (:ev/type x)))
 (defmethod ev-type :ev.user/create [x] :ev.user/create)
 (defmethod ev-type :ev.user/update [x] :ev.user/update)
@@ -128,6 +123,15 @@
 (defmethod ev-type :ev.player/collect-tile-value [x] :ev.player/collect-tile-value)
 (defmethod ev-type :ev.arbiter/finish-game [x] :ev.arbiter/finish-game)
 (s/def :ev/event (s/multi-spec ev-type :ev/type))
+
+(defmulti ev-type-player (fn [x] (:ev/type x)) )
+(defmethod ev-type-player :ev.player/move-cape [x] :ev.player/move-cape)
+(defmethod ev-type-player :ev.player/collect-tile-value [x] :ev.player/collect-tile-value)
+(s/def :ev.player/event (s/multi-spec ev-type-player :ev/type))
+
+(defmulti ev-type-arbiter (fn [x] (:ev/type x)))
+(defmethod ev-type-arbiter :ev.arbiter/finish-game [x] :ev.arbiter/finish-game)
+(s/def :ev.arbiter/event (s/multi-spec ev-type-arbiter :ev/type))
 
 (comment
 
