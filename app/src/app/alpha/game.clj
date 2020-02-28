@@ -17,7 +17,8 @@
   :a-finish-game-event)
 
 (s/fdef next-state
-  :args (s/cat :st :g/state :ev :ev.g/event))
+  :args (s/cat :st :g/state
+               :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
 
 (comment
 
