@@ -87,6 +87,7 @@
   (gen/generate (s/gen :g/state))
 
   
+  (gen/sample ev-p-move-cape-gen 1)
 
   ;;
   )
@@ -113,10 +114,22 @@
 
 (s/def :ev.p/move-cape (s/keys :req [:ev/type :p/uuid :g/uuid
                                      :p/cape]))
+(def gen-ev-p-move-cape (gen/fmap (fn [x]
+                                    (merge
+                                     x
+                                     {:ev/type :ev.p/move-cape}))
+                                  (s/gen :ev.p/move-cape)))
+
 
 (s/def :ev.p/collect-tile-value (s/and (s/keys :req [:ev/type])))
 
 (s/def :ev.a/finish-game (s/and (s/keys :req [:ev/type])))
+
+(def gen-ev-a-finish-game (gen/fmap (fn [x]
+                                      (merge
+                                       x
+                                       {:ev/type :ev.a/finish-game}))
+                                    (s/gen :ev.a/finish-game)))
 
 (defmulti ev-type (fn [x] (:ev/type x)))
 (defmethod ev-type :ev.u/create [x] :ev.u/create)
@@ -182,6 +195,9 @@
                        :g.e/type :g.e.type/cape
                        :g.e/pos [1 1]}})
 
+  (s/explain :ev.g/event (first (gen/sample gen-ev-p-move-cape 1)))
+  (s/explain :ev.g/event (first (gen/sample gen-ev-a-finish-game 1)))
+
   (s/explain :ev.c/delete-record
              {:ev/type :ev.c/delete-record
               :record/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"})
@@ -192,6 +208,13 @@
   (gen/generate (s/gen :ev.p/move-cape))
 
   (gen/generate (s/gen :ev.u/update))
+
+  (s/def ::hello
+    (s/with-gen #(clojure.string/includes? % "hello")
+      #(gen/fmap (fn [[s1 s2]] (str s1 "hello" s2))
+                 (gen/tuple (gen/string-alphanumeric) (gen/string-alphanumeric)))))
+  (gen/sample (s/gen ::hello))
+
   ;;
   )
 
