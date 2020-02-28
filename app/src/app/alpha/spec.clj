@@ -8,17 +8,17 @@
 
 
 
-(s/def :e/uuid uuid?)
-(s/def :e/pos (s/tuple int? int?))
-(s/def :e/numeric-value number?)
-(s/def :e/type keyword?)
+(s/def :g.e/uuid uuid?)
+(s/def :g.e/pos (s/tuple int? int?))
+(s/def :g.e/numeric-value number?)
+(s/def :g.e/type keyword?)
 
-(s/def :e.type/teleport (s/keys :req [:e/type :e/uuid :e/pos]))
-(s/def :e.type/cape (s/keys :req [:e/type :e/uuid  :e/pos]))
-(s/def :e.type/value-tile (s/keys :req [:e/type :e/uuid :e/pos :e/numeric-value]))
+(s/def :g.e.type/teleport (s/keys :req [:g.e/type :g.e/uuid :g.e/pos]))
+(s/def :g.e.type/cape (s/keys :req [:g.e/type :g.e/uuid  :g.e/pos]))
+(s/def :g.e.type/value-tile (s/keys :req [:g.e/type :g.e/uuid :g.e/pos :g.e/numeric-value]))
 
 (s/def :p/uuid uuid?)
-(s/def :p/cape :e.type/cape)
+(s/def :p/cape :g.e.type/cape)
 (s/def :p/entites (s/keys :req [:p/cape]))
 (s/def :p/sum number?)
 
@@ -31,8 +31,8 @@
 (s/def :g/map-size (s/tuple int? int?))
 (s/def :g/player1 :g/player)
 (s/def :g/player2 :g/player)
-(s/def :g/exit-teleports (s/coll-of :e.type/teleport))
-(s/def :g/value-tiles (s/coll-of :e.type/value-tile))
+(s/def :g/exit-teleports (s/coll-of :g.e.type/teleport))
+(s/def :g/value-tiles (s/coll-of :g.e.type/value-tile))
 (s/def :g/observer-uuids (s/coll-of uuid?))
 
 (s/def :g/state (s/keys :req [:g/uuid :g/status :g/start-inst
@@ -60,26 +60,26 @@
                        :g/duration-ms 60000
                        :g/map-size [128 128]
                        :g/player1 {:p/uuid #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-                                   :p/entites {:p/cape {:e/type :e.type/cape
-                                                        :e/uuid (java.util.UUID/randomUUID)
-                                                        :e/pos [0 0]}}
+                                   :p/entites {:p/cape {:g.e/type :g.e.type/cape
+                                                        :g.e/uuid (java.util.UUID/randomUUID)
+                                                        :g.e/pos [0 0]}}
                                    :p/sum 0}
                        :g/player2 {:p/uuid #uuid "179c265a-7f72-4225-a785-2d048d575854"
-                                   :p/entites {:p/cape {:e/type :e.type/cape
-                                                        :e/uuid (java.util.UUID/randomUUID)
-                                                        :e/pos [0 127]}}
+                                   :p/entites {:p/cape {:g.e/type :g.e.type/cape
+                                                        :g.e/uuid (java.util.UUID/randomUUID)
+                                                        :g.e/pos [0 127]}}
                                    :p/sum 0}
-                       :g/exit-teleports [{:e/type :e.type/teleport
-                                           :e/uuid (java.util.UUID/randomUUID)
-                                           :e/pos [127 0]}
-                                          {:e/type :e.type/teleport
-                                           :e/uuid (java.util.UUID/randomUUID)
-                                           :e/pos [127 127]}]
+                       :g/exit-teleports [{:g.e/type :g.e.type/teleport
+                                           :g.e/uuid (java.util.UUID/randomUUID)
+                                           :g.e/pos [127 0]}
+                                          {:g.e/type :g.e.type/teleport
+                                           :g.e/uuid (java.util.UUID/randomUUID)
+                                           :g.e/pos [127 127]}]
                        :g/value-tiles (mapv (fn [x y]
-                                              {:e/uuid (java.util.UUID/randomUUID)
-                                               :e/type :e.type/value-tile
-                                               :e/pos [x y]
-                                               :e/numeric-value (inc (rand-int 10))}) (range 0 127) (range 0 127))
+                                              {:g.e/uuid (java.util.UUID/randomUUID)
+                                               :g.e/type :g.e.type/value-tile
+                                               :g.e/pos [x y]
+                                               :g.e/numeric-value (inc (rand-int 10))}) (range 0 127) (range 0 127))
                        :g/observer-uuids [#uuid "46855899-838a-45fd-98b4-c76c08954645"
                                           #uuid "ea1162e3-fe45-4652-9fa9-4f8dc6c78f71"
                                           #uuid "4cd4b905-6859-4c22-bae7-ad5ec51dc3f8"]})
@@ -91,97 +91,101 @@
 
 
 (def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
-(s/def :user/uuid uuid?)
+(s/def :u/uuid uuid?)
 (s/def :record/uuid uuid?)
-(s/def :user/username string?)
-(s/def :user/email (s/and string? #(re-matches email-regex %)))
+(s/def :u/username string?)
+(s/def :u/email (s/and string? #(re-matches email-regex %)))
 
-(s/def :user/user (s/keys :req [:user/uuid :user/username :user/email]))
+(s/def :test/a-keyword keyword?)
+(s/def :test/a-string string?)
+(s/def :test/or (s/or :a :test/a-string :b :test/a-keyword ))
+(s/explain :test/or ":as")
 
-(s/def :event/create-user (s/and (s/keys :req [:event/type :user/uuid :user/email :user/username]
-                                         :opt [])
-                                 #(= (:event/type %) :event/create-user)))
+(s/def :u/user (s/keys :req [:u/uuid :u/username :u/email]))
 
-(s/def :event/update-user (s/and (s/keys :req [:event/type]
-                                         :opt [:user/email :user/username])
-                                 #(= (:event/type %) :event/update-user)
-                                 #(not-empty (select-keys % [:user/email :user/username]))))
+(s/def :ev.user/create (s/and (s/keys :req [:ev/type :u/uuid :u/email :u/username]
+                                      :opt [])))
 
-(s/def :event/delete-record (s/and (s/keys :req [:event/type]
-                                           :opt [:record/uuid])
-                                   #(= (:event/type %) :event/delete-record)))
+(s/def :ev.user/update (s/and (s/keys :req [:ev/type]
+                                      :opt [:u/email :u/username])
+                              #(not-empty (select-keys % [:u/email :u/username]))))
 
-(s/def :event/uuid uuid?)
-(s/def :event/player-uuid uuid?)
-(s/def :event/player-event (s/and (s/keys :req [:event/type
-                                                :event/uuid
-                                                :event/player-uuid
-                                                
-                                                ])
-                                  #(= (:event/type %) :event/player-event)))
+(s/def :ev.core/delete-record (s/and (s/keys :req [:ev/type]
+                                             :opt [:record/uuid])))
 
-(defmulti event-type (fn [x] (:event/type x)))
-(defmethod event-type :event/create-user [x] :event/create-user)
-(defmethod event-type :event/update-user [x] :event/update-user)
-(defmethod event-type :event/delete-record [x] :event/delete-record)
-(defmethod event-type :event/player-event [x] :event/player-event)
-(defmethod event-type :event/arbiter-event [x] :event/arbiter-event)
-(s/def :event/event (s/multi-spec event-type :event/type))
+(s/def :ev.player/move-cape (s/and (s/keys :req [:ev/type])))
+
+(s/def :ev.player/collect-tile-value (s/and (s/keys :req [:ev/type])))
+
+(s/def :ev.arbiter/finish-game (s/and (s/keys :req [:ev/type])))
+
+(s/def :ev.player/event (s/or :a :ev.player/move-cape
+                              :b :ev.player/collect-tile-value))
+
+(s/def :ev.arbiter/event (s/or :a :ev.arbiter/finish-game))
+
+(defmulti ev-type (fn [x] (:ev/type x)))
+(defmethod ev-type :ev.user/create [x] :ev.user/create)
+(defmethod ev-type :ev.user/update [x] :ev.user/update)
+(defmethod ev-type :ev.core/delete-record [x] :ev.core/delete-record)
+(defmethod ev-type :ev.player/move-cape [x] :ev.player/move-cape)
+(defmethod ev-type :ev.player/collect-tile-value [x] :ev.player/collect-tile-value)
+(defmethod ev-type :ev.arbiter/finish-game [x] :ev.arbiter/finish-game)
+(s/def :ev/event (s/multi-spec ev-type :ev/type))
 
 (comment
 
-  
   (s/explain :event.game-event/player-uuid nil)
 
-  (s/valid? :event/create-user
-            {:event/type :event/create-user
-             :user/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-             :user/email "user0@gmail.com"
-             :user/username "user0"})
+  (s/valid? :ev.user/create
+            {:ev/type :ev.user/create
+             :u/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+             :u/email "user0@gmail.com"
+             :u/username "user0"})
 
   (s/explain :event/update-user
-             {:event/type :event/update-user
-              :user/email "user0@gmail.com"
-              :user/username "user0"})
+             {:ev/type :event/update-user
+              :u/email "user0@gmail.com"
+              :u/username "user0"})
 
-  (s/valid? :event/event
-            {:event/type :event/create-user
-             :user/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-             :user/email "user0@gmail.com"
-             :user/username "user0"})
+  (s/valid? :ev/event
+            {:ev/type :ev.user/create
+             :u/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+             :u/email "user0@gmail.com"
+             :u/username "user0"})
 
-  (s/conform :event/event
-             {:event/type :event/create-user
-              :user/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-              :user/email "user0@gmail.com"
-              :user/username "user0"})
+  (s/conform :ev/event
+             {:ev/type :ev.user/create
+              :u/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+              :u/email "user0@gmail.com"
+              :u/username "user0"})
 
-  (s/explain :event/event
-             {:event/type :event/create-user
-              :user/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-              :user/username "user0"})
+  (s/explain :ev/event
+             {:ev/type :ev.user/create
+              :u/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+              :u/username "user0"})
 
-  (s/conform :event/event
-             {:event/type :event/create-user
-              :user/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-              :user/username "user0"})
+  (s/conform :ev/event
+             {:ev/type :ev.user/create
+              :u/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+              :u/username "user0"})
 
-  (s/valid? :event/event
-            {:event/type :event/update-user
-             :user/email "user0@gmail.com"
-             :user/username "user0"})
+  (s/valid? :ev/event
+            {:ev/type :ev.user/update
+             :u/email "user0@gmail.com"
+             :u/username "user0"})
 
-  (s/explain :event/create-user
-             {:event/type :event/create-user
-              :user/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-              :user/email "user0@gmail.com"
-              :user/username "user0"})
+  (s/explain :ev.user/create
+             {:ev/type :ev.user/create
+              :u/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+              :u/email "user0@gmail.com"
+              :u/username "user0"})
 
-  (s/explain :event/delete-record
-             {:event/type :event/delete-record
+  (s/explain :ev.core/delete-record
+             {:ev/type :ev.core/delete-record
               :record/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"})
-  (s/explain :event/delete-record
-             {:event/type :event/delete-record})
+  (s/explain :ev.core/delete-record
+             {:ev/type :ev.core/delete-record})
 
   ;;
   )
