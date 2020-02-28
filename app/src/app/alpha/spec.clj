@@ -6,15 +6,83 @@
             [clojure.spec.test.alpha :as stest])
   (:import java.util.Date))
 
-(def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
 
+
+(s/def :e/uuid uuid?)
+(s/def :e/pos (s/tuple int? int?))
+(s/def :e/numeric-value number?)
+
+(s/def :e.type/teleport (s/keys :req [:e/uuid :e/pos]))
+(s/def :e.type/cape (s/keys :req [:e/uuid :e/pos]))
+(s/def :e.type/value-tile (s/keys :req [:e/uuid :e/pos :e/numeric-value]))
+
+(s/def :player/uuid uuid?)
+(s/def :player/cape :e.type/cape)
+(s/def :player/entites (s/keys :req [:player/cape]))
+(s/def :player/sum number?)
+
+(s/def :game/player (s/keys :req [:player/uuid :player/entites :player/sum]))
+
+
+(s/def :game/uuid uuid?)
+(s/def :game/status #{:created :opened :started :finished})
+(s/def :game/start-inst inst?)
+(s/def :game/duration-ms number?)
+(s/def :game/map-size (s/tuple int? int?))
+(s/def :game/player1 :game/player)
+(s/def :game/player2 :game/player)
+(s/def :game/exit-teleports (s/coll-of :e.type/teleport))
+(s/def :game/observer-uuids (s/coll-of uuid?))
+
+(s/def :game/state (s/keys :req [:game/uuid :game/status :game/start-inst
+                                 :game/duration-ms :game/player1-uuid :game/player2-uuid
+                                 :game/player1-cape-pos :game/player1-cape-pos :game/player1-sum
+                                 :game/player2-sum :game/teleport1-pos :game/teleport2-pos :game/map-size
+                                 :game/observer-uuids]))
+
+(comment
+  ; https://stackoverflow.com/questions/36639154/convert-java-util-date-to-what-java-time-type
+  (def d (java.util.Date.))
+  (.getTime d)
+  (inst? (java.time.Instant/now))
+  (inst? (java.time.Instant/now))
+  (java.sql.Timestamp. 0)
+  (java.sql.Timestamp.)
+
+  (pr-str (java.util.Date.))
+  (pr-str (java.time.Instant/now))
+  (read-string (pr-str (java.time.Instant/now)))
+
+  (s/explain :game/state {:game/uuid (java.util.UUID/randomUUID)
+                          :game/status :created
+                          :game/start-inst (java.util.Date.)
+                          :game/duration-ms 60000
+                          :game/map-size [128 128]
+                          :game/player1-uuid #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+                          :game/player2-uuid #uuid "179c265a-7f72-4225-a785-2d048d575854"
+                          :game/player1-cape-pos [0 0]
+                          :game/player2-cape-pos [0 127]
+                          :game/player1-sum 0
+                          :game/player2-sum 0
+                          :game/teleport1-pos [127 0]
+                          :game/teleport2-pos [127 127]
+                          :game/observer-uuids [#uuid "46855899-838a-45fd-98b4-c76c08954645"
+                                                #uuid "ea1162e3-fe45-4652-9fa9-4f8dc6c78f71"
+                                                #uuid "4cd4b905-6859-4c22-bae7-ad5ec51dc3f8"]})
+
+
+
+  ;;
+  )
+
+
+(def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
 (s/def :user/uuid uuid?)
 (s/def :record/uuid uuid?)
 (s/def :user/username string?)
 (s/def :user/email (s/and string? #(re-matches email-regex %)))
 
 (s/def :user/user (s/keys :req [:user/uuid :user/username :user/email]))
-
 
 (s/def :event/create-user (s/and (s/keys :req [:event/type :user/uuid :user/email :user/username]
                                          :opt [])
@@ -25,12 +93,31 @@
                                  #(= (:event/type %) :event/update-user)
                                  #(not-empty (select-keys % [:user/email :user/username]))))
 
-(s/def :event/delete-record (s/and (s/keys :req [:event/type ]
+(s/def :event/delete-record (s/and (s/keys :req [:event/type]
                                            :opt [:record/uuid])
-                                   #(= (:event/type %) :event/delete-record)
-                                   ))
+                                   #(= (:event/type %) :event/delete-record)))
+
+(s/def :event/uuid uuid?)
+(s/def :event/player-uuid uuid?)
+(s/def :event/player-event (s/and (s/keys :req [:event/type
+                                                :event/uuid
+                                                :event/player-uuid
+                                                
+                                                ])
+                                  #(= (:event/type %) :event/player-event)))
+
+(defmulti event-type (fn [x] (:event/type x)))
+(defmethod event-type :event/create-user [x] :event/create-user)
+(defmethod event-type :event/update-user [x] :event/update-user)
+(defmethod event-type :event/delete-record [x] :event/delete-record)
+(defmethod event-type :event/player-event [x] :event/player-event)
+(defmethod event-type :event/arbiter-event [x] :event/arbiter-event)
+(s/def :event/event (s/multi-spec event-type :event/type))
 
 (comment
+
+  
+  (s/explain :event.game-event/player-uuid nil)
 
   (s/valid? :event/create-user
             {:event/type :event/create-user
@@ -42,19 +129,6 @@
              {:event/type :event/update-user
               :user/email "user0@gmail.com"
               :user/username "user0"})
-
-  ;;
-  )
-
-
-(defmulti event-type (fn [x] (:event/type x)))
-(defmethod event-type :event/create-user [x] :event/create-user)
-(defmethod event-type :event/update-user [x] :event/update-user)
-(defmethod event-type :event/delete-record [x] :event/delete-record)
-(s/def :event/event (s/multi-spec event-type :event/type))
-
-(comment
-
 
   (s/valid? :event/event
             {:event/type :event/create-user
@@ -107,59 +181,12 @@
   ;;
   )
 
-(s/def :game/uuid uuid?)
-(s/def :game/status #{:created :opened :started :finished})
-(s/def :game/start-inst inst?)
-(s/def :game/duration-ms number?)
-(s/def :game/map-size (s/tuple int? int?))
-(s/def :game/player1-uuid uuid?)
-(s/def :game/player2-uuid uuid?)
-(s/def :game/player1-cape-pos (s/tuple int? int?))
-(s/def :game/player2-cape-pos (s/tuple int? int?))
-(s/def :game/player1-sum number?)
-(s/def :game/player2-sum number?)
-(s/def :game/teleport1-pos (s/tuple int? int?))
-(s/def :game/teleport2-pos (s/tuple int? int?))
-(s/def :game/observer-uuids (s/coll-of uuid?))
-
-
-(s/def :game/state (s/keys :req [:game/uuid :game/status :game/start-inst
-                                 :game/duration-ms :game/player1-uuid :game/player2-uuid
-                                 :game/player1-cape-pos :game/player1-cape-pos :game/player1-sum
-                                 :game/player2-sum :game/teleport1-pos :game/teleport2-pos :game/map-size
-                                 :game/observer-uuids]))
-
-(comment
-  ; https://stackoverflow.com/questions/36639154/convert-java-util-date-to-what-java-time-type
-  (def d (java.util.Date.))
-  (.getTime d)
-  (inst? (java.time.Instant/now))
-  (inst? (java.time.Instant/now))
-  (java.sql.Timestamp. 0)
-  (java.sql.Timestamp.)
-
-  (pr-str (java.util.Date.))
-  (pr-str (java.time.Instant/now))
-  (read-string (pr-str (java.time.Instant/now)))
-
-  (s/explain :game/state {:game/uuid (java.util.UUID/randomUUID)
-                          :game/status :created
-                          :game/start-inst (java.util.Date.)
-                          :game/duration-ms 60000
-                          :game/map-size [128 128]
-                          :game/player1-uuid #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-                          :game/player2-uuid #uuid "179c265a-7f72-4225-a785-2d048d575854"
-                          :game/player1-cape-pos [0 0]
-                          :game/player2-cape-pos [0 127]
-                          :game/player1-sum 0
-                          :game/player2-sum 0
-                          :game/teleport1-pos [127 0]
-                          :game/teleport2-pos [127 127]
-                          :game/observer-uuids [#uuid "46855899-838a-45fd-98b4-c76c08954645"
-                                                #uuid "ea1162e3-fe45-4652-9fa9-4f8dc6c78f71"
-                                                #uuid "4cd4b905-6859-4c22-bae7-ad5ec51dc3f8"]})
 
 
 
-  ;;
-  )
+
+
+
+
+
+

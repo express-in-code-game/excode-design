@@ -3,6 +3,7 @@
             [app.alpha.streams.core :refer [add-shutdown-hook
                                             produce-event
                                             create-user]]
+            [app.alpha.game :refer [next-state]]
             [clojure.spec.test.alpha :as stest])
   (:import
    app.kafka.serdes.TransitJsonSerializer
