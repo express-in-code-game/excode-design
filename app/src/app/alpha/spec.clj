@@ -96,11 +96,6 @@
 (s/def :u/username string?)
 (s/def :u/email (s/and string? #(re-matches email-regex %)))
 
-(s/def :test/a-keyword keyword?)
-(s/def :test/a-string string?)
-(s/def :test/or (s/or :a :test/a-string :b :test/a-keyword ))
-(s/explain :test/or ":as")
-
 (s/def :u/user (s/keys :req [:u/uuid :u/username :u/email]))
 
 (s/def :ev.user/create (s/and (s/keys :req [:ev/type :u/uuid :u/email :u/username]
@@ -113,7 +108,8 @@
 (s/def :ev.core/delete-record (s/and (s/keys :req [:ev/type]
                                              :opt [:record/uuid])))
 
-(s/def :ev.player/move-cape (s/and (s/keys :req [:ev/type])))
+(s/def :ev.player/move-cape (s/and (s/keys :req [:ev/type :p/uuid :g/uuid
+                                                 :p/cape])))
 
 (s/def :ev.player/collect-tile-value (s/and (s/keys :req [:ev/type])))
 
@@ -136,6 +132,10 @@
 (comment
 
   (s/explain :event.game-event/player-uuid nil)
+  (s/def :test/a-keyword keyword?)
+  (s/def :test/a-string string?)
+  (s/def :test/or (s/or :a :test/a-string :b :test/a-keyword))
+  (s/explain :test/or ":as")
 
   (s/valid? :ev.user/create
             {:ev/type :ev.user/create
@@ -143,16 +143,10 @@
              :u/email "user0@gmail.com"
              :u/username "user0"})
 
-  (s/explain :event/update-user
-             {:ev/type :event/update-user
+  (s/explain :ev.user/update
+             {:ev/type :ev.user/update
               :u/email "user0@gmail.com"
               :u/username "user0"})
-
-  (s/valid? :ev/event
-            {:ev/type :ev.user/create
-             :u/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-             :u/email "user0@gmail.com"
-             :u/username "user0"})
 
   (s/conform :ev/event
              {:ev/type :ev.user/create
@@ -160,26 +154,21 @@
               :u/email "user0@gmail.com"
               :u/username "user0"})
 
-  (s/explain :ev/event
-             {:ev/type :ev.user/create
-              :u/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-              :u/username "user0"})
+  (s/explain :ev.player/move-cape
+             {:ev/type :ev.player/move-cape
+              :p/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+              :g/uuid (java.util.UUID/randomUUID)
+              :p/cape {:g.e/uuid (java.util.UUID/randomUUID)
+                       :g.e/type :g.e.type/cape
+                       :g.e/pos [1 1]}})
 
-  (s/conform :ev/event
-             {:ev/type :ev.user/create
-              :u/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-              :u/username "user0"})
-
-  (s/valid? :ev/event
-            {:ev/type :ev.user/update
-             :u/email "user0@gmail.com"
-             :u/username "user0"})
-
-  (s/explain :ev.user/create
-             {:ev/type :ev.user/create
-              :u/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-              :u/email "user0@gmail.com"
-              :u/username "user0"})
+  (s/explain :ev.player/event
+             {:ev/type :ev.player/move-cape
+              :p/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+              :g/uuid (java.util.UUID/randomUUID)
+              :p/cape {:g.e/uuid (java.util.UUID/randomUUID)
+                       :g.e/type :g.e.type/cape
+                       :g.e/pos [1 1]}})
 
   (s/explain :ev.core/delete-record
              {:ev/type :ev.core/delete-record
