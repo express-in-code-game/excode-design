@@ -2,11 +2,12 @@
   (:require [clojure.pprint :as pp]
             [app.alpha.spec :as spec]
             [app.alpha.spec-test :as spec-test]
-            [app.alpha.streams.users :as streams-users]
             [app.alpha.streams.core :refer [create-topics list-topics
                                             delete-topics]]
             [app.alpha.part :as part]
-            [app.alpha.streams.users])
+            [app.alpha.streams.users :as streams-users]
+            [app.alpha.streams.games :as streams-games]
+            [app.alpha.streams.broadcast :as streams-broadcast])
   (:import
    org.apache.kafka.common.KafkaFuture$BiConsumer))
 
@@ -50,25 +51,34 @@
   (let [appenv (read-string (System/getenv "appenv"))]
     (:optimized appenv)))
 
+(def topics ["alpha.user.data"
+             "alpha.user.data.changes"
+             "alpha.game.events"
+             "alpha.game.events.changes"])
+
 (defn mount
   []
   (when-not (env-optimized?)
     (spec-test/instrument))
-  #_(-> (create-topics {:props props
-                        :names ["alpha.user.data"
-                                "alpha.user.data.changes"]
-                        :num-partitions 1
-                        :replication-factor 1})
-        (.all)
-        (.whenComplete
-         (reify KafkaFuture$BiConsumer
-           (accept [this res err]
-             (streams-users/mount))))))
+  (-> (create-topics {:props props
+                      :names topics
+                      :num-partitions 1
+                      :replication-factor 1})
+      (.all)
+      (.whenComplete
+       (reify KafkaFuture$BiConsumer
+         (accept [this res err]
+                 (println "; created topics")
+                 #_(streams-users/mount)
+                 #_(streams-games/mount)
+                 #_(streams-broadcast/mount))))))
 
 (defn unmount
   []
   (spec-test/unstrument)
-  #_(streams-users/unmount))
+  (streams-users/unmount)
+  (streams-games/unmount)
+  (streams-broadcast/unmount))
 
 (comment
 
@@ -78,8 +88,8 @@
 
   (list-topics {:props props})
 
-  (delete-topics {:props props :names ["alpha.user.data"
-                                       "alpha.user.data.changes"]})
+  (delete-topics {:props props :names topics})
+  
   (def producer (KafkaProducer.
                  {"bootstrap.servers" "broker1:9092"
                   "auto.commit.enable" "true"
