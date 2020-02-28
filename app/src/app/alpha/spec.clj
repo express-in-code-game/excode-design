@@ -11,34 +11,35 @@
 (s/def :e/uuid uuid?)
 (s/def :e/pos (s/tuple int? int?))
 (s/def :e/numeric-value number?)
+(s/def :e/type keyword?)
 
-(s/def :e.type/teleport (s/keys :req [:e/uuid :e/pos]))
-(s/def :e.type/cape (s/keys :req [:e/uuid :e/pos]))
-(s/def :e.type/value-tile (s/keys :req [:e/uuid :e/pos :e/numeric-value]))
+(s/def :e.type/teleport (s/keys :req [:e/type :e/uuid :e/pos]))
+(s/def :e.type/cape (s/keys :req [:e/type :e/uuid  :e/pos]))
+(s/def :e.type/value-tile (s/keys :req [:e/type :e/uuid :e/pos :e/numeric-value]))
 
-(s/def :player/uuid uuid?)
-(s/def :player/cape :e.type/cape)
-(s/def :player/entites (s/keys :req [:player/cape]))
-(s/def :player/sum number?)
+(s/def :p/uuid uuid?)
+(s/def :p/cape :e.type/cape)
+(s/def :p/entites (s/keys :req [:p/cape]))
+(s/def :p/sum number?)
 
-(s/def :game/player (s/keys :req [:player/uuid :player/entites :player/sum]))
+(s/def :g/player (s/keys :req [:p/uuid :p/entites :p/sum]))
 
+(s/def :g/uuid uuid?)
+(s/def :g/status #{:created :opened :started :finished})
+(s/def :g/start-inst inst?)
+(s/def :g/duration-ms number?)
+(s/def :g/map-size (s/tuple int? int?))
+(s/def :g/player1 :g/player)
+(s/def :g/player2 :g/player)
+(s/def :g/exit-teleports (s/coll-of :e.type/teleport))
+(s/def :g/value-tiles (s/coll-of :e.type/value-tile))
+(s/def :g/observer-uuids (s/coll-of uuid?))
 
-(s/def :game/uuid uuid?)
-(s/def :game/status #{:created :opened :started :finished})
-(s/def :game/start-inst inst?)
-(s/def :game/duration-ms number?)
-(s/def :game/map-size (s/tuple int? int?))
-(s/def :game/player1 :game/player)
-(s/def :game/player2 :game/player)
-(s/def :game/exit-teleports (s/coll-of :e.type/teleport))
-(s/def :game/observer-uuids (s/coll-of uuid?))
-
-(s/def :game/state (s/keys :req [:game/uuid :game/status :game/start-inst
-                                 :game/duration-ms :game/player1-uuid :game/player2-uuid
-                                 :game/player1-cape-pos :game/player1-cape-pos :game/player1-sum
-                                 :game/player2-sum :game/teleport1-pos :game/teleport2-pos :game/map-size
-                                 :game/observer-uuids]))
+(s/def :g/state (s/keys :req [:g/uuid :g/status :g/start-inst
+                              :g/duration-ms :g/map-size
+                              :g/player1 :g/player2
+                              :g/exit-teleports :g/observer-uuids
+                              :g/value-tiles]))
 
 (comment
   ; https://stackoverflow.com/questions/36639154/convert-java-util-date-to-what-java-time-type
@@ -53,22 +54,35 @@
   (pr-str (java.time.Instant/now))
   (read-string (pr-str (java.time.Instant/now)))
 
-  (s/explain :game/state {:game/uuid (java.util.UUID/randomUUID)
-                          :game/status :created
-                          :game/start-inst (java.util.Date.)
-                          :game/duration-ms 60000
-                          :game/map-size [128 128]
-                          :game/player1-uuid #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-                          :game/player2-uuid #uuid "179c265a-7f72-4225-a785-2d048d575854"
-                          :game/player1-cape-pos [0 0]
-                          :game/player2-cape-pos [0 127]
-                          :game/player1-sum 0
-                          :game/player2-sum 0
-                          :game/teleport1-pos [127 0]
-                          :game/teleport2-pos [127 127]
-                          :game/observer-uuids [#uuid "46855899-838a-45fd-98b4-c76c08954645"
-                                                #uuid "ea1162e3-fe45-4652-9fa9-4f8dc6c78f71"
-                                                #uuid "4cd4b905-6859-4c22-bae7-ad5ec51dc3f8"]})
+  (s/explain :g/state {:g/uuid (java.util.UUID/randomUUID)
+                       :g/status :created
+                       :g/start-inst (java.util.Date.)
+                       :g/duration-ms 60000
+                       :g/map-size [128 128]
+                       :g/player1 {:p/uuid #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+                                   :p/entites {:p/cape {:e/type :e.type/cape
+                                                        :e/uuid (java.util.UUID/randomUUID)
+                                                        :e/pos [0 0]}}
+                                   :p/sum 0}
+                       :g/player2 {:p/uuid #uuid "179c265a-7f72-4225-a785-2d048d575854"
+                                   :p/entites {:p/cape {:e/type :e.type/cape
+                                                        :e/uuid (java.util.UUID/randomUUID)
+                                                        :e/pos [0 127]}}
+                                   :p/sum 0}
+                       :g/exit-teleports [{:e/type :e.type/teleport
+                                           :e/uuid (java.util.UUID/randomUUID)
+                                           :e/pos [127 0]}
+                                          {:e/type :e.type/teleport
+                                           :e/uuid (java.util.UUID/randomUUID)
+                                           :e/pos [127 127]}]
+                       :g/value-tiles (mapv (fn [x y]
+                                              {:e/uuid (java.util.UUID/randomUUID)
+                                               :e/type :e.type/value-tile
+                                               :e/pos [x y]
+                                               :e/numeric-value (inc (rand-int 10))}) (range 0 127) (range 0 127))
+                       :g/observer-uuids [#uuid "46855899-838a-45fd-98b4-c76c08954645"
+                                          #uuid "ea1162e3-fe45-4652-9fa9-4f8dc6c78f71"
+                                          #uuid "4cd4b905-6859-4c22-bae7-ad5ec51dc3f8"]})
 
 
 
