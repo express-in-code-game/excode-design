@@ -84,7 +84,9 @@
                                           #uuid "ea1162e3-fe45-4652-9fa9-4f8dc6c78f71"
                                           #uuid "4cd4b905-6859-4c22-bae7-ad5ec51dc3f8"]})
 
+  (gen/generate (s/gen :g/state))
 
+  
 
   ;;
   )
@@ -97,6 +99,8 @@
 (s/def :u/email (s/and string? #(re-matches email-regex %)))
 
 (s/def :u/user (s/keys :req [:u/uuid :u/username :u/email]))
+
+(s/def :ev/type keyword?)
 
 (s/def :ev.u/create (s/and (s/keys :req [:ev/type :u/uuid :u/email :u/username]
                                       :opt [])))
@@ -133,9 +137,14 @@
 (defmethod ev-type-arbiter :ev.a/finish-game [x] :ev.a/finish-game)
 (s/def :ev.a/event (s/multi-spec ev-type-arbiter :ev/type))
 
+(defmulti ev-type-game (fn [x] (:ev/type x)))
+(defmethod ev-type-game :ev.p/move-cape [x] :ev.p/move-cape)
+(defmethod ev-type-game :ev.p/collect-tile-value [x] :ev.p/collect-tile-value)
+(defmethod ev-type-game :ev.a/finish-game [x] :ev.a/finish-game)
+(s/def :ev.g/event (s/multi-spec ev-type-game :ev/type))
+
 (comment
 
-  (s/explain :event.game-event/player-uuid nil)
   (s/def :test/a-keyword keyword?)
   (s/def :test/a-string string?)
   (s/def :test/or (s/or :a :test/a-string :b :test/a-keyword))
@@ -180,6 +189,8 @@
   (s/explain :ev.c/delete-record
              {:ev/type :ev.c/delete-record})
 
+  
+  (gen/generate (s/gen :ev.p/move-cape))
   ;;
   )
 

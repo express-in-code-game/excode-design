@@ -1,28 +1,33 @@
 (ns app.alpha.game
   (:require [clojure.repl :refer [doc]]
             [clojure.spec.alpha :as s]
+            [clojure.spec.gen.alpha :as gen]
             [clojure.spec.test.alpha :as stest]
             [app.alpha.spec :as spec]))
 
+(defmulti next-state (fn [state event] [(:ev/type event)]))
 
-
-(defmulti next-state (fn [state event] [(:event/type event)]))
-
-(defmethod next-state [:event/player-event]
+(defmethod next-state [:ev.p/move-cape]
   [state event]
-  :a-player-event)
+  :a-move-cape-event)
 
-(defmethod next-state [:event/arbiter-event]
+(defmethod next-state [:ev.a/finish-game]
   [state event]
-  :an-arbiter-event)
+  :a-finish-game-event)
 
 (s/fdef next-state
-  :args (s/cat :state some? :event some?))
+  :args (s/cat :state :g/state :event :ev.g/event))
 
 (comment
+  
+  (ns-unmap *ns* 'next-state)
 
-  (next-state {} {:event/type :event/player-event})
-  (next-state {} {:event/type :event/arbiter-event})
+  (def state (gen/generate (s/gen :g/state)))
+  (def ev-p (gen/generate (s/gen :ev.p/move-cape)))
+  (def ev-a (gen/generate (s/gen :ev.a/finish-game)))
+
+  (next-state state ev-p)
+  (next-state state ev-a)
 
 
   (stest/instrument [`next-state])
