@@ -172,10 +172,10 @@
                                  :value-serde (Serdes/String)
                                  :key-serde-str (.. Serdes String getClass)
                                  :value-serde-str (.. Serdes String getClass)}))
-  (def sreams1 (:streams app1))
-  (.start sreams1)
-  (.close sreams1)
-  (.isRunning (.state sreams1))
+  (def streams1 (:streams app1))
+  (.isRunning (.state streams1))
+  (.start streams1)
+  (.close streams1)
 
   (def consumer-fu1 (future-call-consumer {:topic "example.serde-compare.string.out"
                                            :key-des "org.apache.kafka.common.serialization.StringDeserializer"
@@ -208,10 +208,11 @@
                                  :value-serde (TransitJsonSerde.)
                                  :key-serde-str "app.kafka.serdes.TransitJsonSerde"
                                  :value-serde-str "app.kafka.serdes.TransitJsonSerde"}))
-  (def sreams2 (:streams app2))
-  (.start sreams2)
-  (.close sreams2)
-  (.isRunning (.state sreams2))
+
+  (def streams2 (:streams app2))
+  (.start streams2)
+  (.close streams2)
+  (.isRunning (.state streams2))
 
   (def consumer-fu2 (future-call-consumer {:topic "example.serde-compare.transit.out"
                                            :key-des "app.kafka.serdes.TransitJsonDeserializer"
@@ -228,9 +229,9 @@
   (.send producer2 (ProducerRecord.
                     "example.serde-compare.transit.in"
                     (get users 0)
-                    {}))
+                    #{}))
 
-  (def store2 (.store streams2 "example.serde-compare.string.transit.store" (QueryableStoreTypes/keyValueStore)))
+  (def store2 (.store streams2 "example.serde-compare.transit.streams.store" (QueryableStoreTypes/keyValueStore)))
   (doseq [x (iterator-seq (.all store2))]
     (println (.key x) (.value x)))
 
