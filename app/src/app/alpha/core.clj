@@ -2,17 +2,16 @@
   (:require [clojure.pprint :as pp]
             [app.alpha.spec :as spec]
             [app.alpha.spec-test :as spec-test]
-            [app.alpha.streams.users :as streams-users]
             [app.alpha.streams.core :refer [create-topics list-topics
                                             delete-topics]]
             [app.alpha.part :as part]
-            [app.alpha.streams.users])
+            [app.alpha.streams.users :as streams-users]
+            [app.alpha.streams.games :as streams-games]
+            [app.alpha.streams.broadcast :as streams-broadcast])
   (:import
    org.apache.kafka.common.KafkaFuture$BiConsumer))
 
 (comment
-
- ; repl interface
 
   create-user
   delete-account
@@ -42,32 +41,6 @@
   ingame-event
   list-ingame-events-for-game
   
-  ; users creates a game -> game.data
-  ;   browser tab opens
-  ;   user changes settings of the game -> game.data
-  ;   once finished, user presses 'invite' or 'game ready' or 'open' -> game.data game becomes visible in the list and joinable
-  ;   opponent joins ( if rating >= specified by the host in settings) -> game.data
-  ;   both press 'ready' -> game.data
-  ;   host presses 'start the game' -> game.data
-  ;   all ingame events are sent through ingame.events topic
-  ;   if user closes the tab, they can reopen it from 'ongoing games' list -> get current state snapshots from game.data and ingame.events
-  ;   game.data and ingame.events may have a lifespan of a day, or later possibly palyers can store up to x unfinshed games
-
-  ; user account data only exists in user.data
-  ; if user deletes their account, it gets removed from user.data
-  ; in the system (event brackets, stats etc.) it get's shown as 'unknown' (only uuid is used in other topics)
-  ; only events history, event placements, user wins/losses are persisted, not all games
-
-  ; user can create lists
-  ;   of other users
-  ;   of events
-
-  ; build system to 0.1 
-  ;   user identity as email into uuid
-  ; add security (token https wss)
-  ; deploy
-  ; iterate
-
   ;;
   )
 
@@ -78,25 +51,34 @@
   (let [appenv (read-string (System/getenv "appenv"))]
     (:optimized appenv)))
 
+(def topics ["alpha.user.data"
+             "alpha.user.data.changes"
+             "alpha.game.events"
+             "alpha.game.events.changes"])
+
 (defn mount
   []
   (when-not (env-optimized?)
     (spec-test/instrument))
-  #_(-> (create-topics {:props props
-                        :names ["alpha.user.data"
-                                "alpha.user.data.changes"]
-                        :num-partitions 1
-                        :replication-factor 1})
-        (.all)
-        (.whenComplete
-         (reify KafkaFuture$BiConsumer
-           (accept [this res err]
-             (streams-users/mount))))))
+  (-> (create-topics {:props props
+                      :names topics
+                      :num-partitions 1
+                      :replication-factor 1})
+      (.all)
+      (.whenComplete
+       (reify KafkaFuture$BiConsumer
+         (accept [this res err]
+                 (println "; created topics")
+                 #_(streams-users/mount)
+                 #_(streams-games/mount)
+                 #_(streams-broadcast/mount))))))
 
 (defn unmount
   []
   (spec-test/unstrument)
-  #_(streams-users/unmount))
+  (streams-users/unmount)
+  (streams-games/unmount)
+  (streams-broadcast/unmount))
 
 (comment
 
@@ -106,32 +88,8 @@
 
   (list-topics {:props props})
 
-  (delete-topics {:props props :names ["alpha.user.data"
-                                       "alpha.user.data.changes"]})
-
-  ; player 1min games from repl
-  ;   arbiter sets game duration to 1 min
-  ;   game map has a number per tile, players step on tiles and eventually get into teleport
-  ;   the player with higher value wins 
-  ; emit events for players
-  ; arbiter emits on interval while depending on current game states
-  ; games computes states from game.events
-  ; broadcast prints to the stdout
-  ;   user1 cape is at [x x], total is 123
-  ;   user2 cape is at [y y], total is -123 
-  ; 
-  ; steps:
-  ; create user1, user2
-  ; create a game
-  ; configure game
-  ; invite/join
-  ; start game
-  ; user1 moves their cape to x,x
-  ; user2 moves theier cape to y,y
-  ; ...
-  ; arbiter completes the game in 1 min
-  ; game finished event
-
+  (delete-topics {:props props :names topics})
+  
   (def producer (KafkaProducer.
                  {"bootstrap.servers" "broker1:9092"
                   "auto.commit.enable" "true"

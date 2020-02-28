@@ -41,7 +41,8 @@
   - 1 hero, 3 research drones (represented with a colored sphere)
   - missiondrone is represented with a large sphere (possible made of nanites) and orbiting supporting spheredrones
   - map is visible and open to both opponents equally, 128x128
-  - palyers are not competing for resources, what one can get, the other can as well
+  - players are not competing for resources, what one can get, the other can as well
+  - players choose their initial position on the map 
   - research, collect, rebalance, by roaming the map
   - players choose what to visit and collect, make choices, balance the missiondrone's and the team's characterisitics
   - players see each others moves, but not choices (the missiondrone build, team's stats etc.)
@@ -172,19 +173,16 @@
 ## drawing board
 
 - ignite
-  - run kafka
-    1 the core of the system via repl interface
-    2 http interface
-    3 ui components
-    4 game ui
-    5 iterate
-  - seq of users/sessions, invite to a game
-  - a tab per player
-  - empty squared board, players move a circle, end turn
-  - first palyer to move the circle to the exit wins
-  - home page simple routes: /events /games 
-  - /games : list of games or create a game
-- search used only for events, games, users
+  - kafka
+  - the core of the system via repl interface
+  - http interface
+  - ui
+  - iterate
+- ui
+  - home page simple routes: /events /games
+  - /games : list of games or create a gam
+- search
+  -  used only for events, games, users
 - time
   - players send events to the ingame.events topic
   - server as well sends events ingame.events (time and other arbiter-type events)
@@ -208,3 +206,39 @@
       - and adds server's current timestamp
       - client receives the data and recomputes time-left using valid server timestamp
       - or add server timestamp to every event from the server, in general
+- data and secutiry
+  - user account data only exists in user.data
+  - if user deletes their account, it gets removed from user.data (kafka tombstone event)
+  - in the system (event brackets, stats etc.) it get's shown as 'unknown' (only uuid is used in other topics)
+  - only events history, event placements, user wins/losses are persisted, not all games
+  - user identity as email into uuid
+  - after 0.1 add token, https, wss
+- 1 min games from repl
+  - arbiter emits on interval state updates
+  - map tiles show values (numbers), players step on tiles and eventually get into teleport
+  - the player with the higher value (sum) wins
+  - games-stream computes states from game.events topic
+  - broadcast-stream prints to the stdout
+    -  user1 cape is at [x x], sum is 123
+    -  user2 cape is at [y y], sum is -80
+  - step sequence to play from repl
+    - create user1, user2
+    - create a game
+    - configure game
+    - invite/join
+    - start game
+    - user1 moves their cape to x,x 
+    - user2 moves theier cape to y,y
+    - ...
+    - arbiter completes the game in 1 min
+- 0.1
+  - users creates a game -> game.data
+  - browser tab opens
+  - user changes settings of the game -> game.data
+  - once finished, user presses 'invite' or 'game ready' or 'open' -> game.data game becomes visible in the list and joinable
+  - opponent joins ( if rating >= specified by the host in settings) -> game.data
+  - more settings, bans, both press 'ready' -> game.data
+  - host presses 'start the game' -> game.data
+  - all ingame events are sent through ingame.events topic
+  - if user closes the tab, they can reopen it from 'ongoing games' list -> get current state snapshots from game.data and ingame.events
+  - after the game has started, host can't cancel it
