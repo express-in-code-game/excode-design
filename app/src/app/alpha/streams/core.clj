@@ -81,7 +81,7 @@
                    key
                    event)))
 (s/fdef produce-event
-  :args (s/cat :producer some? :topic string? :key uuid? :event :event/event))
+  :args (s/cat :producer some? :topic string? :key (s/alt :uuid uuid? :string string?) :event :ev/event))
 
 (defn create-user
   [producer event]

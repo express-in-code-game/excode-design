@@ -7,6 +7,7 @@
             [app.kafka.ktable-agg-example]
             [app.kafka.reduce-example]
             [app.kafka.aggregate-delete-example]
+            [app.kafka.serde-compare]
             [app.clojure.spec]
             [app.clojure.multi]
             [app.alpha.core :as alpha]

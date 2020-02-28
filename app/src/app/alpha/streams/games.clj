@@ -58,10 +58,10 @@
                                  (apply [this k v ag]
                                    (println k v)
                                    (cond
-                                     (= (get v :event/type) :event/delete-record) nil
+                                     (= (get v :ev/type) :ev.c/delete-record) nil
                                      :else (merge ag v))))
                                (-> (Materialized/as "alpha.game.events.streams.store")
-                                   (.withKeySerde (TransitJsonSerde.) #_(Serdes/String))
+                                   (.withKeySerde (TransitJsonSerde.))
                                    (.withValueSerde (TransitJsonSerde.))))
                    (.toStream)
                    (.to "alpha.game.events.changes"))
@@ -71,7 +71,6 @@
                           "bootstrap.servers" "broker1:9092"
                           "auto.offset.reset" "earliest" #_"latest"
                           "default.key.serde" "app.kafka.serdes.TransitJsonSerde"
-                          #_(.. Serdes String getClass)
                           "default.value.serde" "app.kafka.serdes.TransitJsonSerde"}))
         streams (KafkaStreams. topology props)
         latch (CountDownLatch. 1)]
@@ -116,7 +115,7 @@
 
   (def players {0 #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
                 1 #uuid "179c265a-7f72-4225-a785-2d048d575854"})
-  
+
   (def observers {0 #uuid "46855899-838a-45fd-98b4-c76c08954645"
                   1 #uuid "ea1162e3-fe45-4652-9fa9-4f8dc6c78f71"
                   2 #uuid "4cd4b905-6859-4c22-bae7-ad5ec51dc3f8"})
@@ -125,57 +124,30 @@
                  {"bootstrap.servers" "broker1:9092"
                   "auto.commit.enable" "true"
                   "key.serializer" "app.kafka.serdes.TransitJsonSerializer"
-                  #_"org.apache.kafka.common.serialization.StringSerializer"
                   "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
 
-  (create-user producer {:event/type :event/create-user
-                         :user/uuid (get users 0)
-                         :user/email "user0@gmail.com"
-                         :user/username "user0"})
-
-  (create-user producer {:event/type :event/create-user
-                         :user/uuid (get users 1)
-                         :user/email "user1@gmail.com"
-                         :user/username "user1"})
-
-  (create-user producer {:event/type :event/create-user
-                         :user/uuid (get users 2)
-                         :user/email "user2@gmail.com"
-                         :user/username "user2"})
+  (produce-event producer
+                 "alpha.game.events"
+                 (get players 0)
+                 {:ev/type :ev.p/move-cape
+                  :p/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+                  :g/uuid (java.util.UUID/randomUUID)
+                  :p/cape {:g.e/uuid (java.util.UUID/randomUUID)
+                           :g.e/type :g.e.type/cape
+                           :g.e/pos [1 1]}})
 
   (produce-event producer
                  "alpha.game.events"
-                 (get users 0)
-                 {:event/type :event/update-user
-                  :user/username "user0"})
-
-  (produce-event producer
-                 "alpha.game.events"
-                 (get users 0)
-                 {:event/type :event/delete-record})
-  (produce-event producer
-                 "alpha.game.events"
-                 (get users 1)
-                 {:event/type :event/delete-record})
-  (produce-event producer
-                 "alpha.game.events"
-                 (get users 2)
-                 {:event/type :event/delete-record})
-
-
+                 (get players 0)
+                 {:ev/type :ev.c/delete-record})
 
   (def readonly-store (.store streams "alpha.game.events.streams.store"
                               (QueryableStoreTypes/keyValueStore)))
 
-  (.approximateNumEntries readonly-store)
   (count (iterator-seq (.all readonly-store)))
-
   (doseq [x (iterator-seq (.all readonly-store))]
     (println (.key x) (.value x)))
-
-  (.get readonly-store (get users 0))
-  (.get readonly-store (get users 1))
-  (.get readonly-store (get users 2))
+  (.get readonly-store "5ada3765-0393-4d48-bad9-fac992d00e62")
 
 
   ;;
