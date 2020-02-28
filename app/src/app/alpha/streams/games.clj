@@ -103,7 +103,7 @@
 
   (def app (:game-events-app @state*))
   (def streams (:streams app))
-  
+
   (println (.describe (:topology app)))
 
   (.isRunning (.state streams))
@@ -111,9 +111,14 @@
   (.close streams)
   (.cleanUp streams)
 
-  (def users {0 #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-              1 #uuid "179c265a-7f72-4225-a785-2d048d575854"
-              2 #uuid "3a3e2d06-3719-4811-afec-0dffdec35543"})
+  (java.util.UUID/randomUUID)
+
+  (def players {0 #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+                1 #uuid "179c265a-7f72-4225-a785-2d048d575854"})
+  
+  (def observers {0 #uuid "46855899-838a-45fd-98b4-c76c08954645"
+                  1 #uuid "ea1162e3-fe45-4652-9fa9-4f8dc6c78f71"
+                  2 #uuid "4cd4b905-6859-4c22-bae7-ad5ec51dc3f8"})
 
   (def producer (KafkaProducer.
                  {"bootstrap.servers" "broker1:9092"

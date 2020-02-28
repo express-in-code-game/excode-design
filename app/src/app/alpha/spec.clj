@@ -120,12 +120,14 @@
 (s/def :game/player2-sum number?)
 (s/def :game/teleport1-pos (s/tuple int? int?))
 (s/def :game/teleport2-pos (s/tuple int? int?))
+(s/def :game/observer-uuids (s/coll-of uuid?))
 
 
 (s/def :game/state (s/keys :req [:game/uuid :game/status :game/start-inst
                                  :game/duration-ms :game/player1-uuid :game/player2-uuid
                                  :game/player1-cape-pos :game/player1-cape-pos :game/player1-sum
-                                 :game/player2-sum :game/teleport1-pos :game/teleport2-pos :game/map-size]))
+                                 :game/player2-sum :game/teleport1-pos :game/teleport2-pos :game/map-size
+                                 :game/observer-uuids]))
 
 (comment
   ; https://stackoverflow.com/questions/36639154/convert-java-util-date-to-what-java-time-type
@@ -152,7 +154,10 @@
                           :game/player1-sum 0
                           :game/player2-sum 0
                           :game/teleport1-pos [127 0]
-                          :game/teleport2-pos [127 127]})
+                          :game/teleport2-pos [127 127]
+                          :game/observer-uuids [#uuid "46855899-838a-45fd-98b4-c76c08954645"
+                                                #uuid "ea1162e3-fe45-4652-9fa9-4f8dc6c78f71"
+                                                #uuid "4cd4b905-6859-4c22-bae7-ad5ec51dc3f8"]})
 
 
 
