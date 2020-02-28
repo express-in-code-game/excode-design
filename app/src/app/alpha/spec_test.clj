@@ -1,10 +1,12 @@
 (ns app.alpha.spec-test
   (:require [clojure.pprint :as pp]
             [app.alpha.spec :as s]
+            [app.alpha.game]
             [clojure.spec.test.alpha :as stest]))
 
-(def spec-fdefs ['app.alpha.streams.users/create-user
-                 'app.alpha.streams.users/produce-event])
+(def spec-fdefs ['app.alpha.streams.core/create-user
+                 'app.alpha.streams.core/produce-event
+                 'app.alpha.game/next-state])
 
 (comment
 

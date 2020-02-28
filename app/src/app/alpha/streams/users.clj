@@ -60,7 +60,7 @@
                                      (= (get v :event/type) :event/delete-record) nil
                                      :else (merge ag v))))
                                (-> (Materialized/as "alpha.user.data.streams.store")
-                                   (.withKeySerde (TransitJsonSerde.) #_(Serdes/String))
+                                   (.withKeySerde (TransitJsonSerde.))
                                    (.withValueSerde (TransitJsonSerde.))))
                    (.toStream)
                    (.to "alpha.user.data.changes"))
@@ -70,7 +70,6 @@
                           "bootstrap.servers" "broker1:9092"
                           "auto.offset.reset" "earliest" #_"latest"
                           "default.key.serde" "app.kafka.serdes.TransitJsonSerde"
-                          #_(.. Serdes String getClass)
                           "default.value.serde" "app.kafka.serdes.TransitJsonSerde"}))
         streams (KafkaStreams. topology props)
         latch (CountDownLatch. 1)]
@@ -119,7 +118,6 @@
                  {"bootstrap.servers" "broker1:9092"
                   "auto.commit.enable" "true"
                   "key.serializer" "app.kafka.serdes.TransitJsonSerializer"
-                  #_"org.apache.kafka.common.serialization.StringSerializer"
                   "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
 
   (create-user producer {:event/type :event/create-user
@@ -183,7 +181,6 @@
                                     "consumer.timeout.ms" "5000"
                                     "key.deserializer"
                                     "app.kafka.serdes.TransitJsonDeserializer"
-                                    #_"org.apache.kafka.common.serialization.StringDeserializer"
                                     "value.deserializer" "app.kafka.serdes.TransitJsonDeserializer"})]
                      (.subscribe consumer (Arrays/asList (object-array ["alpha.user.data.changes"])))
                      (while true

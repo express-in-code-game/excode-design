@@ -1,12 +1,12 @@
 #!/bin/bash
 
 
-reset_example(){
+reset(){
   # https://kafka.apache.org/24/documentation/streams/developer-guide/app-reset-tool.html
   bash /app/kafka/bin/kafka-streams-application-reset.sh \
-  --application-id "alpha.user.data.streams" \
+  --application-id "alpha.game.events.streams" \
   --bootstrap-servers "localhost:9092" \
-  --input-topics "alpha.user.data"
+  --input-topics "alpha.game.events"
 }
 
 

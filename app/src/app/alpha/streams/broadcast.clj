@@ -54,9 +54,7 @@
                                         "auto.commit.enable" "false"
                                         "group.id" (.toString (java.util.UUID/randomUUID))
                                         "consumer.timeout.ms" "5000"
-                                        "key.deserializer"
-                                        "app.kafka.serdes.TransitJsonDeserializer"
-                                        #_"org.apache.kafka.common.serialization.StringDeserializer"
+                                        "key.deserializer" "app.kafka.serdes.TransitJsonDeserializer"
                                         "value.deserializer" "app.kafka.serdes.TransitJsonDeserializer"})]
                          (.subscribe consumer (Arrays/asList (object-array ["alpha.game.events.changes"])))
                          (while true
