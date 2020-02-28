@@ -102,18 +102,17 @@
 
 (s/def :ev/type keyword?)
 
-(s/def :ev.u/create (s/and (s/keys :req [:ev/type :u/uuid :u/email :u/username]
-                                      :opt [])))
+(s/def :ev.u/create (s/keys :req [:ev/type :u/uuid :u/email :u/username]
+                            :opt []))
 
-(s/def :ev.u/update (s/and (s/keys :req [:ev/type]
-                                      :opt [:u/email :u/username])
-                              #(not-empty (select-keys % [:u/email :u/username]))))
+(s/def :ev.u/update (s/keys :req [:ev/type]
+                            :opt [:u/email :u/username]))
 
-(s/def :ev.c/delete-record (s/and (s/keys :req [:ev/type]
-                                          :opt [:record/uuid])))
+(s/def :ev.c/delete-record (s/keys :req [:ev/type]
+                                   :opt [:record/uuid]))
 
-(s/def :ev.p/move-cape (s/and (s/keys :req [:ev/type :p/uuid :g/uuid
-                                            :p/cape])))
+(s/def :ev.p/move-cape (s/keys :req [:ev/type :p/uuid :g/uuid
+                                     :p/cape]))
 
 (s/def :ev.p/collect-tile-value (s/and (s/keys :req [:ev/type])))
 
@@ -189,8 +188,10 @@
   (s/explain :ev.c/delete-record
              {:ev/type :ev.c/delete-record})
 
-  
+
   (gen/generate (s/gen :ev.p/move-cape))
+
+  (gen/generate (s/gen :ev.u/update))
   ;;
   )
 
