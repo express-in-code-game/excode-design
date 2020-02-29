@@ -105,9 +105,26 @@
 
 (s/def :ev.u/create (s/keys :req [:ev/type :u/uuid :u/email :u/username]
                             :opt []))
-
 (s/def :ev.u/update (s/keys :req [:ev/type]
-                            :opt [:u/email :u/username]))
+                                 :opt [:u/email :u/username]))
+
+(s/def :ev.u.g/create (s/keys :req [:ev/type :u/uuid]
+                                 :opt []))
+
+(s/def :ev.u.g/delete (s/keys :req [:ev/type :u/uuid :g/uuid]
+                                 :opt []))
+
+(s/def :ev.u.g/configure (s/keys :req [:ev/type :u/uuid :g/uuid]
+                                    :opt []))
+
+(s/def :ev.u.g/start (s/keys :req [:ev/type :u/uuid :g/uuid]
+                                :opt []))
+
+(s/def :ev.u.g/join (s/keys :req [:ev/type :u/uuid :g/uuid]
+                               :opt []))
+
+(s/def :ev.u.g/leave (s/keys :req [:ev/type :u/uuid :g/uuid]
+                                :opt []))
 
 (s/def :ev.c/delete-record (s/keys :req [:ev/type]
                                    :opt [:record/uuid]))
@@ -134,6 +151,12 @@
 (defmulti ev-type (fn [x] (:ev/type x)))
 (defmethod ev-type :ev.u/create [x] :ev.u/create)
 (defmethod ev-type :ev.u/update [x] :ev.u/update)
+(defmethod ev-type :ev.u.g/create [x] :ev.u.g/create)
+(defmethod ev-type :ev.u.g/delete [x] :ev.u.g/delete)
+(defmethod ev-type :ev.u.g/configure [x] :ev.u.g/configure)
+(defmethod ev-type :ev.u.g/start [x] :ev.u.g/start)
+(defmethod ev-type :ev.u.g/join [x] :ev.u.g/join)
+(defmethod ev-type :ev.u.g/leave [x] :ev.u.g/leave)
 (defmethod ev-type :ev.c/delete-record [x] :ev.c/delete-record)
 (defmethod ev-type :ev.p/move-cape [x] :ev.p/move-cape)
 (defmethod ev-type :ev.p/collect-tile-value [x] :ev.p/collect-tile-value)

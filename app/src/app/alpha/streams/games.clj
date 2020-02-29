@@ -147,7 +147,7 @@
   (count (iterator-seq (.all readonly-store)))
   (doseq [x (iterator-seq (.all readonly-store))]
     (println (.key x) (.value x)))
-  (.get readonly-store "5ada3765-0393-4d48-bad9-fac992d00e62")
+  (.get readonly-store (get players 0))
 
 
   ;;

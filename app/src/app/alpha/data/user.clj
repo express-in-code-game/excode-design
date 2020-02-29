@@ -1,4 +1,4 @@
-(ns app.alpha.game
+(ns app.alpha.data.user
   (:require [clojure.repl :refer [doc]]
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
@@ -6,15 +6,21 @@
             [app.alpha.spec :refer [gen-ev-p-move-cape
                                     gen-ev-a-finish-game]]))
 
+
+
 (defmulti next-state (fn [st ev] [(:ev/type ev)]))
 
-(defmethod next-state [:ev.p/move-cape]
+(defmethod next-state [:ev.u/create-game]
   [st ev]
-  :a-move-cape-event)
+  :ev.u/create-game)
 
-(defmethod next-state [:ev.a/finish-game]
+(defmethod next-state [:ev.u/delete-game]
   [st ev]
-  :a-finish-game-event)
+  :ev.u/delete-game)
+
+(defmethod next-state [:ev.u/delete-game]
+  [st ev]
+  :ev.u/delete-game)
 
 (s/fdef next-state
   :args (s/cat :st :g/state
