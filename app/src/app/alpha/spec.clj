@@ -97,7 +97,14 @@
 (s/def :u/uuid uuid?)
 (s/def :record/uuid uuid?)
 (s/def :u/username string?)
-(s/def :u/email (s/and string? #(re-matches email-regex %)))
+(s/def :u/email (s/with-gen (s/and string? #(re-matches email-regex %))
+                  (fn []
+                    (gen/fmap (fn [s1]
+                                (str s1 "@gmail.com"))
+                              (gen/such-that #(not= % "")
+                                             (gen/string-alphanumeric))))))
+
+#_(gen/sample (s/gen :u/email))
 
 #_(s/def :test/uuids (s/coll-of uuid?))
 #_(s/explain :test/uuids [(java.util.UUID/randomUUID) (java.util.UUID/randomUUID)])
@@ -154,14 +161,12 @@
 (defmulti ev (fn [x] (:ev/type x)))
 (defmethod ev :ev.u/create [x] :ev.u/create)
 (defmethod ev :ev.u/update [x] :ev.u/update)
-
 (defmethod ev :ev.g.u/create [x] :ev.g.u/create)
 (defmethod ev :ev.g.u/delete [x] :ev.g.u/delete)
 (defmethod ev :ev.g.u/configure [x] :ev.g.u/configure)
 (defmethod ev :ev.g.u/start [x] :ev.g.u/start)
 (defmethod ev :ev.g.u/join [x] :ev.g.u/join)
 (defmethod ev :ev.g.u/leave [x] :ev.g.u/leave)
-
 (defmethod ev :ev.c/delete-record [x] :ev.c/delete-record)
 (defmethod ev :ev.g.p/move-cape [x] :ev.g.p/move-cape)
 (defmethod ev :ev.g.p/collect-tile-value [x] :ev.g.p/collect-tile-value)

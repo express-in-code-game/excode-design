@@ -16,6 +16,30 @@
   [st ev]
   :a-finish-game-event)
 
+(defmethod next-state [:ev.g.u/create]
+  [st ev]
+  :ev.g.u/create)
+
+(defmethod next-state [:ev.g.u/delete]
+  [st ev]
+  :ev.g.u/delete)
+
+(defmethod next-state [:ev.g.u/configure]
+  [st ev]
+  :ev.g.u/configure)
+
+(defmethod next-state [:ev.g.u/start]
+  [st ev]
+  :ev.g.u/start)
+
+(defmethod next-state [:ev.g.u/join]
+  [st ev]
+  :ev.g.u/join)
+
+(defmethod next-state [:ev.g.u/leave]
+  [st ev]
+  :ev.g.u/leave)
+
 (s/fdef next-state
   :args (s/cat :st :g/state
                :ev :ev.g.m/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
