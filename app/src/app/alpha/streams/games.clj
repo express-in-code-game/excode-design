@@ -3,7 +3,7 @@
             [app.alpha.streams.core :refer [add-shutdown-hook
                                             produce-event
                                             create-user]]
-            [app.alpha.game :refer [next-state]]
+            [app.alpha.data.game :refer [next-state]]
             [clojure.spec.test.alpha :as stest])
   (:import
    app.kafka.serdes.TransitJsonSerializer
@@ -147,7 +147,7 @@
   (count (iterator-seq (.all readonly-store)))
   (doseq [x (iterator-seq (.all readonly-store))]
     (println (.key x) (.value x)))
-  (.get readonly-store "5ada3765-0393-4d48-bad9-fac992d00e62")
+  (.get readonly-store (get players 0))
 
 
   ;;

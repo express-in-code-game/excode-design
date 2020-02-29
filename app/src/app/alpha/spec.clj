@@ -97,63 +97,110 @@
 (s/def :u/uuid uuid?)
 (s/def :record/uuid uuid?)
 (s/def :u/username string?)
-(s/def :u/email (s/and string? #(re-matches email-regex %)))
+(s/def :u/email (s/with-gen
+                  (s/and string? #(re-matches email-regex %))
+                  #(gen/fmap (fn [s]
+                               (str s "@gmail.com"))
+                             (gen/such-that (fn [s] (not= s ""))
+                                            (gen/string-alphanumeric)))))
+
+#_(gen/sample (s/gen :u/email))
+
+#_(s/def :test/uuids (s/coll-of uuid?))
+#_(s/explain :test/uuids [(java.util.UUID/randomUUID) (java.util.UUID/randomUUID)])
 
 (s/def :u/user (s/keys :req [:u/uuid :u/username :u/email]))
 
 (s/def :ev/type keyword?)
 
-(s/def :ev.u/create (s/keys :req [:ev/type :u/uuid :u/email :u/username]
-                            :opt []))
-
-(s/def :ev.u/update (s/keys :req [:ev/type]
-                            :opt [:u/email :u/username]))
-
 (s/def :ev.c/delete-record (s/keys :req [:ev/type]
                                    :opt [:record/uuid]))
 
-(s/def :ev.p/move-cape (s/keys :req [:ev/type :p/uuid :g/uuid
+(s/def :ev.u/create (s/keys :req [:ev/type :u/uuid :u/email :u/username]
+                            :opt []))
+(s/def :ev.u/update (s/keys :req [:ev/type]
+                                 :opt [:u/email :u/username]))
+
+(s/def :ev.g.u/create (s/keys :req [:ev/type :u/uuid]
+                                 :opt []))
+
+(s/def :ev.g.u/delete (s/keys :req [:ev/type :u/uuid :g/uuid]
+                                 :opt []))
+
+(s/def :ev.g.u/configure (s/keys :req [:ev/type :u/uuid :g/uuid]
+                                    :opt []))
+
+(s/def :ev.g.u/start (s/keys :req [:ev/type :u/uuid :g/uuid]
+                                :opt []))
+
+(s/def :ev.g.u/join (s/keys :req [:ev/type :u/uuid :g/uuid]
+                               :opt []))
+
+(s/def :ev.g.u/leave (s/keys :req [:ev/type :u/uuid :g/uuid]
+                                :opt []))
+
+(s/def :ev.g.p/move-cape (s/keys :req [:ev/type :p/uuid :g/uuid
                                      :p/cape]))
 (def gen-ev-p-move-cape (gen/fmap (fn [x]
                                     (merge
                                      x
-                                     {:ev/type :ev.p/move-cape}))
-                                  (s/gen :ev.p/move-cape)))
+                                     {:ev/type :ev.g.p/move-cape}))
+                                  (s/gen :ev.g.p/move-cape)))
 
 
-(s/def :ev.p/collect-tile-value (s/and (s/keys :req [:ev/type])))
+(s/def :ev.g.p/collect-tile-value (s/and (s/keys :req [:ev/type])))
 
-(s/def :ev.a/finish-game (s/and (s/keys :req [:ev/type])))
+(s/def :ev.g.a/finish-game (s/and (s/keys :req [:ev/type])))
 
 (def gen-ev-a-finish-game (gen/fmap (fn [x]
                                       (merge
                                        x
-                                       {:ev/type :ev.a/finish-game}))
-                                    (s/gen :ev.a/finish-game)))
+                                       {:ev/type :ev.g.a/finish-game}))
+                                    (s/gen :ev.g.a/finish-game)))
 
-(defmulti ev-type (fn [x] (:ev/type x)))
-(defmethod ev-type :ev.u/create [x] :ev.u/create)
-(defmethod ev-type :ev.u/update [x] :ev.u/update)
-(defmethod ev-type :ev.c/delete-record [x] :ev.c/delete-record)
-(defmethod ev-type :ev.p/move-cape [x] :ev.p/move-cape)
-(defmethod ev-type :ev.p/collect-tile-value [x] :ev.p/collect-tile-value)
-(defmethod ev-type :ev.a/finish-game [x] :ev.a/finish-game)
-(s/def :ev/event (s/multi-spec ev-type :ev/type))
+(defmulti ev (fn [x] (:ev/type x)))
+(defmethod ev :ev.u/create [x] :ev.u/create)
+(defmethod ev :ev.u/update [x] :ev.u/update)
+(defmethod ev :ev.g.u/create [x] :ev.g.u/create)
+(defmethod ev :ev.g.u/delete [x] :ev.g.u/delete)
+(defmethod ev :ev.g.u/configure [x] :ev.g.u/configure)
+(defmethod ev :ev.g.u/start [x] :ev.g.u/start)
+(defmethod ev :ev.g.u/join [x] :ev.g.u/join)
+(defmethod ev :ev.g.u/leave [x] :ev.g.u/leave)
+(defmethod ev :ev.c/delete-record [x] :ev.c/delete-record)
+(defmethod ev :ev.g.p/move-cape [x] :ev.g.p/move-cape)
+(defmethod ev :ev.g.p/collect-tile-value [x] :ev.g.p/collect-tile-value)
+(defmethod ev :ev.g.a/finish-game [x] :ev.g.a/finish-game)
+(s/def :ev/event (s/multi-spec ev :ev/type))
 
-(defmulti ev-type-player (fn [x] (:ev/type x)) )
-(defmethod ev-type-player :ev.p/move-cape [x] :ev.p/move-cape)
-(defmethod ev-type-player :ev.p/collect-tile-value [x] :ev.p/collect-tile-value)
-(s/def :ev.p/event (s/multi-spec ev-type-player :ev/type))
+(defmulti ev-game-player (fn [x] (:ev/type x)) )
+(defmethod ev-game-player :ev.g.p/move-cape [x] :ev.g.p/move-cape)
+(defmethod ev-game-player :ev.g.p/collect-tile-value [x] :ev.g.p/collect-tile-value)
+(s/def :ev.g.p/event (s/multi-spec ev-game-player :ev/type))
 
-(defmulti ev-type-arbiter (fn [x] (:ev/type x)))
-(defmethod ev-type-arbiter :ev.a/finish-game [x] :ev.a/finish-game)
-(s/def :ev.a/event (s/multi-spec ev-type-arbiter :ev/type))
+(defmulti ev-game-arbiter (fn [x] (:ev/type x)))
+(defmethod ev-game-arbiter :ev.g.a/finish-game [x] :ev.g.a/finish-game)
+(s/def :ev.g.a/event (s/multi-spec ev-game-arbiter :ev/type))
 
-(defmulti ev-type-game (fn [x] (:ev/type x)))
-(defmethod ev-type-game :ev.p/move-cape [x] :ev.p/move-cape)
-(defmethod ev-type-game :ev.p/collect-tile-value [x] :ev.p/collect-tile-value)
-(defmethod ev-type-game :ev.a/finish-game [x] :ev.a/finish-game)
-(s/def :ev.g/event (s/multi-spec ev-type-game :ev/type))
+(defmulti ev-game-member (fn [x] (:ev/type x)))
+(defmethod ev-game-member :ev.g.p/move-cape [x] :ev.g.p/move-cape)
+(defmethod ev-game-member :ev.g.p/collect-tile-value [x] :ev.g.p/collect-tile-value)
+(defmethod ev-game-member :ev.g.a/finish-game [x] :ev.g.a/finish-game)
+(s/def :ev.g.m/event (s/multi-spec ev-game-member :ev/type))
+
+(defmulti ev-game-user (fn [x] (:ev/type x)))
+(defmethod ev-game-user :ev.g.u/create [x] :ev.g.u/create)
+(defmethod ev-game-user :ev.g.u/delete [x] :ev.g.u/delete)
+(defmethod ev-game-user :ev.g.u/configure [x] :ev.g.u/configure)
+(defmethod ev-game-user :ev.g.u/start [x] :ev.g.u/start)
+(defmethod ev-game-user :ev.g.u/join [x] :ev.g.u/join)
+(defmethod ev-game-user :ev.g.u/leave [x] :ev.g.u/leave)
+(s/def :ev.g.u/event (s/multi-spec ev-game-user :ev/type))
+
+(defmulti ev-user (fn [x] (:ev/type x)))
+(defmethod ev-user :ev.u/create [x] :ev.u/create)
+(defmethod ev-user :ev.u/update [x] :ev.u/update)
+(s/def :ev.u/event (s/multi-spec ev-user :ev/type))
 
 (comment
 
@@ -179,16 +226,16 @@
               :u/email "user0@gmail.com"
               :u/username "user0"})
 
-  (s/explain :ev.p/move-cape
-             {:ev/type :ev.p/move-cape
+  (s/explain :ev.g.p/move-cape
+             {:ev/type :ev.g.p/move-cape
               :p/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
               :g/uuid (java.util.UUID/randomUUID)
               :p/cape {:g.e/uuid (java.util.UUID/randomUUID)
                        :g.e/type :g.e.type/cape
                        :g.e/pos [1 1]}})
 
-  (s/explain :ev.p/event
-             {:ev/type :ev.p/move-cape
+  (s/explain :ev.g.p/event
+             {:ev/type :ev.g.p/move-cape
               :p/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
               :g/uuid (java.util.UUID/randomUUID)
               :p/cape {:g.e/uuid (java.util.UUID/randomUUID)
@@ -205,7 +252,7 @@
              {:ev/type :ev.c/delete-record})
 
 
-  (gen/generate (s/gen :ev.p/move-cape))
+  (gen/generate (s/gen :ev.g.p/move-cape))
 
   (gen/generate (s/gen :ev.u/update))
 

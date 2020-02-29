@@ -87,9 +87,9 @@
   [producer event]
   (produce-event producer
                  "alpha.user.data"
-                 (:user/uuid event)
+                 (:u/uuid event)
                  event))
 ; https://clojuredocs.org/clojure.spec.alpha/fdef#example-5c4b535ce4b0ca44402ef629
 (s/fdef create-user
-  :args (s/cat :producer some? :event :event/create-user))
+  :args (s/cat :producer some? :event :ev.u/create))
 
