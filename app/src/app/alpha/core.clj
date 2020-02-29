@@ -150,13 +150,13 @@
   :args (s/cat :producer some? :event :ev.u/create))
 
 
-(defn ev-to-recordkey
+(defn event-to-recordkey
   [ev]
   (or
    (-> ev :ev/type evtype-recordkey-map ev)
    (java.util.UUID/randomUUID)))
 
-(defn ev-to-topic
+(defn event-to-topic
   [ev]
   (-> ev :ev/type evtype-topic-map))
 
@@ -169,14 +169,14 @@
   ([ev producer]
    [:ev :producer]
    (.send producer
-          (ev-to-topic ev)
-          (ev-to-recordkey ev)
+          (event-to-topic ev)
+          (event-to-recordkey ev)
           ev))
   ([ev topic producer]
    [:ev :topic :producer]
    (.send producer
           topic
-          (ev-to-recordkey ev)
+          (event-to-recordkey ev)
           ev))
   ([ev k topic producer]
    [:ev :topic :producer]
