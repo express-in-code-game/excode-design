@@ -75,13 +75,47 @@
                             (.countDown latch))))))
 
 (defn produce-event
-  [producer topic key event]
+  [producer topic k event]
   (.send producer (ProducerRecord.
                    topic
-                   key
+                   k
                    event)))
 (s/fdef produce-event
-  :args (s/cat :producer some? :topic string? :key (s/alt :uuid uuid? :string string?) :event :ev/event))
+  :args (s/cat :producer some? :topic string? :k (s/alt :uuid uuid? :string string?) :event :ev/event))
+
+(defn delete-record
+  [producer topic k]
+  (produce-event
+   producer
+   topic
+   k
+   {:ev/type :ev.c/delete-record}))
+
+(defn future-call-consumer
+  [{:keys [topic
+           key-des
+           value-des
+           recordf]
+    :or {key-des "app.kafka.serdes.TransitJsonDeserializer"
+         value-des "app.kafka.serdes.TransitJsonDeserializer"}
+    :as opts}]
+  (future-call
+   (fn []
+     (let [consumer (KafkaConsumer.
+                     {"bootstrap.servers" "broker1:9092"
+                      "auto.offset.reset" "earliest"
+                      "auto.commit.enable" "false"
+                      "group.id" (.toString (java.util.UUID/randomUUID))
+                      "consumer.timeout.ms" "5000"
+                      "key.deserializer" key-des
+                      "value.deserializer" value-des})]
+       (.subscribe consumer (Arrays/asList (object-array [topic])))
+       (while true
+         (let [records (.poll consumer 1000)]
+           (.println System/out (str "; polling " topic (java.time.LocalTime/now)))
+           (doseq [rec records]
+             (recordf rec)
+            )))))))
 
 (defn create-user
   [producer event]
