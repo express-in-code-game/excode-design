@@ -40,7 +40,7 @@
    java.util.Locale
    java.util.Arrays))
 
-(def topic-event-map
+(def topic-evtype-map
   {"alpha.user" #{:ev.u/create :ev.u/update}
    "alpha.game" #{:ev.g.u/create :ev.g.u/delete
                   :ev.g.u/join :ev.g.u/leave
@@ -48,17 +48,24 @@
                   :ev.g.p/move-cape :ev.g.p/collect-tile-value
                   :ev.g.a/finish-game}})
 
-(def event-topic-map
-  (->> topic-event-map
+(def evtype-topic-map
+  (->> topic-evtype-map
        (map (fn [[topic kset]]
               (map #(vector % topic) kset)))
        (mapcat identity)
        (into {})))
 
-
-(def event-recordkey-map
+(def evtype-recordkey-map
   {:ev.u/create :u/uuid
    :ev.u/update :u/uuid})
+
+(defn ev-to-recordkey
+  [ev]
+  (-> ev :ev/type evtype-recordkey-map ev))
+
+(defn ev-to-topic
+  [ev]
+  (-> ev :ev/type evtype-topic-map))
 
 (defn create-topics
   [{:keys [props
@@ -150,40 +157,50 @@
   :args (s/cat :producer some? :event :ev.u/create))
 
 
-(defmulti send-event
+(defn send-event
   "Send kafka event. Topic is mapped by ev/type."
-  {:arglists '([ev producer] [ev topic producer])}
-  (fn [ev & args] (:ev/type ev)))
-
-(defmethod send-event :default
+  {:arglists '([ev producer] 
+               [ev topic producer]
+               [ev recordkey topic producer])}
   ([ev producer]
    [:ev :producer]
-   #_(.send producer
-            (event-topic-map (ev :ev/type))
-            (event-recordkey-map ev)
-            ev))
+   (.send producer
+          (ev-to-topic ev)
+          (ev-to-recordkey ev)
+          ev))
   ([ev topic producer]
    [:ev :topic :producer]
-   #_(.send producer
-            topic
-            (event-recordkey-map ev)
-            ev)))
+   (.send producer
+          topic
+          (ev-to-recordkey ev)
+          ev))
+  ([ev k topic producer]
+   [:ev :topic :producer]
+   (.send producer
+          topic
+          k
+          ev)))
 
 (s/fdef send-event
-  :args (s/alt :a (s/? (s/cat :ev :ev/event
-                              :producer some?))
-               :b (s/? (s/cat :ev :ev/event
-                              :topic? string?
-                              :producer some?))))
+  :args (s/alt :2 (s/cat :ev :ev/event
+                         :producer any?)
+               :3 (s/cat :ev :ev/event
+                         :topic string?
+                         :producer any?)
+               :4 (s/cat :ev :ev/event
+                         :topic string?
+                         :k uuid?
+                         :producer any?)))
 
 (comment
-  
+
   (ns-unmap *ns* 'send-event)
   (stest/instrument `send-event)
   (stest/unstrument `send-event)
 
   (def ev (gen/sample (s/gen :ev/event) 1))
 
+  (instance? org.apache.kafka.clients.producer.KafkaProducer nil)
   (send-event ev nil)
   (send-event ev "asd" nil)
   (send-event ev)

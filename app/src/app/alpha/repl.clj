@@ -1,7 +1,7 @@
 (ns app.alpha.repl
   (:require [clojure.pprint :as pp]
             [app.alpha.spec :as spec]
-            
+
             [app.alpha.core :refer [create-topics list-topics
                                     delete-topics produce-event
                                     delete-record future-call-consumer]]
@@ -10,7 +10,37 @@
             [app.alpha.streams.games :as streams-games]
             [app.alpha.streams.broadcast :as streams-broadcast])
   (:import
-   org.apache.kafka.common.KafkaFuture$BiConsumer))
+   app.kafka.serdes.TransitJsonSerializer
+   app.kafka.serdes.TransitJsonDeserializer
+   app.kafka.serdes.TransitJsonSerde
+   org.apache.kafka.common.serialization.Serdes
+   org.apache.kafka.streams.KafkaStreams
+   org.apache.kafka.streams.StreamsBuilder
+   org.apache.kafka.streams.StreamsConfig
+   org.apache.kafka.streams.Topology
+   org.apache.kafka.streams.kstream.KStream
+   org.apache.kafka.streams.kstream.KTable
+   java.util.Properties
+   java.util.concurrent.CountDownLatch
+   org.apache.kafka.clients.admin.KafkaAdminClient
+   org.apache.kafka.clients.admin.NewTopic
+   org.apache.kafka.clients.consumer.KafkaConsumer
+   org.apache.kafka.clients.producer.KafkaProducer
+   org.apache.kafka.clients.producer.ProducerRecord
+   org.apache.kafka.streams.kstream.ValueMapper
+   org.apache.kafka.streams.kstream.KeyValueMapper
+   org.apache.kafka.streams.KeyValue
+   org.apache.kafka.streams.kstream.Materialized
+   org.apache.kafka.streams.kstream.Produced
+   org.apache.kafka.streams.kstream.Reducer
+   org.apache.kafka.streams.kstream.Grouped
+   org.apache.kafka.streams.state.QueryableStoreTypes
+   org.apache.kafka.streams.kstream.Initializer
+   org.apache.kafka.streams.kstream.Aggregator
+   org.apache.kafka.common.KafkaFuture$BiConsumer
+   java.util.ArrayList
+   java.util.Locale
+   java.util.Arrays))
 
 (comment
 
@@ -90,6 +120,8 @@
                   "auto.commit.enable" "true"
                   "key.serializer" "app.kafka.serdes.TransitJsonSerializer"
                   "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
+  
+  (instance? org.apache.kafka.clients.producer.KafkaProducer producer)
 
   (def games {:a #uuid "15108e92-959d-4089-98fe-b92bb7c571db"
               :b #uuid "461b65a8-0f24-46c9-8248-4bf6d7e1aa1a"})
