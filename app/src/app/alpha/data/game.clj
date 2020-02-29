@@ -8,11 +8,11 @@
 
 (defmulti next-state (fn [st ev] [(:ev/type ev)]))
 
-(defmethod next-state [:ev.p/move-cape]
+(defmethod next-state [:ev.g.p/move-cape]
   [st ev]
   :a-move-cape-event)
 
-(defmethod next-state [:ev.a/finish-game]
+(defmethod next-state [:ev.g.a/finish-game]
   [st ev]
   :a-finish-game-event)
 

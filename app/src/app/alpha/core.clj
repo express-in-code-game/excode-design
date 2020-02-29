@@ -1,7 +1,7 @@
 (ns app.alpha.core
   (:require [clojure.pprint :as pp]
             [app.alpha.spec :as spec]
-            [app.alpha.spec-test :as spec-test]
+            
             [app.alpha.streams.core :refer [create-topics list-topics
                                             delete-topics]]
             [app.alpha.part :as part]
@@ -46,11 +46,6 @@
 
 (def props {"bootstrap.servers" "broker1:9092"})
 
-(defn env-optimized?
-  []
-  (let [appenv (read-string (System/getenv "appenv"))]
-    (:optimized appenv)))
-
 (def topics ["alpha.user.data"
              "alpha.user.data.changes"
              "alpha.game.events"
@@ -58,8 +53,6 @@
 
 (defn mount
   []
-  (when-not (env-optimized?)
-    (spec-test/instrument))
   (-> (create-topics {:props props
                       :names topics
                       :num-partitions 1
@@ -68,14 +61,13 @@
       (.whenComplete
        (reify KafkaFuture$BiConsumer
          (accept [this res err]
-                 (println "; created topics")
-                 #_(streams-users/mount)
-                 #_(streams-games/mount)
-                 #_(streams-broadcast/mount))))))
+           (println "; created topics")
+           #_(streams-users/mount)
+           #_(streams-games/mount)
+           #_(streams-broadcast/mount))))))
 
 (defn unmount
   []
-  (spec-test/unstrument)
   (streams-users/unmount)
   (streams-games/unmount)
   (streams-broadcast/unmount))

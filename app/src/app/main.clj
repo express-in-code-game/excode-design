@@ -1,5 +1,6 @@
 (ns app.main
   (:require [dev.nrepl :refer [start-nrepl-server]]
+            [clojure.spec.test.alpha :as stest]
             [app.kafka.core]
             [app.kafka.wordcount-example]
             [app.kafka.streams-example]
@@ -14,6 +15,20 @@
    ;
             ))
 
+(defn env-optimized?
+  []
+  (let [appenv (read-string (System/getenv "appenv"))]
+    (:optimized appenv)))
+
 (defn -main  [& args]
   (start-nrepl-server "0.0.0.0" 7788)
+  (when-not (env-optimized?)
+    (stest/instrument))
   (alpha/mount))
+
+(comment
+  
+  (stest/unstrument)
+  
+  ;;
+  )
