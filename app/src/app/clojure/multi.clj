@@ -1,5 +1,7 @@
 (ns app.clojure.multi
-  (:require [clojure.repl :refer [doc]]))
+  (:require [clojure.repl :refer [doc]]
+            [clojure.spec.alpha :as s]
+            [clojure.spec.test.alpha :as stest]))
 
 
 (comment
@@ -139,12 +141,31 @@
   (defmethod send-event [2  [java.util.Map Number]] [& args] [:map :number])
   (defmethod send-event [3  [java.util.Map Number String]] [& args] [:map :number :string])
 
-  (send-event )
+  (send-event)
   (send-event "asd")
   (send-event "asd" 1)
   (send-event  1 "asd")
   (send-event  1 1)
   (send-event  {} 1 "asd")
+
+  (s/fdef send-event
+    :args (s/alt :0 (s/cat)
+                 :number (s/? (s/cat :a number?))
+                 :string-number (s/? (s/cat :a string? :b number?))
+                 :number-number (s/? (s/cat :a number? :b number?))
+                 :number-string (s/? (s/cat :a number? :b string?))))
+  
+  (stest/instrument `send-event)
+  (stest/unstrument `send-event)
+
+  (s/alt)
+  (s/*)
+  (s/+)
+  (s/?)
+  (s/cat)
+  (s/or)
+
+  (send-event  1 {})
 
   ;;
   )
