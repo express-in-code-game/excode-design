@@ -59,13 +59,6 @@
   {:ev.u/create :u/uuid
    :ev.u/update :u/uuid})
 
-(defn ev-to-recordkey
-  [ev]
-  (-> ev :ev/type evtype-recordkey-map ev))
-
-(defn ev-to-topic
-  [ev]
-  (-> ev :ev/type evtype-topic-map))
 
 (defn create-topics
   [{:keys [props
@@ -155,6 +148,17 @@
 ; https://clojuredocs.org/clojure.spec.alpha/fdef#example-5c4b535ce4b0ca44402ef629
 (s/fdef create-user
   :args (s/cat :producer some? :event :ev.u/create))
+
+
+(defn ev-to-recordkey
+  [ev]
+  (or
+   (-> ev :ev/type evtype-recordkey-map ev)
+   (java.util.UUID/randomUUID)))
+
+(defn ev-to-topic
+  [ev]
+  (-> ev :ev/type evtype-topic-map))
 
 
 (defn send-event
