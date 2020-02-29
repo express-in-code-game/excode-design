@@ -98,6 +98,9 @@
 (s/def :record/uuid uuid?)
 (s/def :u/username string?)
 (s/def :u/email (s/and string? #(re-matches email-regex %)))
+(s/def :u/games (s/coll-of uuid?))
+
+(s/def :test/uuids (s/coll-of uuid?))
 
 (s/def :u/user (s/keys :req [:u/uuid :u/username :u/email]))
 
@@ -177,6 +180,17 @@
 (defmethod ev-type-game :ev.p/collect-tile-value [x] :ev.p/collect-tile-value)
 (defmethod ev-type-game :ev.a/finish-game [x] :ev.a/finish-game)
 (s/def :ev.g/event (s/multi-spec ev-type-game :ev/type))
+
+(defmulti ev-type-user (fn [x] (:ev/type x)))
+(defmethod ev-type-user :ev.u/create [x] :ev.u/create)
+(defmethod ev-type-user :ev.u/update [x] :ev.u/update)
+(defmethod ev-type-user :ev.u.g/create [x] :ev.u.g/create)
+(defmethod ev-type-user :ev.u.g/delete [x] :ev.u.g/delete)
+(defmethod ev-type-user :ev.u.g/configure [x] :ev.u.g/configure)
+(defmethod ev-type-user :ev.u.g/start [x] :ev.u.g/start)
+(defmethod ev-type-user :ev.u.g/join [x] :ev.u.g/join)
+(defmethod ev-type-user :ev.u.g/leave [x] :ev.u.g/leave)
+(s/def :ev.u/event (s/multi-spec ev-type-user :ev/type))
 
 (comment
 

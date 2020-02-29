@@ -10,21 +10,33 @@
 
 (defmulti next-state (fn [st ev] [(:ev/type ev)]))
 
-(defmethod next-state [:ev.u/create-game]
+(defmethod next-state [:ev.u.g/create]
   [st ev]
-  :ev.u/create-game)
+  :ev.u.g/create)
 
-(defmethod next-state [:ev.u/delete-game]
+(defmethod next-state [:ev.u.g/delete]
   [st ev]
-  :ev.u/delete-game)
+  :ev.u.g/delete)
 
-(defmethod next-state [:ev.u/delete-game]
+(defmethod next-state [:ev.u.g/configure]
   [st ev]
-  :ev.u/delete-game)
+  :ev.u.g/configure)
+
+(defmethod next-state [:ev.u.g/start]
+  [st ev]
+  :ev.u.g/start)
+
+(defmethod next-state [:ev.u.g/join]
+  [st ev]
+  :ev.u.g/join)
+
+(defmethod next-state [:ev.u.g/leave]
+  [st ev]
+  :ev.u.g/leave)
 
 (s/fdef next-state
   :args (s/cat :st :g/state
-               :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
+               :ev :ev.u/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
 
 (comment
 
