@@ -1,7 +1,9 @@
 (ns app.alpha.core
   (:require [clojure.pprint :as pp]
             [app.alpha.spec :as spec]
-            [clojure.spec.alpha :as s])
+            [clojure.spec.alpha :as s]
+            [clojure.spec.test.alpha :as stest]
+            [clojure.spec.gen.alpha :as gen])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer
@@ -52,6 +54,11 @@
               (map #(vector % topic) kset)))
        (mapcat identity)
        (into {})))
+
+
+(def event-recordkey-map
+  {:ev.u/create :u/uuid
+   :ev.u/update :u/uuid})
 
 (defn create-topics
   [{:keys [props
@@ -143,13 +150,46 @@
   :args (s/cat :producer some? :event :ev.u/create))
 
 
-(defmulti send-event (fn [& args] [(count args) (mapv class args)]))
-(defmethod send-event [0 []] [])
-(defmethod send-event [1 [String]] [:string])
-(defmethod send-event [2 [String Number]] [:string :number])
-(defmethod send-event [2 [Number String]] [:number :string])
-(defmethod send-event [2 [Number Number]] [:number :number])
-(defmethod send-event [2 [java.util.Map Number]] [:map :number])
+(defmulti send-event
+  "Send kafka event. Topic is mapped by ev/type."
+  {:arglists '([ev producer] [ev topic producer])}
+  (fn [ev & args] (:ev/type ev)))
+
+(defmethod send-event :default
+  ([ev producer]
+   [:ev :producer]
+   #_(.send producer
+            (event-topic-map (ev :ev/type))
+            (event-recordkey-map ev)
+            ev))
+  ([ev topic producer]
+   [:ev :topic :producer]
+   #_(.send producer
+            topic
+            (event-recordkey-map ev)
+            ev)))
+
+(s/fdef send-event
+  :args (s/alt :a (s/? (s/cat :ev :ev/event
+                              :producer some?))
+               :b (s/? (s/cat :ev :ev/event
+                              :topic? string?
+                              :producer some?))))
+
+(comment
+  
+  (ns-unmap *ns* 'send-event)
+  (stest/instrument `send-event)
+  (stest/unstrument `send-event)
+
+  (def ev (gen/sample (s/gen :ev/event) 1))
+
+  (send-event ev nil)
+  (send-event ev "asd" nil)
+  (send-event ev)
+
+  ;;
+  )
 
 
 
