@@ -11,7 +11,7 @@
             [app.kafka.serde-compare]
             [app.clojure.spec]
             [app.clojure.multi]
-            [app.alpha.core :as alpha]
+            [app.alpha.repl :as alpha-repl]
    ;
             ))
 
@@ -24,7 +24,7 @@
   (start-nrepl-server "0.0.0.0" 7788)
   (when-not (env-optimized?)
     (stest/instrument))
-  (alpha/mount))
+  #_(alpha-repl/mount))
 
 (comment
   

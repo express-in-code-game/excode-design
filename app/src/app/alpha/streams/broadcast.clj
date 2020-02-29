@@ -1,8 +1,8 @@
 (ns app.alpha.streams.broadcast
   (:require [clojure.pprint :as pp]
-            [app.alpha.streams.core :refer [add-shutdown-hook
-                                            produce-event
-                                            create-user]]
+            [app.alpha.core :refer [add-shutdown-hook
+                                    produce-event
+                                    create-user]]
             [clojure.spec.test.alpha :as stest])
   (:import
    app.kafka.serdes.TransitJsonSerializer

@@ -1,8 +1,8 @@
 (ns app.alpha.streams.games
   (:require [clojure.pprint :as pp]
-            [app.alpha.streams.core :refer [add-shutdown-hook
-                                            produce-event
-                                            create-user]]
+            [app.alpha.core :refer [add-shutdown-hook
+                                    produce-event
+                                    create-user]]
             [app.alpha.data.game :refer [next-state]]
             [clojure.spec.test.alpha :as stest])
   (:import

@@ -1,5 +1,7 @@
 (ns app.clojure.multi
-  (:require [clojure.repl :refer [doc]]))
+  (:require [clojure.repl :refer [doc]]
+            [clojure.spec.alpha :as s]
+            [clojure.spec.test.alpha :as stest]))
 
 
 (comment
@@ -108,3 +110,66 @@
   ;;
   )
 
+
+(comment
+
+  (defmulti variadic (fn [& args] (mapv class args)))
+  (defmethod variadic [String] [& args] [:string])
+  (defmethod variadic [String String]  [& args] [:string :string])
+  (defmethod variadic [String java.util.Map] [& args] [:string :map])
+  (defmethod variadic [Number java.util.Map]  [& args] [:number :map])
+  (ancestors (class {}))
+  (ns-unmap *ns* 'variadic)
+
+  (variadic "asd")
+  (variadic "asd" "asd")
+  (variadic "asd" {})
+  (isa? (class {}) java.util.Map)
+  (variadic 1 {})
+
+
+  (ns-unmap *ns* 'send-event)
+  (stest/unstrument `send-event)
+  (stest/instrument `send-event)
+  
+  (defmulti send-event
+    "send event to kafka"
+    {:arglists '([] [topic] [topic a-num] [a-num topic])}
+    (fn [& args] [(count args) (mapv class args)]))
+  (defmethod send-event [0 []] [& args] [])
+  (defmethod send-event [1  [Number]]  [& args] [:number])
+  (defmethod send-event [1  [String]]  [& args] [:string])
+  (defmethod send-event [2  [String Number]] [& args] [:string :number])
+  (defmethod send-event [2  [Number String]] [& args]  [:number :string])
+  (defmethod send-event [2  [Number Number]] [& args]  [:number :number])
+  (defmethod send-event [2  [java.util.Map Number]] [& args] [:map :number])
+  (defmethod send-event [3  [java.util.Map Number String]] [& args] [:map :number :string])
+
+  (s/fdef send-event
+    :args (s/alt :0 (s/cat)
+                 :number (s/cat :a number?)
+                 :string (s/cat :a string?)
+                 :string-number (s/cat :a string? :b number?)
+                 :number-string (s/cat :a number? :b string?)
+                 :number-number (s/cat :a number? :b number?)
+                 :map-number (s/cat :a map? :b number?)
+                 :map-number-string (s/cat :a map? :b number? :c string?)))
+
+  (send-event)
+  (send-event 1)
+  (send-event "asd")
+  (send-event "asd" 1)
+  (send-event  1 "asd")
+  (send-event  1 1)
+  (send-event  {} 1)
+  (send-event  {} 1 "asd")
+
+  (send-event :a)
+  (send-event :a :b)
+
+
+
+
+
+  ;;
+  )
