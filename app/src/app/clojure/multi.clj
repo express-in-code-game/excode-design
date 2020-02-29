@@ -108,3 +108,23 @@
   ;;
   )
 
+
+(comment
+
+  (defmulti variadic (fn [& args] (mapv class args)))
+  (defmethod variadic [String] [& args] [:string])
+  (defmethod variadic [String String]  [& args] [:string :string])
+  (defmethod variadic [String java.util.Map] [& args] [:string :map])
+  (defmethod variadic [Number java.util.Map]  [& args] [:number :map])
+  (ancestors (class {}))
+  (ns-unmap *ns* 'variadic)
+
+  (variadic "asd")
+  (variadic "asd" "asd")
+  (variadic "asd" {})
+  (isa? (class {}) java.util.Map)
+  (variadic 1 {})
+
+
+  ;;
+  )

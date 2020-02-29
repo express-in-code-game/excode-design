@@ -127,3 +127,5 @@
 (s/fdef create-user
   :args (s/cat :producer some? :event :ev.u/create))
 
+
+(defmulti send-event [] [])
