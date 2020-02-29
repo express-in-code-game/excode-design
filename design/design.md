@@ -233,7 +233,10 @@
     - arbiter completes the game in 1 min
 - 0.1
   - users creates a game -> game.data
-  - browser tab opens
+    - user presses create a game from /u/games list
+    - once response/event arrives, list gets updated
+    - entry (game) has open button
+    - on click, tabs open with the current state of the game
   - user changes settings of the game -> game.data
   - once finished, user presses 'invite' or 'game ready' or 'open' -> game.data game becomes visible in the list and joinable
   - opponent joins ( if rating >= specified by the host in settings) -> game.data
