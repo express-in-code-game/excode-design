@@ -126,5 +126,22 @@
   (variadic 1 {})
 
 
+  (ns-unmap *ns* 'send-event)
+  (defmulti send-event (fn [& args] [(count args) (mapv class args)]))
+  (defmethod send-event [0 []] [& args] [])
+  (defmethod send-event [1  [String]]  [& args] [:string])
+  (defmethod send-event [2  [String Number]] [& args] [:string :number])
+  (defmethod send-event [2  [Number String]] [& args]  [:number :string])
+  (defmethod send-event [2  [Number Number]] [& args]  [:number :number])
+  (defmethod send-event [2  [java.util.Map Number]] [& args] [:map :number])
+  (defmethod send-event [3  [java.util.Map Number String]] [& args] [:map :number :string])
+
+  (send-event)
+  (send-event "asd")
+  (send-event "asd" 1)
+  (send-event  1 "asd")
+  (send-event  1 1)
+  (send-event  {} 1 "asd")
+
   ;;
   )

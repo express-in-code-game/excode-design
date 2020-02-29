@@ -2,9 +2,9 @@
   (:require [clojure.pprint :as pp]
             [app.alpha.spec :as spec]
             
-            [app.alpha.streams.core :refer [create-topics list-topics
-                                            delete-topics produce-event
-                                            delete-record future-call-consumer]]
+            [app.alpha.core :refer [create-topics list-topics
+                                    delete-topics produce-event
+                                    delete-record future-call-consumer]]
             [app.alpha.part :as part]
             [app.alpha.streams.users :as streams-users]
             [app.alpha.streams.games :as streams-games]

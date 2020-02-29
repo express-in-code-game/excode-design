@@ -1,4 +1,4 @@
-(ns app.alpha.streams.core
+(ns app.alpha.core
   (:require [clojure.pprint :as pp]
             [app.alpha.spec :as spec]
             [clojure.spec.alpha :as s])
@@ -37,6 +37,21 @@
    java.util.ArrayList
    java.util.Locale
    java.util.Arrays))
+
+(def topic-event-map
+  {"alpha.user" #{:ev.u/create :ev.u/update}
+   "alpha.game" #{:ev.g.u/create :ev.g.u/delete
+                  :ev.g.u/join :ev.g.u/leave
+                  :ev.g.u/configure :ev.g.u/start
+                  :ev.g.p/move-cape :ev.g.p/collect-tile-value
+                  :ev.g.a/finish-game}})
+
+(def event-topic-map
+  (->> topic-event-map
+       (map (fn [[topic kset]]
+              (map #(vector % topic) kset)))
+       (mapcat identity)
+       (into {})))
 
 (defn create-topics
   [{:keys [props
@@ -128,4 +143,10 @@
   :args (s/cat :producer some? :event :ev.u/create))
 
 
-(defmulti send-event [] [])
+(defmulti send-event (fn [& args] [(count args) (mapv class args)]))
+(defmethod send-event [0 []] [])
+(defmethod send-event [1 [String]] [:string])
+(defmethod send-event [2 [String Number]] [:string :number])
+(defmethod send-event [2 [Number String]] [:number :string])
+(defmethod send-event [2 [Number Number]] [:number :number])
+(defmethod send-event [2 [java.util.Map Number]] [:map :number])
