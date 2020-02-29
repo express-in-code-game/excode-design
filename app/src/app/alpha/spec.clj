@@ -4,8 +4,15 @@
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.test.alpha :as stest])
-  (:import java.util.Date))
+  (:import 
+   java.util.Date
+   org.apache.kafka.clients.producer.KafkaProducer
+   org.apache.kafka.clients.consumer.KafkaConsumer
+   ))
 
+
+(s/def :instance/producer #(instance? org.apache.kafka.clients.producer.KafkaProducer %))
+(s/def :instance/consumer #(instance? org.apache.kafka.clients.consumer.KafkaConsumer %))
 
 
 (s/def :g.e/uuid uuid?)

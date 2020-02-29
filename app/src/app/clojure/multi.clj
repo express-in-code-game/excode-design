@@ -164,6 +164,8 @@
   (s/?)
   (s/cat)
   (s/or)
+  (s/every)
+  
 
   (send-event  1 {})
 

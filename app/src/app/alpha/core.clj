@@ -186,15 +186,15 @@
           ev)))
 
 (s/fdef send-event
-  :args (s/alt :2 (s/cat :ev :ev/event
-                         :producer any?)
+  :args (s/alt :1 (s/cat :ev :ev/event
+                         :producer :instance/producer)
+               :2 (s/cat :ev :ev/event
+                         :topic string?
+                         :producer :instance/producer)
                :3 (s/cat :ev :ev/event
                          :topic string?
-                         :producer any?)
-               :4 (s/cat :ev :ev/event
-                         :topic string?
                          :k uuid?
-                         :producer any?)))
+                         :producer :instance/producer)))
 
 (comment
 
@@ -202,10 +202,11 @@
   (stest/instrument `send-event)
   (stest/unstrument `send-event)
 
-  (def ev (gen/sample (s/gen :ev/event) 1))
+  (def ev (first (gen/sample (s/gen :ev/event) 1)))
 
-  (instance? org.apache.kafka.clients.producer.KafkaProducer nil)
-  (send-event ev nil)
+  (instance? (resolve 'org.apache.kafka.clients.producer.KafkaProducer) nil)
+  (resolve 'org.apache.kafka.clients.producer.KafkaProducer)
+  (send-event ev {})
   (send-event ev "asd" nil)
   (send-event ev)
 

@@ -1,5 +1,6 @@
 (ns app.alpha.repl
   (:require [clojure.pprint :as pp]
+            [clojure.spec.alpha :as s]
             [app.alpha.spec :as spec]
 
             [app.alpha.core :refer [create-topics list-topics
@@ -121,7 +122,7 @@
                   "key.serializer" "app.kafka.serdes.TransitJsonSerializer"
                   "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
   
-  (instance? org.apache.kafka.clients.producer.KafkaProducer producer)
+  (s/explain :instance/producer producer)
 
   (def games {:a #uuid "15108e92-959d-4089-98fe-b92bb7c571db"
               :b #uuid "461b65a8-0f24-46c9-8248-4bf6d7e1aa1a"})
