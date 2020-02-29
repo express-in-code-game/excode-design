@@ -19,7 +19,7 @@ term(){
   dc exec $1 bash -c "bash;"
 }
 
-rm_volume(){
+remove_volumes(){
   docker volume rm starnet.kafka
 }
 

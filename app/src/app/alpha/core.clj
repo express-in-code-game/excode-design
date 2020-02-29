@@ -89,22 +89,12 @@
   (list-topics {:props props})
 
   (delete-topics {:props props :names topics})
-  
+
   (def producer (KafkaProducer.
                  {"bootstrap.servers" "broker1:9092"
                   "auto.commit.enable" "true"
-                  "key.serializer" "org.apache.kafka.common.serialization.StringSerializer"
+                  "key.serializer" "app.kafka.serdes.TransitJsonSerializer"
                   "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
-
-  (def users {0 (.toString #uuid "5ada3765-0393-4d48-bad9-fac992d00e62")
-              1 (.toString #uuid "179c265a-7f72-4225-a785-2d048d575854")
-              2 (.toString #uuid "3a3e2d06-3719-4811-afec-0dffdec35543")})
-
-  (.send producer (ProducerRecord.
-                   "game.events"
-                   (get users 0)
-                   :game-event-here))
-
 
   ;;
   )
