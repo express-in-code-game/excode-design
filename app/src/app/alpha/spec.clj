@@ -97,12 +97,12 @@
 (s/def :u/uuid uuid?)
 (s/def :record/uuid uuid?)
 (s/def :u/username string?)
-(s/def :u/email (s/with-gen (s/and string? #(re-matches email-regex %))
-                  (fn []
-                    (gen/fmap (fn [s1]
-                                (str s1 "@gmail.com"))
-                              (gen/such-that #(not= % "")
-                                             (gen/string-alphanumeric))))))
+(s/def :u/email (s/with-gen
+                  (s/and string? #(re-matches email-regex %))
+                  #(gen/fmap (fn [s]
+                               (str s "@gmail.com"))
+                             (gen/such-that (fn [s] (not= s ""))
+                                            (gen/string-alphanumeric)))))
 
 #_(gen/sample (s/gen :u/email))
 
