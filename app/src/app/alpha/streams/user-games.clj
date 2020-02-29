@@ -3,7 +3,9 @@
 
 (comment
   
-  ; ktable of :u/uuid -> (list-of :g/uuids or :g/states or :g/substates)
+  ; ktable of :u/uuid -> (list-of :g/uuids )
+  ; request for list of user games will read from the store using uuids
+  ; client will sort/group by host/player/observer
   
   ;;
   )
