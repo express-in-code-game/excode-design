@@ -235,9 +235,15 @@
   [ev topic uuidkey kproducer]
   [:ev :topic :uuidkey :kproducer])
 
+(s/fdef send-event
+  :args (s/cat :ev :ev/event
+               :args (s/* any?)))
+
 (comment
 
   (ns-unmap *ns* 'send-event)
+  (stest/unstrument `send-event)
+  (stest/instrument `send-event)
 
   (def producer (KafkaProducer.
                  {"bootstrap.servers" "broker1:9092"
@@ -252,6 +258,11 @@
   (send-event ev (java.util.UUID/randomUUID) producer)
   (send-event ev "a-topic" (java.util.UUID/randomUUID) producer)
 
+
+  (send-event {:ev/type "hello"} producer)
+  (send-event {} "a-topic" producer)
+
+  (s/explain :ev/event ev)
 
   (type (java.util.UUID/randomUUID))
   (class (java.util.UUID/randomUUID))
