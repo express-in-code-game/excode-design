@@ -222,18 +222,30 @@
   (fn [ev & args]
     (mapv type (into [ev] args))))
 
-(defmethod send-event [Object :isa/producer] 
-  [ev kproducer] 
-  [:ev :kproducer])
-(defmethod send-event [Object String :isa/producer] 
-  [ev topic kproducer] 
-  [:ev :topic :kproducer])
-(defmethod send-event [Object :isa/uuid :isa/producer]
+(defmethod send-event [Object :isa/kproducer]
+  [ev kproducer]
+  (.send kproducer
+         (event-to-topic ev)
+         (event-to-recordkey ev)
+         ev))
+(defmethod send-event [Object String :isa/kproducer]
+  [ev topic kproducer]
+  (.send kproducer
+         topic
+         (event-to-recordkey ev)
+         ev))
+(defmethod send-event [Object :isa/uuid :isa/kproducer]
   [ev uuidkey kproducer]
-  [:ev :uuidkey :kproducer])
-(defmethod send-event [Object String :isa/uuid :isa/producer]
+  (.send kproducer
+         (event-to-topic ev)
+         uuidkey
+         ev))
+(defmethod send-event [Object String :isa/uuid :isa/kproducer]
   [ev topic uuidkey kproducer]
-  [:ev :topic :uuidkey :kproducer])
+  (.send kproducer
+         topic
+         uuidkey
+         ev))
 
 (s/fdef send-event
   :args (s/cat :ev :ev/event
@@ -252,7 +264,7 @@
                   "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
   (def ev (first (gen/sample (s/gen :ev/event) 1)))
 
-  (isa? (class producer) :isa/producer)
+  (isa? (class producer) :isa/kproducer)
   (send-event ev producer)
   (send-event ev "a-topic" producer)
   (send-event ev (java.util.UUID/randomUUID) producer)

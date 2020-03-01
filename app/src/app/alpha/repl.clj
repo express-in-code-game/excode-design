@@ -5,7 +5,8 @@
 
             [app.alpha.core :refer [create-topics list-topics
                                     delete-topics produce-event
-                                    delete-record future-call-consumer]]
+                                    delete-record future-call-consumer
+                                    send-event]]
             [app.alpha.part :as part]
             [app.alpha.streams.users :as streams-users]
             [app.alpha.streams.games :as streams-games]
@@ -116,12 +117,12 @@
 
   (delete-topics {:props props :names topics})
 
-  (def producer (KafkaProducer.
-                 {"bootstrap.servers" "broker1:9092"
-                  "auto.commit.enable" "true"
-                  "key.serializer" "app.kafka.serdes.TransitJsonSerializer"
-                  "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
-  
+  (def p (KafkaProducer.
+          {"bootstrap.servers" "broker1:9092"
+           "auto.commit.enable" "true"
+           "key.serializer" "app.kafka.serdes.TransitJsonSerializer"
+           "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
+
   (s/explain :instance/producer producer)
 
   (def games {:a #uuid "15108e92-959d-4089-98fe-b92bb7c571db"
@@ -133,6 +134,9 @@
   (def observers {:a #uuid "46855899-838a-45fd-98b4-c76c08954645"
                   :b #uuid "ea1162e3-fe45-4652-9fa9-4f8dc6c78f71"
                   :c #uuid "4cd4b905-6859-4c22-bae7-ad5ec51dc3f8"})
+
+  (send-event {:ev/type :ev.g.u/create
+               :u/uuid (:a users)} p)
 
   (produce-event
    "alpha.games"
