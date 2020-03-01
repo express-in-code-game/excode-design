@@ -150,6 +150,9 @@
   (send-event  1 1)
   (send-event  {} 1)
   (send-event  {} 1 "asd")
+  
+  (send-event :a)
+  (send-event :a :b)
 
   (s/fdef send-event
     :args (s/alt :0 (s/cat)
