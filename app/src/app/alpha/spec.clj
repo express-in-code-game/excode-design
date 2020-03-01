@@ -17,8 +17,8 @@
 (derive org.apache.kafka.clients.consumer.KafkaConsumer :isa/kconsumer)
 (derive clojure.lang.Keyword :isa/keyword)
 
-(s/def :instance/producer #(instance? org.apache.kafka.clients.producer.KafkaProducer %))
-(s/def :instance/consumer #(instance? org.apache.kafka.clients.consumer.KafkaConsumer %))
+(s/def :instance/kproducer #(instance? org.apache.kafka.clients.producer.KafkaProducer %))
+(s/def :instance/kconsumer #(instance? org.apache.kafka.clients.consumer.KafkaConsumer %))
 
 
 (s/def :g.e/uuid uuid?)

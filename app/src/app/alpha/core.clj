@@ -103,7 +103,10 @@
                    k
                    event)))
 (s/fdef produce-event
-  :args (s/cat :producer some? :topic string? :k (s/alt :uuid uuid? :string string?) :event :ev/event))
+  :args (s/cat :producer :instance/kproducer
+               :topic string?
+               :k (s/alt :uuid uuid? :string string?)
+               :event :ev/event))
 
 (defn delete-record
   [producer topic k]
@@ -225,27 +228,31 @@
 (defmethod send-event [Object :isa/kproducer]
   [ev kproducer]
   (.send kproducer
-         (event-to-topic ev)
-         (event-to-recordkey ev)
-         ev))
+         (ProducerRecord.
+          (event-to-topic ev)
+          (event-to-recordkey ev)
+          ev)))
 (defmethod send-event [Object String :isa/kproducer]
   [ev topic kproducer]
   (.send kproducer
-         topic
-         (event-to-recordkey ev)
-         ev))
+         (ProducerRecord.
+          topic-evtype-map
+          (event-to-recordkey ev)
+          ev)))
 (defmethod send-event [Object :isa/uuid :isa/kproducer]
   [ev uuidkey kproducer]
   (.send kproducer
-         (event-to-topic ev)
-         uuidkey
-         ev))
+         (ProducerRecord.
+          (event-to-topic ev)
+          uuidkey
+          ev)))
 (defmethod send-event [Object String :isa/uuid :isa/kproducer]
   [ev topic uuidkey kproducer]
   (.send kproducer
-         topic
-         uuidkey
-         ev))
+         (ProducerRecord.
+          topic
+          uuidkey
+          ev)))
 
 (s/fdef send-event
   :args (s/cat :ev :ev/event
