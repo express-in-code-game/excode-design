@@ -161,57 +161,105 @@
   (-> ev :ev/type evtype-topic-map))
 
 
-(defn send-event
-  "Send kafka event. Topic is mapped by ev/type."
-  {:arglists '([ev producer] 
-               [ev topic producer]
-               [ev recordkey topic producer])}
-  ([ev producer]
-   [:ev :producer]
-   (.send producer
-          (event-to-topic ev)
-          (event-to-recordkey ev)
-          ev))
-  ([ev topic producer]
-   [:ev :topic :producer]
-   (.send producer
-          topic
-          (event-to-recordkey ev)
-          ev))
-  ([ev k topic producer]
-   [:ev :topic :producer]
-   (.send producer
-          topic
-          k
-          ev)))
+#_(defn send-event
+    "Send kafka event. Topic is mapped by ev/type."
+    {:arglists '([ev producer]
+                 [ev topic producer]
+                 [ev recordkey topic producer])}
+    ([ev producer]
+     [:ev :producer]
+     (.send producer
+            (event-to-topic ev)
+            (event-to-recordkey ev)
+            ev))
+    ([ev topic producer]
+     [:ev :topic :producer]
+     (.send producer
+            topic
+            (event-to-recordkey ev)
+            ev))
+    ([ev k topic producer]
+     [:ev :topic :producer]
+     (.send producer
+            topic
+            k
+            ev)))
 
-(s/fdef send-event
-  :args (s/alt :1 (s/cat :ev :ev/event
-                         :producer :instance/producer)
-               :2 (s/cat :ev :ev/event
-                         :topic string?
-                         :producer :instance/producer)
-               :3 (s/cat :ev :ev/event
-                         :topic string?
-                         :k uuid?
-                         :producer :instance/producer)))
+#_(s/fdef send-event
+    :args (s/alt :1 (s/cat :ev :ev/event
+                           :producer :instance/producer)
+                 :2 (s/cat :ev :ev/event
+                           :topic string?
+                           :producer :instance/producer)
+                 :3 (s/cat :ev :ev/event
+                           :topic string?
+                           :k uuid?
+                           :producer :instance/producer)))
+
+#_(comment
+
+    (ns-unmap *ns* 'send-event)
+    (stest/instrument `send-event)
+    (stest/unstrument `send-event)
+
+    (def ev (first (gen/sample (s/gen :ev/event) 1)))
+
+    (instance? (resolve 'org.apache.kafka.clients.producer.KafkaProducer) nil)
+    (resolve 'org.apache.kafka.clients.producer.KafkaProducer)
+    (send-event ev {})
+    (send-event ev "asd" nil)
+    (send-event ev)
+
+  ;;
+    )
+
+(defmulti send-event
+  "Send kafka event. Topic is mapped by ev/type."
+  {:arglists '([ev kafka-producer]
+               [ev topic kafka-producer]
+               [ev recordkey-uuid kafka-producer]
+               [ev recordkey topic kafka-producer])}
+  (fn [ev & args]
+    (mapv type (into [ev] args))))
+
+(defmethod send-event [Object :isa/producer] [ev p] [:ev :producer])
+(defmethod send-event [Object String :isa/producer] [ev topic kprod] [:ev :topic :producer])
+(defmethod send-event [Object :isa/uuid :isa/producer] [ev key kprod] [:ev :uuid :producer])
 
 (comment
 
   (ns-unmap *ns* 'send-event)
-  (stest/instrument `send-event)
-  (stest/unstrument `send-event)
 
+  (def producer (KafkaProducer.
+                 {"bootstrap.servers" "broker1:9092"
+                  "auto.commit.enable" "true"
+                  "key.serializer" "app.kafka.serdes.TransitJsonSerializer"
+                  "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
   (def ev (first (gen/sample (s/gen :ev/event) 1)))
 
-  (instance? (resolve 'org.apache.kafka.clients.producer.KafkaProducer) nil)
-  (resolve 'org.apache.kafka.clients.producer.KafkaProducer)
-  (send-event ev {})
-  (send-event ev "asd" nil)
-  (send-event ev)
+  (isa? (class producer) :isa/producer)
+  (send-event ev producer)
+  (send-event ev "a-topic" producer)
+  (send-event ev (java.util.UUID/randomUUID) producer)
+
+
+  (type (java.util.UUID/randomUUID))
+  (class (java.util.UUID/randomUUID))
+  (= (type (java.util.UUID/randomUUID)) (class (java.util.UUID/randomUUID)))
+
+  (class 1)
+  (type "")
+  (type {})
+  (isa? nil Object)
+  (ancestors (class nil))
+  (ancestors (class {}))
 
   ;;
   )
+
+
+
+
 
 
 

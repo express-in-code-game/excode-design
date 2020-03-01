@@ -10,6 +10,12 @@
    org.apache.kafka.clients.consumer.KafkaConsumer
    ))
 
+(derive java.util.Map :isa/map)
+(derive java.util.Set :isa/set)
+(derive java.util.UUID :isa/uuid)
+(derive org.apache.kafka.clients.producer.KafkaProducer :isa/producer)
+(derive org.apache.kafka.clients.consumer.KafkaConsumer :isa/consumer)
+(derive clojure.lang.Keyword :isa/keyword)
 
 (s/def :instance/producer #(instance? org.apache.kafka.clients.producer.KafkaProducer %))
 (s/def :instance/consumer #(instance? org.apache.kafka.clients.consumer.KafkaConsumer %))

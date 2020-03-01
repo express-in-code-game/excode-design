@@ -27,20 +27,24 @@
   ;;
   )
 
-(derive java.lang.Object ::object)
-(derive java.util.Map ::map)
-(derive java.util.Collection ::coll)
-(derive (class :a-keyword) ::key)
+(comment
 
-(defmulti get-state (fn [ctx part] [(class ctx) (class part)]))
-(defmethod get-state [::map ::map] [ctx part] :map-map)
-(defmethod get-state [::map ::key] [ctx part] :map-key)
-(defmethod get-state [::object ::object] [ctx part] :objects)
-(defmethod get-state [::object java.lang.Comparable] [ctx part] :object-comparable)
-(prefer-method get-state [::object java.lang.Comparable] [::object ::object])
-(prefer-method get-state  [::map ::map] [::object ::object])
-#_(defmethod get-state :default [ctx part] :oops)
+  (derive java.lang.Object ::object)
+  (derive java.util.Map ::map)
+  (derive java.util.Collection ::coll)
+  (derive (class :a-keyword) ::key)
 
+  (defmulti get-state (fn [ctx part] [(class ctx) (class part)]))
+  (defmethod get-state [::map ::map] [ctx part] :map-map)
+  (defmethod get-state [::map ::key] [ctx part] :map-key)
+  (defmethod get-state [::object ::object] [ctx part] :objects)
+  (defmethod get-state [::object java.lang.Comparable] [ctx part] :object-comparable)
+  (prefer-method get-state [::object java.lang.Comparable] [::object ::object])
+  (prefer-method get-state  [::map ::map] [::object ::object])
+  #_(defmethod get-state :default [ctx part] :oops)
+
+  ;;
+  )
 
 
 
