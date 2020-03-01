@@ -129,6 +129,9 @@
 
 
   (ns-unmap *ns* 'send-event)
+  (stest/unstrument `send-event)
+  (stest/instrument `send-event)
+  
   (defmulti send-event
     "send event to kafka"
     {:arglists '([] [topic] [topic a-num] [a-num topic])}
@@ -142,18 +145,6 @@
   (defmethod send-event [2  [java.util.Map Number]] [& args] [:map :number])
   (defmethod send-event [3  [java.util.Map Number String]] [& args] [:map :number :string])
 
-  (send-event)
-  (send-event 1)
-  (send-event "asd")
-  (send-event "asd" 1)
-  (send-event  1 "asd")
-  (send-event  1 1)
-  (send-event  {} 1)
-  (send-event  {} 1 "asd")
-  
-  (send-event :a)
-  (send-event :a :b)
-
   (s/fdef send-event
     :args (s/alt :0 (s/cat)
                  :number (s/cat :a number?)
@@ -164,8 +155,21 @@
                  :map-number (s/cat :a map? :b number?)
                  :map-number-string (s/cat :a map? :b number? :c string?)))
 
-  (stest/instrument `send-event)
-  (stest/unstrument `send-event)
+  (send-event)
+  (send-event 1)
+  (send-event "asd")
+  (send-event "asd" 1)
+  (send-event  1 "asd")
+  (send-event  1 1)
+  (send-event  {} 1)
+  (send-event  {} 1 "asd")
+
+  (send-event :a)
+  (send-event :a :b)
+
+
+
+
 
   ;;
   )

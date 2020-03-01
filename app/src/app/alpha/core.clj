@@ -236,8 +236,10 @@
   [:ev :topic :uuidkey :kproducer])
 
 (s/fdef send-event
-  :args (s/cat :ev :ev/event
-               :args (s/* any?)))
+  :args (s/alt :0 (s/cat)
+               :1 (s/cat :ev :ev/event)
+               :2 (s/cat :ev :ev/event
+                         :args (s/* any?))))
 
 (comment
 
