@@ -236,10 +236,8 @@
   [:ev :topic :uuidkey :kproducer])
 
 (s/fdef send-event
-  :args (s/alt :0 (s/cat)
-               :1 (s/cat :ev :ev/event)
-               :2 (s/cat :ev :ev/event
-                         :args (s/* any?))))
+  :args (s/cat :ev :ev/event
+               :args (s/* any?)))
 
 (comment
 
@@ -261,8 +259,12 @@
   (send-event ev "a-topic" (java.util.UUID/randomUUID) producer)
 
 
-  (send-event {:ev/type "hello"} producer)
-  (send-event {} "a-topic" producer)
+  (send-event {:ev/type :ev.g.u/join1
+               :u/uuid #uuid "e61b2def-ce9f-4537-8c88-cae912952534"
+               :g/uuid #uuid "0de9033b-d80c-49e6-a260-ffd0d654eb2d"} producer)
+  
+  (send-event {} "a-topic" producer) ; correct - no method at :ev/event
+  (send-event ev "a-topic" nil)
 
   (s/explain :ev/event ev)
 
