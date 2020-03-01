@@ -134,6 +134,7 @@
     {:arglists '([] [topic] [topic a-num] [a-num topic])}
     (fn [& args] [(count args) (mapv class args)]))
   (defmethod send-event [0 []] [& args] [])
+  (defmethod send-event [1  [Number]]  [& args] [:number])
   (defmethod send-event [1  [String]]  [& args] [:string])
   (defmethod send-event [2  [String Number]] [& args] [:string :number])
   (defmethod send-event [2  [Number String]] [& args]  [:number :string])
@@ -142,32 +143,26 @@
   (defmethod send-event [3  [java.util.Map Number String]] [& args] [:map :number :string])
 
   (send-event)
+  (send-event 1)
   (send-event "asd")
   (send-event "asd" 1)
   (send-event  1 "asd")
   (send-event  1 1)
+  (send-event  {} 1)
   (send-event  {} 1 "asd")
 
   (s/fdef send-event
     :args (s/alt :0 (s/cat)
-                 :number (s/? (s/cat :a number?))
-                 :string-number (s/? (s/cat :a string? :b number?))
-                 :number-number (s/? (s/cat :a number? :b number?))
-                 :number-string (s/? (s/cat :a number? :b string?))))
-  
+                 :number (s/cat :a number?)
+                 :string (s/cat :a string?)
+                 :string-number (s/cat :a string? :b number?)
+                 :number-string (s/cat :a number? :b string?)
+                 :number-number (s/cat :a number? :b number?)
+                 :map-number (s/cat :a map? :b number?)
+                 :map-number-string (s/cat :a map? :b number? :c string?)))
+
   (stest/instrument `send-event)
   (stest/unstrument `send-event)
-
-  (s/alt)
-  (s/*)
-  (s/+)
-  (s/?)
-  (s/cat)
-  (s/or)
-  (s/every)
-  
-
-  (send-event  1 {})
 
   ;;
   )
