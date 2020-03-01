@@ -215,16 +215,25 @@
 
 (defmulti send-event
   "Send kafka event. Topic is mapped by ev/type."
-  {:arglists '([ev kafka-producer]
-               [ev topic kafka-producer]
-               [ev recordkey-uuid kafka-producer]
-               [ev recordkey topic kafka-producer])}
+  {:arglists '([ev kproducer]
+               [ev topic kproducer]
+               [ev uuidkey kproducer]
+               [ev topic uuidkey kproducer])}
   (fn [ev & args]
     (mapv type (into [ev] args))))
 
-(defmethod send-event [Object :isa/producer] [ev p] [:ev :producer])
-(defmethod send-event [Object String :isa/producer] [ev topic kprod] [:ev :topic :producer])
-(defmethod send-event [Object :isa/uuid :isa/producer] [ev key kprod] [:ev :uuid :producer])
+(defmethod send-event [Object :isa/producer] 
+  [ev kproducer] 
+  [:ev :kproducer])
+(defmethod send-event [Object String :isa/producer] 
+  [ev topic kproducer] 
+  [:ev :topic :kproducer])
+(defmethod send-event [Object :isa/uuid :isa/producer]
+  [ev uuidkey kproducer]
+  [:ev :uuidkey :kproducer])
+(defmethod send-event [Object String :isa/uuid :isa/producer]
+  [ev topic uuidkey kproducer]
+  [:ev :topic :uuidkey :kproducer])
 
 (comment
 
@@ -241,6 +250,7 @@
   (send-event ev producer)
   (send-event ev "a-topic" producer)
   (send-event ev (java.util.UUID/randomUUID) producer)
+  (send-event ev "a-topic" (java.util.UUID/randomUUID) producer)
 
 
   (type (java.util.UUID/randomUUID))
