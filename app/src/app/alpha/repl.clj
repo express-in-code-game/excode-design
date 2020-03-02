@@ -190,7 +190,7 @@
   (.cleanUp streams-game)
   (def store-game (.store streams-game "alpha.game.streams.store" (QueryableStoreTypes/keyValueStore)))
 
-  (read-store store-game :fval  #(select-keys % [:g/uuid :g/status :g/start-inst :g/status1]))
+  (read-store store-game :fval  #(select-keys % [:g/uuid :g/status :g/start-inst ]))
 
   (send-event {:ev/type :ev.g.u/create
                :u/uuid  (get users 0)}
@@ -204,8 +204,7 @@
   (send-event {:ev/type :ev.g.u/configure
                :u/uuid (get users 0)
                :g/uuid (get games 0)
-               :g/status :started
-               :g/status1 :opened}
+               :g/status :started}
               p)
 
 

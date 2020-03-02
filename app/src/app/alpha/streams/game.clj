@@ -98,13 +98,8 @@
   [state k ev]
   nil)
 
-(defn tmpfn-
-  [state k ev]
-  (println "; some-fn called1"))
-
 (defmethod next-state [:ev.g.u/configure]
   [state k ev]
-  #_(tmpfn- state k ev)
   (merge state ev))
 
 (defmethod next-state [:ev.g.u/start]
@@ -128,12 +123,13 @@
   state)
 
 (s/fdef next-state
-  :args (s/cat :state (s/nilable :g/game)
-               :k uuid?
-               :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
+    :args (s/cat :state (s/nilable :g/game)
+                 :k uuid?
+                 :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
 
 (comment
-
+  (gensym "tmp")
+  
   (ns-unmap *ns* 'next-state)
 
   (stest/instrument [`next-state])
@@ -208,7 +204,8 @@
   (.close streams)
   (.cleanUp streams)
 
-  (java.util.UUID/randomUUID)
+  (isa? (class {}) java.util.Map)
+
 
   (def players {0 #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
                 1 #uuid "179c265a-7f72-4225-a785-2d048d575854"})
@@ -246,6 +243,6 @@
     (println (.key x) (.value x)))
   (.get readonly-store (get players 0))
 
-
+  (java.util.UUID/randomUUID)
   ;;
   )
