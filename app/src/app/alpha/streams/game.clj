@@ -127,7 +127,8 @@
                  :k uuid?
                  :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
 
-(defn assert-next-state [state] {:post [(s/assert :g/game %)]} state)
+
+(defn assert-next-state [state] {:post [(s/explain :g/game %)]} state)
 
 (comment
   (gensym "tmp")
@@ -153,10 +154,21 @@
   (next-state state (merge ev-p {:p/uuid "asd"}))
 
 
-
+  (def a-game (gen/generate (s/gen :g/game)))
+  (def ev {:ev/type :ev.g.u/configure
+           :u/uuid (java.util.UUID/randomUUID)
+           :g/uuid (java.util.UUID/randomUUID)
+           :g/status :opened})
+  (def nv (next-state a-game (java.util.UUID/randomUUID) ev))
+  (def anv (assert-next-state nv))
+  (s/explain :g/game nv)
+  (s/explain-data :g/game anv)
+  (try
+    (next-state anv (java.util.UUID/randomUUID) ev)
+    (catch Exception e
+      (prn "hello")))
   ;;
   )
-
 
 (defn create-streams-game
   []
@@ -169,7 +181,11 @@
                                    nil))
                                (reify Aggregator
                                  (apply [this k v ag]
-                                   (assert-next-state (next-state ag k v))))
+                                        (println "; call create-streams-game aggregate ")
+                                        (try
+                                          (assert-next-state (next-state ag k v))
+                                          (catch Exception e (.printStackTrace e))
+                                          (finally ag))))
                                (-> (Materialized/as "alpha.game.streams.store")
                                    (.withKeySerde (TransitJsonSerde.))
                                    (.withValueSerde (TransitJsonSerde.))))
