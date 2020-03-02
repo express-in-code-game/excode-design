@@ -221,6 +221,22 @@
 (defmethod ev-game-user :ev.g.u/leave [x] :ev.g.u/leave)
 (s/def :ev.g.u/event (s/multi-spec ev-game-user :ev/type))
 
+
+
+(defmulti ev-game (fn [x] (:ev/type x)))
+(defmethod ev-game :ev.g.u/create [x] :ev.g.u/create)
+(defmethod ev-game :ev.g.u/delete [x] :ev.g.u/delete)
+(defmethod ev-game :ev.c/delete-record [x] :ev.c/delete-record)
+(defmethod ev-game :ev.g.u/configure [x] :ev.g.u/configure)
+(defmethod ev-game :ev.g.u/start [x] :ev.g.u/start)
+(defmethod ev-game :ev.g.u/join [x] :ev.g.u/join)
+(defmethod ev-game :ev.g.u/leave [x] :ev.g.u/leave)
+(defmethod ev-game :ev.g.p/move-cape [x] :ev.g.p/move-cape)
+(defmethod ev-game :ev.g.p/collect-tile-value [x] :ev.g.p/collect-tile-value)
+(defmethod ev-game :ev.g.a/finish-game [x] :ev.g.a/finish-game)
+(s/def :ev.g/event (s/multi-spec ev-game :ev/type))
+
+
 (defmulti ev-user (fn [x] (:ev/type x)))
 (defmethod ev-user :ev.u/create [x] :ev.u/create)
 (defmethod ev-user :ev.u/update [x] :ev.u/update)

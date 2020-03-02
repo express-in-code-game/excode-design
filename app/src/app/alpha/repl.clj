@@ -144,12 +144,11 @@
   (.cleanUp streams-user)
 
   (def store-user (.store streams-user "alpha.user.streams.store" (QueryableStoreTypes/keyValueStore)))
+  (.approximateNumEntries store-game)
+  (count (read-store store-user))
   (read-store store-user)
   (read-store store-user :offset 1 :limit 1 :intomap? true)
   (read-store store-user :offset 1 :limit 1 :intomap? false :fval #(select-keys % [:u/email]))
-
-  (.approximateNumEntries store-game)
-  (count (read-store store-user))
 
   (send-event {:ev/type :ev.u/create
                :u/uuid  (get users 0)
@@ -190,15 +189,13 @@
   (.close streams-game)
   (.cleanUp streams-game)
 
-
   (def store-game (.store streams-game "alpha.game.streams.store" (QueryableStoreTypes/keyValueStore)))
-
-
+  (read-store store-game :fval  #(select-keys % [:g/uuid :g/status :g/start-inst]))
 
   (send-event {:ev/type :ev.g.u/create
-               :u/uuid (:a players)} p)
-
-  (.get store-game (:a games))
+               :u/uuid  (get users 0)}
+              (get games 0) p)
+  (.get store-game (get games 0))
 
 
   ;;;

@@ -123,7 +123,7 @@
 (s/fdef next-state
   :args (s/cat :state (s/nilable :g/game)
                :k uuid?
-               :ev :ev.g.m/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
+               :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
 
 (comment
 
