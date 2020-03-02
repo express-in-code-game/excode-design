@@ -209,6 +209,7 @@
 (defmulti ev-game-user (fn [x] (:ev/type x)))
 (defmethod ev-game-user :ev.g.u/create [x] :ev.g.u/create)
 (defmethod ev-game-user :ev.g.u/delete [x] :ev.g.u/delete)
+(defmethod ev-game-user :ev.c/delete-record [x] :ev.c/delete-record)
 (defmethod ev-game-user :ev.g.u/configure [x] :ev.g.u/configure)
 (defmethod ev-game-user :ev.g.u/start [x] :ev.g.u/start)
 (defmethod ev-game-user :ev.g.u/join [x] :ev.g.u/join)

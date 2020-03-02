@@ -13,7 +13,7 @@
      :g/status :created
      :g/start-inst (java.util.Date.)
      :g/duration-ms 60000
-     :g/map-size [128 128]
+     :g/map-size [16 16]
      :g/roles {host-uuid {:g.r/host true
                           :g.r/player 0
                           :g.r/observer false}}
@@ -43,42 +43,46 @@
 (defmulti next-state
   "Returns the next state of the game."
   {:arglists '([state key event ])}
-  (fn [st k ev] [(:ev/type ev)]))
+  (fn [state k ev] [(:ev/type ev)]))
+
+(defmethod next-state [:ev.c/delete-record]
+  [state k ev]
+  nil)
 
 (defmethod next-state [:ev.g.u/create]
-  [st k ev]
+  [state k ev]
   (gen-default-game-state k ev))
 
 (defmethod next-state [:ev.g.u/delete]
-  [st k ev]
-  :ev.g.u/delete)
+  [state k ev]
+  nil)
 
 (defmethod next-state [:ev.g.u/configure]
-  [st k ev]
-  :ev.g.u/configure)
+  [state k ev]
+  state)
 
 (defmethod next-state [:ev.g.u/start]
-  [st k ev]
-  :ev.g.u/start)
+  [state k ev]
+  state)
 
 (defmethod next-state [:ev.g.u/join]
-  [st k ev]
-  :ev.g.u/join)
+  [state k ev]
+  state)
 
 (defmethod next-state [:ev.g.u/leave]
-  [st k ev]
-  :ev.g.u/leave)
+  [state k ev]
+  state)
 
 (defmethod next-state [:ev.g.p/move-cape]
-  [st k ev]
-  :a-move-cape-event)
+  [state k ev]
+  state)
 
 (defmethod next-state [:ev.g.a/finish-game]
-  [st k ev]
-  :a-finish-game-event)
+  [state k ev]
+  state)
 
 (s/fdef next-state
-  :args (s/cat :st :g/game
+  :args (s/cat :state :g/game
                :k uuid?
                :ev :ev.g.m/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
 

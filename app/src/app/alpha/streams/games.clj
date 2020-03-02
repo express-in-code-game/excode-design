@@ -56,9 +56,7 @@
                                    nil))
                                (reify Aggregator
                                  (apply [this k v ag]
-                                        (cond
-                                          (= (get v :ev/type) :ev.c/delete-record) nil
-                                          :else (next-state ag v k))))
+                                   (next-state ag k v)))
                                (-> (Materialized/as "alpha.game.streams.store")
                                    (.withKeySerde (TransitJsonSerde.))
                                    (.withValueSerde (TransitJsonSerde.))))
