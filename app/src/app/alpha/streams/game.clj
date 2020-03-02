@@ -100,7 +100,8 @@
 
 (defmethod next-state [:ev.g.u/configure]
   [state k ev]
-  (merge state ev {:g/uuid "hello"}))
+  (when state
+    (merge state ev)))
 
 (defmethod next-state [:ev.g.u/start]
   [state k ev]
@@ -122,10 +123,16 @@
   [state k ev]
   state)
 
+(defmethod next-state [:ev.g.p/collect-tile-value]
+  [state k ev]
+  state)
+
+
 (s/fdef next-state
-    :args (s/cat :state (s/nilable :g/game)
-                 :k uuid?
-                 :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
+  :args (s/cat :state (s/nilable :g/game)
+               :k uuid?
+               :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game))
+  :ret (s/nilable :g/game))
 
 
 (defn assert-next-state-post [state] {:post [(s/assert :g/game %)]} state)
@@ -137,6 +144,10 @@
       data)))
 
 (comment
+  
+  (stest/check `next-state)
+  (stest/summarize-results (stest/check `next-state))
+  
   (gensym "tmp")
 
   (ns-unmap *ns* 'next-state)
