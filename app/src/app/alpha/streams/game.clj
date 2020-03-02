@@ -128,7 +128,7 @@
                  :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
 
 
-(defn assert-next-state [state] {:post [(s/assert :g/game %)]} state)
+(defn assert-next-state-post [state] {:post [(s/assert :g/game %)]} state)
 
 (comment
   (gensym "tmp")
@@ -160,8 +160,8 @@
            :g/uuid (java.util.UUID/randomUUID)
            :g/status :opened})
   (def nv (next-state a-game (java.util.UUID/randomUUID) ev))
-  (def anv (assert-next-state nv))
-  (def anv (assert-next-state a-game))
+  (def anv (assert-next-state-post nv))
+  (def anv (assert-next-state-post a-game))
   (s/explain :g/game nv)
   (s/explain-data :g/game nv)
   (s/assert :g/game nv)
@@ -190,15 +190,12 @@
                                    nil))
                                (reify Aggregator
                                  (apply [this k v ag]
-                                   (println "; call create-streams-game aggregate ")
-                                   (println (type k))
-                                   (println (type v))
-                                   (println (type ag))
-                                   (try
-                                     (assert-next-state (next-state ag k v))
-                                     (catch Exception e
-                                       (println (ex-message e))
-                                       ag))))
+                                        (try
+                                          (assert-next-state-post (next-state ag k v))
+                                          (catch Exception e
+                                            #_(println (ex-message e))
+                                            (println e)
+                                            ag))))
                                (-> (Materialized/as "alpha.game.streams.store")
                                    (.withKeySerde (TransitJsonSerde.))
                                    (.withValueSerde (TransitJsonSerde.))))
