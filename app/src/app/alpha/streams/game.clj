@@ -129,10 +129,11 @@
 
 
 (defn assert-next-state-post [state] {:post [(s/assert :g/game %)]} state)
+(defn assert-next-state-in [state] (s/assert :g/game state))
 
 (comment
   (gensym "tmp")
-  
+
   (ns-unmap *ns* 'next-state)
 
   (stest/instrument [`next-state])
@@ -162,20 +163,20 @@
   (def nv (next-state a-game (java.util.UUID/randomUUID) ev))
   (def anv (assert-next-state-post nv))
   (def anv (assert-next-state-post a-game))
+  (def anv (assert-next-state-in nv))
   (s/explain :g/game nv)
   (s/explain-data :g/game nv)
   (s/assert :g/game nv)
   (s/assert :g/game a-game)
   (s/check-asserts?)
   (s/check-asserts true)
-  
+
+
   (try
-    (s/assert :g/game nv)
+    (assert-next-state-in nv)
     (catch Exception e
       #_(println e)
-      (println (ex-message e))
-      #_(println (ex-data e))
-      #_(println e)))
+      (println (ex-message e))))
   ;;
   )
 
@@ -193,8 +194,8 @@
                                         (try
                                           (assert-next-state-post (next-state ag k v))
                                           (catch Exception e
-                                            #_(println (ex-message e))
-                                            (println e)
+                                            (println (ex-message e))
+                                            #_(println e)
                                             ag))))
                                (-> (Materialized/as "alpha.game.streams.store")
                                    (.withKeySerde (TransitJsonSerde.))
