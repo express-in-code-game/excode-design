@@ -138,9 +138,13 @@
                             :opt []))
 (s/def :ev.u/update (s/keys :req [:ev/type]
                                  :opt [:u/email :u/username]))
-
+(s/def :ev.u/delete (s/keys :req [:ev/type]
+                            :opt []))
 (s/def :ev.g.u/create (s/keys :req [:ev/type :u/uuid]
                                  :opt []))
+
+(s/def :ev.g.u/delete (s/keys :req [:ev/type]
+                              :opt []))
 
 (s/def :ev.g.u/delete (s/keys :req [:ev/type :u/uuid :g/uuid]
                                  :opt []))
@@ -179,6 +183,7 @@
 (defmulti ev (fn [x] (:ev/type x)))
 (defmethod ev :ev.u/create [x] :ev.u/create)
 (defmethod ev :ev.u/update [x] :ev.u/update)
+(defmethod ev :ev.u/delete [x] :ev.u/delete)
 (defmethod ev :ev.g.u/create [x] :ev.g.u/create)
 (defmethod ev :ev.g.u/delete [x] :ev.g.u/delete)
 (defmethod ev :ev.g.u/configure [x] :ev.g.u/configure)
@@ -219,6 +224,7 @@
 (defmulti ev-user (fn [x] (:ev/type x)))
 (defmethod ev-user :ev.u/create [x] :ev.u/create)
 (defmethod ev-user :ev.u/update [x] :ev.u/update)
+(defmethod ev-user :ev.u/delete [x] :ev.u/delete)
 (s/def :ev.u/event (s/multi-spec ev-user :ev/type))
 
 (comment

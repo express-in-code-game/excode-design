@@ -91,7 +91,7 @@
                 1 #uuid "ea1162e3-fe45-4652-9fa9-4f8dc6c78f71"
                 2 #uuid "4cd4b905-6859-4c22-bae7-ad5ec51dc3f8"})
 
-(defn print-store
+(defn store-seq
   [store]
   (doseq [x (iterator-seq (.all store))]
     (println (.key x))
@@ -129,6 +129,9 @@
 
   (def store-user (.store streams-user "alpha.user.streams.store" (QueryableStoreTypes/keyValueStore)))
   (print-store store-user)
+  
+  (seq (iterator-seq (.all store-user)))
+  (ancestors (class (.all store-user)))
   (.approximateNumEntries store-game)
   (count (iterator-seq (.all store-game)))
 
@@ -136,18 +139,23 @@
                :u/uuid  (get users 0)
                :u/email "user0@gmail.com"
                :u/username "user0"} p)
+  (.get store-user (get users 0))
 
   (send-event {:ev/type :ev.u/create
                :u/uuid  (get users 1)
                :u/email "user1@gmail.com"
                :u/username "user1"} p)
+  (.get store-user (get users 1))
 
-  (send-event {:ev/type :ev.u/create
+  (send-event {:ev/type :ev.u/update
                :u/uuid  (get users 1)
                :u/email "user1@gmail.com"
-               :u/username "user1"} p)
+               :u/username "user12"} p)
+  (.get store-user (get users 1))
 
-
+  (send-event {:ev/type :ev.u/delete
+               :u/uuid  (get users 0)} p)
+  (.get store-user (get users 0))
 
 
   (def fu-consumer-user-changes

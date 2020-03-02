@@ -12,7 +12,6 @@
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer
    app.kafka.serdes.TransitJsonSerde
-
    org.apache.kafka.common.serialization.Serdes
    org.apache.kafka.streams.KafkaStreams
    org.apache.kafka.streams.StreamsBuilder
@@ -30,33 +29,38 @@
    org.apache.kafka.streams.kstream.ValueMapper
    org.apache.kafka.streams.kstream.KeyValueMapper
    org.apache.kafka.streams.KeyValue
-
    org.apache.kafka.streams.kstream.Materialized
    org.apache.kafka.streams.kstream.Produced
    org.apache.kafka.streams.kstream.Reducer
    org.apache.kafka.streams.kstream.Grouped
    org.apache.kafka.streams.state.QueryableStoreTypes
-
    org.apache.kafka.streams.kstream.Initializer
    org.apache.kafka.streams.kstream.Aggregator
-
    java.util.ArrayList
    java.util.Locale
    java.util.Arrays))
 
 
-(defmulti next-state (fn [st ev] [(:ev/type ev)]))
+(defmulti next-state 
+  "Returns next state of the user record"
+  {:arglists '([state key event])}
+  (fn [state k ev] [(:ev/type ev)]))
 
 (defmethod next-state [:ev.u/create]
-  [st ev]
-  :ev.u/create)
+  [state k ev]
+  ev)
 
 (defmethod next-state [:ev.u/update]
-  [st ev]
-  :ev.u/update)
+  [state k ev]
+  (merge state ev))
+
+(defmethod next-state [:ev.u/delete]
+  [state k ev]
+  nil)
 
 (s/fdef next-state
-  :args (s/cat :st :u/user
+  :args (s/cat :state (s/nilable :u/user)
+               :k uuid?
                :ev :ev.u/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
 
 (comment
@@ -80,7 +84,6 @@
 
   (next-state state (merge ev-p {:p/uuid "asd"}))
 
-
   ;;
   )
 
@@ -95,10 +98,7 @@
                                    nil))
                                (reify Aggregator
                                  (apply [this k v ag]
-                                   (println k v)
-                                   (cond
-                                     (= (get v :event/type) :event/delete-record) nil
-                                     :else (merge ag v))))
+                                        (next-state ag k v)))
                                (-> (Materialized/as "alpha.user.streams.store")
                                    (.withKeySerde (TransitJsonSerde.))
                                    (.withValueSerde (TransitJsonSerde.))))
