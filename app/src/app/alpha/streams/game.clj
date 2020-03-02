@@ -100,7 +100,7 @@
 
 (defmethod next-state [:ev.g.u/configure]
   [state k ev]
-  (merge state ev))
+  (merge state ev {:g/uuid "hello"}))
 
 (defmethod next-state [:ev.g.u/start]
   [state k ev]
@@ -126,6 +126,8 @@
     :args (s/cat :state (s/nilable :g/game)
                  :k uuid?
                  :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
+
+(defn assert-next-state [state] {:post [(s/assert :g/game %)]} state)
 
 (comment
   (gensym "tmp")
@@ -167,7 +169,7 @@
                                    nil))
                                (reify Aggregator
                                  (apply [this k v ag]
-                                   (next-state ag k v)))
+                                   (assert-next-state (next-state ag k v))))
                                (-> (Materialized/as "alpha.game.streams.store")
                                    (.withKeySerde (TransitJsonSerde.))
                                    (.withValueSerde (TransitJsonSerde.))))
