@@ -6,42 +6,80 @@
             [app.alpha.spec :refer [gen-ev-p-move-cape
                                     gen-ev-a-finish-game]]))
 
-(defmulti next-state (fn [st ev] [(:ev/type ev)]))
+(defn gen-default-game-state
+  [k ev]
+  (let [host-uuid (:u/uuid ev)]
+    {:g/uuid k
+     :g/status :created
+     :g/start-inst (java.util.Date.)
+     :g/duration-ms 60000
+     :g/map-size [128 128]
+     :g/roles {host-uuid {:g.r/host true
+                          :g.r/player 0
+                          :g.r/observer false}}
+     :g/player-states {0 {:g.p/entities {:g.p/cape {:g.e/type :g.e.type/cape
+                                                    :g.e/uuid (java.util.UUID/randomUUID)
+                                                    :g.e/pos [0 0]}}
+                          :g.p/sum 0}
+                       1 {:g.p/entities {:g.p/cape {:g.e/type :g.e.type/cape
+                                                    :g.e/uuid (java.util.UUID/randomUUID)
+                                                    :g.e/pos [0 15]}}
+                          :g.p/sum 0}}
+     :g/exit-teleports [{:g.e/type :g.e.type/teleport
+                         :g.e/uuid (java.util.UUID/randomUUID)
+                         :g.e/pos [15 0]}
+                        {:g.e/type :g.e.type/teleport
+                         :g.e/uuid (java.util.UUID/randomUUID)
+                         :g.e/pos [15 15]}]
+     :g/value-tiles (-> (mapcat (fn [x]
+                                  (mapv (fn [y]
+                                          {:g.e/uuid (java.util.UUID/randomUUID)
+                                           :g.e/type :g.e.type/value-tile
+                                           :g.e/pos [x y]
+                                           :g.e/numeric-value (inc (rand-int 10))}) (range 0 16)))
+                                (range 0 16))
+                        (vec))}))
 
-(defmethod next-state [:ev.g.p/move-cape]
-  [st ev]
-  :a-move-cape-event)
-
-(defmethod next-state [:ev.g.a/finish-game]
-  [st ev]
-  :a-finish-game-event)
+(defmulti next-state
+  "Returns the next state of the game."
+  {:arglists '([state key event ])}
+  (fn [st k ev] [(:ev/type ev)]))
 
 (defmethod next-state [:ev.g.u/create]
-  [st ev]
-  :ev.g.u/create)
+  [st k ev]
+  (gen-default-game-state k ev))
 
 (defmethod next-state [:ev.g.u/delete]
-  [st ev]
+  [st k ev]
   :ev.g.u/delete)
 
 (defmethod next-state [:ev.g.u/configure]
-  [st ev]
+  [st k ev]
   :ev.g.u/configure)
 
 (defmethod next-state [:ev.g.u/start]
-  [st ev]
+  [st k ev]
   :ev.g.u/start)
 
 (defmethod next-state [:ev.g.u/join]
-  [st ev]
+  [st k ev]
   :ev.g.u/join)
 
 (defmethod next-state [:ev.g.u/leave]
-  [st ev]
+  [st k ev]
   :ev.g.u/leave)
 
+(defmethod next-state [:ev.g.p/move-cape]
+  [st k ev]
+  :a-move-cape-event)
+
+(defmethod next-state [:ev.g.a/finish-game]
+  [st k ev]
+  :a-finish-game-event)
+
 (s/fdef next-state
-  :args (s/cat :st :g/state
+  :args (s/cat :st :g/game
+               :k uuid?
                :ev :ev.g.m/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
 
 (comment
@@ -51,7 +89,9 @@
   (stest/instrument [`next-state])
   (stest/unstrument [`next-state])
 
-  (def state (gen/generate (s/gen :g/state)))
+  (def state (gen/generate (s/gen :g/game)))
+  (def ev (first (gen/sample (s/gen :ev.g.u/create) 1)))
+  (s/explain :g/game (gen-default-game-state (java.util.UUID/randomUUID) ev))
 
   (def ev-p (gen/generate (s/gen :ev.p/move-cape)))
   (def ev-a (gen/generate (s/gen :ev.a/finish-game)))

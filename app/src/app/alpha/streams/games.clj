@@ -49,25 +49,24 @@
   []
   (let [builder (StreamsBuilder.)
         ktable (-> builder
-                   (.stream "alpha.game.events")
+                   (.stream "alpha.game")
                    (.groupByKey)
                    (.aggregate (reify Initializer
                                  (apply [this]
                                    nil))
                                (reify Aggregator
                                  (apply [this k v ag]
-                                   (println k v)
-                                   (cond
-                                     (= (get v :ev/type) :ev.c/delete-record) nil
-                                     :else (merge ag v))))
-                               (-> (Materialized/as "alpha.game.events.streams.store")
+                                        (cond
+                                          (= (get v :ev/type) :ev.c/delete-record) nil
+                                          :else (next-state ag v k))))
+                               (-> (Materialized/as "alpha.game.streams.store")
                                    (.withKeySerde (TransitJsonSerde.))
                                    (.withValueSerde (TransitJsonSerde.))))
                    (.toStream)
-                   (.to "alpha.game.events.changes"))
+                   (.to "alpha.game.changes"))
         topology (.build builder)
         props (doto (Properties.)
-                (.putAll {"application.id" "alpha.game.events.streams"
+                (.putAll {"application.id" "alpha.game.streams"
                           "bootstrap.servers" "broker1:9092"
                           "auto.offset.reset" "earliest" #_"latest"
                           "default.key.serde" "app.kafka.serdes.TransitJsonSerde"
@@ -127,7 +126,7 @@
                   "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
 
   (produce-event producer
-                 "alpha.game.events"
+                 "alpha.game"
                  (get players 0)
                  {:ev/type :ev.p/move-cape
                   :p/uuid  #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
@@ -137,11 +136,11 @@
                            :g.e/pos [1 1]}})
 
   (produce-event producer
-                 "alpha.game.events"
+                 "alpha.game"
                  (get players 0)
                  {:ev/type :ev.c/delete-record})
 
-  (def readonly-store (.store streams "alpha.game.events.streams.store"
+  (def readonly-store (.store streams "alpha.game.streams.store"
                               (QueryableStoreTypes/keyValueStore)))
 
   (count (iterator-seq (.all readonly-store)))

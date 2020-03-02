@@ -29,7 +29,7 @@
   (stest/instrument [`next-state])
   (stest/unstrument [`next-state])
 
-  (def state (gen/generate (s/gen :g/state)))
+  (def state (gen/generate (s/gen :g/game)))
   (def u (gen/generate (s/gen :u/user)))
 
   (def ev-p (gen/generate (s/gen :ev.p/move-cape)))
