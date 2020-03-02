@@ -94,7 +94,10 @@
 (defn print-store
   [store]
   (doseq [x (iterator-seq (.all store))]
-    (println (.key x) (.value x))))
+    (println (.key x))
+    (println (select-keys (.value x) [:u/uuid :u/username :u/email
+                                      :g/uuid :g/status]))
+    (println ";")))
 
 (comment
 
