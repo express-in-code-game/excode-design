@@ -129,7 +129,12 @@
 
 
 (defn assert-next-state-post [state] {:post [(s/assert :g/game %)]} state)
-(defn assert-next-state-in [state] (s/assert :g/game state))
+(defn assert-next-state-body [state]
+  (let [data (s/conform :g/game state)]
+    (if (= data ::s/invalid)
+      (throw (ex-info "Invalid data"
+                      (select-keys (s/explain-data :g/game state) [::s/spec ::s/problems])))
+      data)))
 
 (comment
   (gensym "tmp")
@@ -163,20 +168,22 @@
   (def nv (next-state a-game (java.util.UUID/randomUUID) ev))
   (def anv (assert-next-state-post nv))
   (def anv (assert-next-state-post a-game))
-  (def anv (assert-next-state-in nv))
+  (def anv (assert-next-state-body nv))
   (s/explain :g/game nv)
-  (s/explain-data :g/game nv)
   (s/assert :g/game nv)
   (s/assert :g/game a-game)
   (s/check-asserts?)
   (s/check-asserts true)
 
+  (keys (s/explain-data :g/game nv))
+  (s/conform :g/game nv)
 
   (try
-    (assert-next-state-in nv)
+    (assert-next-state-body nv)
     (catch Exception e
       #_(println e)
-      (println (ex-message e))))
+      (println (ex-message e))
+      (println (ex-data e))))
   ;;
   )
 
@@ -192,10 +199,10 @@
                                (reify Aggregator
                                  (apply [this k v ag]
                                         (try
-                                          (assert-next-state-post (next-state ag k v))
+                                          (assert-next-state-body (next-state ag k v))
                                           (catch Exception e
                                             (println (ex-message e))
-                                            #_(println e)
+                                            (println (ex-data e))
                                             ag))))
                                (-> (Materialized/as "alpha.game.streams.store")
                                    (.withKeySerde (TransitJsonSerde.))
