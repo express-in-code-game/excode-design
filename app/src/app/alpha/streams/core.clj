@@ -1,4 +1,4 @@
-(ns app.alpha.core
+(ns app.alpha.streams.core
   (:require [clojure.pprint :as pp]
             [app.alpha.spec :as spec]
             [clojure.spec.alpha :as s]

@@ -1,10 +1,13 @@
 (ns app.alpha.streams.user
   (:require [clojure.pprint :as pp]
-            [app.alpha.core :refer [add-shutdown-hook
-                                    produce-event
-                                    create-user]]
-            [app.alpha.data.user :refer [next-state]]
-            [clojure.spec.test.alpha :as stest])
+            [app.alpha.streams.core :refer [add-shutdown-hook
+                                            produce-event
+                                            create-user]]
+            [clojure.spec.alpha :as s]
+            [clojure.spec.gen.alpha :as gen]
+            [clojure.spec.test.alpha :as stest]
+            [app.alpha.spec :refer [gen-ev-p-move-cape
+                                    gen-ev-a-finish-game]])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer
@@ -41,11 +44,51 @@
    java.util.Locale
    java.util.Arrays))
 
+
+(defmulti next-state (fn [st ev] [(:ev/type ev)]))
+
+(defmethod next-state [:ev.u/create]
+  [st ev]
+  :ev.u/create)
+
+(defmethod next-state [:ev.u/update]
+  [st ev]
+  :ev.u/update)
+
+(s/fdef next-state
+  :args (s/cat :st :u/user
+               :ev :ev.u/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
+
+(comment
+
+  (ns-unmap *ns* 'next-state)
+
+  (stest/instrument [`next-state])
+  (stest/unstrument [`next-state])
+
+  (def state (gen/generate (s/gen :g/game)))
+  (def u (gen/generate (s/gen :u/user)))
+
+  (def ev-p (gen/generate (s/gen :ev.p/move-cape)))
+  (def ev-a (gen/generate (s/gen :ev.a/finish-game)))
+
+  (def ev-p (first (gen/sample gen-ev-p-move-cape 1)))
+  (def ev-a (first (gen/sample gen-ev-a-finish-game 1)))
+
+  (next-state state ev-p)
+  (next-state state ev-a)
+
+  (next-state state (merge ev-p {:p/uuid "asd"}))
+
+
+  ;;
+  )
+
 (defn create-streams-user
   []
   (let [builder (StreamsBuilder.)
         ktable (-> builder
-                   (.stream "alpha.user.data")
+                   (.stream "alpha.user")
                    (.groupByKey)
                    (.aggregate (reify Initializer
                                  (apply [this]
@@ -56,14 +99,14 @@
                                    (cond
                                      (= (get v :event/type) :event/delete-record) nil
                                      :else (merge ag v))))
-                               (-> (Materialized/as "alpha.user.data.streams.store")
+                               (-> (Materialized/as "alpha.user.streams.store")
                                    (.withKeySerde (TransitJsonSerde.))
                                    (.withValueSerde (TransitJsonSerde.))))
                    (.toStream)
-                   (.to "alpha.user.data.changes"))
+                   (.to "alpha.user.changes"))
         topology (.build builder)
         props (doto (Properties.)
-                (.putAll {"application.id" "alpha.user.data.streams"
+                (.putAll {"application.id" "alpha.user.streams"
                           "bootstrap.servers" "broker1:9092"
                           "auto.offset.reset" "earliest" #_"latest"
                           "default.key.serde" "app.kafka.serdes.TransitJsonSerde"
@@ -71,15 +114,21 @@
         streams (KafkaStreams. topology props)
         latch (CountDownLatch. 1)]
     (do
-      (add-shutdown-hook props streams latch)
-      (.cleanUp streams)
-      (.start streams))
+      (add-shutdown-hook props streams latch))
     {:builder builder
      :ktable ktable
      :topology topology
      :props props
      :streams streams
      :latch latch}))
+
+
+(defn create-streams-user-games
+  []
+  ; ktable of :u/uuid -> (list-of :g/uuids )
+  ; request for list of user games will read from the store using uuids
+  ; client will sort/group by host/player/observer
+  )
 
 (comment
 
@@ -119,27 +168,27 @@
                          :user/username "user2"})
 
   (produce-event producer
-                 "alpha.user.data"
+                 "alpha.user"
                  (get users 0)
                  {:event/type :event/update-user
                   :user/username "user0"})
 
   (produce-event producer
-                 "alpha.user.data"
+                 "alpha.user"
                  (get users 0)
                  {:event/type :event/delete-record})
   (produce-event producer
-                 "alpha.user.data"
+                 "alpha.user"
                  (get users 1)
                  {:event/type :event/delete-record})
   (produce-event producer
-                 "alpha.user.data"
+                 "alpha.user"
                  (get users 2)
                  {:event/type :event/delete-record})
 
 
 
-  (def readonly-store (.store streams "alpha.user.data.streams.store"
+  (def readonly-store (.store streams "alpha.user.streams.store"
                               (QueryableStoreTypes/keyValueStore)))
 
   (.approximateNumEntries readonly-store)
@@ -165,10 +214,10 @@
                                     "key.deserializer"
                                     "app.kafka.serdes.TransitJsonDeserializer"
                                     "value.deserializer" "app.kafka.serdes.TransitJsonDeserializer"})]
-                     (.subscribe consumer (Arrays/asList (object-array ["alpha.user.data.changes"])))
+                     (.subscribe consumer (Arrays/asList (object-array ["alpha.user.changes"])))
                      (while true
                        (let [records (.poll consumer 1000)]
-                         (.println System/out (str "; app.alpha.streams.users.changes polling:" (java.time.LocalTime/now)))
+                         (.println System/out (str "; polling alpha.user.changes " (java.time.LocalTime/now)))
                          (doseq [rec records]
                            (println ";")
                            (println (.key rec))
