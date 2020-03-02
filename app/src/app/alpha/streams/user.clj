@@ -48,7 +48,7 @@
 
 (defmethod next-state [:ev.u/create]
   [state k ev]
-  ev)
+  (or state ev))
 
 (defmethod next-state [:ev.u/update]
   [state k ev]
