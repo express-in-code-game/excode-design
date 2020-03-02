@@ -1,5 +1,6 @@
 (ns app.main
   (:require [dev.nrepl :refer [start-nrepl-server]]
+            [clojure.spec.alpha :as s]
             [clojure.spec.test.alpha :as stest]
             [app.kafka.core]
             [app.kafka.wordcount-example]
@@ -23,7 +24,10 @@
 (defn -main  [& args]
   (start-nrepl-server "0.0.0.0" 7788)
   (when-not (env-optimized?)
-    (stest/instrument))
+    (stest/instrument)
+    (s/check-asserts true))
+  (when (env-optimized?)
+    (alter-var-root #'clojure.test/*load-tests* (fn [v] false)))
   #_(alpha-repl/mount))
 
 (comment

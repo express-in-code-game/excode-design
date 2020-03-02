@@ -1,4 +1,4 @@
-(ns app.alpha.core
+(ns app.alpha.streams.core
   (:require [clojure.pprint :as pp]
             [app.alpha.spec :as spec]
             [clojure.spec.alpha :as s]
@@ -40,24 +40,7 @@
    java.util.Locale
    java.util.Arrays))
 
-(def topic-evtype-map
-  {"alpha.user" #{:ev.u/create :ev.u/update}
-   "alpha.game" #{:ev.g.u/create :ev.g.u/delete
-                  :ev.g.u/join :ev.g.u/leave
-                  :ev.g.u/configure :ev.g.u/start
-                  :ev.g.p/move-cape :ev.g.p/collect-tile-value
-                  :ev.g.a/finish-game}})
 
-(def evtype-topic-map
-  (->> topic-evtype-map
-       (map (fn [[topic kset]]
-              (map #(vector % topic) kset)))
-       (mapcat identity)
-       (into {})))
-
-(def evtype-recordkey-map
-  {:ev.u/create :u/uuid
-   :ev.u/update :u/uuid})
 
 
 (defn create-topics
@@ -152,6 +135,28 @@
 (s/fdef create-user
   :args (s/cat :producer some? :event :ev.u/create))
 
+
+(def topic-evtype-map
+  {"alpha.user" #{:ev.u/create :ev.u/update :ev.u/delete}
+   "alpha.game" #{:ev.g.u/create :ev.g.u/delete
+                  :ev.g.u/join :ev.g.u/leave
+                  :ev.g.u/configure :ev.g.u/start
+                  :ev.g.p/move-cape :ev.g.p/collect-tile-value
+                  :ev.g.a/finish-game}})
+
+(def evtype-topic-map
+  (->> topic-evtype-map
+       (map (fn [[topic kset]]
+              (map #(vector % topic) kset)))
+       (mapcat identity)
+       (into {})))
+
+(def evtype-recordkey-map
+  {:ev.u/create :u/uuid
+   :ev.u/update :u/uuid
+   :ev.u/delete :u/uuid
+   :ev.g.u/configure :g/uuid
+   })
 
 (defn event-to-recordkey
   [ev]
