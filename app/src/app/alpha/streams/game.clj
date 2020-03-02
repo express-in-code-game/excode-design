@@ -90,7 +90,9 @@
 
 (defmethod next-state [:ev.g.u/create]
   [state k ev]
-  (gen-default-game-state k ev))
+  (or
+   state
+   (gen-default-game-state k ev)))
 
 (defmethod next-state [:ev.g.u/delete]
   [state k ev]
@@ -98,7 +100,7 @@
 
 (defmethod next-state [:ev.g.u/configure]
   [state k ev]
-  state)
+  (merge state ev))
 
 (defmethod next-state [:ev.g.u/start]
   [state k ev]

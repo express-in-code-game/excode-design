@@ -154,7 +154,9 @@
 (def evtype-recordkey-map
   {:ev.u/create :u/uuid
    :ev.u/update :u/uuid
-   :ev.u/delete :u/uuid})
+   :ev.u/delete :u/uuid
+   :ev.g.u/configure :g/uuid
+   })
 
 (defn event-to-recordkey
   [ev]

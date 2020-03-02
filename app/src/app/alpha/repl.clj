@@ -195,7 +195,13 @@
   (send-event {:ev/type :ev.g.u/create
                :u/uuid  (get users 0)}
               (get games 0) p)
-  (.get store-game (get games 0))
+
+  (send-event {:ev/type :ev.g.u/configure
+               :u/uuid (get users 0)
+               :g/uuid (get games 0)
+               :g/status :opened}
+              p)
+
 
 
   ;;;
