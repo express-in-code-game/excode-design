@@ -1,4 +1,4 @@
-(ns app.alpha.streams.users
+(ns app.alpha.streams.user
   (:require [clojure.pprint :as pp]
             [app.alpha.core :refer [add-shutdown-hook
                                     produce-event
@@ -41,11 +41,7 @@
    java.util.Locale
    java.util.Arrays))
 
-
-(def opts {:base-props {"bootstrap.servers" "broker1:9092"}})
-(def state* (atom {:user-data-app nil}))
-
-(defn create-user-data-app
+(defn create-streams-user
   []
   (let [builder (StreamsBuilder.)
         ktable (-> builder
@@ -85,26 +81,12 @@
      :streams streams
      :latch latch}))
 
-(defn mount
-  []
-  (let [user-data-app (create-user-data-app)]
-    (swap! state* assoc :user-data-app user-data-app)))
-
-(defn unmount
-  []
-  (when (:user-data-app @state*)
-    (.close (:streams (:user-data-app @state*)))
-    (swap! state* assoc :user-data-app nil)))
-
 (comment
 
-  (mount)
-  (unmount)
+  (def state (create-streams-user))
+  (def streams (:streams state))
 
-  (def app (:user-data-app @state*))
-  (def streams (:streams app))
-
-  (println (.describe (:topology app)))
+  (println (.describe (:topology state)))
 
   (.isRunning (.state streams))
   (.start streams)

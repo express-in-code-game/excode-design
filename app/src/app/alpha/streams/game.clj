@@ -1,4 +1,4 @@
-(ns app.alpha.streams.games
+(ns app.alpha.streams.game
   (:require [clojure.pprint :as pp]
             [app.alpha.core :refer [add-shutdown-hook
                                     produce-event
@@ -41,11 +41,7 @@
    java.util.Locale
    java.util.Arrays))
 
-
-(def opts {:base-props {"bootstrap.servers" "broker1:9092"}})
-(def state* (atom {:game-events-app nil}))
-
-(defn create-game-events-app
+(defn create-streams-game
   []
   (let [builder (StreamsBuilder.)
         ktable (-> builder
@@ -82,26 +78,13 @@
      :streams streams
      :latch latch}))
 
-(defn mount
-  []
-  (let [game-events-app (create-game-events-app)]
-    (swap! state* assoc :game-events-app game-events-app)))
-
-(defn unmount
-  []
-  (when (:game-events-app @state*)
-    (.close (:streams (:game-events-app @state*)))
-    (swap! state* assoc :game-events-app nil)))
-
 (comment
 
-  (mount)
-  (unmount)
 
-  (def app (:game-events-app @state*))
-  (def streams (:streams app))
+  (def state (create-streams-game))
+  (def streams (:streams state))
 
-  (println (.describe (:topology app)))
+  (println (.describe (:topology state)))
 
   (.isRunning (.state streams))
   (.start streams)

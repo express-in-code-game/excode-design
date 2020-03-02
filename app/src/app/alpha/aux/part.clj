@@ -1,4 +1,4 @@
-(ns app.alpha.part
+(ns app.alpha.aux.part
   (:require [clojure.repl :refer [doc]]))
 
 (comment
