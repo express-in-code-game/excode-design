@@ -128,7 +128,7 @@
                  :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
 
 
-(defn assert-next-state [state] {:post [(s/explain :g/game %)]} state)
+(defn assert-next-state [state] {:post [(s/assert :g/game %)]} state)
 
 (comment
   (gensym "tmp")
@@ -161,12 +161,21 @@
            :g/status :opened})
   (def nv (next-state a-game (java.util.UUID/randomUUID) ev))
   (def anv (assert-next-state nv))
+  (def anv (assert-next-state a-game))
   (s/explain :g/game nv)
-  (s/explain-data :g/game anv)
+  (s/explain-data :g/game nv)
+  (s/assert :g/game nv)
+  (s/assert :g/game a-game)
+  (s/check-asserts?)
+  (s/check-asserts true)
+  
   (try
-    (next-state anv (java.util.UUID/randomUUID) ev)
+    (s/assert :g/game nv)
     (catch Exception e
-      (prn "hello")))
+      #_(println e)
+      (println (ex-message e))
+      #_(println (ex-data e))
+      #_(println e)))
   ;;
   )
 
@@ -181,11 +190,15 @@
                                    nil))
                                (reify Aggregator
                                  (apply [this k v ag]
-                                        (println "; call create-streams-game aggregate ")
-                                        (try
-                                          (assert-next-state (next-state ag k v))
-                                          (catch Exception e (.printStackTrace e))
-                                          (finally ag))))
+                                   (println "; call create-streams-game aggregate ")
+                                   (println (type k))
+                                   (println (type v))
+                                   (println (type ag))
+                                   (try
+                                     (assert-next-state (next-state ag k v))
+                                     (catch Exception e
+                                       (println (ex-message e))
+                                       ag))))
                                (-> (Materialized/as "alpha.game.streams.store")
                                    (.withKeySerde (TransitJsonSerde.))
                                    (.withValueSerde (TransitJsonSerde.))))

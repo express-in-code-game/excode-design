@@ -202,6 +202,7 @@
                :g/uuid (get games 0)
                :g/status :opened}
               p)
+  
   (send-event {:ev/type :ev.g.u/configure
                :u/uuid (get users 0)
                :g/uuid (get games 0)
