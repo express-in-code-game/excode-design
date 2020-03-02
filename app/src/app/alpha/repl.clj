@@ -81,6 +81,21 @@
              "alpha.game"
              "alpha.game.changes"])
 
+(def games {:a #uuid "15108e92-959d-4089-98fe-b92bb7c571db"
+            :b #uuid "461b65a8-0f24-46c9-8248-4bf6d7e1aa1a"})
+
+(def players {:a #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
+              :b #uuid "179c265a-7f72-4225-a785-2d048d575854"})
+
+(def observers {:a #uuid "46855899-838a-45fd-98b4-c76c08954645"
+                :b #uuid "ea1162e3-fe45-4652-9fa9-4f8dc6c78f71"
+                :c #uuid "4cd4b905-6859-4c22-bae7-ad5ec51dc3f8"})
+
+(defn print-store
+  [store]
+  (doseq [x (iterator-seq (.all store))]
+    (println (.key x) (.value x))))
+
 (comment
 
   (-> (create-topics {:props props
@@ -97,7 +112,27 @@
   (list-topics {:props props})
 
   (def state-user (create-streams-user))
+  (def streams-user (:streams state-user))
+  (.isRunning (.state streams-user))
+  (.start streams-user)
+  (.close streams-user)
+  (.cleanUp streams-user)
+
   (def state-game (create-streams-game))
+  (def streams-game (:streams state-game))
+  (.isRunning (.state streams-game))
+  (.start streams-game)
+  (.close streams-game)
+  (.cleanUp streams-game)
+
+  (def store-user (.store streams-user "alpha.user.streams.store" (QueryableStoreTypes/keyValueStore)))
+  (def store-game (.store streams-game "alpha.game.streams.store" (QueryableStoreTypes/keyValueStore)))
+
+  (print-store store-user)
+  (print-store store-game)
+
+  (.approximateNumEntries store-game)
+  (count (iterator-seq (.all store-game)))
 
   (def p (KafkaProducer.
           {"bootstrap.servers" "broker1:9092"
@@ -105,30 +140,14 @@
            "key.serializer" "app.kafka.serdes.TransitJsonSerializer"
            "value.serializer" "app.kafka.serdes.TransitJsonSerializer"}))
 
-  (def games {:a #uuid "15108e92-959d-4089-98fe-b92bb7c571db"
-              :b #uuid "461b65a8-0f24-46c9-8248-4bf6d7e1aa1a"})
-
-  (def players {:a #uuid "5ada3765-0393-4d48-bad9-fac992d00e62"
-                :b #uuid "179c265a-7f72-4225-a785-2d048d575854"})
-
-  (def observers {:a #uuid "46855899-838a-45fd-98b4-c76c08954645"
-                  :b #uuid "ea1162e3-fe45-4652-9fa9-4f8dc6c78f71"
-                  :c #uuid "4cd4b905-6859-4c22-bae7-ad5ec51dc3f8"})
-
   (send-event {:ev/type :ev.g.u/create
                :u/uuid (:a players)} p)
 
-  (produce-event
-   "alpha.games"
-   (:a games)
-   {:ev/type :ev.g.u/create
-    :u/uuid (:a players)})
+  (.get store-game (:a games))
+  (print-store store-game)
 
-  (produce-event
-   "alpha.games"
-   (:a games)
-   {:ev/type :ev.g.u/delete
-    :u/uuid (:a players)})
+
+
 
   (def fu-consumer-user-changes
     (future-call-consumer {:topic "alpha.user.changes"
