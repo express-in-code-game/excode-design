@@ -98,8 +98,13 @@
   [state k ev]
   nil)
 
+(defn tmpfn-
+  [state k ev]
+  (println "; some-fn called1"))
+
 (defmethod next-state [:ev.g.u/configure]
   [state k ev]
+  #_(tmpfn- state k ev)
   (merge state ev))
 
 (defmethod next-state [:ev.g.u/start]

@@ -184,12 +184,12 @@
 
   (def state-game (create-streams-game))
   (def streams-game (:streams state-game))
-  (.isRunning (.state streams-game))
   (.start streams-game)
-  (.close streams-game)
-  (.cleanUp streams-game)
-
+  #_(.isRunning (.state streams-game))
+  #_(.close streams-game)
+  #_(.cleanUp streams-game)
   (def store-game (.store streams-game "alpha.game.streams.store" (QueryableStoreTypes/keyValueStore)))
+
   (read-store store-game :fval  #(select-keys % [:g/uuid :g/status :g/start-inst]))
 
   (send-event {:ev/type :ev.g.u/create
@@ -200,6 +200,11 @@
                :u/uuid (get users 0)
                :g/uuid (get games 0)
                :g/status :opened}
+              p)
+  (send-event {:ev/type :ev.g.u/configure
+               :u/uuid (get users 0)
+               :g/uuid (get games 0)
+               :g/status :started}
               p)
 
 
