@@ -149,7 +149,7 @@
   (read-store store-user :offset 1 :limit 1 :intomap? false :fval #(select-keys % [:u/email]))
 
   (.approximateNumEntries store-game)
-  (count (iterator-seq (.all store-game)))
+  (count (read-store store-user))
 
   (send-event {:ev/type :ev.u/create
                :u/uuid  (get users 0)
