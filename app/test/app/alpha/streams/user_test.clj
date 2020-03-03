@@ -12,10 +12,7 @@
    org.apache.kafka.clients.consumer.KafkaConsumer
    org.apache.kafka.clients.producer.KafkaProducer))
 
-(s/fdef next-state
-  :args (s/cat :state (s/nilable :u/user)
-               :k uuid?
-               :ev :ev.u/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
+
 
 (comment
 

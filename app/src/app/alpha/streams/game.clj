@@ -4,7 +4,6 @@
                                             produce-event
                                             create-user]]
             [app.alpha.data.game :refer [gen-default-game-state]]
-            [clojure.spec.test.alpha :as stest]
             [clojure.spec.alpha :as s]
             [app.alpha.streams.game-testfn :refer [assert-next-state-body]])
   (:import
@@ -41,8 +40,6 @@
    java.util.ArrayList
    java.util.Locale
    java.util.Arrays))
-
-
 
 
 (defmulti next-state
@@ -92,6 +89,12 @@
 (defmethod next-state [:ev.g.p/collect-tile-value]
   [state k ev]
   state)
+
+(s/fdef next-state
+  :args (s/cat :state (s/nilable :g/game)
+               :k uuid?
+               :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game))
+  :ret (s/nilable :g/game))
 
 (defn create-streams-game
   []

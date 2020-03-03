@@ -17,22 +17,6 @@
    org.apache.kafka.clients.consumer.KafkaConsumer
    org.apache.kafka.clients.producer.KafkaProducer))
 
-
-(s/fdef app.alpha.streams.game/next-state
-  :args (s/cat :state (s/nilable :g/game)
-               :k uuid?
-               :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game))
-  :ret (s/nilable :g/game))
-
-
-(defn assert-next-state-post [state] {:post [(s/assert :g/game %)]} state)
-(defn assert-next-state-body [state]
-  (let [data (s/conform :g/game state)]
-    (if (= data ::s/invalid)
-      (throw (ex-info "Invalid data"
-                      (select-keys (s/explain-data :g/game state) [::s/spec ::s/problems])))
-      data)))
-
 (comment
   
   (resolve `next-state)
@@ -68,30 +52,5 @@
 
   (next-state state (merge ev-p {:p/uuid "asd"}))
 
-
-  (def a-game (sgen/generate (s/gen :g/game)))
-  (def ev {:ev/type :ev.g.u/configure
-           :u/uuid (java.util.UUID/randomUUID)
-           :g/uuid (java.util.UUID/randomUUID)
-           :g/status :opened})
-  (def nv (next-state a-game (java.util.UUID/randomUUID) ev))
-  (def anv (assert-next-state-post nv))
-  (def anv (assert-next-state-post a-game))
-  (def anv (assert-next-state-body nv))
-  (s/explain :g/game nv)
-  (s/assert :g/game nv)
-  (s/assert :g/game a-game)
-  (s/check-asserts?)
-  (s/check-asserts true)
-
-  (keys (s/explain-data :g/game nv))
-  (s/conform :g/game nv)
-
-  (try
-    (assert-next-state-body nv)
-    (catch Exception e
-      #_(println e)
-      (println (ex-message e))
-      (println (ex-data e))))
   ;;
   )
