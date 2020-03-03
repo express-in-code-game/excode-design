@@ -45,10 +45,9 @@
   (prop/for-all [v (gen/vector gen/int)]
                 (= (sort v) (sort (sort v)))))
 
-(defn test-ns-hook
-  []
-  (next-state-stest)
-  (sort-is-idempotent))
+#_(defn test-ns-hook
+    []
+    (next-state-stest))
 
 (comment
   
