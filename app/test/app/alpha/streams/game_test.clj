@@ -37,6 +37,9 @@
                    (stest/check `next-state
                                 {:clojure.spec.test.check/opts {:num-tests num-tests}})))))))
 
+(defn test-ns-hook
+  []
+  (next-state-stest))
 
 (comment
   
