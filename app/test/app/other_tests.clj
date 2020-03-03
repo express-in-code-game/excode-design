@@ -52,5 +52,8 @@
   (testing "stuff"
     (is (= (type (java.util.UUID/randomUUID)) (class (java.util.UUID/randomUUID)))
         "(type) and (class) are same when metadata has no :type or something"))
-  )
+  (testing "macros"
+    (is (= (macroexpand '(when (pos? a) (println "positive") (/ b a)))
+           '(if (pos? a) (do (println "positive") (/ b a))))
+        "macroexpand example with when macro")))
 

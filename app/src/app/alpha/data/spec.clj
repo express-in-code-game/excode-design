@@ -5,16 +5,10 @@
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.test.alpha :as stest]))
 
-(def setof-game-status #{:created :opened :started :finished})
-(def setof-evtype
-  #{:ev.c/delete-record :ev.u/create
-    :ev.u/update :ev.u/delete
-    :ev.g.u/create
-    :ev.g.u/delete :ev.g.u/configure
-    :ev.g.u/start :ev.g.u/join
-    :ev.g.u/leave :ev.g.p/move-cape
-    :ev.g.p/collect-tile-value
-    :ev.g.a/finish-game})
+
+
+
+
 
 (s/def :g.e/uuid uuid?)
 (s/def :g.e/pos (s/tuple int? int?))
@@ -35,6 +29,8 @@
 (s/def :g.r/player (s/nilable int?))
 (s/def :g.r/observer (s/nilable boolean?))
 (s/def :g.r/role (s/keys :req [:g.r/host :g.r/player :g.r/observer]))
+
+(def setof-game-status #{:created :opened :started :finished})
 
 (s/def :g/uuid uuid?)
 (s/def :g/status setof-game-status)
@@ -65,8 +61,19 @@
 
 (s/def :u/user (s/keys :req [:u/uuid :u/username :u/email]))
 
+(def setof-ev-event
+  #{:ev.c/delete-record :ev.u/create
+    :ev.u/update :ev.u/delete
+    :ev.g.u/create
+    :ev.g.u/delete :ev.g.u/configure
+    :ev.g.u/start :ev.g.u/join
+    :ev.g.u/leave :ev.g.p/move-cape
+    :ev.g.p/collect-tile-value
+    :ev.g.a/finish-game})
 
-(s/def :ev/type setof-evtype)
+
+
+(s/def :ev/type setof-ev-event)
 
 (s/def :ev.c/delete-record (s/keys :req [:ev/type]
                                    :opt [:record/uuid]))
@@ -114,68 +121,58 @@
                                        {:ev/type :ev.g.a/finish-game}))
                                     (s/gen :ev.g.a/finish-game)))
 
+(defmacro defmethods-for-a-set
+  "Iterates over a #{} of :ev/type keywords and calls defmethod"
+  [mmethod kwset]
+  `(doseq [kw# ~kwset]
+     (defmethod ~mmethod kw# [x#] kw#)))
 
 (defmulti ev (fn [x] (:ev/type x)))
-(defmethod ev :ev.u/create [x] :ev.u/create)
-(defmethod ev :ev.u/update [x] :ev.u/update)
-(defmethod ev :ev.u/delete [x] :ev.u/delete)
-(defmethod ev :ev.g.u/create [x] :ev.g.u/create)
-(defmethod ev :ev.g.u/delete [x] :ev.g.u/delete)
-(defmethod ev :ev.g.u/configure [x] :ev.g.u/configure)
-(defmethod ev :ev.g.u/start [x] :ev.g.u/start)
-(defmethod ev :ev.g.u/join [x] :ev.g.u/join)
-(defmethod ev :ev.g.u/leave [x] :ev.g.u/leave)
-(defmethod ev :ev.c/delete-record [x] :ev.c/delete-record)
-(defmethod ev :ev.g.p/move-cape [x] :ev.g.p/move-cape)
-(defmethod ev :ev.g.p/collect-tile-value [x] :ev.g.p/collect-tile-value)
-(defmethod ev :ev.g.a/finish-game [x] :ev.g.a/finish-game)
+(defmethods-for-a-set ev setof-ev-event)
 (s/def :ev/event (s/multi-spec ev :ev/type))
 
+(def setof-ev-g-p-event
+  #{:ev.g.p/move-cape :ev.g.p/collect-tile-value})
+
 (defmulti ev-game-player (fn [x] (:ev/type x)) )
-(defmethod ev-game-player :ev.g.p/move-cape [x] :ev.g.p/move-cape)
-(defmethod ev-game-player :ev.g.p/collect-tile-value [x] :ev.g.p/collect-tile-value)
+(defmethods-for-a-set ev-game-player setof-ev-g-p-event)
 (s/def :ev.g.p/event (s/multi-spec ev-game-player :ev/type))
 
 (defmulti ev-game-arbiter (fn [x] (:ev/type x)))
 (defmethod ev-game-arbiter :ev.g.a/finish-game [x] :ev.g.a/finish-game)
 (s/def :ev.g.a/event (s/multi-spec ev-game-arbiter :ev/type))
 
+(def setof-ev-g-m-event
+  #{:ev.g.p/move-cape :ev.g.p/collect-tile-value :ev.g.a/finish-game})
+
 (defmulti ev-game-member (fn [x] (:ev/type x)))
-(defmethod ev-game-member :ev.g.p/move-cape [x] :ev.g.p/move-cape)
-(defmethod ev-game-member :ev.g.p/collect-tile-value [x] :ev.g.p/collect-tile-value)
-(defmethod ev-game-member :ev.g.a/finish-game [x] :ev.g.a/finish-game)
+(defmethods-for-a-set ev-game-member setof-ev-g-m-event)
 (s/def :ev.g.m/event (s/multi-spec ev-game-member :ev/type))
 
+(def setof-ev-g-u-event
+  #{:ev.g.u/create :ev.g.u/delete :ev.c/delete-record
+    :ev.g.u/configure :ev.g.u/start :ev.g.u/join
+    :ev.g.u/leave})
+
 (defmulti ev-game-user (fn [x] (:ev/type x)))
-(defmethod ev-game-user :ev.g.u/create [x] :ev.g.u/create)
-(defmethod ev-game-user :ev.g.u/delete [x] :ev.g.u/delete)
-(defmethod ev-game-user :ev.c/delete-record [x] :ev.c/delete-record)
-(defmethod ev-game-user :ev.g.u/configure [x] :ev.g.u/configure)
-(defmethod ev-game-user :ev.g.u/start [x] :ev.g.u/start)
-(defmethod ev-game-user :ev.g.u/join [x] :ev.g.u/join)
-(defmethod ev-game-user :ev.g.u/leave [x] :ev.g.u/leave)
+(defmethods-for-a-set ev-game-user setof-ev-g-u-event)
 (s/def :ev.g.u/event (s/multi-spec ev-game-user :ev/type))
 
-
+(def setof-ev-g-event
+  #{:ev.g.u/create :ev.g.u/delete :ev.c/delete-record
+    :ev.g.u/configure :ev.g.u/start :ev.g.u/join
+    :ev.g.u/leave :ev.g.p/move-cape
+    :ev.g.p/collect-tile-value :ev.g.a/finish-game})
 
 (defmulti ev-game (fn [x] (:ev/type x)))
-(defmethod ev-game :ev.g.u/create [x] :ev.g.u/create)
-(defmethod ev-game :ev.g.u/delete [x] :ev.g.u/delete)
-(defmethod ev-game :ev.c/delete-record [x] :ev.c/delete-record)
-(defmethod ev-game :ev.g.u/configure [x] :ev.g.u/configure)
-(defmethod ev-game :ev.g.u/start [x] :ev.g.u/start)
-(defmethod ev-game :ev.g.u/join [x] :ev.g.u/join)
-(defmethod ev-game :ev.g.u/leave [x] :ev.g.u/leave)
-(defmethod ev-game :ev.g.p/move-cape [x] :ev.g.p/move-cape)
-(defmethod ev-game :ev.g.p/collect-tile-value [x] :ev.g.p/collect-tile-value)
-(defmethod ev-game :ev.g.a/finish-game [x] :ev.g.a/finish-game)
+(defmethods-for-a-set ev-game setof-ev-g-event)
 (s/def :ev.g/event (s/multi-spec ev-game :ev/type))
 
+(def setof-ev-u-event
+  #{:ev.u/create :ev.u/update :ev.u/delete})
 
 (defmulti ev-user (fn [x] (:ev/type x)))
-(defmethod ev-user :ev.u/create [x] :ev.u/create)
-(defmethod ev-user :ev.u/update [x] :ev.u/update)
-(defmethod ev-user :ev.u/delete [x] :ev.u/delete)
+(defmethods-for-a-set ev-user setof-ev-u-event)
 (s/def :ev.u/event (s/multi-spec ev-user :ev/type))
 
 
