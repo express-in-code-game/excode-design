@@ -2,8 +2,9 @@
   (:require [dev.nrepl :refer [start-nrepl-server]]
             [clojure.spec.alpha :as s]
             [clojure.spec.test.alpha :as stest]
-            [app.pad]
-            [app.alpha.repl]))
+            [app.alpha.repl]
+            [app.alpha.tests]
+            [app.pad]))
 
 (defn env-optimized?
   []

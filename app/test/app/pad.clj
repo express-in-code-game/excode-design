@@ -9,3 +9,4 @@
             [app.kafka.serde-compare]
             [app.clojure.spec]
             [app.clojure.multi]))
+
