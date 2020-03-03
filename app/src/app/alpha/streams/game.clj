@@ -3,14 +3,10 @@
             [app.alpha.streams.core :refer [add-shutdown-hook
                                             produce-event
                                             create-user]]
+            [app.alpha.data.game :refer [gen-default-game-state]]
             [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as sgen]
             [clojure.spec.test.alpha :as stest]
-            [clojure.test.check :as tc]
-            [clojure.test.check.generators :as gen]
-            [clojure.test.check.properties :as prop]
-            [app.alpha.spec :refer [gen-ev-p-move-cape
-                                    gen-ev-a-finish-game]])
+            [app.alpha.streams.game-testfn :refer [assert-next-state-body]])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer
@@ -46,40 +42,6 @@
    java.util.Locale
    java.util.Arrays))
 
-
-(defn gen-default-game-state
-  [k ev]
-  (let [host-uuid (:u/uuid ev)]
-    {:g/uuid k
-     :g/status :created
-     :g/start-inst (java.util.Date.)
-     :g/duration-ms 60000
-     :g/map-size [16 16]
-     :g/roles {host-uuid {:g.r/host true
-                          :g.r/player 0
-                          :g.r/observer false}}
-     :g/player-states {0 {:g.p/entities {:g.p/cape {:g.e/type :g.e.type/cape
-                                                    :g.e/uuid (java.util.UUID/randomUUID)
-                                                    :g.e/pos [0 0]}}
-                          :g.p/sum 0}
-                       1 {:g.p/entities {:g.p/cape {:g.e/type :g.e.type/cape
-                                                    :g.e/uuid (java.util.UUID/randomUUID)
-                                                    :g.e/pos [0 15]}}
-                          :g.p/sum 0}}
-     :g/exit-teleports [{:g.e/type :g.e.type/teleport
-                         :g.e/uuid (java.util.UUID/randomUUID)
-                         :g.e/pos [15 0]}
-                        {:g.e/type :g.e.type/teleport
-                         :g.e/uuid (java.util.UUID/randomUUID)
-                         :g.e/pos [15 15]}]
-     :g/value-tiles (-> (mapcat (fn [x]
-                                  (mapv (fn [y]
-                                          {:g.e/uuid (java.util.UUID/randomUUID)
-                                           :g.e/type :g.e.type/value-tile
-                                           :g.e/pos [x y]
-                                           :g.e/numeric-value (inc (rand-int 10))}) (range 0 16)))
-                                (range 0 16))
-                        (vec))}))
 
 (defmulti next-state
   "Returns the next state of the game."
@@ -129,79 +91,18 @@
   [state k ev]
   state)
 
-
 (s/fdef next-state
   :args (s/cat :state (s/nilable :g/game)
                :k uuid?
                :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game))
   :ret (s/nilable :g/game))
 
-
-(defn assert-next-state-post [state] {:post [(s/assert :g/game %)]} state)
-(defn assert-next-state-body [state]
-  (let [data (s/conform :g/game state)]
-    (if (= data ::s/invalid)
-      (throw (ex-info "Invalid data"
-                      (select-keys (s/explain-data :g/game state) [::s/spec ::s/problems])))
-      data)))
-
 (comment
-  
-  (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1}})
-  (stest/summarize-results (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1}}))
-  (stest/summarize-results (stest/check  ))
-  (-> (stest/enumerate-namespace (ns-name *ns*)) (stest/check {:clojure.spec.test.check/opts {:num-tests 2}}))
-  
-  clojure.test/*load-tests*
-  (alter-var-root #'clojure.test/*load-tests* (fn [v] true))
-  
-  (gensym "tmp")
 
   (ns-unmap *ns* 'next-state)
-
   (stest/instrument [`next-state])
   (stest/unstrument [`next-state])
 
-  (def state (sgen/generate (s/gen :g/game)))
-  (def ev (first (sgen/sample (s/gen :ev.g.u/create) 1)))
-  (s/explain :g/game (gen-default-game-state (java.util.UUID/randomUUID) ev))
-
-  (def ev-p (sgen/generate (s/gen :ev.p/move-cape)))
-  (def ev-a (sgen/generate (s/gen :ev.a/finish-game)))
-
-  (def ev-p (first (sgen/sample gen-ev-p-move-cape 1)))
-  (def ev-a (first (sgen/sample gen-ev-a-finish-game 1)))
-
-  (next-state state ev-p)
-  (next-state state ev-a)
-
-  (next-state state (merge ev-p {:p/uuid "asd"}))
-
-
-  (def a-game (sgen/generate (s/gen :g/game)))
-  (def ev {:ev/type :ev.g.u/configure
-           :u/uuid (java.util.UUID/randomUUID)
-           :g/uuid (java.util.UUID/randomUUID)
-           :g/status :opened})
-  (def nv (next-state a-game (java.util.UUID/randomUUID) ev))
-  (def anv (assert-next-state-post nv))
-  (def anv (assert-next-state-post a-game))
-  (def anv (assert-next-state-body nv))
-  (s/explain :g/game nv)
-  (s/assert :g/game nv)
-  (s/assert :g/game a-game)
-  (s/check-asserts?)
-  (s/check-asserts true)
-
-  (keys (s/explain-data :g/game nv))
-  (s/conform :g/game nv)
-
-  (try
-    (assert-next-state-body nv)
-    (catch Exception e
-      #_(println e)
-      (println (ex-message e))
-      (println (ex-data e))))
   ;;
   )
 

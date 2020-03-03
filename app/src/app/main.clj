@@ -2,19 +2,10 @@
   (:require [dev.nrepl :refer [start-nrepl-server]]
             [clojure.spec.alpha :as s]
             [clojure.spec.test.alpha :as stest]
-            [app.kafka.core]
-            [app.kafka.wordcount-example]
-            [app.kafka.streams-example]
-            [app.kafka.transit-example]
-            [app.kafka.ktable-agg-example]
-            [app.kafka.reduce-example]
-            [app.kafka.aggregate-delete-example]
-            [app.kafka.serde-compare]
-            [app.clojure.spec]
-            [app.clojure.multi]
-            [app.alpha.repl :as alpha-repl]
-   ;
-            ))
+            [app.alpha.repl]
+            [app.alpha.tests]
+            [app.other-tests]
+            [app.pad]))
 
 (defn env-optimized?
   []
@@ -27,8 +18,8 @@
     (stest/instrument)
     (s/check-asserts true))
   (when (env-optimized?)
-    (alter-var-root #'clojure.test/*load-tests* (fn [v] false)))
-  #_(alpha-repl/mount))
+    (alter-var-root #'clojure.test/*load-tests* (fn [_] false)))
+  #_(app.alpha.repl/mount))
 
 (comment
   
