@@ -29,13 +29,21 @@
                                       (java.util.UUID/randomUUID)
                                       (first (sgen/generate (s/gen :ev.g.u/create))))))))
 
-(deftest next-state-stest
-  (testing "running spec.test/check"
+(deftest next-state-speccheck
+  (testing "running spec.test/check "
     (is (every? true?
                 (map
                  #(get-in % [:clojure.spec.test.check/ret :pass?])
                  (stest/check `next-state
                               {:clojure.spec.test.check/opts {:num-tests 10}}))))))
+
+(deftest all-specchecks
+  (testing "running spec.test/check for 'app.alpha.streams.game "
+    (is (every? true?
+                (map
+                 #(get-in % [:clojure.spec.test.check/ret :pass?])
+                 (-> (stest/enumerate-namespace 'app.alpha.streams.game)
+                     (stest/check {:clojure.spec.test.check/opts {:num-tests 10}})))))))
 
 (def sort-is-idempotent-prop
   (prop/for-all [v (gen/vector gen/int)]
