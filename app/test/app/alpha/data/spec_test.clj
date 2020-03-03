@@ -9,18 +9,8 @@
 ; -> tests proptests 
 
 (comment
-  ; https://stackoverflow.com/questions/36639154/convert-java-util-date-to-what-java-time-type
-  (def d (java.util.Date.))
-  (.getTime d)
-  (inst? (java.util.Date.))
-  (inst? (java.time.Instant/now))
-  (inst? (java.time.Instant/now))
-  (java.sql.Timestamp. 0)
-  (java.sql.Timestamp.)
+  
 
-  (pr-str (java.util.Date.))
-  (pr-str (java.time.Instant/now))
-  (read-string (pr-str (java.time.Instant/now)))
 
   (s/explain :g/game {:g/uuid (java.util.UUID/randomUUID)
                       :g/status :created

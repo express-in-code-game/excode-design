@@ -36,7 +36,12 @@
     (is (= (type #uuid "5ada3765-0393-4d48-bad9-fac992d00e62") java.util.UUID)
         "type of #uuid  is java.util.UUID")
     (is (uuid? (java.util.UUID/fromString "5ada3765-0393-4d48-bad9-fac992d00e62")))
-    "java.util.UUID/fromString uuid? true"))
+    "java.util.UUID/fromString uuid? true")
+  (testing "some data"
+    (pr-str (java.util.Date.))
+    (let [x {:a 1}]
+      (is (= x (read-string (pr-str x)))
+          "pr-str then read-string "))))
 
 (comment
 

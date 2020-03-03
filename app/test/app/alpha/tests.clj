@@ -11,7 +11,8 @@
             [app.alpha.streams.user-test]
             [app.alpha.streams.core-test]
             [app.alpha.data.game-test]
-            [app.alpha.data.spec-test]))
+            [app.alpha.data.spec-test]
+            [app.alpha.spec-test]))
 
 (deftest sample-test
   (testing "Arihtmetic"
