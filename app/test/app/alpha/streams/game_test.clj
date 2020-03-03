@@ -10,6 +10,7 @@
             [clojure.test.check :as tc]
             [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
+            [clojure.test.check.clojure-test :refer [defspec]]
             [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
             [app.alpha.data.spec :refer [gen-ev-p-move-cape
                                          gen-ev-a-finish-game]])
@@ -36,14 +37,25 @@
                  (stest/check `next-state
                               {:clojure.spec.test.check/opts {:num-tests 10}}))))))
 
+(def sort-is-idempotent-prop
+  (prop/for-all [v (gen/vector gen/int)]
+                (= (sort v) (sort (sort v)))))
+
+(defspec sort-is-idempotent 10
+  (prop/for-all [v (gen/vector gen/int)]
+                (= (sort v) (sort (sort v)))))
+
 (defn test-ns-hook
   []
-  (next-state-stest))
+  (next-state-stest)
+  (sort-is-idempotent))
 
 (comment
   
   (run-tests)
   (next-state-stest)
+  
+  (tc/quick-check 10 sort-is-idempotent-prop)
   
   (resolve `next-state)
   (resolve 'next-state)
