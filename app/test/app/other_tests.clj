@@ -46,20 +46,11 @@
     (is (false? (alter-var-root #'clojure.test/*load-tests* (fn [_] false))))
     (is (true? (alter-var-root #'clojure.test/*load-tests* (fn [_] true))))
     (is (true? clojure.test/*load-tests*)))
-  
+  (testing "isa?"
+    (is (false? (isa? nil Object))
+        "isa? nil Object is false"))
+  (testing "stuff"
+    (is (= (type (java.util.UUID/randomUUID)) (class (java.util.UUID/randomUUID)))
+        "(type) and (class) are same when metadata has no :type or something"))
   )
-
-(comment
-
-  (ancestors java.util.Date)
-  (ancestors java.time.Instant)
-
-  ;;
-  )
-
-
-
-
-
-
 
