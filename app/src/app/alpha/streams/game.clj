@@ -147,6 +147,8 @@
   
   (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1}})
   (stest/summarize-results (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1}}))
+  (stest/summarize-results (stest/check  ))
+  (-> (stest/enumerate-namespace (ns-name *ns*)) (stest/check {:clojure.spec.test.check/opts {:num-tests 2}}))
   
   (gensym "tmp")
 
