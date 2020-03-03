@@ -1,11 +1,12 @@
 (ns app.alpha.data.spec-test
-  (:require [clojure.pprint :as pp]
+  (:require [clojure.set :refer [subset?]]
             [clojure.repl :refer [doc]]
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.test.alpha :as stest]
             [clojure.test.check.clojure-test :refer [defspec]]
-            [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]))
+            [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
+            [app.alpha.data.spec :refer [setof-evtype]]))
 
 
 (comment
@@ -19,6 +20,9 @@
   (testing ":g/game spec"
     (is (s/valid? :g/game (gen/generate (s/gen :g/game)))
         "game can be generated"))
+  (testing "event specs"
+    (is (subset? (into #{} (gen/sample (s/gen :ev/type))) setof-evtype)
+        "generate a subset of :ev/type"))
   (testing "other specs"
     (is (s/valid? (s/coll-of :u/email) (gen/sample (s/gen :u/email)))
         "coll-of :u/email can be generated via custom gen")

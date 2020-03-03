@@ -5,6 +5,17 @@
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.test.alpha :as stest]))
 
+(def setof-game-status #{:created :opened :started :finished})
+(def setof-evtype
+  #{:ev.c/delete-record :ev.u/create
+    :ev.u/update :ev.u/delete
+    :ev.g.u/create
+    :ev.g.u/delete :ev.g.u/configure
+    :ev.g.u/start :ev.g.u/join
+    :ev.g.u/leave :ev.g.p/move-cape
+    :ev.g.p/collect-tile-value
+    :ev.g.a/finish-game})
+
 (s/def :g.e/uuid uuid?)
 (s/def :g.e/pos (s/tuple int? int?))
 (s/def :g.e/numeric-value number?)
@@ -26,7 +37,7 @@
 (s/def :g.r/role (s/keys :req [:g.r/host :g.r/player :g.r/observer]))
 
 (s/def :g/uuid uuid?)
-(s/def :g/status #{:created :opened :started :finished})
+(s/def :g/status setof-game-status)
 (s/def :g/start-inst inst?)
 (s/def :g/duration-ms number?)
 (s/def :g/map-size (s/tuple int? int?))
@@ -34,7 +45,6 @@
 (s/def :g/player-states (s/map-of int? :g.p/player))
 (s/def :g/exit-teleports (s/coll-of :g.e.type/teleport))
 (s/def :g/value-tiles (s/coll-of :g.e.type/value-tile))
-
 
 (s/def :g/game (s/keys :req [:g/uuid :g/status :g/start-inst
                              :g/duration-ms :g/map-size
@@ -55,7 +65,8 @@
 
 (s/def :u/user (s/keys :req [:u/uuid :u/username :u/email]))
 
-(s/def :ev/type keyword?)
+
+(s/def :ev/type setof-evtype)
 
 (s/def :ev.c/delete-record (s/keys :req [:ev/type]
                                    :opt [:record/uuid]))
@@ -71,9 +82,6 @@
 
 (s/def :ev.g.u/delete (s/keys :req [:ev/type]
                               :opt []))
-
-(s/def :ev.g.u/delete (s/keys :req [:ev/type :u/uuid :g/uuid]
-                                 :opt []))
 
 (s/def :ev.g.u/configure (s/keys :req [:ev/type :u/uuid :g/uuid]
                                     :opt []))
@@ -105,6 +113,7 @@
                                        x
                                        {:ev/type :ev.g.a/finish-game}))
                                     (s/gen :ev.g.a/finish-game)))
+
 
 (defmulti ev (fn [x] (:ev/type x)))
 (defmethod ev :ev.u/create [x] :ev.u/create)
