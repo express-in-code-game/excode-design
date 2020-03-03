@@ -12,6 +12,7 @@
   ; https://stackoverflow.com/questions/36639154/convert-java-util-date-to-what-java-time-type
   (def d (java.util.Date.))
   (.getTime d)
+  (inst? (java.util.Date.))
   (inst? (java.time.Instant/now))
   (inst? (java.time.Instant/now))
   (java.sql.Timestamp. 0)

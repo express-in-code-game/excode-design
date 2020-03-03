@@ -4,6 +4,7 @@
             [clojure.spec.test.alpha :as stest]
             [app.alpha.repl]
             [app.alpha.tests]
+            [app.other-tests]
             [app.pad]))
 
 (defn env-optimized?
