@@ -388,3 +388,23 @@
 
   ;; 
   )
+
+(comment
+
+  (ns-unmap *ns* 'ev-type)
+  
+  (defmulti ev-type (fn [kw] kw))
+  (defmethod ev-type :ev.u/create [_] #{:ev.u/create})
+  (defmethod ev-type :ev.u/delete [_] #{:ev.u/delete})
+  (s/def :ev/type1 (s/multi-spec ev-type (fn [gened-val dispatch-tag]
+                                           (prn "gened-val " gened-val)
+                                           (prn "dispatch-tag " dispatch-tag)
+                                           dispatch-tag)))
+  (ev-type :ev.u/create)
+  (s/valid? :ev/type1 :ev.u/create)
+  (s/valid? :ev/type1 :ev.u/delete)
+  (s/valid? :ev/type1 :ev.u/delete1)
+  (gen/generate (s/gen :ev/type1))
+  
+  ;;
+  )

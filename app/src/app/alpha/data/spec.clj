@@ -71,6 +71,8 @@
     :ev.g.p/collect-tile-value
     :ev.g.a/finish-game})
 
+
+
 (s/def :ev/type setof-ev-event)
 
 (s/def :ev.c/delete-record (s/keys :req [:ev/type]
