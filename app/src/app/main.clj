@@ -25,8 +25,9 @@
   (start-nrepl-server "0.0.0.0" 7788)
   (when-not (env-optimized?)
     (stest/instrument)
-    (alter-var-root #'clojure.test/*load-tests* (fn [v] true))
     (s/check-asserts true))
+  (when (env-optimized?)
+    (alter-var-root #'clojure.test/*load-tests* (fn [v] false)))
   #_(alpha-repl/mount))
 
 (comment
