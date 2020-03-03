@@ -1,20 +1,13 @@
-(ns app.alpha.streams.game-test
+(ns app.alpha.streams.core-test
   (:require [clojure.pprint :as pp]
-            [app.alpha.streams.core :refer [add-shutdown-hook
-                                            produce-event
-                                            create-user]]
             [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as sgen]
             [clojure.spec.test.alpha :as stest]
-            [clojure.test.check :as tc]
-            [clojure.test.check.generators :as gen]
-            [clojure.test.check.properties :as prop]
-            [app.alpha.spec :refer [gen-ev-p-move-cape
-                                    gen-ev-a-finish-game]])
+            [clojure.spec.gen.alpha :as gen])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer
    app.kafka.serdes.TransitJsonSerde
+
    org.apache.kafka.common.serialization.Serdes
    org.apache.kafka.streams.KafkaStreams
    org.apache.kafka.streams.StreamsBuilder
@@ -32,13 +25,16 @@
    org.apache.kafka.streams.kstream.ValueMapper
    org.apache.kafka.streams.kstream.KeyValueMapper
    org.apache.kafka.streams.KeyValue
+
    org.apache.kafka.streams.kstream.Materialized
    org.apache.kafka.streams.kstream.Produced
    org.apache.kafka.streams.kstream.Reducer
    org.apache.kafka.streams.kstream.Grouped
    org.apache.kafka.streams.state.QueryableStoreTypes
+
    org.apache.kafka.streams.kstream.Initializer
    org.apache.kafka.streams.kstream.Aggregator
+
    java.util.ArrayList
    java.util.Locale
    java.util.Arrays))
