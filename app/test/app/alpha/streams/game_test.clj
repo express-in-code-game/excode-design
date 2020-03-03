@@ -29,13 +29,12 @@
                                       (first (sgen/generate (s/gen :ev.g.u/create))))))))
 
 (deftest next-state-stest
-  (let [num-tests 10]
-    (testing (str "running spec.test/check with :num-tests " num-tests)
-      (is (every? true?
-                  (map
-                   #(get-in % [:clojure.spec.test.check/ret :pass?])
-                   (stest/check `next-state
-                                {:clojure.spec.test.check/opts {:num-tests num-tests}})))))))
+  (testing "running spec.test/check"
+    (is (every? true?
+                (map
+                 #(get-in % [:clojure.spec.test.check/ret :pass?])
+                 (stest/check `next-state
+                              {:clojure.spec.test.check/opts {:num-tests 10}}))))))
 
 (defn test-ns-hook
   []
