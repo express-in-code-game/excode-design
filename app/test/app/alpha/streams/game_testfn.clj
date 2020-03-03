@@ -1,6 +1,5 @@
-(ns app.alpha.streams.game-test
-  (:require [app.alpha.streams.game :refer [next-state]]
-            [clojure.pprint :as pp]
+(ns app.alpha.streams.game-testfn
+  (:require [clojure.pprint :as pp]
             [app.alpha.streams.core :refer [add-shutdown-hook
                                             produce-event
                                             create-user]]
@@ -10,20 +9,10 @@
             [clojure.test.check :as tc]
             [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
-            [clojure.test :refer [is] :as t]
-            [app.alpha.data.spec :refer [gen-ev-p-move-cape
-                                         gen-ev-a-finish-game]])
+            [clojure.test :refer [is] :as t])
   (:import
    org.apache.kafka.clients.consumer.KafkaConsumer
    org.apache.kafka.clients.producer.KafkaProducer))
-
-
-(s/fdef next-state
-  :args (s/cat :state (s/nilable :g/game)
-               :k uuid?
-               :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game))
-  :ret (s/nilable :g/game))
-
 
 (defn assert-next-state-post [state] {:post [(s/assert :g/game %)]} state)
 (defn assert-next-state-body [state]
@@ -34,37 +23,6 @@
       data)))
 
 (comment
-
-  (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1}})
-  (stest/summarize-results (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1}}))
-  (stest/summarize-results (stest/check))
-  (-> (stest/enumerate-namespace (ns-name *ns*)) (stest/check {:clojure.spec.test.check/opts {:num-tests 2}}))
-
-  clojure.test/*load-tests*
-  (alter-var-root #'clojure.test/*load-tests* (fn [v] true))
-
-  (gensym "tmp")
-
-  (ns-unmap *ns* 'next-state)
-
-  (stest/instrument [`next-state])
-  (stest/unstrument [`next-state])
-
-  (def state (sgen/generate (s/gen :g/game)))
-  (def ev (first (sgen/sample (s/gen :ev.g.u/create) 1)))
-  (s/explain :g/game (gen-default-game-state (java.util.UUID/randomUUID) ev))
-
-  (def ev-p (sgen/generate (s/gen :ev.p/move-cape)))
-  (def ev-a (sgen/generate (s/gen :ev.a/finish-game)))
-
-  (def ev-p (first (sgen/sample gen-ev-p-move-cape 1)))
-  (def ev-a (first (sgen/sample gen-ev-a-finish-game 1)))
-
-  (next-state state ev-p)
-  (next-state state ev-a)
-
-  (next-state state (merge ev-p {:p/uuid "asd"}))
-
 
   (def a-game (sgen/generate (s/gen :g/game)))
   (def ev {:ev/type :ev.g.u/configure

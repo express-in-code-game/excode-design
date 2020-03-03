@@ -3,7 +3,8 @@
             [app.alpha.streams.core :refer [add-shutdown-hook
                                             produce-event
                                             create-user]]
-            [app.alpha.streams.game-test :refer [assert-next-state-body]]) ; boom. explicit. remove when needed
+            [app.alpha.data.game :refer [gen-default-game-state]]
+            [app.alpha.streams.game-testfn :refer [assert-next-state-body]])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer

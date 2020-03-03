@@ -5,9 +5,7 @@
                                             create-user]]
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
-            [clojure.spec.test.alpha :as stest]
-            [app.alpha.spec :refer [gen-ev-p-move-cape
-                                    gen-ev-a-finish-game]])
+            [clojure.spec.test.alpha :as stest])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer

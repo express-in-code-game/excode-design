@@ -17,7 +17,7 @@
     (stest/instrument)
     (s/check-asserts true))
   (when (env-optimized?)
-    (alter-var-root #'clojure.test/*load-tests* (fn [v] false)))
+    (alter-var-root #'clojure.test/*load-tests* (fn [_] false)))
   #_(app.alpha.repl/mount))
 
 (comment
