@@ -28,17 +28,25 @@
                                       (java.util.UUID/randomUUID)
                                       (first (sgen/generate (s/gen :ev.g.u/create))))))))
 
-
+(deftest next-state-stest
+  (let [num-tests 10]
+    (testing (str "running spec.test/check with :num-tests " num-tests)
+      (is (every? true?
+                  (map
+                   #(get-in % [:clojure.spec.test.check/ret :pass?])
+                   (stest/check `next-state
+                                {:clojure.spec.test.check/opts {:num-tests num-tests}})))))))
 
 
 (comment
   
   (run-tests)
+  (next-state-stest)
   
   (resolve `next-state)
   (resolve 'next-state)
   (type `next-state)
-  (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1}})
+  (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1000}})
   (stest/summarize-results (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1}}))
   (stest/summarize-results (stest/check))
   (-> (stest/enumerate-namespace (ns-name *ns*)) (stest/check {:clojure.spec.test.check/opts {:num-tests 2}}))
