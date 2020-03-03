@@ -4,15 +4,17 @@
                                             produce-event
                                             create-user]]
             [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]
+            [clojure.spec.gen.alpha :as sgen]
             [clojure.spec.test.alpha :as stest]
+            [clojure.test.check :as tc]
+            [clojure.test.check.generators :as gen]
+            [clojure.test.check.properties :as prop]
             [app.alpha.spec :refer [gen-ev-p-move-cape
                                     gen-ev-a-finish-game]])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer
    app.kafka.serdes.TransitJsonSerde
-
    org.apache.kafka.common.serialization.Serdes
    org.apache.kafka.streams.KafkaStreams
    org.apache.kafka.streams.StreamsBuilder
@@ -160,15 +162,15 @@
   (stest/instrument [`next-state])
   (stest/unstrument [`next-state])
 
-  (def state (gen/generate (s/gen :g/game)))
-  (def ev (first (gen/sample (s/gen :ev.g.u/create) 1)))
+  (def state (sgen/generate (s/gen :g/game)))
+  (def ev (first (sgen/sample (s/gen :ev.g.u/create) 1)))
   (s/explain :g/game (gen-default-game-state (java.util.UUID/randomUUID) ev))
 
-  (def ev-p (gen/generate (s/gen :ev.p/move-cape)))
-  (def ev-a (gen/generate (s/gen :ev.a/finish-game)))
+  (def ev-p (sgen/generate (s/gen :ev.p/move-cape)))
+  (def ev-a (sgen/generate (s/gen :ev.a/finish-game)))
 
-  (def ev-p (first (gen/sample gen-ev-p-move-cape 1)))
-  (def ev-a (first (gen/sample gen-ev-a-finish-game 1)))
+  (def ev-p (first (sgen/sample gen-ev-p-move-cape 1)))
+  (def ev-a (first (sgen/sample gen-ev-a-finish-game 1)))
 
   (next-state state ev-p)
   (next-state state ev-a)
@@ -176,7 +178,7 @@
   (next-state state (merge ev-p {:p/uuid "asd"}))
 
 
-  (def a-game (gen/generate (s/gen :g/game)))
+  (def a-game (sgen/generate (s/gen :g/game)))
   (def ev {:ev/type :ev.g.u/configure
            :u/uuid (java.util.UUID/randomUUID)
            :g/uuid (java.util.UUID/randomUUID)
