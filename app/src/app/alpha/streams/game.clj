@@ -145,8 +145,8 @@
 
 (comment
   
-  (stest/check `next-state)
-  (stest/summarize-results (stest/check `next-state))
+  (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1}})
+  (stest/summarize-results (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1}}))
   
   (gensym "tmp")
 
