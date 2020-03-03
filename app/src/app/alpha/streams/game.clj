@@ -4,6 +4,8 @@
                                             produce-event
                                             create-user]]
             [app.alpha.data.game :refer [gen-default-game-state]]
+            [clojure.spec.test.alpha :as stest]
+            [clojure.spec.alpha :as s]
             [app.alpha.streams.game-testfn :refer [assert-next-state-body]])
   (:import
    app.kafka.serdes.TransitJsonSerializer
@@ -90,7 +92,6 @@
 (defmethod next-state [:ev.g.p/collect-tile-value]
   [state k ev]
   state)
-
 
 (defn create-streams-game
   []

@@ -18,7 +18,7 @@
    org.apache.kafka.clients.producer.KafkaProducer))
 
 
-(s/fdef next-state
+(s/fdef app.alpha.streams.game/next-state
   :args (s/cat :state (s/nilable :g/game)
                :k uuid?
                :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game))
@@ -34,7 +34,10 @@
       data)))
 
 (comment
-
+  
+  (resolve `next-state)
+  (resolve 'next-state)
+  (type `next-state)
   (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1}})
   (stest/summarize-results (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1}}))
   (stest/summarize-results (stest/check))

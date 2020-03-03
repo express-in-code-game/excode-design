@@ -5,7 +5,7 @@
             [clojure.test.check :as tc]
             [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
-            [clojure.test :refer [is run-all-tests testing deftest] :as t]
+            [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
 
             [app.alpha.streams.game-test]
             [app.alpha.streams.user-test]
@@ -13,9 +13,11 @@
 
 (deftest hello
   (testing "Airhtmetic"
-    (is (= 5 (+ 2 2)))))
+    (is (= 5 (+ 3 2)))))
 
 (comment
+  
+  (run-tests)
 
   (run-all-tests #"app.*")
   (re-matches #"app.*" "app.alpha.streams.game-test")
