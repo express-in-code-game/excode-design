@@ -1,5 +1,6 @@
 (ns app.alpha.data.game
-  (:require [app.alpha.data.spec]))
+  (:require [app.alpha.data.spec]
+            [clojure.spec.alpha :as s]))
 
 (defn gen-default-game-state
   [k ev]
@@ -34,3 +35,8 @@
                                            :g.e/numeric-value (inc (rand-int 10))}) (range 0 16)))
                                 (range 0 16))
                         (vec))}))
+
+(s/fdef gen-default-game-state
+  :args (s/cat :k uuid?
+               :ev :ev.g/event)
+  :ret :g/game)

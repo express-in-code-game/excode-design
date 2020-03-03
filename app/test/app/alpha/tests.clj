@@ -9,10 +9,12 @@
 
             [app.alpha.streams.game-test]
             [app.alpha.streams.user-test]
-            [app.alpha.streams.core-test]))
+            [app.alpha.streams.core-test]
+            [app.alpha.data.game-test]
+            [app.alpha.data.spec-test]))
 
-(deftest hello
-  (testing "Airhtmetic"
+(deftest sample-test
+  (testing "Arihtmetic"
     (is (= 5 (+ 3 2)))))
 
 (comment
