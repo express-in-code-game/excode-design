@@ -41,7 +41,13 @@
     (pr-str (java.util.Date.))
     (let [x {:a 1}]
       (is (= x (read-string (pr-str x)))
-          "pr-str then read-string "))))
+          "pr-str then read-string ")))
+  (testing "rebinding root vars"
+    (is (false? (alter-var-root #'clojure.test/*load-tests* (fn [_] false))))
+    (is (true? (alter-var-root #'clojure.test/*load-tests* (fn [_] true))))
+    (is (true? clojure.test/*load-tests*)))
+  
+  )
 
 (comment
 

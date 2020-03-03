@@ -5,6 +5,7 @@
                                             create-user]]
             [app.alpha.data.game :refer [gen-default-game-state]]
             [clojure.spec.alpha :as s]
+            [clojure.spec.test.alpha :as stest]
             [app.alpha.streams.game-testfn :refer [assert-next-state-body]])
   (:import
    app.kafka.serdes.TransitJsonSerializer
@@ -95,6 +96,15 @@
                :k uuid?
                :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game))
   :ret (s/nilable :g/game))
+
+(comment
+
+  (ns-unmap *ns* 'next-state)
+  (stest/instrument [`next-state])
+  (stest/unstrument [`next-state])
+
+  ;;
+  )
 
 (defn create-streams-game
   []

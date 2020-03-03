@@ -18,6 +18,23 @@
    org.apache.kafka.clients.consumer.KafkaConsumer
    org.apache.kafka.clients.producer.KafkaProducer))
 
+(comment
+
+  (run-tests)
+  (next-state-speccheck)
+
+  (tc/quick-check 10 sort-is-idempotent-prop)
+
+  (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1000}})
+  (stest/summarize-results (stest/check `next-state
+                                        {:clojure.spec.test.check/opts {:num-tests 1}}))
+  (stest/summarize-results (stest/check))
+  (-> (stest/enumerate-namespace 'app.alpha.streams.game)
+      (stest/check {:clojure.spec.test.check/opts {:num-tests 2}}))
+
+  ;;
+  )
+
 (deftest next-state-tests
   (testing "event :ev.g.u/create"
     (is (s/valid? :g/game (next-state nil
@@ -30,7 +47,7 @@
                                       (first (sgen/generate (s/gen :ev.g.u/create))))))))
 
 (deftest next-state-speccheck
-  (testing "running spec.test/check "
+  (testing "running spec.test/check"
     (is (every? true?
                 (map
                  #(get-in % [:clojure.spec.test.check/ret :pass?])
@@ -38,7 +55,7 @@
                               {:clojure.spec.test.check/opts {:num-tests 10}}))))))
 
 (deftest all-specchecks
-  (testing "running spec.test/check for 'app.alpha.streams.game "
+  (testing "running spec.test/check for ns"
     (is (every? true?
                 (map
                  #(get-in % [:clojure.spec.test.check/ret :pass?])
@@ -56,46 +73,3 @@
 #_(defn test-ns-hook
     []
     (next-state-stest))
-
-(comment
-  
-  (run-tests)
-  (next-state-stest)
-  
-  (tc/quick-check 10 sort-is-idempotent-prop)
-  
-  (resolve `next-state)
-  (resolve 'next-state)
-  (type `next-state)
-  (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1000}})
-  (stest/summarize-results (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1}}))
-  (stest/summarize-results (stest/check))
-  (-> (stest/enumerate-namespace (ns-name *ns*)) (stest/check {:clojure.spec.test.check/opts {:num-tests 2}}))
-
-  clojure.test/*load-tests*
-  (alter-var-root #'clojure.test/*load-tests* (fn [v] true))
-
-  (gensym "tmp")
-
-  (ns-unmap *ns* 'next-state)
-
-  (stest/instrument [`next-state])
-  (stest/unstrument [`next-state])
-
-  (def state (sgen/generate (s/gen :g/game)))
-  (def ev (first (sgen/sample (s/gen :ev.g.u/create) 1)))
-  (s/explain :g/game (gen-default-game-state (java.util.UUID/randomUUID) ev))
-
-  (def ev-p (sgen/generate (s/gen :ev.p/move-cape)))
-  (def ev-a (sgen/generate (s/gen :ev.a/finish-game)))
-
-  (def ev-p (first (sgen/sample gen-ev-p-move-cape 1)))
-  (def ev-a (first (sgen/sample gen-ev-a-finish-game 1)))
-
-  (next-state state ev-p)
-  (next-state state ev-a)
-
-  (next-state state (merge ev-p {:p/uuid "asd"}))
-
-  ;;
-  )

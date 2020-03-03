@@ -49,7 +49,8 @@
 
 (defmethod next-state [:ev.u/update]
   [state k ev]
-  (merge state ev))
+  (when state
+    (merge state ev)))
 
 (defmethod next-state [:ev.u/delete]
   [state k ev]
@@ -59,6 +60,16 @@
   :args (s/cat :state (s/nilable :u/user)
                :k uuid?
                :ev :ev.u/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
+
+(comment
+
+  (ns-unmap *ns* 'next-state)
+  (stest/instrument [`next-state])
+  (stest/unstrument [`next-state])
+
+  ;;
+  )
+
 
 (defn create-streams-user
   []
