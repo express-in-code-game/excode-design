@@ -40,22 +40,6 @@
    java.util.Locale
    java.util.Arrays))
 
-;;;;
-
-(defn [])
-
-'fpsec
-
-'deftest
-
-'defspec
-
-'comment
-
-
-;;;;
-
-
 (defmulti next-state 
   "Returns next state of the user record"
   {:arglists '([state key event])}

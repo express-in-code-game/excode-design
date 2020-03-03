@@ -1,6 +1,5 @@
 (ns app.alpha.streams.core
   (:require [clojure.pprint :as pp]
-            [app.alpha.spec :as spec]
             [clojure.spec.alpha :as s]
             [clojure.spec.test.alpha :as stest]
             [clojure.spec.gen.alpha :as gen])
