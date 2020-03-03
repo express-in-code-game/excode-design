@@ -10,14 +10,30 @@
             [clojure.test.check :as tc]
             [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
-            [clojure.test :refer [is] :as t]
+            [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
             [app.alpha.data.spec :refer [gen-ev-p-move-cape
                                          gen-ev-a-finish-game]])
   (:import
    org.apache.kafka.clients.consumer.KafkaConsumer
    org.apache.kafka.clients.producer.KafkaProducer))
 
+(deftest next-state-tests
+  (testing "event :ev.g.u/create"
+    (is (s/valid? :g/game (next-state nil
+                                      (java.util.UUID/randomUUID)
+                                      {:ev/type :ev.g.u/create
+                                       :u/uuid  (java.util.UUID/randomUUID)}))))
+  (testing "random :g/game and :ev.g.u/create event "
+    (is (s/valid? :g/game (next-state (sgen/generate (s/gen :g/game))
+                                      (java.util.UUID/randomUUID)
+                                      (first (sgen/generate (s/gen :ev.g.u/create))))))))
+
+
+
+
 (comment
+  
+  (run-tests)
   
   (resolve `next-state)
   (resolve 'next-state)
