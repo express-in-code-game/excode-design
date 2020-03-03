@@ -150,6 +150,9 @@
   (stest/summarize-results (stest/check  ))
   (-> (stest/enumerate-namespace (ns-name *ns*)) (stest/check {:clojure.spec.test.check/opts {:num-tests 2}}))
   
+  clojure.test/*load-tests*
+  (alter-var-root #'clojure.test/*load-tests* (fn [v] true))
+  
   (gensym "tmp")
 
   (ns-unmap *ns* 'next-state)
