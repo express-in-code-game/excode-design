@@ -11,7 +11,7 @@
   (testing "generates valid :g/game"
     (is (s/valid? :g/game
                   (gen-default-game-state
-                   (java.util.UUID/randomUUID)
+                   #uuid "46855899-838a-45fd-98b4-c76c08954645"
                    (sgen/generate (s/gen :ev.g.u/create)))))))
 
 (comment

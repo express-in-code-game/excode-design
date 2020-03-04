@@ -1,11 +1,11 @@
-(ns ui.board.view
+(ns ui.alpha.board.view
   (:require  [reagent.core :as r]
              [re-frame.core :as rf]
              [cljs.repl :as repl]
              [cljs.pprint :as pp]
              [goog.string :refer [format]]
-             [ui.board.evs :as evs]
-             [ui.board.subs :as subs]
+             [ui.alpha.board.evs :as evs]
+             [ui.alpha.board.subs :as subs]
              ))
 
 (defn view []

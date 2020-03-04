@@ -6,9 +6,9 @@
             [re-frame.core :as rf]
             [shadow.loader :as loader]
             [ui.alpha.subs :as subs]
-            [ui.home.view]
-            [ui.map.view]
-            [ui.board.view]
+            [ui.alpha.home.view]
+            [ui.alpha.map.view]
+            [ui.alpha.board.view]
             [cljs.core.async :refer [<! timeout]]
             [ui.alpha.config :as config]
             [clojure.string :as string]
@@ -21,9 +21,9 @@
 (defn- views [view-name]
   #_(prn view-name)
   (case view-name
-    :home-view [ui.home.view/view]
-    :map-view [ui.map.view/view]
-    :board-view [ui.board.view/view]
+    :home-view [ui.alpha.home.view/view]
+    :map-view [ui.alpha.map.view/view]
+    :board-view [ui.alpha.board.view/view]
     ; nil [:div "loading..."]
     [not-found-view view-name]))
 

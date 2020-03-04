@@ -1,10 +1,10 @@
-(ns ui.home.view
+(ns ui.alpha.home.view
   (:require  [reagent.core :as r]
              [cljs.repl :as repl]
              [cljs.pprint :as pp]
              [re-frame.core :as rf]
-             [ui.home.subs :as subs]
-             [ui.home.evs :as evs]
+             [ui.alpha.home.subs :as subs]
+             [ui.alpha.home.evs :as evs]
              ["antd/lib/button" :default AntButton]
              ["@ant-design/icons/SmileOutlined" :default AntSmileOutlined]))
 
