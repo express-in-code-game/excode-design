@@ -1,12 +1,13 @@
 (ns ui.alpha.home.view
-  (:require  [reagent.core :as r]
-             [cljs.repl :as repl]
-             [cljs.pprint :as pp]
-             [re-frame.core :as rf]
-             [ui.alpha.home.subs :as subs]
-             [ui.alpha.home.evs :as evs]
-             ["antd/lib/button" :default AntButton]
-             ["@ant-design/icons/SmileOutlined" :default AntSmileOutlined]))
+  (:require
+   [reagent.core :as r]
+   [cljs.repl :as repl]
+   [cljs.pprint :as pp]
+   [re-frame.core :as rf]
+   [ui.alpha.home.subs :as subs]
+   [ui.alpha.home.evs :as evs]
+   ["antd/lib/button" :default AntButton]
+   ["@ant-design/icons/SmileOutlined" :default AntSmileOutlined]))
 
 (def ant-button (r/adapt-react-class AntButton))
 (def ant-smile-outlined (r/adapt-react-class AntSmileOutlined))

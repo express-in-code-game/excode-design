@@ -1,12 +1,12 @@
 (ns ui.alpha.board.view
-  (:require  [reagent.core :as r]
-             [re-frame.core :as rf]
-             [cljs.repl :as repl]
-             [cljs.pprint :as pp]
-             [goog.string :refer [format]]
-             [ui.alpha.board.evs :as evs]
-             [ui.alpha.board.subs :as subs]
-             ))
+  (:require
+   [reagent.core :as r]
+   [re-frame.core :as rf]
+   [cljs.repl :as repl]
+   [cljs.pprint :as pp]
+   [goog.string :refer [format]]
+   [ui.alpha.board.evs :as evs]
+   [ui.alpha.board.subs :as subs]))
 
 (defn view []
   (let []

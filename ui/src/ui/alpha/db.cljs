@@ -1,7 +1,7 @@
 (ns ui.alpha.db
-  (:require [clojure.spec.alpha :as s]
-            [re-frame.core :as rf]
-   ))
+  (:require
+   [clojure.spec.alpha :as s]
+   [re-frame.core :as rf]))
 
 (defn gen-default-db
   "gens the deafult db"

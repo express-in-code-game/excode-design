@@ -1,15 +1,17 @@
 (ns ui.alpha.routes
-  (:require [clojure.repl]
-            [bidi.bidi :as bidi]
-            [pushy.core :as pushy]
-            #_[goog.events]
-            [reagent.core :as r]
-            [re-frame.core :as rf])
-  (:import goog.History
-           goog.history.Html5History
-           goog.history.Html5History.TokenTransformer
-           goog.history.EventType
-           goog.Uri))
+  (:require
+   [clojure.repl]
+   [bidi.bidi :as bidi]
+   [pushy.core :as pushy]
+   #_[goog.events]
+   [reagent.core :as r]
+   [re-frame.core :as rf])
+  (:import
+   goog.History
+   goog.history.Html5History
+   goog.history.Html5History.TokenTransformer
+   goog.history.EventType
+   goog.Uri))
 
 #_(def routes [".+" :map-view])
 

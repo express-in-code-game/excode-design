@@ -6,7 +6,7 @@
    #_[vimsical.re-frame.cofx.inject :as inject]
    [ajax.core :as ajax]
    [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
-   [ui.core :refer  [deep-merge]]
+   [ui.alpha.core :refer  [deep-merge]]
    ))
 
 (rf/reg-event-fx
