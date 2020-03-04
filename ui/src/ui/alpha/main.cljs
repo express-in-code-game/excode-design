@@ -18,7 +18,8 @@
    [common.alpha.game]
    [common.alpha.spec]
    [common.alpha.tests]
-   [ui.other-tests]))
+   [common.sample-tests]
+   [ui.sample-tests]))
 
 (devtools/install!)
 #_(enable-console-print!)

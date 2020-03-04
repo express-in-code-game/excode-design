@@ -1,5 +1,6 @@
-(ns app.other-tests
+(ns app.sample-tests
   (:require
+   [clojure.set :refer [subset?]]
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
    [clojure.spec.test.alpha :as stest]
@@ -19,7 +20,7 @@
   ;;
   )
 
-(deftest exploratory
+(deftest some-tests
   (testing "time"
     (is (inst? (java.util.Date.))
         "java.util.Date satisfies Inst")

@@ -1,4 +1,4 @@
-(ns ui.other-tests
+(ns ui.sample-tests
   (:require
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
@@ -19,9 +19,9 @@
   ;;
   )
 
-(deftest exploratory
+(deftest some-tests
   (testing "macros"
     (is (= (macroexpand '(when (pos? a) (println "positive") (/ b a)))
            '(if (pos? a) (do (println "positive") (/ b a))))
-        "macroexpand example with when macro")))
+        "macroexpand example")))
 
