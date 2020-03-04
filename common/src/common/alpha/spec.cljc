@@ -1,10 +1,12 @@
 (ns common.alpha.spec
   (:require
+   [clojure.repl :refer [doc]]
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
    [clojure.spec.test.alpha :as stest]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
+   [common.alpha.core :refer [with-gen-self]]
    #?(:cljs [common.alpha.macros :refer-macros [defmethods-for-a-set]]
       :clj  [common.alpha.macros :refer [defmethods-for-a-set]])))
 
@@ -69,15 +71,22 @@
     :ev.g.p/collect-tile-value
     :ev.g.a/finish-game})
 
-
-
 (s/def :ev/type setof-ev-event)
 
 (s/def :ev.c/delete-record (s/keys :req [:ev/type]
                                    :opt [:record/uuid]))
+(s/def :ev.u/create (let [s (s/keys :req [:ev/type :u/uuid :u/email :u/username]
+                                    :opt [])]
+                      (s/with-gen s
+                        #(gen/fmap (fn [vl]
+                                     (assoc vl :ev/type :ev.u/create)) (s/gen s)))))
 
-(s/def :ev.u/create (s/keys :req [:ev/type :u/uuid :u/email :u/username]
-                            :opt []))
+(s/def :ev.u/create (with-gen-self
+                     (s/keys :req [:ev/type :u/uuid :u/email :u/username]
+                             :opt [])
+                     #(gen/fmap (fn [vl]
+                                  (assoc vl :ev/type :ev.u/create)) (s/gen %))))
+
 (s/def :ev.u/update (s/keys :req [:ev/type]
                                  :opt [:u/email :u/username]))
 (s/def :ev.u/delete (s/keys :req [:ev/type]
@@ -118,7 +127,6 @@
                                        x
                                        {:ev/type :ev.g.a/finish-game}))
                                     (s/gen :ev.g.a/finish-game)))
-
 
 
 (defmulti ev (fn [x] (:ev/type x)))
