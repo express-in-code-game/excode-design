@@ -18,20 +18,16 @@ permissions(){
 
 dock() {
     docker build -t starnet.app -f Dockerfile ..
-    docker run --gpus all \
-                --rm \
+    docker run  --rm \
                 --name starnet.app \
                 -it \
                 --network starnet.kafka \
                 -p 7788:7788 \
-                -v "$(cd ../ && pwd)":/app/root \
+                -v "$(cd ../ && pwd)":/ctx \
                 -e "appenv={:optimized false}" \
                  starnet.app \
                  bash
 }
-
-
-
 
 
 "$@"
