@@ -1,15 +1,24 @@
-(ns ui.main
-  (:require [cljs.repl :as repl]
-            [cljs.pprint :as pp]
-            [reagent.core :as r]
-            [re-frame.core :as rf]
-            [re-pressed.core :as rp]
-            [ui.evs :as evs]
-            [ui.routes :as routes]
-            [ui.config :as config]
-            [ui.subs :as subs]
-            [ui.view :refer [view]]
-            [devtools.core :as devtools]))
+(ns ui.alpha.main
+  (:require
+   [cljs.repl :as repl]
+   [cljs.pprint :as pp]
+   [reagent.core :as r]
+   [re-frame.core :as rf]
+   [re-pressed.core :as rp]
+   [devtools.core :as devtools]
+
+   [ui.alpha.evs :as evs]
+   [ui.alpha.routes :as routes]
+   [ui.alpha.config :as config]
+   [ui.alpha.subs :as subs]
+   [ui.alpha.view :refer [view]]
+
+   [ui.alpha.repl]
+   [ui.alpha.tests]
+   [common.alpha.game]
+   [common.alpha.spec]
+   [common.alpha.tests]
+   [ui.other-tests]))
 
 (devtools/install!)
 #_(enable-console-print!)
@@ -17,7 +26,7 @@
 (defn mount-root []
   (rf/clear-subscription-cache!)
   (r/render [view]
-            (.getElementById js/document "app")))
+            (.getElementById js/document "ui")))
 
 (defn dev-setup []
   (when config/debug?

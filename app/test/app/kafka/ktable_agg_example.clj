@@ -1,6 +1,7 @@
 (ns app.kafka.ktable-agg-example
-  (:require [clojure.pprint :as pp]
-            [app.kafka.serdes])
+  (:require
+   [clojure.pprint :as pp]
+   [app.kafka.serdes])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer

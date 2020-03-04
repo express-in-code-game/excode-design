@@ -9,7 +9,7 @@ compile(){
 
 dev(){
   compile
-  clj -A:core:dev:local -m app.main 
+  clj -A:core:dev:local -m app.alpha.main
 }
 
 permissions(){

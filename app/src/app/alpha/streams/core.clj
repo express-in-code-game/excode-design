@@ -1,8 +1,9 @@
 (ns app.alpha.streams.core
-  (:require [clojure.pprint :as pp]
-            [clojure.spec.alpha :as s]
-            [clojure.spec.test.alpha :as stest]
-            [clojure.spec.gen.alpha :as gen])
+  (:require
+   [clojure.pprint :as pp]
+   [clojure.spec.alpha :as s]
+   [clojure.spec.test.alpha :as stest]
+   [clojure.spec.gen.alpha :as gen])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer

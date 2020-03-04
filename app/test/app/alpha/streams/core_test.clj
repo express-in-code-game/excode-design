@@ -1,9 +1,10 @@
 (ns app.alpha.streams.core-test
-  (:require [clojure.pprint :as pp]
-            [clojure.spec.alpha :as s]
-            [clojure.spec.test.alpha :as stest]
-            [clojure.spec.gen.alpha :as gen]
-            [app.alpha.streams.core :refer [send-event]])
+  (:require
+   [clojure.pprint :as pp]
+   [clojure.spec.alpha :as s]
+   [clojure.spec.test.alpha :as stest]
+   [clojure.spec.gen.alpha :as gen]
+   [app.alpha.streams.core :refer [send-event]])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer

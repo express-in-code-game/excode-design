@@ -1,4 +1,4 @@
-(ns ui.config)
+(ns ui.alpha.config)
 
 (def debug?
   ^boolean goog.DEBUG)

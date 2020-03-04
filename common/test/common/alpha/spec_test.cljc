@@ -1,12 +1,13 @@
 (ns common.alpha.spec-test
-  (:require [clojure.set :refer [subset?]]
-            [clojure.repl :refer [doc]]
-            [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]
-            [clojure.spec.test.alpha :as stest]
-            [clojure.test.check.clojure-test :refer [defspec]]
-            [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
-            [app.alpha.data.spec :refer [setof-ev-event]]))
+  (:require
+   [clojure.set :refer [subset?]]
+   [clojure.repl :refer [doc]]
+   [clojure.spec.alpha :as s]
+   [clojure.spec.gen.alpha :as gen]
+   [clojure.spec.test.alpha :as stest]
+   [clojure.test.check.clojure-test :refer [defspec]]
+   [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
+   [common.alpha.spec :refer [setof-ev-event]]))
 
 
 (comment

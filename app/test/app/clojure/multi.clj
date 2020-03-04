@@ -1,7 +1,8 @@
 (ns app.clojure.multi
-  (:require [clojure.repl :refer [doc]]
-            [clojure.spec.alpha :as s]
-            [clojure.spec.test.alpha :as stest]))
+  (:require
+   [clojure.repl :refer [doc]]
+   [clojure.spec.alpha :as s]
+   [clojure.spec.test.alpha :as stest]))
 
 
 (comment

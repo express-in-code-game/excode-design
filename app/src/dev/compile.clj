@@ -1,6 +1,7 @@
 (ns dev.compile
-  (:require [clojure.repl :as repl]
-            [app.kafka.serdes]))
+  (:require
+   [clojure.repl :as repl]
+   [app.kafka.serdes]))
 
 (defn -main
   []

@@ -1,9 +1,8 @@
 (ns app.alpha.spec
-  (:require [app.alpha.data.spec]
-            
-            [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]
-            [clojure.spec.test.alpha :as stest])
+  (:require
+   [clojure.spec.alpha :as s]
+   [clojure.spec.gen.alpha :as gen]
+   [clojure.spec.test.alpha :as stest])
   (:import
    java.util.Date
    org.apache.kafka.clients.producer.KafkaProducer

@@ -1,15 +1,17 @@
-(ns ui.routes
-  (:require [clojure.repl]
-            [bidi.bidi :as bidi]
-            [pushy.core :as pushy]
-            #_[goog.events]
-            [reagent.core :as r]
-            [re-frame.core :as rf])
-  (:import goog.History
-           goog.history.Html5History
-           goog.history.Html5History.TokenTransformer
-           goog.history.EventType
-           goog.Uri))
+(ns ui.alpha.routes
+  (:require
+   [clojure.repl]
+   [bidi.bidi :as bidi]
+   [pushy.core :as pushy]
+   #_[goog.events]
+   [reagent.core :as r]
+   [re-frame.core :as rf])
+  (:import
+   goog.History
+   goog.history.Html5History
+   goog.history.Html5History.TokenTransformer
+   goog.history.EventType
+   goog.Uri))
 
 #_(def routes [".+" :map-view])
 
@@ -33,7 +35,7 @@
   (prn matched-route)
   (let [handler (:handler matched-route)
         url (:url matched-route)]
-    (rf/dispatch [:ui.evs/set-active-view handler])))
+    (rf/dispatch [:ui.alpha.evs/set-active-view handler])))
 
 (declare history)
 
@@ -49,4 +51,4 @@
 
 (def path-for (partial bidi/path-for routes))
 
-#_(ui.routes/set-path! (str "/" (panel->module-name (keyword key))))
+#_(ui.alpha.routes/set-path! (str "/" (panel->module-name (keyword key))))

@@ -1,11 +1,14 @@
-(ns app.main
-  (:require [dev.nrepl :refer [start-nrepl-server]]
-            [clojure.spec.alpha :as s]
-            [clojure.spec.test.alpha :as stest]
-            [app.alpha.repl]
-            [app.alpha.tests]
-            [app.other-tests]
-            [app.pad]))
+(ns app.alpha.main
+  (:require
+   [dev.nrepl :refer [start-nrepl-server]]
+   [clojure.spec.alpha :as s]
+   [clojure.spec.test.alpha :as stest]
+   [app.alpha.spec]
+   [common.alpha.spec]
+   [app.alpha.repl]
+   [app.alpha.tests]
+   [common.alpha.tests]
+   [app.other-tests]))
 
 (defn env-optimized?
   []

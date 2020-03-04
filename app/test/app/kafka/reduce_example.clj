@@ -1,5 +1,6 @@
 (ns app.kafka.reduce-example
-  (:require [clojure.pprint :as pp])
+  (:require
+   [clojure.pprint :as pp])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer

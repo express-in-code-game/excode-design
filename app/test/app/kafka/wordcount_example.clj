@@ -1,5 +1,6 @@
 (ns app.kafka.wordcount-example
-  (:require [clojure.pprint :as pp])
+  (:require
+   [clojure.pprint :as pp])
   (:import
    org.apache.kafka.clients.consumer.ConsumerConfig
    org.apache.kafka.common.serialization.Serdes

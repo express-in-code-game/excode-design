@@ -1,11 +1,12 @@
 (ns app.alpha.streams.user
-  (:require [clojure.pprint :as pp]
-            [app.alpha.streams.core :refer [add-shutdown-hook
-                                            produce-event
-                                            create-user]]
-            [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]
-            [clojure.spec.test.alpha :as stest])
+  (:require
+   [clojure.pprint :as pp]
+   [app.alpha.streams.core :refer [add-shutdown-hook
+                                   produce-event
+                                   create-user]]
+   [clojure.spec.alpha :as s]
+   [clojure.spec.gen.alpha :as gen]
+   [clojure.spec.test.alpha :as stest])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer

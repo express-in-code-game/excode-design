@@ -1,6 +1,7 @@
-(ns ui.core
-  (:require [clojure.repl :as repl]
-            [clojure.string :as str]))
+(ns ui.alpha.core
+  (:require
+   [clojure.repl :as repl]
+   [clojure.string :as str]))
 
 (defn deep-merge [a & maps]
   (if (map? a)

@@ -1,7 +1,8 @@
 {:deps         true
 
  :nrepl        {:port 8899
-                ;:init-ns ui.main
+                :host "0.0.0.0"
+                ;:init-ns ui.alpha.main
                 }
 
  :http {:port 9630
@@ -12,7 +13,7 @@
         :asset-path "/js-out"
         :module-loader true
         :modules
-        {:main {:entries [ui.main]}}
+        {:main {:entries [ui.alpha.main]}}
 
         :compiler-options
         {:infer-externs    :auto
@@ -23,7 +24,7 @@
                             day8.re-frame.tracing/trace-enabled? true}}
 
         :devtools
-        {:repl-init-ns ui.main
+        {:repl-init-ns ui.alpha.main
          :repl-pprint true
          :http-root  "resources/public"
          :http-port  9500
