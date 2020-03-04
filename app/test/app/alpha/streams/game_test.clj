@@ -12,9 +12,7 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    [clojure.test.check.clojure-test :refer [defspec]]
-   [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
-   [app.alpha.data.spec :refer [gen-ev-p-move-cape
-                                gen-ev-a-finish-game]])
+   [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t])
   (:import
    org.apache.kafka.clients.consumer.KafkaConsumer
    org.apache.kafka.clients.producer.KafkaProducer))
