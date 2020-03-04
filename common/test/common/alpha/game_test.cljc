@@ -41,48 +41,5 @@
   (all-specchecks)
   (mk-default-game-state-speccheck)
 
-  (def x (stest/check `mk-default-game-state
-                      {:clojure.spec.test.check/opts {:num-tests 10}}))
-  (def r (first x))
-  (type r)
-  (keys r)
-  (keys (:clojure.spec.test.check/ret r))
-  (keys (get-in r [:clojure.spec.test.check/ret]))
-  (keys (ex-data (get-in r [:clojure.spec.test.check/ret :result])))
-  (def ex (ex-data (get-in r [:clojure.spec.test.check/ret :result])))
-  (dissoc ex :clojure.spec.alpha/value :clojure.spec.test.alpha/val)
-  (select-keys [:clojure.spec.alpha/problems :clojure.spec.alpha/spec])
-
-  (def r1 (-> r
-              (update-in [:clojure.spec.test.check/ret :result] ex-data)
-              (update-in [:clojure.spec.test.check/ret :result]
-                         dissoc :clojure.spec.alpha/value :clojure.spec.test.alpha/val)
-              (get-in [:clojure.spec.test.check/ret :result])))
-  (def r2 (-> r
-              (update-in [:clojure.spec.test.check/ret :result] ex-data)
-              (update-in [:clojure.spec.test.check/ret :result]
-                         dissoc :clojure.spec.alpha/value :clojure.spec.test.alpha/val)
-              (update-in [:failure] ex-data)
-              (update-in [:failure]
-                         dissoc :clojure.spec.alpha/value :clojure.spec.test.alpha/val)
-              (update-in [:shrunk :result] ex-data)
-              (update-in [:shrunk :result]
-                         dissoc :clojure.spec.alpha/value :clojure.spec.test.alpha/val)
-              
-              ))
-  (keys r)
-  (keys (get-in r [:clojure.spec.test.check/ret :shrunk]))
-  (:spec r)
-  (:sym r)
-  (:failure r)
-  (keys (ex-data (:failure r)))
-
-  (-> r
-      (update-in [:clojure.spec.test.check/ret :result] ex-data)
-      (update-in [:clojure.spec.test.check/ret :result]
-                 dissoc :clojure.spec.alpha/value :clojure.spec.test.alpha/val))
-
-
-
   ;;
   )
