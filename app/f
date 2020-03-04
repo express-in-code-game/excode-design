@@ -9,7 +9,7 @@ compile(){
 
 dev(){
   compile
-  clj -A:core:dev -m app.main 
+  clj -A:core:dev:local -m app.main 
 }
 
 permissions(){
@@ -17,21 +17,17 @@ permissions(){
 }
 
 dock() {
-    docker build -t starnet.app .
-    docker run --gpus all \
-                --rm \
+    docker build -t starnet.app -f Dockerfile ..
+    docker run  --rm \
                 --name starnet.app \
                 -it \
                 --network starnet.kafka \
                 -p 7788:7788 \
-                -v "$(pwd)":/app/root \
+                -v "$(cd ../ && pwd)":/ctx \
                 -e "appenv={:optimized false}" \
                  starnet.app \
                  bash
 }
-
-
-
 
 
 "$@"

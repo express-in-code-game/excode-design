@@ -2,7 +2,15 @@
 
 
 start(){
-  bin/kafka-server-start.sh /app/node/config/server.properties
+  bin/kafka-server-start.sh /ctx/node/config/server.properties
+}
+
+reset(){
+  # https://kafka.apache.org/24/documentation/streams/developer-guide/app-reset-tool.html
+  bash /ctx/kafka/bin/kafka-streams-application-reset.sh \
+  --application-id "alpha.game.events.streams" \
+  --bootstrap-servers "localhost:9092" \
+  --input-topics "alpha.game.events"
 }
 
 

@@ -10,8 +10,8 @@
             [app.alpha.streams.game-test]
             [app.alpha.streams.user-test]
             [app.alpha.streams.core-test]
-            [app.alpha.data.game-test]
-            [app.alpha.data.spec-test]
+            [common.alpha.game-test]
+            [common.alpha.spec-test]
             [app.alpha.spec-test]))
 
 (deftest sample-test

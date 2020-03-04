@@ -25,10 +25,10 @@ services:
   zookeeper1:
     image: zookeeper
     volumes:
-      - ./.nodes/zookeeper1/:/app/node
+      - ./.nodes/zookeeper1/:/ctx/node
       - type: volume
         source:  starnet.kafka
-        target: /app/data
+        target: /ctx/data
         volume:
           nocopy: true
     networks:
@@ -46,10 +46,10 @@ services:
   broker1:
     image: broker
     volumes:
-      - ./.nodes/broker1/:/app/node
+      - ./.nodes/broker1/:/ctx/node
       - type: volume
         source:  starnet.kafka
-        target: /app/data
+        target: /ctx/data
         volume:
           nocopy: true
     # user: user

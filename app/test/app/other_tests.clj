@@ -5,13 +5,7 @@
             [clojure.test.check :as tc]
             [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
-            [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
-
-            [app.alpha.streams.game-test]
-            [app.alpha.streams.user-test]
-            [app.alpha.streams.core-test]
-            [app.alpha.data.game-test]
-            [app.alpha.data.spec-test]))
+            [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]))
 
 (comment
 

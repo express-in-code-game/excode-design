@@ -53,9 +53,9 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list && \
     sudo apt-get update && sudo apt-get -y install yarn
 
-## app
-WORKDIR /app/root
-COPY deps.edn .
-RUN clojure -A:core -Stree
+## ctx
+WORKDIR /ctx/ui
+COPY ui/deps.edn .
+RUN clojure -A:core:dev:optimized -Stree
 
 EXPOSE 9500 9630 8899

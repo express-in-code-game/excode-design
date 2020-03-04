@@ -1,5 +1,5 @@
-(ns app.alpha.data.game
-  (:require [app.alpha.data.spec]
+(ns common.alpha.game
+  (:require [common.alpha.spec]
             [clojure.spec.alpha :as s]))
 
 (defn gen-default-game-state
