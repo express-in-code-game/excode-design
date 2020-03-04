@@ -13,11 +13,9 @@
           org.apache.kafka/kafka-streams {:mvn/version "2.4.0"}
 
           nrepl {:mvn/version "0.6.0"}
-          cider/cider-nrepl {:mvn/version "0.21.1"}}
-          common {:local/root "../common"}
-         }
+          cider/cider-nrepl {:mvn/version "0.21.1"}}}
   :dev {:extra-deps
         {org.clojure/test.check {:mvn/version "1.0.0"}}}
-  :optimized {{:extra-deps {}}}
-  }
+  :optimized {:extra-deps {}}
+  :local {:extra-deps {common {:local/root "../common"}}}}
 }
