@@ -11,11 +11,12 @@
    [app.alpha.streams.game-test]
    [app.alpha.streams.user-test]
    [app.alpha.streams.core-test]
-   [app.alpha.spec-test]))
+   [app.alpha.spec-test]
+   [common.alpha.core :refer [rand-uuid]]))
 
-(deftest sample-test
-  (testing "Arihtmetic"
-    (is (= 5 (+ 3 2)))))
+(deftest common-deps
+  (testing "generating random uuid via reader conditionals in .cljc"
+    (is (uuid? (rand-uuid)))))
 
 (comment
   

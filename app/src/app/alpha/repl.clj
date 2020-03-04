@@ -8,8 +8,7 @@
                                    delete-record future-call-consumer
                                    send-event]]
    [app.alpha.streams.user :refer [create-streams-user]]
-   [app.alpha.streams.game :refer [create-streams-game]]
-   [common.alpha.core :refer [rand-uuid]])
+   [app.alpha.streams.game :refer [create-streams-game]])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer
