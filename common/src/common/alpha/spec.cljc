@@ -1,7 +1,5 @@
 (ns common.alpha.spec
   (:require
-   [clojure.pprint :as pp]
-   [clojure.repl :refer [doc]]
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as gen]
    [clojure.spec.test.alpha :as stest]))

@@ -1,6 +1,5 @@
 (ns common.alpha.game
   (:require
-   [common.alpha.spec]
    [clojure.spec.alpha :as s]))
 
 (defn gen-default-game-state

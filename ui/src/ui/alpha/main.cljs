@@ -15,6 +15,8 @@
 
    [ui.alpha.repl]
    [ui.alpha.tests]
+   [common.alpha.game]
+   [common.alpha.spec]
    [common.alpha.tests]
    [ui.other-tests]))
 
