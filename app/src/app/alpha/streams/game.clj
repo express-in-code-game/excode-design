@@ -4,7 +4,7 @@
    [app.alpha.streams.core :refer [add-shutdown-hook
                                    produce-event
                                    create-user]]
-   [common.alpha.game :refer [gen-default-game-state]]
+   [common.alpha.game :refer [mk-default-game-state]]
    [clojure.spec.alpha :as s]
    [clojure.spec.test.alpha :as stest]
    [app.alpha.streams.game-testfn :refer [assert-next-state-body]])
@@ -57,7 +57,7 @@
   [state k ev]
   (or
    state
-   (gen-default-game-state k ev)))
+   (mk-default-game-state k ev)))
 
 (defmethod next-state [:ev.g.u/delete]
   [state k ev]
