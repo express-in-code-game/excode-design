@@ -7,7 +7,7 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    [clojure.test.check.clojure-test :refer [defspec]]
-   [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
+   [clojure.test :as test :refer [is run-all-tests testing deftest run-tests]]
    [common.alpha.game :refer [mk-default-game-state]]))
 
 
@@ -32,14 +32,13 @@
                 (->>
                  (stest/check `mk-default-game-state
                               {:clojure.spec.test.check/opts {:num-tests 1}})
-                 (map #(get-in % [:clojure.spec.test.check/ret :pass?])))
-                ))))
+                 (map #(get-in % [:clojure.spec.test.check/ret :pass?])))))))
 
 (comment
 
   (run-tests)
   (all-specchecks)
   (mk-default-game-state-speccheck)
-
+  
   ;;
   )
