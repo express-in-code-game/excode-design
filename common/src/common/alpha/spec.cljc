@@ -1,10 +1,12 @@
 (ns common.alpha.spec
   (:require
+   [clojure.repl :refer [doc]]
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
    [clojure.spec.test.alpha :as stest]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
+   [common.alpha.core :refer [with-gen-fmap]]
    #?(:cljs [common.alpha.macros :refer-macros [defmethods-for-a-set]]
       :clj  [common.alpha.macros :refer [defmethods-for-a-set]])))
 
@@ -69,57 +71,70 @@
     :ev.g.p/collect-tile-value
     :ev.g.a/finish-game})
 
-
-
 (s/def :ev/type setof-ev-event)
 
-(s/def :ev.c/delete-record (s/keys :req [:ev/type]
-                                   :opt [:record/uuid]))
+(s/def :ev.c/delete-record (with-gen-fmap
+                             (s/keys :req [:ev/type]
+                                     :opt [:record/uuid])
+                             #(assoc %  :ev/type :ev.c/delete-record)))
 
-(s/def :ev.u/create (s/keys :req [:ev/type :u/uuid :u/email :u/username]
-                            :opt []))
-(s/def :ev.u/update (s/keys :req [:ev/type]
-                                 :opt [:u/email :u/username]))
-(s/def :ev.u/delete (s/keys :req [:ev/type]
-                            :opt []))
-(s/def :ev.g.u/create (s/keys :req [:ev/type :u/uuid]
-                                 :opt []))
+(s/def :ev.u/create (with-gen-fmap
+                      (s/keys :req [:ev/type :u/uuid :u/email :u/username]
+                              :opt [])
+                      #(assoc %  :ev/type :ev.u/create)))
 
-(s/def :ev.g.u/delete (s/keys :req [:ev/type]
-                              :opt []))
+(s/def :ev.u/update (with-gen-fmap
+                      (s/keys :req [:ev/type]
+                              :opt [:u/email :u/username])
+                      #(assoc %  :ev/type :ev.u/update)))
 
-(s/def :ev.g.u/configure (s/keys :req [:ev/type :u/uuid :g/uuid]
-                                    :opt []))
+(s/def :ev.u/delete (with-gen-fmap
+                      (s/keys :req [:ev/type]
+                              :opt [])
+                      #(assoc %  :ev/type :ev.u/delete)))
 
-(s/def :ev.g.u/start (s/keys :req [:ev/type :u/uuid :g/uuid]
-                                :opt []))
+(s/def :ev.g.u/create (with-gen-fmap
+                      (s/keys :req [:ev/type :u/uuid]
+                              :opt [])
+                      #(assoc %  :ev/type :ev.g.u/create)))
 
-(s/def :ev.g.u/join (s/keys :req [:ev/type :u/uuid :g/uuid]
-                               :opt []))
+(s/def :ev.g.u/delete (with-gen-fmap
+                        (s/keys :req [:ev/type]
+                                :opt [])
+                        #(assoc %  :ev/type :ev.g.u/delete)))
 
-(s/def :ev.g.u/leave (s/keys :req [:ev/type :u/uuid :g/uuid]
-                                :opt []))
+(s/def :ev.g.u/configure (with-gen-fmap
+                        (s/keys :req [:ev/type :u/uuid :g/uuid]
+                                :opt [])
+                        #(assoc %  :ev/type :ev.g.u/configure)))
 
-(s/def :ev.g.p/move-cape (s/keys :req [:ev/type :u/uuid :g/uuid
-                                       :g.p/cape]))
-(def gen-ev-p-move-cape (sgen/fmap (fn [x]
-                                    (merge
-                                     x
-                                     {:ev/type :ev.g.p/move-cape}))
-                                  (s/gen :ev.g.p/move-cape)))
+(s/def :ev.g.u/start (with-gen-fmap
+                           (s/keys :req [:ev/type :u/uuid :g/uuid]
+                                   :opt [])
+                           #(assoc %  :ev/type :ev.g.u/start)))
 
+(s/def :ev.g.u/join (with-gen-fmap
+                       (s/keys :req [:ev/type :u/uuid :g/uuid]
+                               :opt [])
+                       #(assoc %  :ev/type :ev.g.u/join)))
 
-(s/def :ev.g.p/collect-tile-value (s/and (s/keys :req [:ev/type])))
+(s/def :ev.g.u/leave (with-gen-fmap
+                      (s/keys :req [:ev/type :u/uuid :g/uuid]
+                              :opt [])
+                      #(assoc %  :ev/type :ev.g.u/leave)))
 
-(s/def :ev.g.a/finish-game (s/and (s/keys :req [:ev/type])))
+(s/def :ev.g.p/move-cape (with-gen-fmap
+                       (s/keys :req [:ev/type :u/uuid :g/uuid
+                                     :g.p/cape])
+                       #(assoc %  :ev/type :ev.g.p/move-cape)))
 
-(def gen-ev-a-finish-game (sgen/fmap (fn [x]
-                                      (merge
-                                       x
-                                       {:ev/type :ev.g.a/finish-game}))
-                                    (s/gen :ev.g.a/finish-game)))
+(s/def :ev.g.p/collect-tile-value (with-gen-fmap
+                                    (s/and (s/keys :req [:ev/type]))
+                                    #(assoc %  :ev/type :ev.g.p/collect-tile-value)))
 
-
+(s/def :ev.g.a/finish-game (with-gen-fmap
+                             (s/and (s/keys :req [:ev/type]))
+                             #(assoc %  :ev/type :ev.g.a/finish-game)))
 
 (defmulti ev (fn [x] (:ev/type x)))
 (defmethods-for-a-set ev setof-ev-event)

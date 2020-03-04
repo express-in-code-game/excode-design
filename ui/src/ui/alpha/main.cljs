@@ -7,18 +7,20 @@
    [re-pressed.core :as rp]
    [devtools.core :as devtools]
 
+   [common.alpha.spec]
+   [common.alpha.game]
+   [common.alpha.tests]
+   [common.sample-tests]
+   [ui.alpha.spec]
+   [ui.alpha.repl]
+   [ui.alpha.tests]
+   [ui.sample-tests]
+
    [ui.alpha.evs :as evs]
    [ui.alpha.routes :as routes]
    [ui.alpha.config :as config]
    [ui.alpha.subs :as subs]
-   [ui.alpha.view :refer [view]]
-
-   [ui.alpha.repl]
-   [ui.alpha.tests]
-   [common.alpha.game]
-   [common.alpha.spec]
-   [common.alpha.tests]
-   [ui.other-tests]))
+   [ui.alpha.view :refer [view]]))
 
 (devtools/install!)
 #_(enable-console-print!)
