@@ -2,7 +2,9 @@
   (:require
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as gen]
-   [clojure.spec.test.alpha :as stest]))
+   [clojure.spec.test.alpha :as stest]
+   #?(:cljs [common.alpha.macros :refer-macros [defmethods-for-a-set]]
+      :clj  [common.alpha.macros :refer [defmethods-for-a-set]])))
 
 (s/def :g.e/uuid uuid?)
 (s/def :g.e/pos (s/tuple int? int?))
@@ -115,11 +117,7 @@
                                        {:ev/type :ev.g.a/finish-game}))
                                     (s/gen :ev.g.a/finish-game)))
 
-(defmacro defmethods-for-a-set
-  "Iterates over a #{} of :ev/type keywords and calls defmethod"
-  [mmethod kwset]
-  `(doseq [kw# ~kwset]
-     (defmethod ~mmethod kw# [x#] kw#)))
+
 
 (defmulti ev (fn [x] (:ev/type x)))
 (defmethods-for-a-set ev setof-ev-event)
