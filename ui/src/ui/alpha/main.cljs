@@ -1,16 +1,17 @@
-(ns ui.main
+(ns ui.alpha.main
   (:require
    [cljs.repl :as repl]
    [cljs.pprint :as pp]
    [reagent.core :as r]
    [re-frame.core :as rf]
    [re-pressed.core :as rp]
-   [ui.evs :as evs]
-   [ui.routes :as routes]
-   [ui.config :as config]
-   [ui.subs :as subs]
-   [ui.view :refer [view]]
    [devtools.core :as devtools]
+
+   [ui.alpha.evs :as evs]
+   [ui.alpha.routes :as routes]
+   [ui.alpha.config :as config]
+   [ui.alpha.subs :as subs]
+   [ui.alpha.view :refer [view]]
 
    [ui.alpha.repl]
    [ui.alpha.tests]
