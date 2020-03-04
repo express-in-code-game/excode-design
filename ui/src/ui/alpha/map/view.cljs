@@ -14,7 +14,7 @@
       [:section
        [:a {:href "/home"} "/home"]
        #_[:button
-        {:on-click (fn [] (rf/dispatch [:ui.evs/set-active-view :home-view]))} "home"]])))
+        {:on-click (fn [] (rf/dispatch [:ui.alpha.evs/set-active-view :home-view]))} "home"]])))
 
 (defn actions []
   [])

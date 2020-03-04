@@ -23,5 +23,5 @@
      [:br]
      [ant-smile-outlined]
      #_[:button
-      {:on-click (fn [] (rf/dispatch [:ui.evs/set-active-view :map-view]))} "map"]]))
+      {:on-click (fn [] (rf/dispatch [:ui.alpha.evs/set-active-view :map-view]))} "map"]]))
 

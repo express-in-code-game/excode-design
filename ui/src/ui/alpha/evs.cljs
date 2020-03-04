@@ -1,4 +1,4 @@
-(ns ui.evs
+(ns ui.alpha.evs
   (:require
    [clojure.string :as string]
    [re-frame.core :as rf]

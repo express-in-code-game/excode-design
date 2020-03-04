@@ -1,18 +1,18 @@
-(ns ui.view
+(ns ui.alpha.view
   (:use-macros [cljs.core.async.macros :only [go]])
   (:require [cljs.repl :as repl]
             [cljs.pprint :as pp]
             [reagent.core :as r]
             [re-frame.core :as rf]
             [shadow.loader :as loader]
-            [ui.subs :as subs]
+            [ui.alpha.subs :as subs]
             [ui.home.view]
             [ui.map.view]
             [ui.board.view]
             [cljs.core.async :refer [<! timeout]]
-            [ui.config :as config]
+            [ui.alpha.config :as config]
             [clojure.string :as string]
-            [ui.routes :refer [set-path!]]))
+            [ui.alpha.routes :refer [set-path!]]))
 
 (defn not-found-view
   [path]
