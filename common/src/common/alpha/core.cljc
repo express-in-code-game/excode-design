@@ -19,4 +19,4 @@
    Caution: may be wrong, naive and design-breaking."
   [spec gen-fn]
   (let [s spec]
-    (s/with-gen s (fn [] (~gen-fn s)))))
+    (s/with-gen s (fn [] (gen-fn s)))))

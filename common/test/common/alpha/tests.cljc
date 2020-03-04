@@ -9,7 +9,8 @@
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
 
    [common.alpha.game-test]
-   [common.alpha.spec-test]))
+   [common.alpha.spec-test]
+   [common.alpha.core-test]))
 
 (deftest sample-test
   (testing "Arihtmetic"
