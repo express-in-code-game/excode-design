@@ -10,7 +10,7 @@
    [clojure.test.check.properties :as prop]
    [clojure.test.check.clojure-test :refer [defspec]]
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
-   [common.alpha.core :refer [with-gen-self]]))
+   [common.alpha.core :refer [with-gen-cyclic]]))
 
 
 (comment
@@ -21,13 +21,13 @@
   )
 
 (deftest core-tests
-  (testing "with-gen-self "
+  (testing "with-gen-cyclic "
     (is (let [changes {:some "value"}
-              s (with-gen-self (s/map-of keyword? string?)
+              s (with-gen-cyclic (s/map-of keyword? string?)
                   (fn [spec]
                     (prn spec)
                     (gen/fmap (fn [x]
                                 (merge x changes)) (s/gen spec))))
               vl (gen/generate (s/gen s))]
           (subset? (set changes) (set vl)))
-        "with-gen-self works")))
+        "with-gen-cyclic works")))

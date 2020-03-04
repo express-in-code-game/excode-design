@@ -6,7 +6,7 @@
    [clojure.spec.test.alpha :as stest]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-   [common.alpha.core :refer [with-gen-self]]
+   [common.alpha.core :refer [with-gen-fmap]]
    #?(:cljs [common.alpha.macros :refer-macros [defmethods-for-a-set]]
       :clj  [common.alpha.macros :refer [defmethods-for-a-set]])))
 
@@ -75,17 +75,10 @@
 
 (s/def :ev.c/delete-record (s/keys :req [:ev/type]
                                    :opt [:record/uuid]))
-(s/def :ev.u/create (let [s (s/keys :req [:ev/type :u/uuid :u/email :u/username]
-                                    :opt [])]
-                      (s/with-gen s
-                        #(gen/fmap (fn [vl]
-                                     (assoc vl :ev/type :ev.u/create)) (s/gen s)))))
-
-(s/def :ev.u/create (with-gen-self
-                     (s/keys :req [:ev/type :u/uuid :u/email :u/username]
-                             :opt [])
-                     #(gen/fmap (fn [vl]
-                                  (assoc vl :ev/type :ev.u/create)) (s/gen %))))
+(s/def :ev.u/create (with-gen-fmap
+                      (s/keys :req [:ev/type :u/uuid :u/email :u/username]
+                              :opt [])
+                      #(assoc %  :ev/type :ev.u/create)))
 
 (s/def :ev.u/update (s/keys :req [:ev/type]
                                  :opt [:u/email :u/username]))
