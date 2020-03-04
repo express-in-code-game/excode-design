@@ -4,4 +4,4 @@
    [clojure.spec.gen.alpha :as gen]
    [clojure.spec.test.alpha :as stest]))
 
-(derive clojure.lang.Keyword :isa/keyword)
+(derive cljs.core/Keyword :isa/keyword)
