@@ -8,11 +8,12 @@
    [clojure.test.check.properties :as prop]
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
 
-   [ui.alpha.spec-test]))
+   [ui.alpha.spec-test]
+   [common.alpha.core :refer [rand-uuid]]))
 
-(deftest sample-test
-  (testing "Arihtmetic"
-    (is (= 5 (+ 3 2)))))
+(deftest common-deps
+  (testing "generating random uuid via reader conditionals in .cljc"
+    (is (uuid? (rand-uuid)))))
 
 (comment
 

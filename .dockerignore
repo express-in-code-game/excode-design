@@ -6,4 +6,5 @@
 .git
 **/node_modules
 **/.shadow-cljs
-**/public
+**/js-out
+**/classes

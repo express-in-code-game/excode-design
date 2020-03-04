@@ -1,8 +1,12 @@
 (ns common.alpha.spec
   (:require
    [clojure.spec.alpha :as s]
-   [clojure.spec.gen.alpha :as gen]
-   [clojure.spec.test.alpha :as stest]))
+   [clojure.spec.gen.alpha :as sgen]
+   [clojure.spec.test.alpha :as stest]
+   [clojure.test.check.generators :as gen]
+   [clojure.test.check.properties :as prop]
+   #?(:cljs [common.alpha.macros :refer-macros [defmethods-for-a-set]]
+      :clj  [common.alpha.macros :refer [defmethods-for-a-set]])))
 
 (s/def :g.e/uuid uuid?)
 (s/def :g.e/pos (s/tuple int? int?))
@@ -48,10 +52,10 @@
 (s/def :u/username string?)
 (s/def :u/email (s/with-gen
                   (s/and string? #(re-matches email-regex %))
-                  #(gen/fmap (fn [s]
+                  #(sgen/fmap (fn [s]
                                (str s "@gmail.com"))
-                             (gen/such-that (fn [s] (not= s ""))
-                                            (gen/string-alphanumeric)))))
+                             (sgen/such-that (fn [s] (not= s ""))
+                                            (sgen/string-alphanumeric)))))
 
 (s/def :u/user (s/keys :req [:u/uuid :u/username :u/email]))
 
@@ -98,7 +102,7 @@
 
 (s/def :ev.g.p/move-cape (s/keys :req [:ev/type :u/uuid :g/uuid
                                        :g.p/cape]))
-(def gen-ev-p-move-cape (gen/fmap (fn [x]
+(def gen-ev-p-move-cape (sgen/fmap (fn [x]
                                     (merge
                                      x
                                      {:ev/type :ev.g.p/move-cape}))
@@ -109,17 +113,13 @@
 
 (s/def :ev.g.a/finish-game (s/and (s/keys :req [:ev/type])))
 
-(def gen-ev-a-finish-game (gen/fmap (fn [x]
+(def gen-ev-a-finish-game (sgen/fmap (fn [x]
                                       (merge
                                        x
                                        {:ev/type :ev.g.a/finish-game}))
                                     (s/gen :ev.g.a/finish-game)))
 
-(defmacro defmethods-for-a-set
-  "Iterates over a #{} of :ev/type keywords and calls defmethod"
-  [mmethod kwset]
-  `(doseq [kw# ~kwset]
-     (defmethod ~mmethod kw# [x#] kw#)))
+
 
 (defmulti ev (fn [x] (:ev/type x)))
 (defmethods-for-a-set ev setof-ev-event)
