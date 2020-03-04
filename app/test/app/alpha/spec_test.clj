@@ -1,10 +1,10 @@
 (ns app.alpha.spec-test
-  (:require [app.alpha.spec]
-
-            [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]
-            [clojure.spec.test.alpha :as stest]
-            [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t])
+  (:require
+   [app.alpha.spec]
+   [clojure.spec.alpha :as s]
+   [clojure.spec.gen.alpha :as gen]
+   [clojure.spec.test.alpha :as stest]
+   [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t])
   (:import
    java.util.Date
    org.apache.kafka.clients.producer.KafkaProducer

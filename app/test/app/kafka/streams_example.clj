@@ -1,5 +1,6 @@
 (ns app.kafka.streams-example
-  (:require [clojure.pprint :as pp])
+  (:require
+   [clojure.pprint :as pp])
   (:import
    org.apache.kafka.common.serialization.Serdes
    org.apache.kafka.streams.KafkaStreams

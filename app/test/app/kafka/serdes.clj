@@ -1,5 +1,6 @@
 (ns app.kafka.serdes
-  (:require [cognitect.transit :as transit])
+  (:require
+   [cognitect.transit :as transit])
   (:import
    java.io.ByteArrayInputStream
    java.io.ByteArrayOutputStream

@@ -1,12 +1,13 @@
 (ns app.alpha.streams.game
-  (:require [clojure.pprint :as pp]
-            [app.alpha.streams.core :refer [add-shutdown-hook
-                                            produce-event
-                                            create-user]]
-            [common.alpha.game :refer [gen-default-game-state]]
-            [clojure.spec.alpha :as s]
-            [clojure.spec.test.alpha :as stest]
-            [app.alpha.streams.game-testfn :refer [assert-next-state-body]])
+  (:require
+   [clojure.pprint :as pp]
+   [app.alpha.streams.core :refer [add-shutdown-hook
+                                   produce-event
+                                   create-user]]
+   [common.alpha.game :refer [gen-default-game-state]]
+   [clojure.spec.alpha :as s]
+   [clojure.spec.test.alpha :as stest]
+   [app.alpha.streams.game-testfn :refer [assert-next-state-body]])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer

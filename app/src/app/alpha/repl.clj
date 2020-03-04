@@ -1,13 +1,15 @@
 (ns app.alpha.repl
-  (:require [clojure.pprint :as pp]
-            [clojure.spec.alpha :as s]
-            [app.alpha.spec :as spec]
-            [app.alpha.streams.core :refer [create-topics list-topics
-                                            delete-topics produce-event
-                                            delete-record future-call-consumer
-                                            send-event]]
-            [app.alpha.streams.user :refer [create-streams-user]]
-            [app.alpha.streams.game :refer [create-streams-game]])
+  (:require
+   [clojure.pprint :as pp]
+   [clojure.spec.alpha :as s]
+   [app.alpha.spec]
+   [common.alpha.spec]
+   [app.alpha.streams.core :refer [create-topics list-topics
+                                   delete-topics produce-event
+                                   delete-record future-call-consumer
+                                   send-event]]
+   [app.alpha.streams.user :refer [create-streams-user]]
+   [app.alpha.streams.game :refer [create-streams-game]])
   (:import
    app.kafka.serdes.TransitJsonSerializer
    app.kafka.serdes.TransitJsonDeserializer

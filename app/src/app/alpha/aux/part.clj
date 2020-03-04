@@ -1,5 +1,6 @@
 (ns app.alpha.aux.part
-  (:require [clojure.repl :refer [doc]]))
+  (:require
+   [clojure.repl :refer [doc]]))
 
 (comment
 
