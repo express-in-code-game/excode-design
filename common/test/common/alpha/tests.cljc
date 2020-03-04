@@ -1,4 +1,4 @@
-(ns app.alpha.tests
+(ns common.alpha.tests
   (:require
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
@@ -8,21 +8,18 @@
    [clojure.test.check.properties :as prop]
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
 
-   [app.alpha.streams.game-test]
-   [app.alpha.streams.user-test]
-   [app.alpha.streams.core-test]
-   [app.alpha.spec-test]))
+   [common.alpha.game-test]
+   [common.alpha.spec-test]))
 
 (deftest sample-test
   (testing "Arihtmetic"
     (is (= 5 (+ 3 2)))))
 
 (comment
-  
+
   (run-tests)
 
-  (run-all-tests #"app.*")
-  (re-matches #"app.*" "app.alpha.streams.game-test")
+  (run-all-tests #"common.*")
   (stest/check)
   (tc/quick-check)
 

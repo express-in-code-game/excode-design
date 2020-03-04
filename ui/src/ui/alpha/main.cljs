@@ -11,9 +11,10 @@
    [ui.subs :as subs]
    [ui.view :refer [view]]
    [devtools.core :as devtools]
-   
+
    [ui.alpha.repl]
    [ui.alpha.tests]
+   [common.alpha.tests]
    [ui.other-tests]))
 
 (devtools/install!)
