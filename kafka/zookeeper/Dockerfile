@@ -47,20 +47,25 @@ RUN curl -O https://raw.githubusercontent.com/technomancy/leiningen/${LEIN_VERSI
     lein version
 
 ## zookeeper
-# WORKDIR /app/
+# WORKDIR /ctx/
 # RUN wget https://github.com/apache/zookeeper/archive/release-3.5.6.tar.gz && \
 #     tar -xzf release-3.5.6.tar.gz
-# WORKDIR /app/zookeeper-release-3.5.6/
+# WORKDIR /ctx/zookeeper-release-3.5.6/
 
-WORKDIR /app/
-RUN wget http://apache-mirror.rbc.ru/pub/apache/zookeeper/zookeeper-3.5.6/apache-zookeeper-3.5.6-bin.tar.gz && \
-    tar -xzf apache-zookeeper-3.5.6-bin.tar.gz && \
-    mv apache-zookeeper-3.5.6-bin zookeeper
-WORKDIR /app/zookeeper/
+ENV ZOOKEEPER_VERSION=3.5.7
+ENV APACHE_MIRROR1=http://mirror.linux-ia64.org/apache/
+ENV APACHE_MIRROR2=http://apache-mirror.rbc.ru/pub/apache
+ENV APACHE_MIRROR3=https://downloads.apache.org/
+
+WORKDIR /ctx/
+RUN wget $APACHE_MIRROR1/zookeeper/zookeeper-$ZOOKEEPER_VERSION/apache-zookeeper-$ZOOKEEPER_VERSION-bin.tar.gz && \
+    tar -xzf apache-zookeeper-$ZOOKEEPER_VERSION-bin.tar.gz && \
+    mv apache-zookeeper-$ZOOKEEPER_VERSION-bin zookeeper
+WORKDIR /ctx/zookeeper/
 COPY f f
 
 # RUN useradd -u 1000 user
-# RUN chown -R user /app
+# RUN chown -R user /ctx
 # USER user
 
 EXPOSE 2181

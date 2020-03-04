@@ -46,9 +46,9 @@ RUN curl -O https://raw.githubusercontent.com/technomancy/leiningen/${LEIN_VERSI
     chmod a+x ${LEIN_DIR}/lein && \
     lein version
 
-## app
-WORKDIR /app/root
-COPY deps.edn .
+## context
+WORKDIR /ctx/app
+COPY app/deps.edn .
 RUN clojure -A:core:dev -Stree
 
 EXPOSE 7788 8080

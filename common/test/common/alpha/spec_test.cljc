@@ -1,4 +1,4 @@
-(ns app.alpha.data.spec-test
+(ns common.alpha.spec-test
   (:require [clojure.set :refer [subset?]]
             [clojure.repl :refer [doc]]
             [clojure.spec.alpha :as s]

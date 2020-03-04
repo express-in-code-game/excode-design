@@ -49,11 +49,16 @@ RUN curl -O https://raw.githubusercontent.com/technomancy/leiningen/${LEIN_VERSI
     lein version
 
 ## kafka
-WORKDIR /app/
-RUN wget http://apache-mirror.rbc.ru/pub/apache/kafka/2.4.0/kafka_2.12-2.4.0.tgz && \
-    tar -xzf kafka_2.12-2.4.0.tgz && \
-    mv kafka_2.12-2.4.0 kafka
-WORKDIR /app/kafka/
+ENV KAFKA_VERSION=2.4.0
+ENV APACHE_MIRROR1=http://mirror.linux-ia64.org/apache/
+ENV APACHE_MIRROR2=http://apache-mirror.rbc.ru/pub/apache
+ENV APACHE_MIRROR3=https://downloads.apache.org/
+
+WORKDIR /ctx/
+RUN wget $APACHE_MIRROR1/kafka/$KAFKA_VERSION/kafka_2.12-$KAFKA_VERSION.tgz && \
+    tar -xzf kafka_2.12-$KAFKA_VERSION.tgz && \
+    mv kafka_2.12-$KAFKA_VERSION kafka
+WORKDIR /ctx/kafka/
 COPY f f
 
 # RUN useradd -u 1000 user

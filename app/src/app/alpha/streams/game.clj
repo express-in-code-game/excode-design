@@ -3,7 +3,7 @@
             [app.alpha.streams.core :refer [add-shutdown-hook
                                             produce-event
                                             create-user]]
-            [app.alpha.data.game :refer [gen-default-game-state]]
+            [common.alpha.game :refer [gen-default-game-state]]
             [clojure.spec.alpha :as s]
             [clojure.spec.test.alpha :as stest]
             [app.alpha.streams.game-testfn :refer [assert-next-state-body]])
