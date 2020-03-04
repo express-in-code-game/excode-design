@@ -2,8 +2,7 @@
   (:require
    [clojure.pprint :as pp]
    [clojure.spec.alpha :as s]
-   [app.alpha.spec]
-   [common.alpha.spec]
+  
    [app.alpha.streams.core :refer [create-topics list-topics
                                    delete-topics produce-event
                                    delete-record future-call-consumer

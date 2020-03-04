@@ -1,2 +1,3 @@
 (ns ui.alpha.board.core
-  (:require [cljs.repl :as repl]))
+  (:require
+   [cljs.repl :as repl]))
