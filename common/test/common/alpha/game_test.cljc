@@ -7,7 +7,7 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    [clojure.test.check.clojure-test :refer [defspec]]
-   [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
+   [clojure.test :as test :refer [is testing run-tests deftest]]
    [common.alpha.game :refer [mk-default-game-state]]))
 
 
@@ -16,30 +16,30 @@
     (is (s/valid? :g/game
                   (mk-default-game-state
                    (gen/generate gen/uuid)
-                   (sgen/generate (s/gen :ev.g.u/create)))))))
+                   (gen/generate (s/gen :ev.g.u/create)))))))
 
 (deftest all-specchecks
   (testing "running spec.test/check via stest/enumerate-namespace"
-    (is (every? true?
-                (map
-                 #(get-in % [:clojure.spec.test.check/ret :pass?])
-                 (-> (stest/enumerate-namespace 'common.alpha.game)
-                     (stest/check {:clojure.spec.test.check/opts {:num-tests 10}})))))))
+    (let [summary (-> #?(:clj (stest/enumerate-namespace 'common.alpha.game)
+                         :cljs 'common.alpha.game)
+                      (stest/check {:clojure.spec.test.check/opts {:num-tests 10}})
+                      (stest/summarize-results))]
+      (is (not (contains? summary :check-failed))))))
 
 (deftest mk-default-game-state-speccheck
   (testing "running spec.test/check"
-    (is (every? true?
-                (->>
-                 (stest/check `mk-default-game-state
-                              {:clojure.spec.test.check/opts {:num-tests 1}})
-                 (map #(get-in % [:clojure.spec.test.check/ret :pass?])))
-                ))))
+    (let [summary (-> (stest/check `mk-default-game-state
+                                   {:clojure.spec.test.check/opts {:num-tests 10}})
+                      (stest/summarize-results))]
+      (is (not (contains? summary :check-failed))))))
 
 (comment
 
   (run-tests)
   (all-specchecks)
   (mk-default-game-state-speccheck)
+
+  (list (reduce #(assoc %1 (keyword (str %2)) %2) {} (range 0 100)))
 
   ;;
   )

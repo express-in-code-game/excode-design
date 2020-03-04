@@ -6,7 +6,9 @@
    [clojure.test.check :as tc]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-   [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]))
+   [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
+   
+   ))
 
 (comment
 

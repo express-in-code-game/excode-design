@@ -8,4 +8,4 @@
 - java.time.Instant
     ; https://stackoverflow.com/questions/36639154/convert-java-util-date-to-what-java-time-type
   
-- 
+- https://docs.oracle.com/javase/9/docs/api/java/util/regex/Pattern.html

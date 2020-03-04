@@ -13,6 +13,11 @@ server(){
     # yarn server
 }
 
+test(){
+    npm i
+    shadow -A:core:dev:local watch test
+}
+
 dev(){
     npm i
     shadow -A:core:dev:local watch app
@@ -33,6 +38,7 @@ dock() {
                 -it \
                 -p 8899:8899 \
                 -p 9500:9500 \
+                -p 9501:9501 \
                 -p 9630:9630 \
                 -v "$(cd ../ && pwd)":/ctx \
                 -e "appenv={:optimized false}" \

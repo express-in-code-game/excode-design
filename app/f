@@ -4,7 +4,11 @@
 compile(){
   mkdir -p classes
   rm -rf classes/*
-  clojure -A:core:dev -m dev.compile
+  clojure -A:core:dev -m app.alpha.compile
+}
+
+test(){
+  clojure -A:core:dev:local -m app.alpha.tests
 }
 
 dev(){
