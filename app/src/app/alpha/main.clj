@@ -4,13 +4,10 @@
    [clojure.spec.alpha :as s]
    [clojure.spec.test.alpha :as stest]
    [common.alpha.spec]
-   [common.alpha.tests]
-   [common.sample-tests]
-   
    [app.alpha.spec]
    [app.alpha.repl]
    [app.alpha.tests]
-   [app.sample-tests]))
+  ))
 
 (defn env-optimized?
   []

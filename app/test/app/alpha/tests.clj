@@ -8,6 +8,9 @@
    [clojure.test.check.properties :as prop]
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
 
+   [common.sample-tests]
+   [common.alpha.tests]
+   [app.sample-tests]
    [app.alpha.streams.game-test]
    [app.alpha.streams.user-test]
    [app.alpha.streams.core-test]
@@ -20,7 +23,16 @@
 
 (comment
   
-  (run-tests)
+  (do
+    (run-tests)
+    (run-tests
+     'common.sample-tests
+     'common.alpha.tests
+     'app.sample-tests
+     'app.alpha.streams.game-test
+     'app.alpha.streams.user-test
+     'app.alpha.streams.core-test
+     'app.alpha.spec-test))
 
   (run-all-tests #"app.*")
   (re-matches #"app.*" "app.alpha.streams.game-test")

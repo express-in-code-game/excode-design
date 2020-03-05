@@ -12,12 +12,11 @@
 
    [common.alpha.spec]
    [common.alpha.game]
-   [common.alpha.tests]
-   [common.sample-tests]
+
    [ui.alpha.spec]
    [ui.alpha.repl]
    [ui.alpha.tests]
-   [ui.sample-tests]
+   
 
    [ui.alpha.evs :as evs]
    [ui.alpha.routes :as routes]
