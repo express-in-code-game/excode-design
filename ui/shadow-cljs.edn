@@ -13,7 +13,7 @@
         :asset-path "/js-out"
         :module-loader true
         :modules
-        {:main {:entries [ui.alpha.main]}}
+        {:main {:entries [starnet.ui.alpha.main]}}
 
         :compiler-options
         {:infer-externs    :auto
@@ -24,7 +24,7 @@
                             day8.re-frame.tracing/trace-enabled? true}}
 
         :devtools
-        {:repl-init-ns ui.alpha.main
+        {:repl-init-ns starnet.ui.alpha.main
          :repl-pprint true
          :http-root  "resources/public"
          :http-port  9500
