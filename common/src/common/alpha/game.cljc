@@ -2,9 +2,9 @@
   (:require
    [clojure.spec.alpha :as s]
    [clojure.test.check.generators :as gen]
-   [common.alpha.core :refer [mk-inst]]))
+   [common.alpha.core :refer [make-inst]]))
 
-(defn mk-default-game-state
+(defn make-default-game-state
   [k ev]
   (let [host-uuid (:u/uuid ev)]
     {:g/uuid k
@@ -38,7 +38,7 @@
                                 (range 0 1))
                         (vec))}))
 
-(s/fdef mk-default-game-state
+(s/fdef make-default-game-state
   :args (s/cat :k uuid?
                :ev :ev.g/event)
   :ret :g/game)

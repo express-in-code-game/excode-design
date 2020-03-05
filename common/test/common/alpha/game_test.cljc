@@ -8,13 +8,13 @@
    [clojure.test.check.properties :as prop]
    [clojure.test.check.clojure-test :refer [defspec]]
    [clojure.test :as test :refer [is testing run-tests deftest]]
-   [common.alpha.game :refer [mk-default-game-state]]))
+   [common.alpha.game :refer [make-default-game-state]]))
 
 
-(deftest mk-default-game-state-tests
+(deftest make-default-game-state-tests
   (testing "generates valid :g/game"
     (is (s/valid? :g/game
-                  (mk-default-game-state
+                  (make-default-game-state
                    (gen/generate gen/uuid)
                    (gen/generate (s/gen :ev.g.u/create)))))))
 
@@ -26,9 +26,9 @@
                       (stest/summarize-results))]
       (is (not (contains? summary :check-failed))))))
 
-(deftest mk-default-game-state-speccheck
+(deftest make-default-game-state-speccheck
   (testing "running spec.test/check"
-    (let [summary (-> (stest/check `mk-default-game-state
+    (let [summary (-> (stest/check `make-default-game-state
                                    {:clojure.spec.test.check/opts {:num-tests 10}})
                       (stest/summarize-results))]
       (is (not (contains? summary :check-failed))))))
@@ -37,7 +37,7 @@
 
   (run-tests)
   (all-specchecks)
-  (mk-default-game-state-speccheck)
+  (make-default-game-state-speccheck)
 
   (list (reduce #(assoc %1 (keyword (str %2)) %2) {} (range 0 100)))
 

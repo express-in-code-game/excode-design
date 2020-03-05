@@ -13,8 +13,8 @@
 
 (comment
   
-  (type (mk-inst))
-  (inst? (mk-inst))
+  (type (make-inst))
+  (inst? (make-inst))
   
   ;;
   )
@@ -43,7 +43,7 @@
     (with-gen-cyclic s
       #(gen/fmap fmap-fn (s/gen %)))))
 
-(defn mk-inst
+(defn make-inst
   "Returns a damn inst"
   []
   #?(:clj (java.util.Date.)
