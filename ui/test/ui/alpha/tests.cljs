@@ -20,18 +20,15 @@
 
 (comment
 
-  (do
-    (run-tests)
-    (run-tests
-     'common.sample-tests
-     'common.alpha.tests
-     'ui.sample-tests
-     'ui.alpha.spec-test))
-
-  (run-all-tests #"ui.*")
-  (re-matches #"ui.*" "ui.alpha.spec-test")
+  (run-all-tests #"ui.+tests?|common.+tests?")
   (stest/check)
   (tc/quick-check)
+
+  (run-tests)
+  (run-tests
+   'common.sample-tests
+   'ui.sample-tests)
+
 
   ;;
   )

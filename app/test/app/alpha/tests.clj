@@ -23,21 +23,15 @@
 
 (comment
   
-  (do
-    (run-tests)
-    (run-tests
-     'common.sample-tests
-     'common.alpha.tests
-     'app.sample-tests
-     'app.alpha.streams.game-test
-     'app.alpha.streams.user-test
-     'app.alpha.streams.core-test
-     'app.alpha.spec-test))
-
-  (run-all-tests #"app.*")
-  (re-matches #"app.*" "app.alpha.streams.game-test")
+  (run-all-tests #"app.+tests?|common.+tests?")
   (stest/check)
   (tc/quick-check)
+
+  (run-tests)
+  (run-tests
+   'common.sample-tests
+   'app.sample-tests)
+
 
   ;;
   )
