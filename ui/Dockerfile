@@ -58,4 +58,4 @@ WORKDIR /ctx/ui
 COPY ui/deps.edn .
 RUN clojure -A:core:dev:optimized -Stree
 
-EXPOSE 9500 9630 8899
+EXPOSE 9500 9501 9630 8899 

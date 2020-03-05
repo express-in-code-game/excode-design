@@ -29,4 +29,18 @@
          :http-root  "resources/public"
          :http-port  9500
        ;   :preloads   [day8.re-frame-10x.preload]
-         }}}}
+         }}
+  :test {:target    :browser-test
+         :test-dir  "resources/public/js-out/test"
+         :runner-ns ui.alpha.tests
+         :compiler-options
+         {:infer-externs    :auto
+          :closure-warnings {:global-this :off}
+          :closure-defines  {"re_frame.trace.trace_enabled_QMARK_"         true
+                             "day8.re_frame.tracing.trace_enabled_QMARK_"  true
+                             re-frame.trace/trace-enabled? true
+                             day8.re-frame.tracing/trace-enabled? true}}
+         :devtools
+         {:http-root  "resources/public/js-out/test"
+          :http-port  9501}
+           }}}
