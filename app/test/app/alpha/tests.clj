@@ -8,6 +8,9 @@
    [clojure.test.check.properties :as prop]
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
 
+   [app.alpha.spec]
+   [common.alpha.spec]
+
    [common.sample-tests]
    [common.alpha.tests]
    [app.sample-tests]
@@ -17,13 +20,12 @@
    [app.alpha.spec-test]
    [common.alpha.core :refer [rand-uuid]]))
 
-(deftest common-deps
-  (testing "generating random uuid via reader conditionals in .cljc"
-    (is (uuid? (rand-uuid)))))
+(defn -main []
+  (run-all-tests #"app.+tests?|common.+tests?")
+  (System/exit 0))
 
 (comment
-  
-  (run-all-tests #"app.+tests?|common.+tests?")
+
   (stest/check)
   (tc/quick-check)
 
@@ -32,6 +34,9 @@
    'common.sample-tests
    'app.sample-tests)
 
-
   ;;
   )
+
+(deftest common-deps
+  (testing "generating random uuid via reader conditionals in .cljc"
+    (is (uuid? (rand-uuid)))))
