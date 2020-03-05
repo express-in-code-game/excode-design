@@ -1,10 +1,23 @@
 (ns common.alpha.core
   (:require
+   [clojure.repl :refer [doc]]
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
    [clojure.spec.test.alpha :as stest]
    [clojure.test.check.generators :as gen]
-   [clojure.test.check.properties :as prop]))
+   [clojure.test.check.properties :as prop]
+   #?(:cljs [goog.date :as gdate]))
+  #?(:clj
+     (:import
+      java.util.Date)))
+
+(comment
+  
+  (type (mk-inst))
+  (inst? (mk-inst))
+  
+  ;;
+  )
 
 (defn str->int [s]
   #?(:clj  (java.lang.Integer/parseInt s)
@@ -29,3 +42,9 @@
   (let [s spec]
     (with-gen-cyclic s
       #(gen/fmap fmap-fn (s/gen %)))))
+
+(defn mk-inst
+  "Returns a damn inst"
+  []
+  #?(:clj (java.util.Date.)
+     :cljs (js/Date.)))

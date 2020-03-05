@@ -2,7 +2,7 @@
   (:require
    [clojure.spec.alpha :as s]
    [clojure.test.check.generators :as gen]
-   [common.alpha.time :as ct]))
+   [common.alpha.core :refer [mk-inst]]))
 
 (defn mk-default-game-state
   [k ev]
