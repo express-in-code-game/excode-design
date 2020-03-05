@@ -1,7 +1,8 @@
 (ns common.alpha.game
   (:require
    [clojure.spec.alpha :as s]
-   [clojure.test.check.generators :as gen]))
+   [clojure.test.check.generators :as gen]
+   [common.alpha.time :as ct]))
 
 (defn mk-default-game-state
   [k ev]
