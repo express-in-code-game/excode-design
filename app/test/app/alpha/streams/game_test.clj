@@ -61,14 +61,6 @@
                  (-> (stest/enumerate-namespace 'app.alpha.streams.game)
                      (stest/check {:clojure.spec.test.check/opts {:num-tests 10}})))))))
 
-(def sort-is-idempotent-prop
-  (prop/for-all [v (gen/vector gen/int)]
-                (= (sort v) (sort (sort v)))))
-
-(defspec sort-is-idempotent 10
-  (prop/for-all [v (gen/vector gen/int)]
-                (= (sort v) (sort (sort v)))))
-
 #_(defn test-ns-hook
     []
     (next-state-stest))

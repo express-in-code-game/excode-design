@@ -7,16 +7,22 @@
    [clojure.test.check :as tc]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-   [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]))
+   [clojure.test.check.clojure-test :refer [defspec]]
+   [clojure.test :as test :refer [is run-all-tests testing deftest run-tests]]))
 
 (comment
 
   (run-tests)
+  (spec-tests)
+  (sort-is-idempotent)
+  (tc/quick-check 100 sort-is-idempotent-prop)
   (stest/check)
-  (tc/quick-check)
 
   ;;
   )
+
+(deftest test-numbers
+  (is (= 1 1)))
 
 (deftest spec-tests
   (testing "with-gen specs"
@@ -49,4 +55,12 @@
               nvl (gen/generate (s/gen nspec))]
           (subset? (set changes) (set nvl)))
         "change (with-gen)spec generated value using gen/fmap directly")))
+
+(def sort-is-idempotent-prop
+  (prop/for-all [v (gen/vector gen/int)]
+                (= (sort v) (sort (sort v)))))
+
+(defspec sort-is-idempotent 10
+  (prop/for-all [v (gen/vector gen/int)]
+                (= (sort v) (sort (sort v)))))
 

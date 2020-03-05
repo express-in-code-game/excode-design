@@ -18,7 +18,7 @@
                    (gen/generate gen/uuid)
                    (sgen/generate (s/gen :ev.g.u/create)))))))
 
-(deftest all-specchecks
+#_(deftest all-specchecks
   (testing "running spec.test/check via stest/enumerate-namespace"
     (is (every? true?
                 (map
@@ -26,7 +26,7 @@
                  (-> (stest/enumerate-namespace 'common.alpha.game)
                      (stest/check {:clojure.spec.test.check/opts {:num-tests 10}})))))))
 
-(deftest mk-default-game-state-speccheck
+#_(deftest mk-default-game-state-speccheck
   (testing "running spec.test/check"
     (is (every? true?
                 (->>
