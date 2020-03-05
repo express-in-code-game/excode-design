@@ -7,6 +7,9 @@
    [re-pressed.core :as rp]
    [devtools.core :as devtools]
 
+   [clojure.spec.test.alpha :as stest]
+   [clojure.spec.alpha :as s]
+
    [common.alpha.spec]
    [common.alpha.game]
    [common.alpha.tests]
@@ -36,7 +39,8 @@
                                             (when (= (.. e -key) "r")
                                               (mount-root)
                                               (prn "r/render"))))
-    #_(println "dev mode" config/debug?)))
+    (stest/instrument)
+    (s/check-asserts true)))
 
 (defn ^:export main []
   (routes/app-routes)
