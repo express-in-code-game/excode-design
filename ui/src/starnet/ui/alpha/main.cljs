@@ -10,8 +10,7 @@
    [clojure.spec.test.alpha :as stest]
    [clojure.spec.alpha :as s]
 
-   [starnet.common.alpha.game001]
-   [starnet.common.alpha.system]
+   [starnet.common.alpha.spec]
 
    [starnet.ui.alpha.spec]
    [starnet.ui.alpha.repl]

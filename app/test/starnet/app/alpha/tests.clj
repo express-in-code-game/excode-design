@@ -9,8 +9,7 @@
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
 
    
-   [starnet.common.alpha.game001]
-   [starnet.common.alpha.system]
+   [starnet.common.alpha.spec]
    [starnet.app.alpha.spec]
 
    [starnet.common.sample-tests]
