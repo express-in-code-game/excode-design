@@ -37,6 +37,4 @@
   ;;
   )
 
-(deftest common-deps
-  (testing "generating random uuid via reader conditionals in .cljc"
-    (is (uuid? (rand-uuid)))))
+
