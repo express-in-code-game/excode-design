@@ -1,11 +1,11 @@
 (ns starnet.app.kafka.transit-example
   (:require
    [clojure.pprint :as pp]
-   [starnet.app.aux.serdes])
+   [starnet.app.alpha.aux.serdes])
   (:import
-   starnet.app.aux.serdesTransitJsonSerializer
-   starnet.app.aux.serdesTransitJsonDeserializer
-   starnet.app.aux.serdesTransitJsonSerde
+   starnet.app.alpha.aux.serdes.TransitJsonSerializer
+   starnet.app.alpha.aux.serdes.TransitJsonDeserializer
+   starnet.app.alpha.aux.serdes.TransitJsonSerde
 
    org.apache.kafka.common.serialization.Serdes
    org.apache.kafka.streams.KafkaStreams
@@ -96,7 +96,7 @@
                   (.putAll {"application.id" "transit-example"
                             "bootstrap.servers" "broker1:9092"
                             "default.key.serde" (.. Serdes String getClass)
-                            "default.value.serde" "starnet.app.aux.serdesTransitJsonSerde"}))))
+                            "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"}))))
 
   (def latch (CountDownLatch. 1))
 
@@ -121,7 +121,7 @@
                                     "group.id" (.toString (java.util.UUID/randomUUID))
                                     "consumer.timeout.ms" "5000"
                                     "key.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"
-                                    "value.deserializer" "starnet.app.aux.serdesTransitJsonDeserializer"})]
+                                    "value.deserializer" "starnet.app.alpha.aux.serdes.TransitJsonDeserializer"})]
                      (.subscribe consumer (Arrays/asList (object-array ["transit-output"])))
                      (while true
                        (let [records (.poll consumer 1000)]
@@ -135,7 +135,7 @@
                  {"bootstrap.servers" "broker1:9092"
                   "auto.commit.enable" "true"
                   "key.serializer" "org.apache.kafka.common.serialization.StringSerializer"
-                  "value.serializer" "starnet.app.aux.serdesTransitJsonSerializer"}))
+                  "value.serializer" "starnet.app.alpha.aux.serdes.TransitJsonSerializer"}))
 
   (.send producer (ProducerRecord.
                    "transit-input"

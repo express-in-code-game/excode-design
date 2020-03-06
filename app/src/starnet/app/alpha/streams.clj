@@ -7,13 +7,14 @@
    [clojure.test.check :as tc]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-   
+
    [starnet.common.alpha.spec]
-   [starnet.app.alpha.spec])
+   [starnet.app.alpha.spec]
+   [starnet.common.alpha.data :refer [make-default-game-state]])
   (:import
-   starnet.app.aux.serdesTransitJsonSerializer
-   starnet.app.aux.serdesTransitJsonDeserializer
-   starnet.app.aux.serdesTransitJsonSerde
+   starnet.app.alpha.aux.serdes.TransitJsonSerializer
+   starnet.app.alpha.aux.serdes.TransitJsonDeserializer
+   starnet.app.alpha.aux.serdes.TransitJsonSerde
 
    org.apache.kafka.common.serialization.Serdes
    org.apache.kafka.streams.KafkaStreams
@@ -100,8 +101,8 @@
            key-des
            value-des
            recordf]
-    :or {key-des "starnet.app.aux.serdesTransitJsonDeserializer"
-         value-des "starnet.app.aux.serdesTransitJsonDeserializer"}
+    :or {key-des "starnet.app.alpha.aux.serdes.TransitJsonDeserializer"
+         value-des "starnet.app.alpha.aux.serdes.TransitJsonDeserializer"}
     :as opts}]
   (future-call
    (fn []
@@ -129,17 +130,16 @@
                 (.putAll {"application.id" appid
                           "bootstrap.servers" "broker1:9092"
                           "auto.offset.reset" "earliest" #_"latest"
-                          "default.key.serde" "starnet.app.aux.serdesTransitJsonSerde"
-                          "default.value.serde" "starnet.app.aux.serdesTransitJsonSerde"}))
+                          "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
+                          "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"}))
         kstreams (KafkaStreams. topology props)
         latch (CountDownLatch. 1)]
     (do
-      (add-shutdown-hook props streams latch))
+      (add-shutdown-hook props kstreams latch))
     {:builder builder
-     :ktable ktable
+     :stream stream
      :topology topology
      :props props
-     :stream stream
      :kstreams kstreams
      :latch latch}))
 

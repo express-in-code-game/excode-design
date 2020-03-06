@@ -1,4 +1,4 @@
-(ns starnet.app.aux.serdes
+(ns starnet.app.alpha.aux.serdes
   (:require
    [cognitect.transit :as transit])
   (:import
@@ -11,7 +11,7 @@
    java.io.IOException)
   (:gen-class))
 
-#_(compile 'starnet.app.aux.serdes)
+#_(compile 'starnet.app.alpha.aux.serdes)
 
 (comment
 

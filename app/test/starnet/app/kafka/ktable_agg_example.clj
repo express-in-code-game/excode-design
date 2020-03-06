@@ -1,11 +1,11 @@
 (ns starnet.app.kafka.ktable-agg-example
   (:require
    [clojure.pprint :as pp]
-   [starnet.app.aux.serdes])
+   [starnet.app.alpha.aux.serdes])
   (:import
-   starnet.app.aux.serdesTransitJsonSerializer
-   starnet.app.aux.serdesTransitJsonDeserializer
-   starnet.app.aux.serdesTransitJsonSerde
+   starnet.app.alpha.aux.serdes.TransitJsonSerializer
+   starnet.app.alpha.aux.serdes.TransitJsonDeserializer
+   starnet.app.alpha.aux.serdes.TransitJsonSerde
 
    org.apache.kafka.common.serialization.Serdes
    org.apache.kafka.streams.KafkaStreams

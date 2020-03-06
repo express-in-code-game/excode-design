@@ -12,11 +12,10 @@
    [starnet.common.alpha.spec]
 
    [starnet.common.sample-tests]
-   [starnet.common.alpha.tests]
    [starnet.app.sample-tests]
-   [starnet.app.alpha.streams.game-test]
-   [starnet.app.alpha.streams.user-test]
-   [starnet.app.alpha.streams.core-test]
+   
+   [starnet.common.alpha.tests]
+   [starnet.app.alpha.streams-test]
    [starnet.app.alpha.spec-test]
    [starnet.common.alpha.core :refer [rand-uuid]]))
 

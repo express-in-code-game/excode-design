@@ -1,6 +1,6 @@
 (ns starnet.app.alpha.main
   (:require
-   [starnet.app.alpha.nrepl :refer [start-nrepl-server]]
+   [starnet.app.alpha.aux.nrepl :refer [start-nrepl-server]]
    [clojure.spec.alpha :as s]
    [clojure.spec.test.alpha :as stest]
    [starnet.common.alpha.spec]

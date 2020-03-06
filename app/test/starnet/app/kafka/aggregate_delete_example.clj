@@ -2,9 +2,9 @@
   (:require
    [clojure.pprint :as pp])
   (:import
-   starnet.app.aux.serdesTransitJsonSerializer
-   starnet.app.aux.serdesTransitJsonDeserializer
-   starnet.app.aux.serdesTransitJsonSerde
+   starnet.app.alpha.aux.serdes.TransitJsonSerializer
+   starnet.app.alpha.aux.serdes.TransitJsonDeserializer
+   starnet.app.alpha.aux.serdes.TransitJsonSerde
 
    org.apache.kafka.common.serialization.Serdes
    org.apache.kafka.streams.KafkaStreams
@@ -127,7 +127,7 @@
                                    "bootstrap.servers" "broker1:9092"
                                    "auto.offset.reset" "earliest" #_"latest"
                                    "default.key.serde" (.. Serdes String getClass)
-                                   "default.value.serde" "starnet.app.aux.serdesTransitJsonSerde"})))
+                                   "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"})))
 
 
     (def streams (KafkaStreams. topology streams-props))
@@ -146,7 +146,7 @@
                  {"bootstrap.servers" "broker1:9092"
                   "auto.commit.enable" "true"
                   "key.serializer" "org.apache.kafka.common.serialization.StringSerializer"
-                  "value.serializer" "starnet.app.aux.serdesTransitJsonSerializer"}))
+                  "value.serializer" "starnet.app.alpha.aux.serdes.TransitJsonSerializer"}))
 
   (def users {0 (.toString #uuid "5ada3765-0393-4d48-bad9-fac992d00e62")
               1 (.toString #uuid "179c265a-7f72-4225-a785-2d048d575854")

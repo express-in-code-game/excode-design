@@ -4,12 +4,12 @@
    [clojure.spec.alpha :as s]
    [starnet.app.alpha.streams :refer [create-topics list-topics
                                       delete-topics produce-event
-                                      delete-record future-call-consumer
+                                      future-call-consumer
                                       send-event create-streams-game create-streams-user]])
   (:import
-   starnet.app.aux.serdesTransitJsonSerializer
-   starnet.app.aux.serdesTransitJsonDeserializer
-   starnet.app.aux.serdesTransitJsonSerde
+   starnet.app.alpha.aux.serdes.TransitJsonSerializer
+   starnet.app.alpha.aux.serdes.TransitJsonDeserializer
+   starnet.app.alpha.aux.serdes.TransitJsonSerde
    org.apache.kafka.common.serialization.Serdes
    org.apache.kafka.streams.KafkaStreams
    org.apache.kafka.streams.StreamsBuilder
@@ -131,8 +131,8 @@
   (def p (KafkaProducer.
           {"bootstrap.servers" "broker1:9092"
            "auto.commit.enable" "true"
-           "key.serializer" "starnet.app.aux.serdesTransitJsonSerializer"
-           "value.serializer" "starnet.app.aux.serdesTransitJsonSerializer"}))
+           "key.serializer" "starnet.app.alpha.aux.serdes.TransitJsonSerializer"
+           "value.serializer" "starnet.app.alpha.aux.serdes.TransitJsonSerializer"}))
 
   (def state-user (create-streams-user))
   (def streams-user (:streams state-user))

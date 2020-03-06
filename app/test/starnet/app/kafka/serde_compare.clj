@@ -2,9 +2,9 @@
   (:require
    [clojure.pprint :as pp])
   (:import
-   starnet.app.aux.serdesTransitJsonSerializer
-   starnet.app.aux.serdesTransitJsonDeserializer
-   starnet.app.aux.serdesTransitJsonSerde
+   starnet.app.alpha.aux.serdes.TransitJsonSerializer
+   starnet.app.alpha.aux.serdes.TransitJsonDeserializer
+   starnet.app.alpha.aux.serdes.TransitJsonSerde
 
    org.apache.kafka.common.serialization.Serdes
    org.apache.kafka.streams.KafkaStreams
@@ -207,8 +207,8 @@
                                  :topic-out "example.serde-compare.transit.out"
                                  :key-serde (TransitJsonSerde.)
                                  :value-serde (TransitJsonSerde.)
-                                 :key-serde-str "starnet.app.aux.serdesTransitJsonSerde"
-                                 :value-serde-str "starnet.app.aux.serdesTransitJsonSerde"}))
+                                 :key-serde-str "starnet.app.alpha.aux.serdes.TransitJsonSerde"
+                                 :value-serde-str "starnet.app.alpha.aux.serdes.TransitJsonSerde"}))
 
   (def streams2 (:streams app2))
   (.isRunning (.state streams2))
@@ -216,16 +216,16 @@
   (.close streams2)
 
   (def consumer-fu2 (future-call-consumer {:topic "example.serde-compare.transit.out"
-                                           :key-des "starnet.app.aux.serdesTransitJsonDeserializer"
-                                           :value-des "starnet.app.aux.serdesTransitJsonDeserializer"}))
+                                           :key-des "starnet.app.alpha.aux.serdes.TransitJsonDeserializer"
+                                           :value-des "starnet.app.alpha.aux.serdes.TransitJsonDeserializer"}))
 
   (future-cancel consumer-fu2)
 
   (def producer2 (KafkaProducer.
                   {"bootstrap.servers" "broker1:9092"
                    "auto.commit.enable" "true"
-                   "key.serializer" "starnet.app.aux.serdesTransitJsonSerializer"
-                   "value.serializer" "starnet.app.aux.serdesTransitJsonSerializer"}))
+                   "key.serializer" "starnet.app.alpha.aux.serdes.TransitJsonSerializer"
+                   "value.serializer" "starnet.app.alpha.aux.serdes.TransitJsonSerializer"}))
 
   (.send producer2 (ProducerRecord.
                     "example.serde-compare.transit.in"

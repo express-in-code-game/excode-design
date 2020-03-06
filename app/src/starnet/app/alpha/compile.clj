@@ -1,7 +1,7 @@
 (ns starnet.app.alpha.compile
   (:require
    [clojure.repl :as repl]
-   [starnet.app.aux.serdes]))
+   [starnet.app.alpha.aux.serdes]))
 
 (defn -main
   []
@@ -11,4 +11,4 @@
                             {:direct-linking false}
                             #_{:disable-locals-clearing true
                                :elide-meta [:doc :file :line :added]}))
-  (compile 'starnet.app.aux.serdes))
+  (compile 'starnet.app.alpha.aux.serdes))
