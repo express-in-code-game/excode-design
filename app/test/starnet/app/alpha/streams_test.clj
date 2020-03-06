@@ -22,16 +22,7 @@
 (comment
 
   (run-tests)
-  (next-state-speccheck)
-
-  (tc/quick-check 10 sort-is-idempotent-prop)
-
-  (stest/check `next-state {:clojure.spec.test.check/opts {:num-tests 1000}})
-  (stest/summarize-results (stest/check `next-state
-                                        {:clojure.spec.test.check/opts {:num-tests 1}}))
-  (stest/summarize-results (stest/check))
-  (-> (stest/enumerate-namespace 'starnet.app.alpha.streams.game)
-      (stest/check {:clojure.spec.test.check/opts {:num-tests 2}}))
+  (tc/quick-check )
 
   ;;
   )
@@ -45,32 +36,14 @@
   (testing "random :g/game and :ev.g.u/create event "
     (is (s/valid? :g/game (next-game (sgen/generate (s/gen :g/game))
                                      (java.util.UUID/randomUUID)
-                                     (first (sgen/generate (s/gen :ev.g.u/create))))))))
-
-(deftest next-game-speccheck
-  (testing "running spec.test/check"
-    (is (every? true?
-                (map
-                 #(get-in % [:clojure.spec.test.check/ret :pass?])
-                 (stest/check `next-game
-                              {:clojure.spec.test.check/opts {:num-tests 10}}))))))
+                                     (sgen/generate (s/gen :ev.g.u/create)))))))
 
 (deftest all-specchecks
   (testing "running spec.test/check for ns"
-    (is (every? true?
-                (map
-                 #(get-in % [:clojure.spec.test.check/ret :pass?])
-                 (-> (stest/enumerate-namespace 'starnet.app.alpha.streams)
-                     (stest/check {:clojure.spec.test.check/opts {:num-tests 10}})))))))
-
-
-(deftest next-user-speccheck
-  (testing "running spec.test/check"
-    (is (every? true?
-                (map
-                 #(get-in % [:clojure.spec.test.check/ret :pass?])
-                 (stest/check `next-user
-                              {:clojure.spec.test.check/opts {:num-tests 10}}))))))
+    (let [summary (-> (stest/enumerate-namespace 'starnet.app.alpha.streams)
+                      (stest/check {:clojure.spec.test.check/opts {:num-tests 10}})
+                      (stest/summarize-results))]
+      (is (not (contains? summary :check-failed))))))
 
 
 #_(defn test-ns-hook

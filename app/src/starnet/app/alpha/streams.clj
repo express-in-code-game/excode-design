@@ -90,11 +90,7 @@
                    k
                    event)))
 
-(s/fdef produce-event
-  :args (s/cat :producer :instance/kproducer
-               :topic string?
-               :k (s/alt :uuid uuid? :string string?)
-               :event :ev/event))
+
 
 (defn read-store-to-lzseq
   "Returns a lzseq of kafka KeyValue from kafka store"
@@ -257,11 +253,6 @@
   [state k ev]
   nil)
 
-(s/fdef next-user
-  :args (s/cat :state (s/nilable :u/user)
-               :k uuid?
-               :ev :ev.u/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
-
 (comment
 
   (ns-unmap *ns* 'next-user)
@@ -338,12 +329,6 @@
 (defmethod next-game [:ev.g.p/collect-tile-value]
   [state k ev]
   state)
-
-(s/fdef next-game
-  :args (s/cat :state (s/nilable :g/game)
-               :k uuid?
-               :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game))
-  :ret (s/nilable :g/game))
 
 (comment
 

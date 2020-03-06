@@ -189,17 +189,10 @@
 
 (s/fdef starnet.common.alpha.data/make-game
   :args (s/cat :k uuid?
-               :ev :ev.g/event)
+               :ev :ev.g.u/create)
   :ret :g/game)
 
 (s/fdef starnet.common.alpha.data/make-game-state
   :args (s/cat :k uuid?
-               :ev :ev.g/event)
+               :ev :ev.g.u/create)
   :ret :g/state)
-
-
-
-
-
-
-
