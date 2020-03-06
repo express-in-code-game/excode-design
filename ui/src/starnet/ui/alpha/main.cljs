@@ -10,13 +10,13 @@
    [clojure.spec.test.alpha :as stest]
    [clojure.spec.alpha :as s]
 
-   [starnet.common.alpha.spec]
-   [starnet.common.alpha.data]
+   [starnet.common.alpha.game001]
+   [starnet.common.alpha.system]
 
    [starnet.ui.alpha.spec]
    [starnet.ui.alpha.repl]
    [starnet.ui.alpha.tests]
-   
+
 
    [starnet.ui.alpha.evs :as evs]
    [starnet.ui.alpha.routes :as routes]

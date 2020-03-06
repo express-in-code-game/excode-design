@@ -13,7 +13,6 @@
    [starnet.app.alpha.streams :refer [create-topics list-topics
                                       delete-topics produce-event
                                       future-call-consumer
-                                      next-user next-game
                                       send-event create-streams-game create-streams-user]])
   (:import
    org.apache.kafka.clients.consumer.KafkaConsumer
@@ -26,17 +25,6 @@
 
   ;;
   )
-
-(deftest next-game-tests
-  (testing "event :ev.g.u/create"
-    (is (s/valid? :g/game (next-game nil
-                                     (java.util.UUID/randomUUID)
-                                     {:ev/type :ev.g.u/create
-                                      :u/uuid  (java.util.UUID/randomUUID)}))))
-  (testing "random :g/game and :ev.g.u/create event "
-    (is (s/valid? :g/game (next-game (sgen/generate (s/gen :g/game))
-                                     (java.util.UUID/randomUUID)
-                                     (sgen/generate (s/gen :ev.g.u/create)))))))
 
 (deftest all-specchecks
   (testing "running spec.test/check for ns"

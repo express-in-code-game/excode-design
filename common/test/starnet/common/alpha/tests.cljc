@@ -8,8 +8,8 @@
    [clojure.test.check.properties :as prop]
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
 
-   [starnet.common.alpha.data-test]
-   [starnet.common.alpha.spec-test]
+   [starnet.common.alpha.game001-test]
+   [starnet.common.alpha.system-test]
    [starnet.common.alpha.core-test]))
 
 (deftest sample-test

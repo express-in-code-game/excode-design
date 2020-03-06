@@ -6,8 +6,10 @@
 
    [starnet.app.alpha.aux.serdes]
 
-   [starnet.common.alpha.spec]
+   [starnet.common.alpha.game001]
+   [starnet.common.alpha.system]
    [starnet.app.alpha.spec]
+   
    [starnet.app.alpha.repl]
    [starnet.app.alpha.tests]))
 

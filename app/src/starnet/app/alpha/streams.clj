@@ -8,9 +8,8 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
 
-   [starnet.common.alpha.spec]
-   [starnet.app.alpha.spec]
-   [starnet.common.alpha.data :refer [make-game]])
+   [starnet.common.alpha.game001 :refer [next-game-state]]
+   [starnet.common.alpha.system :refer [next-user]])
   (:import
    starnet.app.alpha.aux.serdes.TransitJsonSerializer
    starnet.app.alpha.aux.serdes.TransitJsonDeserializer
@@ -235,32 +234,7 @@
           ev)))
 
 
-(defmulti next-user
-  "Returns next state of the user record"
-  {:arglists '([state key event])}
-  (fn [state k ev] [(:ev/type ev)]))
 
-(defmethod next-user [:ev.u/create]
-  [state k ev]
-  (or state ev))
-
-(defmethod next-user [:ev.u/update]
-  [state k ev]
-  (when state
-    (merge state ev)))
-
-(defmethod next-user [:ev.u/delete]
-  [state k ev]
-  nil)
-
-(comment
-
-  (ns-unmap *ns* 'next-user)
-  (stest/instrument [`next-user])
-  (stest/unstrument [`next-user])
-
-  ;;
-  )
 
 (defn create-streams-user
   []
@@ -281,63 +255,6 @@
                         (.toStream)
                         (.to "alpha.user.changes")))))
 
-
-(defmulti next-game
-  "Returns the next state of the game."
-  {:arglists '([state key event])}
-  (fn [state k ev] [(:ev/type ev)]))
-
-(defmethod next-game [:ev.c/delete-record]
-  [state k ev]
-  nil)
-
-(defmethod next-game [:ev.g.u/create]
-  [state k ev]
-  (or
-   state
-   (make-game k ev)))
-
-(defmethod next-game [:ev.g.u/delete]
-  [state k ev]
-  nil)
-
-(defmethod next-game [:ev.g.u/configure]
-  [state k ev]
-  (when state
-    (merge state ev)))
-
-(defmethod next-game [:ev.g.u/start]
-  [state k ev]
-  state)
-
-(defmethod next-game [:ev.g.u/join]
-  [state k ev]
-  state)
-
-(defmethod next-game [:ev.g.u/leave]
-  [state k ev]
-  state)
-
-(defmethod next-game [:ev.g.p/move-cape]
-  [state k ev]
-  state)
-
-(defmethod next-game [:ev.g.a/finish-game]
-  [state k ev]
-  state)
-
-(defmethod next-game [:ev.g.p/collect-tile-value]
-  [state k ev]
-  state)
-
-(comment
-
-  (ns-unmap *ns* 'next-game)
-  (stest/instrument [`next-game])
-  (stest/unstrument [`next-game])
-
-  ;;
-  )
 
 (defn assert-next-game-post [state] {:post [(s/assert :g/game %)]} state)
 (defn assert-next-game-body [state]
@@ -389,7 +306,7 @@
                      (reify Aggregator
                        (apply [this k v ag]
                          (try
-                           (assert-next-game-body (next-game ag k v))
+                           (assert-next-game-body (next-game-state ag k v))
                            (catch Exception e
                              (println (ex-message e))
                              (println (ex-data e))
