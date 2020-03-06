@@ -40,9 +40,9 @@
                                            {:ev/type :ev.g.u/create
                                             :u/uuid  (gen/generate gen/uuid)}))))
   (testing "random :g/game and :ev.g.u/create event "
-    (is (s/valid? :g/game (next-game-state (sgen/generate (s/gen :g/game))
+    (is (s/valid? :g/game (next-game-state (gen/generate (s/gen :g/game))
                                            (gen/generate gen/uuid)
-                                           (sgen/generate (s/gen :ev.g.u/create)))))))
+                                           (gen/generate (s/gen :ev.g.u/create)))))))
 
 (comment
 
@@ -51,6 +51,8 @@
   (make-game-state-speccheck)
 
   (list (reduce #(assoc %1 (keyword (str %2)) %2) {} (range 0 100)))
-
+  
+  (next-game-state-tests)
+  (make-game-state-tests)
   ;;
   )
