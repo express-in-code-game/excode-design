@@ -8,9 +8,8 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
 
-   [starnet.common.alpha.spec]
-   [starnet.app.alpha.spec]
-   [starnet.common.alpha.data :refer [make-default-game-state]])
+   [starnet.common.alpha.game :refer [next-game-state]]
+   [starnet.common.alpha.system :refer [next-user]])
   (:import
    starnet.app.alpha.aux.serdes.TransitJsonSerializer
    starnet.app.alpha.aux.serdes.TransitJsonDeserializer
@@ -90,11 +89,7 @@
                    k
                    event)))
 
-(s/fdef produce-event
-  :args (s/cat :producer :instance/kproducer
-               :topic string?
-               :k (s/alt :uuid uuid? :string string?)
-               :event :ev/event))
+
 
 (defn read-store-to-lzseq
   "Returns a lzseq of kafka KeyValue from kafka store"
@@ -239,37 +234,7 @@
           ev)))
 
 
-(defmulti next-user
-  "Returns next state of the user record"
-  {:arglists '([state key event])}
-  (fn [state k ev] [(:ev/type ev)]))
 
-(defmethod next-user [:ev.u/create]
-  [state k ev]
-  (or state ev))
-
-(defmethod next-user [:ev.u/update]
-  [state k ev]
-  (when state
-    (merge state ev)))
-
-(defmethod next-user [:ev.u/delete]
-  [state k ev]
-  nil)
-
-(s/fdef next-user
-  :args (s/cat :state (s/nilable :u/user)
-               :k uuid?
-               :ev :ev.u/event #_(s/alt :ev.p/move-cape :ev.a/finish-game)))
-
-(comment
-
-  (ns-unmap *ns* 'next-user)
-  (stest/instrument [`next-user])
-  (stest/unstrument [`next-user])
-
-  ;;
-  )
 
 (defn create-streams-user
   []
@@ -290,69 +255,6 @@
                         (.toStream)
                         (.to "alpha.user.changes")))))
 
-
-(defmulti next-game
-  "Returns the next state of the game."
-  {:arglists '([state key event])}
-  (fn [state k ev] [(:ev/type ev)]))
-
-(defmethod next-game [:ev.c/delete-record]
-  [state k ev]
-  nil)
-
-(defmethod next-game [:ev.g.u/create]
-  [state k ev]
-  (or
-   state
-   (make-default-game-state k ev)))
-
-(defmethod next-game [:ev.g.u/delete]
-  [state k ev]
-  nil)
-
-(defmethod next-game [:ev.g.u/configure]
-  [state k ev]
-  (when state
-    (merge state ev)))
-
-(defmethod next-game [:ev.g.u/start]
-  [state k ev]
-  state)
-
-(defmethod next-game [:ev.g.u/join]
-  [state k ev]
-  state)
-
-(defmethod next-game [:ev.g.u/leave]
-  [state k ev]
-  state)
-
-(defmethod next-game [:ev.g.p/move-cape]
-  [state k ev]
-  state)
-
-(defmethod next-game [:ev.g.a/finish-game]
-  [state k ev]
-  state)
-
-(defmethod next-game [:ev.g.p/collect-tile-value]
-  [state k ev]
-  state)
-
-(s/fdef next-game
-  :args (s/cat :state (s/nilable :g/game)
-               :k uuid?
-               :ev :ev.g/event #_(s/alt :ev.p/move-cape :ev.a/finish-game))
-  :ret (s/nilable :g/game))
-
-(comment
-
-  (ns-unmap *ns* 'next-game)
-  (stest/instrument [`next-game])
-  (stest/unstrument [`next-game])
-
-  ;;
-  )
 
 (defn assert-next-game-post [state] {:post [(s/assert :g/game %)]} state)
 (defn assert-next-game-body [state]
@@ -404,7 +306,7 @@
                      (reify Aggregator
                        (apply [this k v ag]
                          (try
-                           (assert-next-game-body (next-game ag k v))
+                           (assert-next-game-body (next-game-state ag k v))
                            (catch Exception e
                              (println (ex-message e))
                              (println (ex-data e))

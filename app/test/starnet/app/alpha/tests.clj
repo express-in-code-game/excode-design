@@ -8,8 +8,9 @@
    [clojure.test.check.properties :as prop]
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
 
-   [starnet.app.alpha.spec]
+   
    [starnet.common.alpha.spec]
+   [starnet.app.alpha.spec]
 
    [starnet.common.sample-tests]
    [starnet.app.sample-tests]
@@ -36,6 +37,4 @@
   ;;
   )
 
-(deftest common-deps
-  (testing "generating random uuid via reader conditionals in .cljc"
-    (is (uuid? (rand-uuid)))))
+

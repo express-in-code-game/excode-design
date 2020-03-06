@@ -8,6 +8,7 @@
 
    [starnet.common.alpha.spec]
    [starnet.app.alpha.spec]
+   
    [starnet.app.alpha.repl]
    [starnet.app.alpha.tests]))
 

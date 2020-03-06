@@ -10,7 +10,9 @@
    [clojure.test.check.properties :as prop]
    [clojure.test.check.clojure-test :refer [defspec]]
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
-   [starnet.common.alpha.core :refer [with-gen-cyclic]]))
+   [starnet.common.alpha.core :refer [with-gen-cyclic
+                                      rand-uuid
+                                      make-inst]]))
 
 
 (comment
@@ -30,4 +32,10 @@
                                 (merge x changes)) (s/gen spec))))
               vl (gen/generate (s/gen s))]
           (subset? (set changes) (set vl)))
-        "with-gen-cyclic works")))
+        "with-gen-cyclic works"))
+  (testing "reader conditionals functions from core.cljc"
+    (is (uuid? (rand-uuid))
+        "rand-uuid returns #uuid")
+    (is (inst? (make-inst))
+        "make-inst returns #inst")))
+

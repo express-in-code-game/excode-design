@@ -24,12 +24,24 @@
     - https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
 
 - clj
-  - fdef defmulti
-    - https://clojuredocs.org/clojure.spec.alpha/fdef#example-5c4b535ce4b0ca44402ef629
+  - spec
+    - guides
+      - https://clojure.org/guides/spec
+      - https://clojure.github.io/spec.alpha/clojure.spec.alpha-api.html
+      - https://clojure.org/guides/test_check_beginner
+        - https://github.com/clojure/test.check/blob/master/README.md
+        - https://github.com/clojure/test.check/blob/master/doc/intro.md
+        - https://github.com/clojure/test.check/blob/master/doc/generator-examples.md
+      - https://blog.taylorwood.io/2018/10/15/clojure-spec-faq.html
+    - fdef defmulti
+      - https://clojuredocs.org/clojure.spec.alpha/fdef#example-5c4b535ce4b0ca44402ef629
+    - code
+      - https://github.com/clojure/tools.deps.alpha/blob/master/src/main/clojure/clojure/tools/deps/alpha/specs.clj
   - java.time.Instant
     - https://stackoverflow.com/questions/36639154/convert-java-util-date-to-what-java-time-type
   - regex
     - https://docs.oracle.com/javase/9/docs/api/java/util/regex/Pattern.html
+  - 
 
 - cljs
   - antd

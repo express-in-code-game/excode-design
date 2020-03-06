@@ -1,6 +1,7 @@
 (ns starnet.common.sample-tests
   (:require
    [clojure.set :refer [subset?]]
+   [clojure.walk :as walk]
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
    [clojure.spec.test.alpha :as stest]
@@ -63,4 +64,12 @@
 (defspec sort-is-idempotent 10
   (prop/for-all [v (gen/vector gen/int)]
                 (= (sort v) (sort (sort v)))))
+
+(deftest clojure-samples
+  (testing "clojure clojure.walk"
+    (let [v {:a 1 :b {:c 1}}
+          vnext {:a 2 :b {:c 2}}]
+      (is (= vnext (walk/postwalk (fn [x]
+                                    (if (number? x) (inc x)
+                                        x)) v))))))
 
