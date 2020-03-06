@@ -4,7 +4,7 @@
    [clojure.spec.alpha :as s]
    [starnet.app.alpha.streams :refer [create-topics list-topics
                                       delete-topics produce-event
-                                      future-call-consumer
+                                      future-call-consumer read-store
                                       send-event create-streams-game create-streams-user]])
   (:import
    starnet.app.alpha.aux.serdes.TransitJsonSerializer
@@ -89,30 +89,6 @@
                 1 #uuid "ea1162e3-fe45-4652-9fa9-4f8dc6c78f71"
                 2 #uuid "4cd4b905-6859-4c22-bae7-ad5ec51dc3f8"})
 
-(defn read-store-to-lzseq
-  "Returns a lzseq of kafka KeyValue from kafka store"
-  [store f]
-  (with-open [it (.all store)]
-    (let [sqn (iterator-seq (.all store))]
-      (f sqn))))
-
-(defn read-store
-  "Returns a vector or map of [key value] from kafka ro-store"
-  [store & {:keys [offset limit intomap? fval fkey]
-            :or {offset 0
-                 limit ##Inf
-                 intomap? false
-                 fval identity
-                 fkey identity
-                 }}]
-  (cond->> (read-store-to-lzseq store (fn [sqn]
-                                        (->> sqn
-                                             (drop offset)
-                                             (take limit))))
-    true (mapv (fn [kv]
-                 [(fkey (.key kv)) (fval (.value kv))]))
-    intomap? (into {})))
-
 (comment
 
   (-> (create-topics {:props props
@@ -135,7 +111,7 @@
            "value.serializer" "starnet.app.alpha.aux.serdes.TransitJsonSerializer"}))
 
   (def state-user (create-streams-user))
-  (def streams-user (:streams state-user))
+  (def streams-user (:kstreams state-user))
   (.isRunning (.state streams-user))
   (.start streams-user)
   (.close streams-user)
@@ -181,7 +157,7 @@
 
 
   (def state-game (create-streams-game))
-  (def streams-game (:streams state-game))
+  (def streams-game (:kstreams state-game))
   (.start streams-game)
   (.isRunning (.state streams-game))
   (.close streams-game)

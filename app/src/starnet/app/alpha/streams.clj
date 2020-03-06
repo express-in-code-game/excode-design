@@ -96,6 +96,29 @@
                :k (s/alt :uuid uuid? :string string?)
                :event :ev/event))
 
+(defn read-store-to-lzseq
+  "Returns a lzseq of kafka KeyValue from kafka store"
+  [store f]
+  (with-open [it (.all store)]
+    (let [sqn (iterator-seq (.all store))]
+      (f sqn))))
+
+(defn read-store
+  "Returns a vector or map of [key value] from kafka ro-store"
+  [store & {:keys [offset limit intomap? fval fkey]
+            :or {offset 0
+                 limit ##Inf
+                         intomap? false
+                 fval identity
+                 fkey identity}}]
+  (cond->> (read-store-to-lzseq store (fn [sqn]
+                                        (->> sqn
+                                             (drop offset)
+                                             (take limit))))
+    true (mapv (fn [kv]
+                 [(fkey (.key kv)) (fval (.value kv))]))
+    intomap? (into {})))
+
 (defn future-call-consumer
   [{:keys [topic
            key-des
