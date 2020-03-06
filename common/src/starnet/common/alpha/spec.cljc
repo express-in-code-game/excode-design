@@ -196,3 +196,8 @@
   :args (s/cat :k uuid?
                :ev :ev.g.u/create)
   :ret :g/state)
+
+(s/fdef starnet.common.alpha.data/next-game-state
+  :args (s/cat :state :g/state
+               :ev :ev.g.p/event)
+  :ret :g/state)

@@ -42,3 +42,8 @@
                           :g.r/observer false}}
      :g/state (make-game-state k ev)}))
 
+
+(defn next-game-state
+  [state ev]
+  state)
+
