@@ -35,3 +35,7 @@
   - antd
     - 4.0 changes https://github.com/ant-design/ant-design/issues/16911
 
+
+- issues
+  - "attempting to call unbound transit-json..." when ineracting with kafka from repl
+    - starnet.app.alpha.aux.serdes namespace must be imported 

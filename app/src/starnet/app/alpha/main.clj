@@ -3,6 +3,9 @@
    [starnet.app.alpha.aux.nrepl :refer [start-nrepl-server]]
    [clojure.spec.alpha :as s]
    [clojure.spec.test.alpha :as stest]
+
+   [starnet.app.alpha.aux.serdes]
+
    [starnet.common.alpha.spec]
    [starnet.app.alpha.spec]
    [starnet.app.alpha.repl]
