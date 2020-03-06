@@ -42,11 +42,14 @@
 (s/def :g/exit-teleports (s/coll-of :g.e.type/teleport))
 (s/def :g/value-tiles (s/coll-of :g.e.type/value-tile))
 
-(s/def :g/game (s/keys :req [:g/uuid :g/status :g/start-inst
-                             :g/duration-ms :g/map-size
-                             :g/roles :g/player-states
-                             :g/exit-teleports
-                             :g/value-tiles]))
+(s/def :g/state (s/keys :req [:g/player-states
+                              :g/value-tiles
+                              :g/exit-teleports
+                              :g/map-size]))
+
+(s/def :g/game (s/keys :req [:g/uuid :g/status
+                             :g/duration-ms :g/start-inst
+                             :g/roles :g/state]))
 
 (def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
 (s/def :u/uuid uuid?)
@@ -184,8 +187,15 @@
 (defmethods-for-a-set ev-user setof-ev-u-event)
 (s/def :ev.u/event (s/multi-spec ev-user :ev/type))
 
+(s/fdef starnet.common.alpha.data/make-game
+  :args (s/cat :k uuid?
+               :ev :ev.g/event)
+  :ret :g/game)
 
-
+(s/fdef starnet.common.alpha.data/make-game-state
+  :args (s/cat :k uuid?
+               :ev :ev.g/event)
+  :ret :g/state)
 
 
 
