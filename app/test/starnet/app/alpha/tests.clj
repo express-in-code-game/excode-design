@@ -20,7 +20,7 @@
    [starnet.common.alpha.core :refer [rand-uuid]]))
 
 (defn -main []
-  (run-all-tests #"app.+tests?$|common.+tests?$")
+  (run-all-tests #"starnet.app.+tests?$|starnet.common.+tests?$")
   (System/exit 0))
 
 (comment

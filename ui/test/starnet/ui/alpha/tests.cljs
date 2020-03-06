@@ -18,7 +18,7 @@
    [starnet.common.alpha.core :refer [rand-uuid]]))
 
 (defn start []
-  (run-all-tests #"ui.+tests?$|common.+tests?$"))
+  (run-all-tests #"starnet.ui.+tests?$|starnet.common.+tests?$"))
 
 (defn stop [done]
   (done))
