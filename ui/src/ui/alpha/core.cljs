@@ -1,4 +1,4 @@
-(ns ui.alpha.core
+(ns starnet.ui.alpha.core
   (:require
    [clojure.repl :as repl]
    [clojure.string :as str]))

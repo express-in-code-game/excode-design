@@ -1,4 +1,4 @@
-(ns ui.alpha.view
+(ns starnet.ui.alpha.view
   (:use-macros
    [cljs.core.async.macros :only [go]])
   (:require
@@ -7,14 +7,14 @@
    [reagent.core :as r]
    [re-frame.core :as rf]
    [shadow.loader :as loader]
-   [ui.alpha.subs :as subs]
-   [ui.alpha.home.view]
-   [ui.alpha.map.view]
-   [ui.alpha.board.view]
+   [starnet.ui.alpha.subs :as subs]
+   [starnet.ui.alpha.home.view]
+   [starnet.ui.alpha.map.view]
+   [starnet.ui.alpha.board.view]
    [cljs.core.async :refer [<! timeout]]
-   [ui.alpha.config :as config]
+   [starnet.ui.alpha.config :as config]
    [clojure.string :as string]
-   [ui.alpha.routes :refer [set-path!]]))
+   [starnet.ui.alpha.routes :refer [set-path!]]))
 
 (defn not-found-view
   [path]
@@ -23,9 +23,9 @@
 (defn- views [view-name]
   #_(prn view-name)
   (case view-name
-    :home-view [ui.alpha.home.view/view]
-    :map-view [ui.alpha.map.view/view]
-    :board-view [ui.alpha.board.view/view]
+    :home-view [starnet.ui.alpha.home.view/view]
+    :map-view [starnet.ui.alpha.map.view/view]
+    :board-view [starnet.ui.alpha.board.view/view]
     ; nil [:div "loading..."]
     [not-found-view view-name]))
 

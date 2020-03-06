@@ -1,4 +1,4 @@
-(ns ui.alpha.main
+(ns starnet.ui.alpha.main
   (:require
    [cljs.repl :as repl]
    [cljs.pprint :as pp]
@@ -10,19 +10,19 @@
    [clojure.spec.test.alpha :as stest]
    [clojure.spec.alpha :as s]
 
-   [common.alpha.spec]
-   [common.alpha.game]
+   [starnet.common.alpha.spec]
+   [starnet.common.alpha.data]
 
-   [ui.alpha.spec]
-   [ui.alpha.repl]
-   [ui.alpha.tests]
+   [starnet.ui.alpha.spec]
+   [starnet.ui.alpha.repl]
+   [starnet.ui.alpha.tests]
    
 
-   [ui.alpha.evs :as evs]
-   [ui.alpha.routes :as routes]
-   [ui.alpha.config :as config]
-   [ui.alpha.subs :as subs]
-   [ui.alpha.view :refer [view]]))
+   [starnet.ui.alpha.evs :as evs]
+   [starnet.ui.alpha.routes :as routes]
+   [starnet.ui.alpha.config :as config]
+   [starnet.ui.alpha.subs :as subs]
+   [starnet.ui.alpha.view :refer [view]]))
 
 (devtools/install!)
 #_(enable-console-print!)

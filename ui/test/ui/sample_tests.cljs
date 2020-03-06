@@ -1,4 +1,4 @@
-(ns ui.sample-tests
+(ns starnet.ui.sample-tests
   (:require
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
@@ -14,7 +14,7 @@
 
   (run-tests)
   (run-all-tests #"ui.*")
-  (re-matches #"ui.*" "ui.alpha.spec-test")
+  (re-matches #"ui.*" "starnet.ui.alpha.spec-test")
   (stest/check)
   (tc/quick-check)
 

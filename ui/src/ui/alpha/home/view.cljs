@@ -1,11 +1,11 @@
-(ns ui.alpha.home.view
+(ns starnet.ui.alpha.home.view
   (:require
    [reagent.core :as r]
    [cljs.repl :as repl]
    [cljs.pprint :as pp]
    [re-frame.core :as rf]
-   [ui.alpha.home.subs :as subs]
-   [ui.alpha.home.evs :as evs]
+   [starnet.ui.alpha.home.subs :as subs]
+   [starnet.ui.alpha.home.evs :as evs]
    ["antd/lib/button" :default AntButton]
    ["@ant-design/icons/SmileOutlined" :default AntSmileOutlined]))
 
@@ -24,5 +24,5 @@
      [:br]
      [ant-smile-outlined]
      #_[:button
-      {:on-click (fn [] (rf/dispatch [:ui.alpha.evs/set-active-view :map-view]))} "map"]]))
+      {:on-click (fn [] (rf/dispatch [:starnet.ui.alpha.evs/set-active-view :map-view]))} "map"]]))
 

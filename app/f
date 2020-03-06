@@ -4,16 +4,16 @@
 compile(){
   mkdir -p classes
   rm -rf classes/*
-  clojure -A:core:dev -m app.alpha.compile
+  clojure -A:core:dev -m starnet.app.alpha.compile
 }
 
 test(){
-  clojure -A:core:dev:local -m app.alpha.tests
+  clojure -A:core:dev:local -m starnet.app.alpha.tests
 }
 
 dev(){
   compile
-  clj -A:core:dev:local -m app.alpha.main
+  clj -A:core:dev:local -m starnet.app.alpha.main
 }
 
 permissions(){

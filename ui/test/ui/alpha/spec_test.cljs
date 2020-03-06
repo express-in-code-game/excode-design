@@ -1,4 +1,4 @@
-(ns ui.alpha.spec-test
+(ns starnet.ui.alpha.spec-test
   (:require
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
@@ -9,7 +9,7 @@
    [clojure.test.check.properties :as prop]
    [clojure.test.check.clojure-test :refer [defspec]]
    [clojure.test :as test :refer [is testing run-tests deftest]]
-   [ui.alpha.spec]))
+   [starnet.ui.alpha.spec]))
 
 (comment
 

@@ -1,3 +1,3 @@
-(ns ui.alpha.board.core
+(ns starnet.ui.alpha.board.core
   (:require
    [cljs.repl :as repl]))

@@ -1,4 +1,4 @@
-(ns ui.alpha.spec
+(ns starnet.ui.alpha.spec
   (:require
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as gen]

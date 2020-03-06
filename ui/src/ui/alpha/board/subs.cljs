@@ -1,3 +1,3 @@
-(ns ui.alpha.board.subs
+(ns starnet.ui.alpha.board.subs
   (:require
    [re-frame.core :as rf]))

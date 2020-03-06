@@ -1,4 +1,4 @@
-(ns ui.alpha.tests
+(ns starnet.ui.alpha.tests
   (:require
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
@@ -8,14 +8,14 @@
    [clojure.test.check.properties :as prop]
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
 
-   [common.alpha.spec]
-   [ui.alpha.spec]
+   [starnet.common.alpha.spec]
+   [starnet.ui.alpha.spec]
    
-   [common.alpha.tests]
-   [common.sample-tests]
-   [ui.alpha.spec-test]
-   [ui.sample-tests]
-   [common.alpha.core :refer [rand-uuid]]))
+   [starnet.common.alpha.tests]
+   [starnet.common.sample-tests]
+   [starnet.ui.alpha.spec-test]
+   [starnet.ui.sample-tests]
+   [starnet.common.alpha.core :refer [rand-uuid]]))
 
 (defn start []
   (run-all-tests #"ui.+tests?$|common.+tests?$"))
@@ -33,8 +33,8 @@
 
   (run-tests)
   (run-tests
-   'common.sample-tests
-   'ui.sample-tests)
+   'starnet.common.sample-tests
+   'starnet.ui.sample-tests)
 
   ;;
   )

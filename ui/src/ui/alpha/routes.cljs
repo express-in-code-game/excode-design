@@ -1,4 +1,4 @@
-(ns ui.alpha.routes
+(ns starnet.ui.alpha.routes
   (:require
    [clojure.repl]
    [bidi.bidi :as bidi]
@@ -35,7 +35,7 @@
   (prn matched-route)
   (let [handler (:handler matched-route)
         url (:url matched-route)]
-    (rf/dispatch [:ui.alpha.evs/set-active-view handler])))
+    (rf/dispatch [:starnet.ui.alpha.evs/set-active-view handler])))
 
 (declare history)
 
@@ -51,4 +51,4 @@
 
 (def path-for (partial bidi/path-for routes))
 
-#_(ui.alpha.routes/set-path! (str "/" (panel->module-name (keyword key))))
+#_(starnet.ui.alpha.routes/set-path! (str "/" (panel->module-name (keyword key))))
