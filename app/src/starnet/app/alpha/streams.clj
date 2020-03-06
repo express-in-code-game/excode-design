@@ -10,7 +10,7 @@
 
    [starnet.common.alpha.spec]
    [starnet.app.alpha.spec]
-   [starnet.common.alpha.data :refer [make-default-game-state]])
+   [starnet.common.alpha.data :refer [make-game]])
   (:import
    starnet.app.alpha.aux.serdes.TransitJsonSerializer
    starnet.app.alpha.aux.serdes.TransitJsonDeserializer
@@ -304,7 +304,7 @@
   [state k ev]
   (or
    state
-   (make-default-game-state k ev)))
+   (make-game k ev)))
 
 (defmethod next-game [:ev.g.u/delete]
   [state k ev]
