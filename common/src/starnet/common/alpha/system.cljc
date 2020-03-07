@@ -27,7 +27,7 @@
 (def setof-ev-event
   #{:ev.c/delete-record :ev.u/create
     :ev.u/update :ev.u/delete
-    :ev.g.u/create
+    :ev.g.u/create :ev.g.u/update-role
     :ev.g.u/delete :ev.g.u/configure
     :ev.g.u/start :ev.g.u/join
     :ev.g.u/leave :ev.g.p/move-cape

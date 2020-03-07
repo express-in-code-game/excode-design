@@ -14,9 +14,7 @@
 (deftest make-game-state-tests
   (testing "generates valid :g/game"
     (is (s/valid? :g/game
-                  (make-game-state
-                   (gen/generate gen/uuid)
-                   (gen/generate (s/gen :ev.g.u/create)))))))
+                  (make-game-state)))))
 
 (deftest all-specchecks
   (testing "running spec.test/check via stest/enumerate-namespace"
@@ -35,7 +33,7 @@
 
 (deftest next-game-state-tests
   (testing "event :ev.g.u/create"
-    (is (s/valid? :g/game (next-game-state nil
+    (is (s/valid? :g/game (next-game-state (s/conform :g/game (make-game-state))
                                            (gen/generate gen/uuid)
                                            {:ev/type :ev.g.u/create
                                             :u/uuid  (gen/generate gen/uuid)}))))

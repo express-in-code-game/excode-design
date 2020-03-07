@@ -239,6 +239,13 @@
   (ns-unmap *ns* 'next-game-state)
   (stest/instrument [`next-game-state])
   (stest/unstrument [`next-game-state])
+  
+  (gen/sample (s/gen :ev.g.u/update-role) 10)
+  (gen/sample (s/gen :ev.g.u/create) 10)
+  (gen/sample (s/gen :g.r/role) 10)
+  
+  
+  (stest/check `next-game-state)
 
   ;;
   )
