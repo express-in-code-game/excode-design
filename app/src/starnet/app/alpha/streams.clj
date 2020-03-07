@@ -8,7 +8,7 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
 
-   [starnet.common.alpha.game001 :refer [next-game-state]]
+   [starnet.common.alpha.game :refer [next-game-state]]
    [starnet.common.alpha.system :refer [next-user]])
   (:import
    starnet.app.alpha.aux.serdes.TransitJsonSerializer

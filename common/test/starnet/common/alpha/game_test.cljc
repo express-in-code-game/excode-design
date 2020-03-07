@@ -1,4 +1,4 @@
-(ns starnet.common.alpha.game001-test
+(ns starnet.common.alpha.game-test
   (:require
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
@@ -8,8 +8,7 @@
    [clojure.test.check.properties :as prop]
    [clojure.test.check.clojure-test :refer [defspec]]
    [clojure.test :as test :refer [is testing run-tests deftest]]
-   [starnet.common.alpha.game001 :refer [make-game-state next-game-state]]))
-
+   [starnet.common.alpha.game :refer [make-game-state next-game-state]]))
 
 (deftest make-game-state-tests
   (testing "generates valid :g/game"
@@ -18,8 +17,8 @@
 
 (deftest all-specchecks
   (testing "running spec.test/check via stest/enumerate-namespace"
-    (let [summary (-> #?(:clj (stest/enumerate-namespace 'starnet.common.alpha.game001)
-                         :cljs 'starnet.common.alpha.game001)
+    (let [summary (-> #?(:clj (stest/enumerate-namespace 'starnet.common.alpha.game)
+                         :cljs 'starnet.common.alpha.game)
                       (stest/check {:clojure.spec.test.check/opts {:num-tests 10}})
                       (stest/summarize-results))]
       (is (not (contains? summary :check-failed))))))
