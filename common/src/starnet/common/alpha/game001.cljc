@@ -357,5 +357,35 @@
                                  #(gen/tuple (gen/return %) (gen/elements %))))
   (gen/sample vector-and-elem)
 
+  (gen/sample (gen/elements [:foo :bar :baz]))
+  (gen/sample (gen/elements #{:foo :bar :baz}) 3)
+  
+  
+  ;;
+  )
+
+(def tags #{:entity :cape :knowledge :bio :building :combinable :element})
+
+
+(s/def :g.e.prop/resolve (s/with-gen int?
+                           #(gen/choose 100 1000)))
+(s/def :g.e.prop/vision (s/with-gen int?
+                          #(gen/choose 4 16)))
+(s/def :g.e.prop/energy (s/with-gen int?
+                          #(gen/choose 0 100)))
+(s/def :g.e/tags (s/with-gen (s/coll-of keyword?)
+                   #(gen/list-distinct (gen/elements tags) {:num-elements 3})))
+
+(s/def :g.e/cape (s/keys :req [:g.e.prop/resolve
+                               :g.e.prop/vision
+                               :g.e.prop/energy
+                               :g.e/tags]))
+
+(comment
+
+  (gen/generate (gen/list-distinct (gen/elements tags) {:num-elements 3}))
+  (gen/generate (s/gen :g.e/tags))
+  (gen/generate (s/gen :g.e/cape))
+
   ;;
   )
