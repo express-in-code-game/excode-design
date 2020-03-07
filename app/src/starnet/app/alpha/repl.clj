@@ -128,19 +128,19 @@
   (send-event {:ev/type :ev.u/create
                :u/uuid  (get users 0)
                :u/email "user0@gmail.com"
-               :u/username "user0"} p)
+               :u/name "user0"} p)
   (.get store-user (get users 0))
 
   (send-event {:ev/type :ev.u/create
                :u/uuid  (get users 1)
                :u/email "user1@gmail.com"
-               :u/username "user1"} p)
+               :u/name "user1"} p)
   (.get store-user (get users 1))
 
   (send-event {:ev/type :ev.u/update
                :u/uuid  (get users 0)
                :u/email "user0@gmail.com"
-               :u/username "user0"} p)
+               :u/name "user0"} p)
   (.get store-user (get users 0))
 
   (send-event {:ev/type :ev.u/delete

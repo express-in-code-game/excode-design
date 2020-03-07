@@ -43,7 +43,7 @@
 (s/def :g/value-tiles (s/coll-of :g.e.type/value-tile))
 
 (s/def :g/game (s/keys :req [:g/uuid :g/status
-                             :g/duration-ms :g/start-inst
+                             :g/duration-ms :g/start-inst 
                              :g/roles :g/player-states
                              :g/value-tiles :g/exit-teleports
                              :g/map-size]))
@@ -84,11 +84,11 @@
                            #(assoc %  :ev/type :ev.g.p/move-cape)))
 
 (s/def :ev.g.p/collect-tile-value (with-gen-fmap
-                                    (s/and (s/keys :req [:ev/type]))
+                                    (s/and (s/keys :req [:ev/type :u/uuid]))
                                     #(assoc %  :ev/type :ev.g.p/collect-tile-value)))
 
 (s/def :ev.g.a/finish-game (with-gen-fmap
-                             (s/and (s/keys :req [:ev/type]))
+                             (s/and (s/keys :req [:ev/type :u/uuid]))
                              #(assoc %  :ev/type :ev.g.a/finish-game)))
 
 (def setof-ev-g-p-event
@@ -129,42 +129,38 @@
 (s/def :ev.g/event (s/multi-spec ev-game :ev/type))
 
 (defn make-game-state
-  [k ev]
-  (let [host-uuid (:u/uuid ev)]
-    {:g/uuid k
-     :g/status :created
-     :g/start-inst (make-inst)
-     :g/duration-ms 60000
-     :g/roles {host-uuid {:g.r/host true
-                          :g.r/player nil
-                          :g.r/observer false}}
-     :g/player-states {0 {:g.p/entities {:g.p/cape {:g.e/type :g.e.type/cape
-                                                    :g.e/uuid (gen/generate gen/uuid)
-                                                    :g.e/pos [0 0]}}
-                          :g.p/sum 0}
-                       1 {:g.p/entities {:g.p/cape {:g.e/type :g.e.type/cape
-                                                    :g.e/uuid (gen/generate gen/uuid)
-                                                    :g.e/pos [0 15]}}
-                          :g.p/sum 0}}
-     :g/exit-teleports [{:g.e/type :g.e.type/teleport
-                         :g.e/uuid (gen/generate gen/uuid)
-                         :g.e/pos [15 0]}
-                        {:g.e/type :g.e.type/teleport
-                         :g.e/uuid (gen/generate gen/uuid)
-                         :g.e/pos [15 15]}]
-     :g/value-tiles (-> (mapcat (fn [x]
-                                  (mapv (fn [y]
-                                          {:g.e/uuid (gen/generate gen/uuid)
-                                           :g.e/type :g.e.type/value-tile
-                                           :g.e/pos [x y]
-                                           :g.e/numeric-value (inc (rand-int 10))}) (range 0 1)))
-                                (range 0 1))
-                        (vec))
-     :g/map-size [16 16]}))
+  []
+  {:g/uuid (gen/generate gen/uuid)
+   :g/status :created
+   :g/start-inst (make-inst)
+   :g/duration-ms 60000
+   :g/roles {}
+   :g/player-states {0 {:g.p/entities {:g.p/cape {:g.e/type :g.e.type/cape
+                                                  :g.e/uuid (gen/generate gen/uuid)
+                                                  :g.e/pos [0 0]}}
+                        :g.p/sum 0}
+                     1 {:g.p/entities {:g.p/cape {:g.e/type :g.e.type/cape
+                                                  :g.e/uuid (gen/generate gen/uuid)
+                                                  :g.e/pos [0 15]}}
+                        :g.p/sum 0}}
+   :g/exit-teleports [{:g.e/type :g.e.type/teleport
+                       :g.e/uuid (gen/generate gen/uuid)
+                       :g.e/pos [15 0]}
+                      {:g.e/type :g.e.type/teleport
+                       :g.e/uuid (gen/generate gen/uuid)
+                       :g.e/pos [15 15]}]
+   :g/value-tiles (-> (mapcat (fn [x]
+                                (mapv (fn [y]
+                                        {:g.e/uuid (gen/generate gen/uuid)
+                                         :g.e/type :g.e.type/value-tile
+                                         :g.e/pos [x y]
+                                         :g.e/numeric-value (inc (rand-int 10))}) (range 0 1)))
+                              (range 0 1))
+                      (vec))
+   :g/map-size [16 16]})
 
 (s/fdef make-game-state
-  :args (s/cat :k uuid?
-               :ev :ev.g.u/create)
+  :args (s/cat)
   :ret :g/game)
 
 (defmulti next-game-state
@@ -178,9 +174,11 @@
 
 (defmethod next-game-state [:ev.g.u/create]
   [state k ev]
-  (or
-   state
-   (make-game-state k ev)))
+  (-> state
+      (update-in [:g/roles]
+                 assoc (:u/uuid ev) {:g.r/observer true
+                                     :g.r/host true
+                                     :g.r/player nil})))
 
 (defmethod next-game-state [:ev.g.u/delete]
   [state k ev]
@@ -197,11 +195,15 @@
 
 (defmethod next-game-state [:ev.g.u/join]
   [state k ev]
-  state)
+  (update-in state [:g/roles]
+             assoc (ev :u/uuid) {:g.r/observer true
+                                 :g.r/host false
+                                 :g.r/player nil}))
 
 (defmethod next-game-state [:ev.g.u/leave]
   [state k ev]
-  state)
+  (update-in state [:g/roles]
+             dissoc (ev :u/uuid)))
 
 (defmethod next-game-state [:ev.g.p/move-cape]
   [state k ev]
@@ -223,10 +225,81 @@
 
 
 (comment
+  
+  (ns-unmap *ns* 'next-game-state)
+  (stest/instrument [`next-game-state])
+  (stest/unstrument [`next-game-state])
 
-  (ns-unmap *ns* 'next-game)
-  (stest/instrument [`next-game])
-  (stest/unstrument [`next-game])
+  ;;
+  )
+
+(def users {:A {:u/name "mighty A"
+                :u/alias :A
+                :u/uuid  (gen/generate gen/uuid)}
+            :B {:u/name "curious B"
+                :u/alias :B
+                :u/uuid  (gen/generate gen/uuid)}
+            :C {:u/name "new C"
+                :u/alias :C
+                :u/uuid  (gen/generate gen/uuid)}
+            :D {:u/name "D the seeker"
+                :u/alias :D
+                :u/uuid  (gen/generate gen/uuid)}
+            :E {:u/name "E'vo"
+                :u/alias :E
+                :u/uuid  (gen/generate gen/uuid)}})
+
+(def state (atom (make-game-state)))
+
+(defn next-state
+  [ev]
+  (reset! state (next-game-state
+                 @state
+                 (:g/uuid @state)
+                 ev))
+  nil)
+
+(defn user-uuid
+  [u-alias]
+  (-> users u-alias :u/uuid))
+
+(defn user-alias
+  [u-uuid]
+  (some (fn [[k {:u/keys [uuid alias]}]]
+          (when (= uuid u-uuid) alias))
+        users))
+
+(defn to-aliaskey
+  [m]
+  (reduce
+   (fn [ag [k v]]
+     (assoc ag (user-alias k) v)) {} m))
+
+(comment
+  (s/explain (s/map-of keyword? (s/keys :req [:u/name :u/uuid])) users)
+
+  @state
+
+  (next-state {:ev/type :ev.g.u/create
+               :u/uuid  (user-uuid :A)})
+
+  (doseq [al [:B :C :D :E]]
+    (next-state {:ev/type :ev.g.u/join
+                 :g/uuid (@state :g/uuid)
+                 :u/uuid (user-uuid al)}))
+
+  ; ? roles 
+  (->> @state :g/roles to-aliaskey)
+
+  (next-state {:ev/type :ev.g.u/leave
+               :g/uuid (@state :g/uuid)
+               :u/uuid  (user-uuid :D)})
+  
+  (next-state {:ev/type :ev.g.u/join
+               :g/uuid (@state :g/uuid)
+               :u/uuid  (user-uuid :D)})
+
+
 
   ;;
   )

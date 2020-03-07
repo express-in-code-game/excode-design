@@ -13,7 +13,7 @@
 (def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
 (s/def :u/uuid uuid?)
 (s/def :record/uuid uuid?)
-(s/def :u/username string?)
+(s/def :u/name string?)
 (s/def :u/email (s/with-gen
                   (s/and string? #(re-matches email-regex %))
                   #(sgen/fmap (fn [s]
@@ -21,7 +21,8 @@
                               (sgen/such-that (fn [s] (not= s ""))
                                               (sgen/string-alphanumeric)))))
 
-(s/def :u/user (s/keys :req [:u/uuid :u/username :u/email]))
+(s/def :u/user (s/keys :req [:u/uuid :u/name :u/email]))
+
 
 (def setof-ev-event
   #{:ev.c/delete-record :ev.u/create
@@ -41,13 +42,13 @@
                              #(assoc %  :ev/type :ev.c/delete-record)))
 
 (s/def :ev.u/create (with-gen-fmap
-                      (s/keys :req [:ev/type :u/uuid :u/email :u/username]
+                      (s/keys :req [:ev/type :u/uuid :u/email :u/name]
                               :opt [])
                       #(assoc %  :ev/type :ev.u/create)))
 
 (s/def :ev.u/update (with-gen-fmap
                       (s/keys :req [:ev/type]
-                              :opt [:u/email :u/username])
+                              :opt [:u/email :u/name])
                       #(assoc %  :ev/type :ev.u/update)))
 
 (s/def :ev.u/delete (with-gen-fmap
