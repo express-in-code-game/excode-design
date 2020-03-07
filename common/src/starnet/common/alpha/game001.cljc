@@ -78,6 +78,11 @@
                                :opt [])
                        #(assoc %  :ev/type :ev.g.u/leave)))
 
+(s/def :ev.g.u/update-role (with-gen-fmap
+                             (s/keys :req [:ev/type :u/uuid :g/uuid :g.r/role]
+                                     :opt [])
+                             #(assoc %  :ev/type :ev.g.u/update-role)))
+
 (s/def :ev.g.p/move-cape (with-gen-fmap
                            (s/keys :req [:ev/type :u/uuid :g/uuid
                                          :g.p/cape])
@@ -120,7 +125,7 @@
 
 (def setof-ev-g-event
   #{:ev.g.u/create :ev.g.u/delete :ev.c/delete-record
-    :ev.g.u/configure :ev.g.u/start :ev.g.u/join
+    :ev.g.u/configure :ev.g.u/start :ev.g.u/join :ev.g.u/update-role
     :ev.g.u/leave :ev.g.p/move-cape
     :ev.g.p/collect-tile-value :ev.g.a/finish-game})
 
@@ -200,6 +205,11 @@
                                  :g.r/host false
                                  :g.r/player nil}))
 
+(defmethod next-game-state [:ev.g.u/update-role]
+  [state k ev]
+  (update-in state [:g/roles]
+             update (ev :u/uuid) merge (:g.r/role ev)))
+
 (defmethod next-game-state [:ev.g.u/leave]
   [state k ev]
   (update-in state [:g/roles]
@@ -256,7 +266,7 @@
   (reset! state (next-game-state
                  @state
                  (:g/uuid @state)
-                 ev))
+                 (assoc ev :g/uuid (@state :g/uuid))))
   nil)
 
 (defn user-uuid
@@ -275,6 +285,14 @@
    (fn [ag [k v]]
      (assoc ag (user-alias k) v)) {} m))
 
+(defn make-role-update
+  [x]
+  (cond
+    (= x :observer) {:g.r/observer true}
+    (= x :host) {:g.r/host true}
+    (:g.r/player x) (merge x {:g.r/observer false})
+    :else x))
+
 (comment
   (s/explain (s/map-of keyword? (s/keys :req [:u/name :u/uuid])) users)
 
@@ -283,21 +301,28 @@
   (next-state {:ev/type :ev.g.u/create
                :u/uuid  (user-uuid :A)})
 
-  (doseq [al [:B :C :D :E]]
+  (doseq [alias [:B :C :D :E]]
     (next-state {:ev/type :ev.g.u/join
-                 :g/uuid (@state :g/uuid)
-                 :u/uuid (user-uuid al)}))
+                 :u/uuid (user-uuid alias)}))
 
   ; ? roles 
   (->> @state :g/roles to-aliaskey)
 
   (next-state {:ev/type :ev.g.u/leave
-               :g/uuid (@state :g/uuid)
                :u/uuid  (user-uuid :D)})
-  
+
   (next-state {:ev/type :ev.g.u/join
-               :g/uuid (@state :g/uuid)
                :u/uuid  (user-uuid :D)})
+
+  (next-state {:ev/type :ev.g.u/update-role
+               :u/uuid  (user-uuid :A)
+               :g.r/role (make-role-update {:g.r/player 0})})
+  
+  (next-state {:ev/type :ev.g.u/update-role
+               :u/uuid  (user-uuid :B)
+               :g.r/role (make-role-update {:g.r/player 1})})
+
+
 
 
 
