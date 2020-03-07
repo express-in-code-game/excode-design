@@ -31,6 +31,7 @@
       - https://clojure.org/guides/test_check_beginner
         - https://github.com/clojure/test.check/blob/master/README.md
         - https://github.com/clojure/test.check/blob/master/doc/intro.md
+        - https://github.com/clojure/test.check/blob/master/doc/generator-examples.md
       - https://blog.taylorwood.io/2018/10/15/clojure-spec-faq.html
     - fdef defmulti
       - https://clojuredocs.org/clojure.spec.alpha/fdef#example-5c4b535ce4b0ca44402ef629

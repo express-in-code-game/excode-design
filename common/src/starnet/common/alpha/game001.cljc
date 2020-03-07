@@ -317,14 +317,20 @@
   (next-state {:ev/type :ev.g.u/update-role
                :u/uuid  (user-uuid :A)
                :g.r/role (make-role-update {:g.r/player 0})})
-  
+
   (next-state {:ev/type :ev.g.u/update-role
                :u/uuid  (user-uuid :B)
                :g.r/role (make-role-update {:g.r/player 1})})
 
 
 
-
+  (gen/sample (gen/map gen/keyword gen/boolean) 5)
+  (gen/sample (gen/tuple gen/nat gen/boolean gen/ratio))
+  (gen/sample (gen/large-integer* {:min 0}))
+  (gen/sample (gen/large-integer* {:min 50 :max 100}))
+  (gen/sample (gen/large-integer* {:min 50 :max 100}))
+  (gen/sample
+   (gen/frequency [[5 gen/small-integer] [3 (gen/vector gen/small-integer)] [2 gen/boolean]]))
 
   ;;
   )
