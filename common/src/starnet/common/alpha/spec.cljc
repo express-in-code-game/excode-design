@@ -9,4 +9,6 @@
    #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethods-for-a-set]]
       :clj  [starnet.common.alpha.macros :refer [defmethods-for-a-set]])
    [starnet.common.alpha.game001]
-   [starnet.common.alpha.system]))
+   [starnet.common.alpha.system]
+   [starnet.common.alpha.game01]
+   ))
