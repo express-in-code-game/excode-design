@@ -332,5 +332,30 @@
   (gen/sample
    (gen/frequency [[5 gen/small-integer] [3 (gen/vector gen/small-integer)] [2 gen/boolean]]))
 
+  (def five-through-nine (gen/choose 5 9))
+  (gen/sample five-through-nine)
+
+  (def languages (gen/elements ["clojure" "haskell" "erlang" "scala" "python"]))
+  (gen/sample languages)
+  (def int-or-nil (gen/one-of [gen/small-integer (gen/return nil)]))
+  (gen/sample int-or-nil)
+  (def mostly-ints (gen/frequency [[9 gen/small-integer] [1 (gen/return nil)]]))
+  (->> (gen/sample mostly-ints 10000) (filter nil?) (count))
+
+  (def even-and-positive (gen/fmap #(* 2 %) gen/nat))
+  (gen/sample even-and-positive 20)
+
+  (def powers-of-two (gen/fmap #(int (Math/pow 2 %)) gen/nat))
+  (gen/sample powers-of-two)
+  (def sorted-vec (gen/fmap sort (gen/vector gen/small-integer)))
+  (gen/sample sorted-vec)
+
+  (def anything-but-five (gen/such-that #(not= % 5) gen/small-integer))
+  (gen/sample anything-but-five)
+
+  (def vector-and-elem (gen/bind (gen/not-empty (gen/vector gen/small-integer))
+                                 #(gen/tuple (gen/return %) (gen/elements %))))
+  (gen/sample vector-and-elem)
+
   ;;
   )
