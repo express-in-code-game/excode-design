@@ -9,6 +9,7 @@
    [starnet.common.alpha.spec]
    [starnet.app.alpha.spec]
    [starnet.common.logic-tests]
+   [starnet.common.alpha.game01]
 
    [starnet.app.alpha.repl]
    [starnet.app.alpha.tests]))
