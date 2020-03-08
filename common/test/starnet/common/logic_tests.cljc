@@ -209,25 +209,29 @@
     ([[:middle :onbox :middle :hasnot]
       :grasp
       [:middle :onbox :middle :has]])
-    ([[pos :onfloor pos has]
+    ([[pos :onfloor pos has?]
       :climb
-      [pos :onbox pos has]])
-    ([[pos1 :onfloor pos1 has]
+      [pos :onbox pos has?]])
+    ([[pos1 :onfloor pos1 has?]
       :push
-      [pos2 :onfloor pos2 has]])
-    ([[pos1 :onfloor box has]
+      [pos2 :onfloor pos2 has?]])
+    ([[pos1 :onfloor box has?]
       :walk
-      [pos2 :onfloor box has]]))
+      [pos2 :onfloor box has?]]))
+
+  (def start-state [:atdoor :onfloor :atwindow :hasnot])
+  (def end-state [:atwindow :onbox :atwindow :has])
 
   (defne cangeto [state out]
-    ([[_ _ _ :has] true])
-    ([_ _] (fresh [action next]
-                  (moveo state action next)
-                  (cangeto next out))))
+    ([[_ _ _ :has] out]
+     (== out true))
+    ([_ _]
+     (fresh [action next]
+            (moveo state action next)
+            (cangeto next out))))
 
   (run 1 [q]
-       (cangeto [:atdoor :onfloor :atwindow :hasnot] q)) ; (true)
-
+       (cangeto start-state q)) ; (true)
 
   ; https://github.com/clojure/core.logic/wiki/Examples#sudoku
 
@@ -272,7 +276,7 @@
 
   (doseq [x (partition 9 (first (sudokufd hints)))]
     (println x))
-  
+
   ;=>
 ; ((2 6 7 3 1 9 5 4 8
 ;   9 5 4 6 7 8 1 3 2 
@@ -337,5 +341,13 @@
                        [[x] :>> [[y] :>> [:apply y x]]] t)))
 
 
+  ;;
+  )
+
+
+(comment
+  
+  
+  
   ;;
   )
