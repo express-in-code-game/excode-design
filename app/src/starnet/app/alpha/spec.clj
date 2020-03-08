@@ -26,7 +26,7 @@
                :k (s/alt :uuid uuid? :string string?)
                :event :ev/event))
 
-(s/fdef starnet.app.alpha.streams/next-user
+(s/fdef starnet.app.alpha.streams/next-state-user
   :args (s/cat :state (s/nilable :u/user)
                :k uuid?
                :ev :ev.u/event)

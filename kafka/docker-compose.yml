@@ -1,8 +1,8 @@
 version: "3.7"
 
 networks:
-  starnet.kafka:
-    name: starnet.kafka
+  starnet:
+    name: starnet
 
 volumes:
   starnet.kafka:
@@ -32,7 +32,7 @@ services:
         volume:
           nocopy: true
     networks:
-      - starnet.kafka
+      - starnet
     # user: user
     # ports:
     #   - 2181:2181
@@ -54,7 +54,7 @@ services:
           nocopy: true
     # user: user
     networks:
-      - starnet.kafka
+      - starnet
     ports:
       - 9092:9092
     # command: tail -f /dev/null

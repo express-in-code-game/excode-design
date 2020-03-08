@@ -311,5 +311,11 @@
     "explorer.openEditors.visible": 0,
     "calva.highlight.enableBracketColors": true,
     "calva.sendAsyncOutputTo": "REPL Window",
-    "explorer.compactFolders": false
+    "explorer.compactFolders": false,
+    "calva.prettyPrintingOptions": {
+        "enabled": true,
+        "printEngine": "pprint",
+        "width": 120
+    },
+    "calva.showDocstringInParameterHelp": true
 }

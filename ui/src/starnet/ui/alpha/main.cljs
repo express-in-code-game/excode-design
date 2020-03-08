@@ -16,7 +16,6 @@
    [starnet.ui.alpha.repl]
    [starnet.ui.alpha.tests]
 
-
    [starnet.ui.alpha.evs :as evs]
    [starnet.ui.alpha.routes :as routes]
    [starnet.ui.alpha.config :as config]

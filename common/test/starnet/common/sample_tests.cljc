@@ -9,7 +9,7 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    [clojure.test.check.clojure-test :refer [defspec]]
-   [clojure.test :as test :refer [is run-all-tests testing deftest run-tests]]))
+   [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]))
 
 (comment
 
@@ -65,6 +65,8 @@
   (prop/for-all [v (gen/vector gen/int)]
                 (= (sort v) (sort (sort v)))))
 
+
+
 (deftest clojure-samples
   (testing "clojure clojure.walk"
     (let [v {:a 1 :b {:c 1}}
@@ -72,4 +74,37 @@
       (is (= vnext (walk/postwalk (fn [x]
                                     (if (number? x) (inc x)
                                         x)) v))))))
+
+(defprotocol P
+  (bar [this a] [this a b] "bar doc")
+  (baz [this x] "baz doc"))
+
+(extend-protocol P
+  clojure.lang.Keyword
+  (bar ([k a] [k a])
+    ([k a b] [k a b]))
+  (baz [k a] [k a])
+  clojure.lang.Symbol
+  (bar ([s a] [s a])
+    ([s a b] [s a b]))
+  (baz [s a] [s a]))
+
+(deftest protocol-1
+  (let [x (reify
+            P
+            (bar [_ a] [a])
+            (bar [_ a b] [a b])
+            (baz [_ x] [x]))]
+    (are [x y] (= x y)
+      (bar x 1) [1]
+      (bar x 3 4) [3 4]
+      (baz x 5) [5]
+      (bar :a 1) [:a 1]
+      (bar :a 1 2) [:a 1 2]
+      (baz :a 1) [:a 1]
+      (bar 'a 1) ['a 1]
+      (bar 'a 1 2) ['a 1 2]
+      (baz 'a 1) ['a 1])))
+
+
 

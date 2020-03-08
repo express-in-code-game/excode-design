@@ -1,4 +1,4 @@
-(ns starnet.common.alpha.system-test
+(ns starnet.common.alpha.user-test
   (:require
    [clojure.set :refer [subset?]]
    [clojure.repl :refer [doc]]
@@ -10,7 +10,7 @@
    [clojure.test.check.properties :as prop]
    [clojure.test.check.clojure-test :refer [defspec]]
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
-   [starnet.common.alpha.system :refer [setof-ev-event]]))
+   [starnet.common.alpha.spec :refer [setof-ev-event]]))
 
 
 (comment
@@ -32,8 +32,8 @@
 
 (deftest all-specchecks
   (testing "running spec.test/check via stest/enumerate-namespace"
-    (let [summary (-> #?(:clj (stest/enumerate-namespace 'starnet.common.alpha.system)
-                         :cljs 'starnet.common.alpha.system)
+    (let [summary (-> #?(:clj (stest/enumerate-namespace 'starnet.common.alpha.user)
+                         :cljs 'starnet.common.alpha.user)
                       (stest/check {:clojure.spec.test.check/opts {:num-tests 10}})
                       (stest/summarize-results))]
       (is (not (contains? summary :check-failed))))))

@@ -41,7 +41,30 @@
     - https://stackoverflow.com/questions/36639154/convert-java-util-date-to-what-java-time-type
   - regex
     - https://docs.oracle.com/javase/9/docs/api/java/util/regex/Pattern.html
-  - 
+  - logic
+    - http://programming-puzzler.blogspot.com/2013/03/logic-programming-is-overrated.html
+      - https://gist.github.com/Engelberg/5105806#file-logic1-clj
+      - https://gist.github.com/Engelberg/5105820#file-logic2-clj
+      - http://swannodette.github.io/2013/03/09/logic-programming-is-underrated
+      - https://gist.github.com/swannodette/5127144
+      - https://gist.github.com/swannodette/5127150
+    - https://github.com/clojure/core.logic
+    - https://github.com/clojure/core.logic/wiki
+    - https://github.com/clojure/core.logic/blob/master/src/test/clojure/clojure/core/logic
+    - https://github.com/clojure/core.logic/tree/master/src/test/cljs/cljs/core/logic
+    - https://github.com/clojure/core.logic/wiki/Features
+    - https://github.com/clojure/core.logic/wiki/Examples
+    - http://minikanren.org/
+    - https://blog.taylorwood.io/2018/05/10/clojure-logic.html
+    - https://jrheard.tumblr.com/post/43575891007/explorations-in-clojures-corelogic
+      - https://www.infoq.com/presentations/core-logic/#mainLogin/
+    - http://swannodette.github.io/
+    - https://web.archive.org/web/20130511050744/http://dosync.posterous.com/a-logic-programming-reading-list
+    - http://tgk.github.io/2012/08/finding-cliques-in-graphs-using-core-logic.html
+    - https://web.archive.org/web/20130511050720/http://dosync.posterous.com/know-your-bounds
+    - http://clojurelx.blogspot.com/2012/01/finite-state-machines-in-corelogic.html
+    - http://clojurelx.blogspot.com/2012/01/lx-in-corelogic-2-jumps-flexible.html
+    - http://gigasquidsoftware.com/chemical-computing/index.html
 
 - cljs
   - antd
