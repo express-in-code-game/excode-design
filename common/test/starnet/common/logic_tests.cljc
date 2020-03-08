@@ -10,21 +10,21 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    [clojure.test.check.clojure-test :refer [defspec]]
-   [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]
-
-
-   [clojure.core.logic  :exclude [is] :as l :refer [run* == and* membero
-                                                    fresh conde succeed
-                                                    conso resto !=]]
+   
    [clojure.core.logic.nominal :exclude [fresh hash] :as nom]
+   [clojure.core.logic :exclude [is] :as l :refer [run* == and* membero
+                                                    fresh conde succeed
+                                                    conso resto != defne tabled]]
    [clojure.core.logic.pldb :as pldb :refer [db with-db db-rel db-fact]]
    [clojure.core.logic.fd  :as fd]
-   [clojure.core.logic.unifier :as u]))
+   [clojure.core.logic.unifier :as u]
+   [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]
+   ))
 
 (comment
   
   (run-tests)
-  
+
   ;;
   )
 
@@ -111,12 +111,6 @@
                    (membero a [1 2 3])
                    (membero q [3 4 5])
                    (== a q))) '(3)))
-  (testing "nominal logic examples"
-    (are [x y] (= x y)
-      (run* [q] (nom/fresh [a] (== a a))) '(_0)
-      (run* [q] (fresh [x] (nom/fresh [a] (== a x))))  '(_0)
-      (run* [q] (nom/fresh [a] (== a 5))) '()
-      (run* [q] (nom/fresh [a b] (== a b))) '()))
   (testing "pldb examples"
     (let [_ (db-rel person p)
           _ (db-rel fruit f)
@@ -164,9 +158,7 @@
       (run* [q]
             (fresh [x y]
                    (!= [1 x] [y 2])
-                   (== q [x y]))) '(([_0 _1] :- (!= (_1 1) (_0 2))))
-      )
-    )
+                   (== q [x y]))) '(([_0 _1] :- (!= (_1 1) (_0 2))))))
   (testing "contraint logic programming (CLP finite domains)"
     (are [x y] (= x y)
       (run* [q]
@@ -193,127 +185,19 @@
                    (fd/in x y (fd/interval 1 10))
                    (fd/+ x y 10)
                    (fd/distinct [x y])
-                   (== q [x y]))) '([1 9] [2 8] [3 7] [4 6] [6 4] [7 3] [8 2] [9 1])
-      ))
-  )
+                   (== q [x y]))) '([1 9] [2 8] [3 7] [4 6] [6 4] [7 3] [8 2] [9 1])))
 
-
-(comment
-
-  ;; CLP (tree)
-
-  (run* [q]
-        (!= q 1))
-
-  (run* [q]
-        (fresh [x y]
-               (!= [1 x] [y 2])
-               (== q [x y])))
-
-
-  ;; CLP (FD) finite domains
-
-  (run* [q]
-        (fd/in q (fd/interval 1 5)))
-
-  (run* [q]
-        (fresh [x y]
-               (fd/in x y (fd/interval 1 10))
-               (fd/+ x y 10)
-               (== q [x y])))
-
-  (run* [q]
-        (fresh [x y]
-               (fd/in x y (fd/interval 0 9))
-               (fd/eq
-                (= (+ x y) 9)
-                (= (+ (* x 2) (* y 4)) 24))
-               (== q [x y])))
-
-  (run* [q]
-        (fresh [x y]
-               (fd/in x y (fd/interval 1 10))
-               (fd/+ x y 10)
-               (fd/distinct [x y]) ;; [5 5] no longer in the set of returned solutions
-               (== q [x y])))
-
-  ;; tabling
-
-  (defne arco [x y]
-    ([:a :b])
-    ([:b :a])
-    ([:b :d]))
-
-  (def patho
-    (tabled [x y]
-            (conde
-             [(arco x y)]
-             [(fresh [z]
-                     (arco x z)
-                     (patho z y))])))
-
-   ;; (:b :a :d)
-  (run* [q] (patho :a q))
-
-
-  ;; nominal
-
-
-  (defn substo [e new a out]
-    (conde
-     [(== ['var a] e) (== new out)]
-     [(fresh [y]
-             (== ['var y] e)
-             (== ['var y] out)
-             (nom/hash a y))]
-     [(fresh [rator ratorres rand randres]
-             (== ['app rator rand] e)
-             (== ['app ratorres randres] out)
-             (substo rator new a ratorres)
-             (substo rand new a randres))]
-     [(fresh [body bodyres]
-             (nom/fresh [c]
-                        (== ['lam (nom/tie c body)] e)
-                        (== ['lam (nom/tie c bodyres)] out)
-                        (nom/hash c a)
-                        (nom/hash c new)
-                        (substo body new a bodyres)))]))
-
-  (run* [q]
-        (nom/fresh [a b]
-                   (substo ['lam (nom/tie a ['app ['var a] ['var b]])]
-                           ['var b] a q)))
-;; => [['lam (nom/tie 'a_0 '(app (var a_0) (var a_1)))]]
-
-  (run* [q]
-        (nom/fresh [a b]
-                   (substo ['lam (nom/tie a ['var b])]
-                           ['var a]
-                           b
-                           q)))
-;; => [['lam (nom/tie 'a_0 '(var a_1))]]
-
-
-  ;; definite clause grammars
-  ((def-->e verb [v]
-     ([[:v 'eats]] '[eats]))
-
-   (def-->e noun [n]
-     ([[:n 'bat]] '[bat])
-     ([[:n 'cat]] '[cat]))
-
-   (def-->e det [d]
-     ([[:d 'the]] '[the])
-     ([[:d 'a]] '[a]))
-
-   (def-->e noun-phrase [n]
-     ([[:np d n]] (det d) (noun n)))
-
-   (def-->e verb-phrase [n]
-     ([[:vp v np]] (verb v) (noun-phrase np)))
-
-   (def-->e sentence [s]
-     ([[:s np vp]] (noun-phrase np) (verb-phrase vp)))
-
-   (run* [parse-tree]
-         (sentence parse-tree '[the bat eats a cat] []))))
+  (testing "tabling"
+    (let [_ (defne arco [x y]
+              ([:a :b])
+              ([:b :a])
+              ([:b :d]))
+          _ (def patho
+              (tabled [x y]
+                      (conde
+                       [(arco x y)]
+                       [(fresh [z]
+                               (arco x z)
+                               (patho z y))])))]
+      (are [x y] (= x y)
+        (run* [q] (patho :a q)) '(:b :a :d)))))
