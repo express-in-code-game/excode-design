@@ -1,4 +1,4 @@
-(ns starnet.app.clojure.spec
+(ns starnet.app.clojure-samples.spec
   (:require
    [clojure.pprint :as pp]
    [clojure.repl :refer [doc]]

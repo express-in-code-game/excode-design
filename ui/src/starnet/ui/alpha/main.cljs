@@ -15,6 +15,7 @@
    [starnet.ui.alpha.spec]
    [starnet.ui.alpha.repl]
    [starnet.ui.alpha.tests]
+   [starnet.common.clojure-samples.logic]
 
 
    [starnet.ui.alpha.evs :as evs]

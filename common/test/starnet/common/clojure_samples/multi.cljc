@@ -1,4 +1,4 @@
-(ns starnet.app.clojure.multi
+(ns starnet.app.clojure-samples.multi
   (:require
    [clojure.repl :refer [doc]]
    [clojure.spec.alpha :as s]

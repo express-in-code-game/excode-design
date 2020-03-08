@@ -8,7 +8,8 @@
 
    [starnet.common.alpha.spec]
    [starnet.app.alpha.spec]
-   
+   [starnet.common.clojure-samples.logic]
+
    [starnet.app.alpha.repl]
    [starnet.app.alpha.tests]))
 
