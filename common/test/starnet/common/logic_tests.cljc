@@ -183,7 +183,8 @@
                    (fd/in x y (fd/interval 1 10))
                    (fd/+ x y 10)
                    (fd/distinct [x y])
-                   (== q [x y]))) '([1 9] [2 8] [3 7] [4 6] [6 4] [7 3] [8 2] [9 1])))
+                   (== q [x y]))) '([1 9] [2 8] [3 7] [4 6] [6 4] [7 3] [8 2] [9 1])
+      (fd/-intersection (fd/interval 0 20) (fd/interval 10 30)) (fd/interval 10 20)))
 
   (testing "tabling"
     (let [_ (defne arco [x y]
@@ -198,7 +199,10 @@
                                (arco x z)
                                (patho z y))])))]
       (are [x y] (= x y)
-        (run* [q] (patho :a q)) '(:b :a :d)))))
+        (run* [q] (patho :a q)) '(:b :a :d))))
+  
+  
+  )
 
 
 (comment
@@ -346,8 +350,66 @@
 
 
 (comment
+
+  fd/domain
+  fd/interval
+  fd/dom
+  fd/in
+
+  (fd/-intersection (fd/interval 1 6) 1)
+  (fd/to-vals (fd/-intersection (fd/interval 1 6) (fd/interval 5 9)))
+
+  ; https://github.com/clojure/core.logic/blob/master/src/test/clojure/clojure/core/logic/tests.clj#L2205
+  (run* [q]
+        (fd/dom q (fd/interval 1 100))
+        (fd/dom q (fd/interval 30 60))
+        (fd/dom q (fd/interval 50 55))
+        #_(== q 51))
+
+  ; https://github.com/clojure/core.logic/blob/master/src/test/clojure/clojure/core/logic/tests.clj#L2604
+  (deftest test-distinct
+    (is (= (into #{}
+                 (run* [q]
+                       (fresh [x y z]
+                              (fd/in x y z (fd/interval 1 3))
+                              (fd/distinct [x y z])
+                              (== q [x y z]))))
+           (into #{} '([1 2 3] [1 3 2] [2 1 3] [2 3 1] [3 1 2] [3 2 1])))))
+
+  (deftest test-fd-<-1
+    (is (= (into #{}
+                 (run* [q]
+                       (fresh [a b c]
+                              (fd/in a b c (fd/interval 1 3))
+                              (fd/< a b) (fd/< b c)
+                              (== q [a b c]))))
+           (into #{} '([1 2 3])))))
+
+  (time (->
+         (run* [q]
+               (fresh [a b c]
+                      (fd/in a b c (fd/interval 1 100))
+                      (fd/< a b) (fd/< b c)
+                      (== q [a b c])))
+         (count)))
+
+
+  (is (= (run* [q]
+               (== q 1)
+               (predc q number? `number?))
+         '(1)))
+  (is (= (run* [q]
+               (predc q number? `number?)
+               (== q "foo"))
+         ()))
   
-  
-  
+  (is (= (run* [q]
+               (fresh [x]
+                      (featurec x {:foo q})
+                      (== x {:foo 1})))
+         '(1)))
+
+
   ;;
   )
+
