@@ -1,4 +1,5 @@
 (ns starnet.common.alpha.game
+  (:refer-clojure :exclude [==])
   (:require
    [clojure.repl :refer [doc]]
    [clojure.spec.alpha :as s]
@@ -8,7 +9,14 @@
    [clojure.test.check.properties :as prop]
    [starnet.common.alpha.core :refer [make-inst with-gen-fmap]]
    #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethods-for-a-set]]
-      :clj  [starnet.common.alpha.macros :refer [defmethods-for-a-set]])))
+      :clj  [starnet.common.alpha.macros :refer [defmethods-for-a-set]])
+
+   [clojure.core.logic.nominal :exclude [fresh hash] :as nom]
+   [clojure.core.logic :exclude [is] :refer :all]
+   [clojure.core.logic.pldb :as pldb :refer [db with-db db-rel db-fact]]
+   [clojure.core.logic.fd  :as fd]
+   [clojure.core.logic.unifier :as u]
+   [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]))
 
 (s/def :g.e/uuid uuid?)
 (s/def :g.e/pos (s/tuple int? int?))
@@ -396,6 +404,11 @@
   (gen/generate (gen/list-distinct (gen/elements tags) {:num-elements 3}))
   (gen/generate (s/gen :g.e/tags))
   (gen/generate (s/gen :g.e/cape))
+
+  (= (fd/-intersection (fd/interval 0 20) (fd/interval 10 30)) (fd/interval 10 20))
+  
+  
+  
 
   ;;
   )
