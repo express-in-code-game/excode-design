@@ -440,15 +440,6 @@
                 (== q [x y])))
    (count))
 
-  (let [x (lvar (gensym "lvar_"))
-        y (lvar (gensym "lvar_"))]
-    (->
-     (run* [q]
-           (apply fd/in)
-           (fd/in x y (fd/interval 1 64))
-           (== q [x y]))
-     (count)))
-
   (= (fd/-drop-before (fd/multi-interval 2 4) (fd/-lb 3))
      4)
 
@@ -507,7 +498,31 @@
                                           (get-in entities [:cape :knowledge :max-start])))})
 
   (def c1 (gen-cape))
+
+  (run 5 [q]
+       (fresh [a b c d]
+              (== a 5)
+              (fd/in a b c d (fd/interval 1 100))
+              (fd/in b (fd/interval 20 80))
+              (fd/in c (fd/interval 50 60))
+              (fd/in d (fd/interval 10 30))
+              #_(fd/eq
+                 (= (- b c) 20)
+                 (= (+ (* c 2) (* d 4)) 24))
+              (== q {:a a
+                     :b b
+                     :c c
+                     :d d})))
+
+  (run 10 [q]
+       (fresh [a ]
+              (fd/in a (fd/interval 1 5))
+              (== q {:a a})))
   
+  
+
+
+
 
 
 
