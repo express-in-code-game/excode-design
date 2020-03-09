@@ -449,7 +449,47 @@
            (== q [x y]))
      (count)))
 
+  (= (fd/-drop-before (fd/multi-interval 2 4) (fd/-lb 3))
+     4)
+
+  (= (fd/-keep-before (fd/multi-interval 2 4) (fd/-lb 3))
+     2)
+
+  (fd/-keep-before (fd/interval 0 100) (fd/-lb 50))
+  (fd/-drop-before (fd/interval 0 100) (fd/-lb 50))
+  (fd/-difference 1 2)
+
+  (fd/multi-interval  (fd/interval 0 100) (fd/interval 10 30))
+  (= (fd/-difference (fd/interval 0 100) (fd/interval 10 30))
+     (fd/multi-interval  (fd/interval 0 9) (fd/interval 31 100)))
+  (= (fd/-intersection (fd/interval 0 100) (fd/interval 10 30))
+     (fd/interval 10 30))
+
+
+  (def entities
+    {:database {:energy {:op '- :min 30 :max 50}
+                :knowledge {:op '+ :min 20 :max 30}}
+     :fruit-tree {:energy {:op '+ :min 60 :max 80}
+                  :vision {:op '+ :min 30 :max 50}}
+     :update-center {:resolve {:op '+ :min 20 :max 50}
+                     :vision {:op '+ :min 10 :max 50}
+                     :interface {:op '+ :min 20 :max 60}
+                     :energy {:op '- :min 20 :max 60}}
+     :nanite-lab {:range {:op '+ :min 20 :max 80}
+                  :fields {:op '+ :min 10 :max 30}
+                  :energy {:op '- :min 20 :max 40}}
+     :missiondroid {:range {:min 0 :max 100}
+                    :fields {:min 0 :max 100}
+                    :interface {:min 0 :max 100}}
+     :cape {:energy {:min 0 :max 100}
+            :resolve {:min 0 :max 100}
+            :vision {:min 0 :max 100}
+            :knowledge {:min 0 :max 100}}})
+
+
   
+
+
 
 
 
