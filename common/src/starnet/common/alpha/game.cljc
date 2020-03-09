@@ -518,11 +518,13 @@
        (fresh [a ]
               (fd/in a (fd/interval 1 5))
               (== q {:a a})))
+  ;;
+  )
+
+
+(comment
+
   
-  
-
-
-
 
 
 
