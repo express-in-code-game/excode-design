@@ -468,16 +468,20 @@
 
   (def entities
     {:database {:energy {:op '- :min 30 :max 50}
-                :knowledge {:op '+ :min 20 :max 30}}
+                :knowledge {:op '+ :min 20 :max 30}
+                :available [even?]}
      :fruit-tree {:energy {:op '+ :min 60 :max 80}
-                  :vision {:op '+ :min 30 :max 50}}
+                  :vision {:op '+ :min 30 :max 50}
+                  :available [#(not= 2)]}
      :update-center {:resolve {:op '+ :min 20 :max 50}
                      :vision {:op '+ :min 10 :max 50}
                      :interface {:op '+ :min 20 :max 60}
-                     :energy {:op '- :min 20 :max 60}}
+                     :energy {:op '- :min 20 :max 60}
+                     :available [odd?]}
      :nanite-lab {:range {:op '+ :min 20 :max 80}
                   :fields {:op '+ :min 10 :max 30}
-                  :energy {:op '- :min 20 :max 40}}
+                  :energy {:op '- :min 20 :max 40}
+                  :available [#{4 5 6 7} 'after-update-center]}
      :missiondroid {:range {:min 0 :max 100}
                     :fields {:min 0 :max 100}
                     :interface {:min 0 :max 100}}
