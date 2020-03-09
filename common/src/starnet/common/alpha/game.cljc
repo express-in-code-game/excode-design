@@ -1,5 +1,4 @@
 (ns starnet.common.alpha.game
-  (:refer-clojure :exclude [==])
   (:require
    [clojure.repl :refer [doc]]
    [clojure.spec.alpha :as s]
@@ -12,7 +11,7 @@
       :clj  [starnet.common.alpha.macros :refer [defmethods-for-a-set]])
 
    [clojure.core.logic.nominal :exclude [fresh hash] :as nom]
-   [clojure.core.logic :exclude [is] :as l :refer :all]
+   [clojure.core.logic :exclude [is] :as l :rename {== ?==} :refer :all]
    [clojure.core.logic.pldb :as pldb :refer [db with-db db-rel db-fact]]
    [clojure.core.logic.fd  :as fd]
    [clojure.core.logic.unifier :as u]
@@ -501,7 +500,7 @@
 
   (run 5 [q]
        (fresh [a b c d]
-              (== a 5)
+              (?== a 5)
               (fd/in a b c d (fd/interval 1 100))
               (fd/in b (fd/interval 20 80))
               (fd/in c (fd/interval 50 60))
@@ -509,15 +508,15 @@
               #_(fd/eq
                  (= (- b c) 20)
                  (= (+ (* c 2) (* d 4)) 24))
-              (== q {:a a
-                     :b b
-                     :c c
-                     :d d})))
+              (?== q {:a a
+                      :b b
+                      :c c
+                      :d d})))
 
   (run 10 [q]
-       (fresh [a ]
+       (fresh [a]
               (fd/in a (fd/interval 1 5))
-              (== q {:a a})))
+              (?== q {:a a})))
   ;;
   )
 
