@@ -465,6 +465,11 @@
   (= (fd/-intersection (fd/interval 0 100) (fd/interval 10 30))
      (fd/interval 10 30))
 
+  (def i (fd/interval 1 5))
+  (.-lb i)
+  (.-ub i)
+  (fd/-lb i)
+  (fd/-ub i)
 
   (def entities
     {:database {:energy {:op '- :min 30 :max 50}
