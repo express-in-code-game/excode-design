@@ -490,16 +490,24 @@
      :missiondroid {:range {:min 0 :max 100}
                     :fields {:min 0 :max 100}
                     :interface {:min 0 :max 100}}
-     :cape {:energy {:min 0 :max 100}
-            :resolve {:min 0 :max 100}
-            :vision {:min 0 :max 100}
-            :knowledge {:min 0 :max 100}}})
+     :cape {:energy {:min 0 :max 100 :min-start 50 :max-start 70}
+            :resolve {:min 0 :max 100 :min-start 80 :max-start 90}
+            :vision {:min 0 :max 100  :min-start 80 :max-start 100}
+            :knowledge {:min 0 :max 100 :min-start 20 :max-start 70}}})
 
+  (defn gen-cape
+    []
+    {:energy (gen/generate (gen/choose (get-in entities [:cape :energy :min-start])
+                                       (get-in entities [:cape :energy :max-start])))
+     :resolve (gen/generate (gen/choose (get-in entities [:cape :resolve :min-start])
+                                        (get-in entities [:cape :resolve :max-start])))
+     :vision (gen/generate (gen/choose (get-in entities [:cape :vision :min-start])
+                                       (get-in entities [:cape :vision :max-start])))
+     :knowledge (gen/generate (gen/choose (get-in entities [:cape :knowledge :min-start])
+                                          (get-in entities [:cape :knowledge :max-start])))})
 
+  (def c1 (gen-cape))
   
-
-
-
 
 
 
