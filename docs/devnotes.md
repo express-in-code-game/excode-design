@@ -41,7 +41,14 @@
     - https://stackoverflow.com/questions/36639154/convert-java-util-date-to-what-java-time-type
   - regex
     - https://docs.oracle.com/javase/9/docs/api/java/util/regex/Pattern.html
-  - 
+  - logic
+    - https://github.com/clojure/core.logic
+    - https://github.com/clojure/core.logic/wiki
+    - https://github.com/clojure/core.logic/blob/master/src/test/clojure/clojure/core/logic
+    - https://github.com/clojure/core.logic/tree/master/src/test/cljs/cljs/core/logic
+    - https://github.com/clojure/core.logic/wiki/Features
+    - https://github.com/clojure/core.logic/wiki/Examples
+    - https://blog.taylorwood.io/2018/05/10/clojure-logic.html
 
 - cljs
   - antd

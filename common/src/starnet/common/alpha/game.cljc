@@ -12,7 +12,7 @@
       :clj  [starnet.common.alpha.macros :refer [defmethods-for-a-set]])
 
    [clojure.core.logic.nominal :exclude [fresh hash] :as nom]
-   [clojure.core.logic :exclude [is] :refer :all]
+   [clojure.core.logic :exclude [is] :as l :refer :all]
    [clojure.core.logic.pldb :as pldb :refer [db with-db db-rel db-fact]]
    [clojure.core.logic.fd  :as fd]
    [clojure.core.logic.unifier :as u]
@@ -432,6 +432,26 @@
                (fd/distinct [x y z])
                (== z 15)
                (== q [x y z])))
+
+  (->>
+   (run* [q]
+         (fresh [x y]
+                (fd/in x y (fd/interval 1 64))
+                (== q [x y])))
+   (count))
+
+  (let [x (lvar (gensym "lvar_"))
+        y (lvar (gensym "lvar_"))]
+    (->
+     (run* [q]
+           (apply fd/in)
+           (fd/in x y (fd/interval 1 64))
+           (== q [x y]))
+     (count)))
+
+  
+
+
 
 
   ;;
