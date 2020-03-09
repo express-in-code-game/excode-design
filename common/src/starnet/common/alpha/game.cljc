@@ -406,9 +406,33 @@
   (gen/generate (s/gen :g.e/cape))
 
   (= (fd/-intersection (fd/interval 0 20) (fd/interval 10 30)) (fd/interval 10 20))
-  
-  
-  
+
+  (= (into #{}
+           (run* [q]
+                 (fresh [x y z]
+                        (fd/in x y z (fd/interval 1 10))
+                        (fd/+ x y z)
+                        (fd/< x y)
+                        (== z 10)
+                        (== q [x y z]))))
+     (into #{} '([1 9 10] [2 8 10] [3 7 10] [4 6 10])))
+
+  (= (into #{}
+           (run* [q]
+                 (fresh [x y z]
+                        (fd/in x y z (fd/interval 1 3))
+                        (fd/distinct [x y z])
+                        (== q [x y z]))))
+     (into #{} '([1 2 3] [1 3 2] [2 1 3] [2 3 1] [3 1 2] [3 2 1])))
+
+  (run* [q]
+        (fresh [x y z]
+               (fd/in x y z (fd/interval 1 20))
+               (fd/+ x y z)
+               (fd/distinct [x y z])
+               (== z 15)
+               (== q [x y z])))
+
 
   ;;
   )
