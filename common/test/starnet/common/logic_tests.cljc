@@ -611,6 +611,12 @@
 
   (type (fd/bounds (fd/interval 1 5)))
 
+  (run* [q]
+        (fresh [x]
+               (l/or*
+                [(fd/in x (fd/interval 1 10))
+                 (fd/in x (fd/interval  20 30))])
+               (== q x)))
   
 
   ;;
