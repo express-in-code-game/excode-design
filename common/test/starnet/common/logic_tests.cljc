@@ -589,7 +589,7 @@
                (project [a b]
                         (fd/in q (fd/interval a b)))))
 
-  
+
   (def a (first (run* [q]
                       (fresh [a b]
                              (== a 1)
@@ -597,6 +597,19 @@
                              (project [a b]
                                       (== q `(fd/interval ~a ~b)))))))
   (def b (eval a))
+
+
+  #interval [[1 2] [5] [10 100]]
+
+  (def x (doall (run* [q]
+                      (fd/in q (fd/interval 1 1000000)))))
+
+  (def y (doall (range 0 1000000)))
+
+  ; possible for intervals to first class primitives in logic?
+  ; so the query above returns <interval 0 100000> instead of unifying/walking
+
+  
 
   ;;
   )
