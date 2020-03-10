@@ -12,7 +12,7 @@
    [clojure.test.check.clojure-test :refer [defspec]]
    
    [clojure.core.logic.nominal :exclude [fresh hash] :as nom]
-   [clojure.core.logic :exclude [is] :refer :all]
+   [clojure.core.logic :exclude [is] :refer :all :as l]
    [clojure.core.logic.protocols :refer :all]
    [clojure.core.logic.pldb :as pldb :refer [db with-db db-rel db-fact]]
    [clojure.core.logic.fd  :as fd]
@@ -506,7 +506,52 @@
                (== q {:path [a b c d]
                       :entities {}})))
 
+  predc
+  conda
+  project
+  permuteo
 
+  (defnc evenc
+    [x]
+    (> x 5))
+
+  (defnc c-2
+    [x]
+    (< x 15))
+
+  (defn rule-1
+    [state dom]
+    (fresh [a b]
+           (fd/in a b dom)
+           (c-1 a)
+           (fd/< a b)
+           (== state {:a a
+                      :b b})))
+
+  (defn rule-2
+    [state dom]
+    (fresh [a b]
+           (fd/in a b dom)
+           (c-2 b)
+           (== state {:a a
+                      :b b})))
+
+  (defn rule-3
+    [state dom]
+    (fresh [a b]
+           (fd/in a b dom)
+           (fd/eq
+            (= (* a 2) b))
+           (== state {:a a
+                      :b b})))
+
+  (let [dom (fd/interval 0 10)]
+    (run 10 [q]
+         (rule-1 q dom)
+         (rule-2 q dom)
+         (rule-3 q dom)))
+  
+  
 
 
   ;;
