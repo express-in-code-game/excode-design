@@ -10,15 +10,15 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    [clojure.test.check.clojure-test :refer [defspec]]
-   
+
    [clojure.core.logic.nominal :exclude [fresh hash] :as nom]
    [clojure.core.logic :exclude [is] :refer :all :as l]
    [clojure.core.logic.protocols :refer :all]
    [clojure.core.logic.pldb :as pldb :refer [db with-db db-rel db-fact]]
    [clojure.core.logic.fd  :as fd]
    [clojure.core.logic.unifier :as u]
-   [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]
-   ))
+   [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]])
+  #?(:clj (:import clojure.core.logic.fd.IntervalFD)))
 
 (comment
   
@@ -606,8 +606,10 @@
 
   (def y (doall (range 0 1000000)))
 
-  ; possible for intervals to first class primitives in logic?
-  ; so the query above returns <interval 0 100000> instead of unifying/walking
+  ; possible for intervals to be first class primitives in logic?
+  ; so the query above would return <interval 0 100000> instead of unifying/walking
+
+  (type (fd/bounds (fd/interval 1 5)))
 
   
 
