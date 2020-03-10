@@ -617,7 +617,63 @@
                 [(fd/in x (fd/interval 1 10))
                  (fd/in x (fd/interval  20 30))])
                (== q x)))
-  
 
+
+
+
+
+
+
+  ;;
+  )
+  
+  (defn dot-prod
+    "Retruns the sum of products of corresponding els"
+    [a b]
+    (reduce + 0 (map * a b)))
+  
+  (defn vec-norm
+    "Returns the  Euclidean norm (length or magnitude) of a vector.
+   L2 norm"
+    [a]
+  ; (bigdec (Math/sqrt (dot-prod a a)))
+    (Math/sqrt (dot-prod a a)))
+
+  (defn elwise-subtract
+    "Returns a vector (mx), subtracts a,b element-wise "
+    [a b]
+    (mapv - a b))
+
+  (defn vec-dist
+    "Returns the distance between two vecs (points in n dimension)"
+    [a b]
+    (vec-norm (elwise-subtract a b)))
+
+(comment
+
+  (def positions (->
+                  (mapcat (fn [x]
+                            (map (fn [y]
+                                   [y x]) (range 8))) (range 8))))
+  (doseq [p (partition 8 positions)]
+    (println p))
+
+  (def radius 1.5)
+  (def center [2 3])
+  
+  (vec-dist [2 3] [3 4])
+
+  (defnc within-radius
+    [x y c r]
+    (< (vec-dist [x y] c) radius))
+
+  (->
+   (run* [q]
+         (fresh [x y]
+                (fd/in x y (fd/interval 0 7))
+                (within-radius x y center radius)
+                (== q [x y])))
+   (count))
+  
   ;;
   )
