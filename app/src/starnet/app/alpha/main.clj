@@ -8,8 +8,7 @@
 
    [starnet.common.alpha.spec]
    [starnet.app.alpha.spec]
-   [starnet.common.logic-samples.stuffo]
-   [starnet.common.logic-samples.game]
+   [starnet.common.pad.all]
 
    [starnet.app.alpha.repl]
    [starnet.app.alpha.tests]))

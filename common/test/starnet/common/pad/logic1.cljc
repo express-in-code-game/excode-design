@@ -1,4 +1,4 @@
-(ns starnet.common.logic-samples.stuffo
+(ns starnet.common.pad.logic1
   (:refer-clojure :exclude [==])
   (:require
    [clojure.set :refer [subset?]]

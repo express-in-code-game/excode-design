@@ -1,4 +1,4 @@
-(ns starnet.app.clojure-samples.spec
+(ns starnet.common.pad.spec1
   (:require
    [clojure.pprint :as pp]
    [clojure.repl :refer [doc]]

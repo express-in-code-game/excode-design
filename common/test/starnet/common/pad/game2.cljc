@@ -1,4 +1,4 @@
-(ns starnet.common.logic-samples.game
+(ns starnet.common.pad.game2
   (:require
    [clojure.set :refer [subset?]]
    [clojure.walk :as walk]

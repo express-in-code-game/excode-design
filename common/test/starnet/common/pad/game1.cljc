@@ -1,4 +1,4 @@
-(ns starnet.common.alpha.game
+(ns starnet.common.pad.game1
   (:require
    [clojure.repl :refer [doc]]
    [clojure.spec.alpha :as s]
@@ -253,6 +253,157 @@
 
 
   (stest/check `next-game-state)
+
+  ;;
+  )
+
+(def users {:A {:u/name "mighty A"
+                :u/alias :A
+                :u/uuid  (gen/generate gen/uuid)}
+            :B {:u/name "curious B"
+                :u/alias :B
+                :u/uuid  (gen/generate gen/uuid)}
+            :C {:u/name "new C"
+                :u/alias :C
+                :u/uuid  (gen/generate gen/uuid)}
+            :D {:u/name "D the seeker"
+                :u/alias :D
+                :u/uuid  (gen/generate gen/uuid)}
+            :E {:u/name "E'vo"
+                :u/alias :E
+                :u/uuid  (gen/generate gen/uuid)}})
+
+(def state (atom (make-game-state)))
+
+(defn next-state
+  [ev]
+  (reset! state (next-game-state
+                 @state
+                 (:g/uuid @state)
+                 (assoc ev :g/uuid (@state :g/uuid))))
+  nil)
+
+(defn user-uuid
+  [u-alias]
+  (-> users u-alias :u/uuid))
+
+(defn user-alias
+  [u-uuid]
+  (some (fn [[k {:u/keys [uuid alias]}]]
+          (when (= uuid u-uuid) alias))
+        users))
+
+(defn to-aliaskey
+  [m]
+  (reduce
+   (fn [ag [k v]]
+     (assoc ag (user-alias k) v)) {} m))
+
+(defn make-role-update
+  [x]
+  (cond
+    (= x :observer) {:g.r/observer true}
+    (= x :host) {:g.r/host true}
+    (:g.r/player x) (merge x {:g.r/observer false})
+    :else x))
+
+(comment
+  (s/explain (s/map-of keyword? (s/keys :req [:u/name :u/uuid])) users)
+
+  @state
+
+  (next-state {:ev/type :ev.g.u/create
+               :u/uuid  (user-uuid :A)})
+
+  (doseq [alias [:B :C :D :E]]
+    (next-state {:ev/type :ev.g.u/join
+                 :u/uuid (user-uuid alias)}))
+
+  ; ? roles 
+  (->> @state :g/roles to-aliaskey)
+
+  (next-state {:ev/type :ev.g.u/leave
+               :u/uuid  (user-uuid :D)})
+
+  (next-state {:ev/type :ev.g.u/join
+               :u/uuid  (user-uuid :D)})
+
+  (next-state {:ev/type :ev.g.u/update-role
+               :u/uuid  (user-uuid :A)
+               :g.r/role (make-role-update {:g.r/player 0})})
+
+  (next-state {:ev/type :ev.g.u/update-role
+               :u/uuid  (user-uuid :B)
+               :g.r/role (make-role-update {:g.r/player 1})})
+
+  ;;
+  )
+
+(comment
+
+  (gen/sample (gen/map gen/keyword gen/boolean) 5)
+  (gen/sample (gen/tuple gen/nat gen/boolean gen/ratio))
+  (gen/sample (gen/large-integer* {:min 0}))
+  (gen/sample (gen/large-integer* {:min 50 :max 100}))
+  (gen/sample (gen/large-integer* {:min 50 :max 100}))
+  (gen/sample
+   (gen/frequency [[5 gen/small-integer] [3 (gen/vector gen/small-integer)] [2 gen/boolean]]))
+
+  (def five-through-nine (gen/choose 5 9))
+  (gen/sample five-through-nine)
+
+  (def languages (gen/elements ["clojure" "haskell" "erlang" "scala" "python"]))
+  (gen/sample languages)
+  (def int-or-nil (gen/one-of [gen/small-integer (gen/return nil)]))
+  (gen/sample int-or-nil)
+  (def mostly-ints (gen/frequency [[9 gen/small-integer] [1 (gen/return nil)]]))
+  (->> (gen/sample mostly-ints 10000) (filter nil?) (count))
+
+  (def even-and-positive (gen/fmap #(* 2 %) gen/nat))
+  (gen/sample even-and-positive 20)
+
+  (def powers-of-two (gen/fmap #(int (Math/pow 2 %)) gen/nat))
+  (gen/sample powers-of-two)
+  (def sorted-vec (gen/fmap sort (gen/vector gen/small-integer)))
+  (gen/sample sorted-vec)
+
+  (def anything-but-five (gen/such-that #(not= % 5) gen/small-integer))
+  (gen/sample anything-but-five)
+
+  (def vector-and-elem (gen/bind (gen/not-empty (gen/vector gen/small-integer))
+                                 #(gen/tuple (gen/return %) (gen/elements %))))
+  (gen/sample vector-and-elem)
+
+  (gen/sample (gen/elements [:foo :bar :baz]))
+  (gen/sample (gen/elements #{:foo :bar :baz}) 3)
+
+  ;;
+  )
+
+
+(def tags #{:entity :cape :knowledge :bio :building :combinable :element})
+
+
+(s/def :g.e.prop/resolve (s/with-gen int?
+                           #(gen/choose 100 1000)))
+(s/def :g.e.prop/vision (s/with-gen int?
+                          #(gen/choose 4 16)))
+(s/def :g.e.prop/energy (s/with-gen int?
+                          #(gen/choose 0 100)))
+(s/def :g.e/tags (s/with-gen (s/coll-of keyword?)
+                   #(gen/list-distinct (gen/elements tags) {:num-elements 3})))
+
+(s/def :g.e/cape (s/keys :req [:g.e.prop/resolve
+                               :g.e.prop/vision
+                               :g.e.prop/energy
+                               :g.e/tags]))
+
+(comment
+
+  (gen/generate (gen/list-distinct (gen/elements tags) {:num-elements 3}))
+  (gen/generate (s/gen :g.e/tags))
+  (gen/generate (s/gen :g.e/cape))
+
 
   ;;
   )
