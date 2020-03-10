@@ -582,7 +582,21 @@
                  (membero q '(:a :b :c :d)))
            '(:d))))
 
+  (run* [q]
+        (fresh [a b]
+               (== a 1)
+               (== b 5)
+               (project [a b]
+                        (fd/in q (fd/interval a b)))))
+
   
-  
+  (def a (first (run* [q]
+                      (fresh [a b]
+                             (== a 1)
+                             (== b 5)
+                             (project [a b]
+                                      (== q `(fd/interval ~a ~b)))))))
+  (def b (eval a))
+
   ;;
   )
