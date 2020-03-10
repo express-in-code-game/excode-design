@@ -13,6 +13,7 @@
    
    [clojure.core.logic.nominal :exclude [fresh hash] :as nom]
    [clojure.core.logic :exclude [is] :refer :all]
+   [clojure.core.logic.protocols :refer :all]
    [clojure.core.logic.pldb :as pldb :refer [db with-db db-rel db-fact]]
    [clojure.core.logic.fd  :as fd]
    [clojure.core.logic.unifier :as u]
@@ -402,12 +403,110 @@
                (predc q number? `number?)
                (== q "foo"))
          ()))
-  
+
   (is (= (run* [q]
                (fresh [x]
                       (featurec x {:foo q})
                       (== x {:foo 1})))
          '(1)))
+
+  (is (= (run* [q]
+               (fresh [x]
+                      (featurec x {:foo {:bar q}})
+                      (== x {:foo {:bar 1}})))
+         '(1)))
+
+  (to-s [[:a 1] [:b 1]])
+
+  (let [[a b c :as v] [1 2 3]]
+    [[a b c] v])
+
+  (= (let [[x y z c b a :as s] (map lvar '[x y z c b a])
+           ss (to-s [[x 5] [y x] [z y] [c z] [b c] [a b]])]
+       (walk ss a))
+     5)
+
+  (= (let [x  (lvar 'x)
+           y  (lvar 'y)]
+       (walk* (to-s [[x 5] [y x]]) `(~x ~y)))
+     '(5 5))
+
+  s#
+
+  (= (u/unify ['(?x 2 . ?y) '(1 2 3 4 5)])
+     '(1 2 3 4 5))
+
+  (= (u/unify ['{:a [?b (?c [?d {:e ?e}])]} {:a [:b '(:c [:d {:e :e}])]}])
+     {:a [:b '(:c [:d {:e :e}])]})
+
+  (defnc evenc [x]
+    (even? x))
+
+  (defnc div3c [x]
+    (zero? (mod x 3)))
+
+  (deftest test-unifier-constraints-4
+    (is (= (u/unify {:when {'#{?a ?b} [evenc div3c]}} ['{:a ?a :b ?b} {:a 6 :b 12}])
+           {:a 6 :b 12}))
+    (is (= (u/unify {:when {'#{?a ?b} [evenc div3c]}} ['{:a ?a :b ?b} {:a 2 :b 6}])
+           nil)))
+
+  (defnc complexc [a b]
+    (and (even? a) (zero? (mod b 3))))
+
+  (deftest test-unifier-constraints-5
+    (is (= (u/unify {:when {'[?a ?b] complexc}} ['{:a ?a :b ?b} {:a 2 :b 3}])
+           {:a 2 :b 3}))
+    (is (= (u/unify {:when {'[?a ?b] complexc}} ['{:a ?a :b ?b} {:a 2 :b 4}])
+           nil)))
+
+  (u/unify {:as '{?x (?y ?z)}} ['?x '(1 2)])
+  (u/unify {:as '{?x (?y ?z)}} ['(?x) '((1 2))])
+
+
+  ;;Anonymous constraints
+  (deftest test-unifier-anon-constraints-3 ;;One var
+    (is (= (u/unify {:when {'?a (fnc [x] (even? x))}} ['{:a ?a} {:a 2}])
+           {:a 2}))
+    (is (= (u/unify {:when {'?a (fnc [x] (even? x))}} ['{:a ?a} {:a 1}])
+           nil)))
+
+  (deftest test-binding-map-constraints-1
+    (is (= (u/unifier {:when {'?x evenc '?y div3c}} ['(?x ?y) '(2 6)])
+           '{?x 2 ?y 6}))
+    (is (= (u/unifier {:when {'?x div3c '? evenc}} ['(?x ?y) '(2 6)])
+           nil))
+    (is (= (u/unifier {:when {'[?x ?y] complexc}} ['(?x ?y) '(2 6)])
+           '{?x 2 ?y 6}))
+    (is (= (u/unifier {:when {'#{?x ?y} [evenc div3c]}} ['(?x ?y) '(6 12)])
+           '{?x 6 ?y 12}))
+    (is (= (u/unifier {:when {'#{?x ?y} [evenc div3c]}} ['(?x ?y) '(14 12)])
+           nil)))
+
+  (deftest test-binding-map-as-1
+    (is (= (u/unifier {:as {'?x '(?y ?z)}} '[(?x) ((1 2))])
+           '{?x (1 2) ?y 1 ?z 2})))
+
+  (defnc dayc [day x]
+    (if (= day :tuesday)
+      (even? x)
+      (odd? x)))
+
+  (defnc greaterc
+    [x v]
+    (> x v))
+
+  (run* [q]
+        (fresh [a b c d]
+               (fd/in a b c d (fd/interval 1 4))
+               (fd/distinct [a b c d])
+               (fd/< a b)
+               (greaterc c 1)
+               (dayc :tuesday d)
+               (== q {:path [a b c d]
+                      :entities {}})))
+
+
 
 
   ;;
