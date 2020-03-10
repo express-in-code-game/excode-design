@@ -1,4 +1,4 @@
-(ns starnet.common.logic-tests
+(ns starnet.common.logic-samples.stuffo
   (:refer-clojure :exclude [==])
   (:require
    [clojure.set :refer [subset?]]
@@ -17,6 +17,7 @@
    [clojure.core.logic.pldb :as pldb :refer [db with-db db-rel db-fact]]
    [clojure.core.logic.fd  :as fd]
    [clojure.core.logic.unifier :as u]
+   [clojure.core.logic.arithmetic :as la]
    [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]])
   #?(:clj (:import clojure.core.logic.fd.IntervalFD)))
 
@@ -65,7 +66,6 @@
              [(== q 1)]
              [(== q 2)])) '(1 2)))
   (testing "conso examples"
-
     (are [x y] (= x y)
       (run* [q]
             (conso 1 [2 3] q)) '((1 2 3))
@@ -599,7 +599,7 @@
   (def b (eval a))
 
 
-  #interval [[1 2] [5] [10 100]]
+  ; #interval [[1 2] [5] [10 100]]
 
   (def x (doall (run* [q]
                       (fd/in q (fd/interval 1 1000000)))))
@@ -654,7 +654,7 @@
 
   (def radius 1.5)
   (def center [2 3])
-  
+
   (vec-dist [2 3] [3 4])
 
   (defnc within-radius
@@ -668,6 +668,23 @@
                 (within-radius x y center radius)
                 (== q [x y])))
    (count))
-  
+
+  (run* [q]
+        (fresh [a b]
+               (conde
+                [(== q [0 0]) (== q [2 2])]
+                [(== a 1) (== b 2) (la/> b a) (== q [a b])])))
+
+  (run* [q]
+        (fresh [a b]
+               (conda
+                [(== q [0 0]) (== q [2 2])]
+                [(== a 1) (== b 2) (la/> b a) (== q [a b])])))
+
+  (run* [q]
+        (fresh [a b]
+               (condu
+                [(== q [0 0]) (== q [2 2])]
+                [(== a 1) (== b 2) (la/> b a) (== q [a b])])))
   ;;
   )
