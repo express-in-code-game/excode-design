@@ -510,6 +510,8 @@
   conda
   project
   permuteo
+  featurec
+  nafc
 
   (defnc evenc
     [x]
@@ -550,9 +552,37 @@
          (rule-1 q dom)
          (rule-2 q dom)
          (rule-3 q dom)))
-  
-  
 
 
+  (deftest test-naf-1
+    (is (= (into #{}
+                 (run* [q]
+                       (membero q '(a b c))
+                       (nafc == q 'b)))
+           '#{a c}))
+    (is (= (into #{}
+                 (run* [q]
+                       (nafc == q 'b)
+                       (membero q '(a b c))))
+           '#{a c})))
+
+  (into #{}
+        (run* [x y]
+              (fd/in x y (fd/interval 1 5))
+              (fd/< x y)
+              (nafc fd/+ x y 5)))
+
+  (deftest test-naf-5
+    (is (= (run* [q]
+                 (membero q '(:a :b :c :d))
+                 (nafc membero q '(:a :b :c)))
+           '(:d)))
+    (is (= (run* [q]
+                 (nafc membero q '(:a :b :c))
+                 (membero q '(:a :b :c :d)))
+           '(:d))))
+
+  
+  
   ;;
   )
