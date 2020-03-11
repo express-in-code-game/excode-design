@@ -20,3 +20,7 @@
    [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]])
   #?(:clj (:import clojure.core.logic.fd.IntervalFD)))
 
+(comment
+
+  ;;
+  )

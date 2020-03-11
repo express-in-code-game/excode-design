@@ -50,6 +50,14 @@
     - https://github.com/clojure/core.logic/wiki/Examples
     - https://blog.taylorwood.io/2018/05/10/clojure-logic.html
     - http://minikanren.org/
+    - http://swannodette.github.io/
+      - https://web.archive.org/web/20130511050744/http://dosync.posterous.com/a-logic-programming-reading-list
+      - http://tgk.github.io/2012/08/finding-cliques-in-graphs-using-core-logic.html
+      - https://web.archive.org/web/20130511050720/http://dosync.posterous.com/know-your-bounds
+      - https://github.com/frenchy64/Logic-Starter/wiki
+      - http://clojurelx.blogspot.com/2012/01/finite-state-machines-in-corelogic.html
+      - http://clojurelx.blogspot.com/2012/01/lx-in-corelogic-2-jumps-flexible.html
+      - https://github.com/namin/logically
 
 - cljs
   - antd
