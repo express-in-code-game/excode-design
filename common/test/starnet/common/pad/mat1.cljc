@@ -6,6 +6,9 @@
    [clojure.core.matrix.linear :as mxl]))
 
 
+; https://github.com/mikera/core.matrix
+; https://mikera.github.io/core.matrix/doc/index.html
+
 (comment
 
   (mxl/norm (mx/sub [2 3] [3 3]) 2)
@@ -21,6 +24,9 @@
   (mx/mmul
    (mx/array [[2 2] [3 3]])
    (mx/array [[4 4] [5 5]]))
+  
+  (mx/cos [90])
+  #?(:clj (Math/cos 90))
 
   ;;
   )
