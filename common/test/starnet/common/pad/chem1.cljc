@@ -110,3 +110,60 @@
 
   ;;
   )
+
+
+(defn reactf
+  [f x]
+  (cond
+    (= 1 (count (:els f)))
+    (->>
+     (apply (:reactf f) (into (:els f) [x]))
+     (into [(assoc f :els [])]))
+    :else [(update-in f [:els] conj x)]))
+
+(defn reaction-1
+  [[x1 x2]]
+  (cond
+    (and (:reactf x1) (:reactf x2)) [x1 x2]
+    (:reactf x1) (reactf x1 x2)
+    (:reactf x2) (reactf x2 x1)
+    :else [x1 x2]))
+
+(comment
+
+
+  (def mostly-ints (gen/frequency [[9 gen/small-integer] [1 (gen/return nil)]]))
+  (->> (gen/sample mostly-ints 10000) (filter nil?) (count))
+
+  (def gen-element1 (gen/fmap #(identity {:val %}) (gen/choose 2 35)))
+  (def gen-element2 (gen/fmap #(identity {:val %}) (gen/choose 36 70)))
+  (def gen-element3 (gen/fmap #(identity {:val %}) (gen/choose 71 101)))
+  (def gen-elementfn (gen/return {:els []
+                                  :reactf (fn rf1 [x1 x2]
+                                            (let [a (:val x1)
+                                                  b (:val x2)]
+                                              (if (and (some? a)
+                                                       (some? b)
+                                                       (> a b)
+                                                       (zero? (mod a b)))
+                                                [{:val b}]
+                                                [{:val a} {:val b}])))}))
+
+  (gen/generate gen-element1)
+  (def f1 (gen/generate gen-elementfn))
+  ((:reactf f1) {:val 6} {:val 5})
+
+  (def elgen1 (gen/frequency [[1 gen-element1]
+                              [2 gen-element2]
+                              [2 gen-element3]
+                              [5 gen-elementfn]]))
+  (def mols (gen/sample elgen1 100))
+
+  (->>
+   (reaction-cycle 1000 mix-and-react reaction-1 mols)
+   (filter #(some? (:val %)))
+   (into  (sorted-set-by #(compare (:val %1) (:val %2))))
+   (map :val))
+
+  ;;
+  )
