@@ -49,6 +49,7 @@
     - https://github.com/clojure/core.logic/wiki/Features
     - https://github.com/clojure/core.logic/wiki/Examples
     - https://blog.taylorwood.io/2018/05/10/clojure-logic.html
+    - http://minikanren.org/
 
 - cljs
   - antd
