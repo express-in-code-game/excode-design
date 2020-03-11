@@ -7,9 +7,10 @@
    [clojure.test.check :as tc]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-
-   [starnet.common.alpha.game :refer [next-game-state]]
-   [starnet.common.alpha.system :refer [next-user]])
+   
+   [starnet.common.alpha.spec :refer [event-to-topic event-to-recordkey]]
+   [starnet.common.alpha.game :refer [next-state-game]]
+   [starnet.common.alpha.user :refer [next-state-user]])
   (:import
    starnet.app.alpha.aux.serdes.TransitJsonSerializer
    starnet.app.alpha.aux.serdes.TransitJsonDeserializer
@@ -161,37 +162,6 @@
      :kstreams kstreams
      :latch latch}))
 
-(def topic-evtype-map
-  {"alpha.user" #{:ev.u/create :ev.u/update :ev.u/delete}
-   "alpha.game" #{:ev.g.u/create :ev.g.u/delete
-                  :ev.g.u/join :ev.g.u/leave
-                  :ev.g.u/configure :ev.g.u/start
-                  :ev.g.p/move-cape :ev.g.p/collect-tile-value
-                  :ev.g.a/finish-game}})
-
-(def evtype-topic-map
-  (->> topic-evtype-map
-       (map (fn [[topic kset]]
-              (map #(vector % topic) kset)))
-       (mapcat identity)
-       (into {})))
-
-(def evtype-recordkey-map
-  {:ev.u/create :u/uuid
-   :ev.u/update :u/uuid
-   :ev.u/delete :u/uuid
-   :ev.g.u/configure :g/uuid})
-
-(defn event-to-recordkey
-  [ev]
-  (or
-   (-> ev :ev/type evtype-recordkey-map ev)
-   (java.util.UUID/randomUUID)))
-
-(defn event-to-topic
-  [ev]
-  (-> ev :ev/type evtype-topic-map))
-
 (defmulti send-event
   "Send kafka event. Topic is mapped by ev/type."
   {:arglists '([ev kproducer]
@@ -213,7 +183,7 @@
   [ev topic kproducer]
   (.send kproducer
          (ProducerRecord.
-          topic-evtype-map
+          topic
           (event-to-recordkey ev)
           ev)))
 
@@ -248,7 +218,7 @@
                                         nil))
                                     (reify Aggregator
                                       (apply [this k v ag]
-                                        (next-user ag k v)))
+                                        (next-state-user ag k v)))
                                     (-> (Materialized/as "alpha.user.streams.store")
                                         (.withKeySerde (TransitJsonSerde.))
                                         (.withValueSerde (TransitJsonSerde.))))
@@ -306,7 +276,7 @@
                      (reify Aggregator
                        (apply [this k v ag]
                          (try
-                           (assert-next-game-body (next-game-state ag k v))
+                           (assert-next-game-body (next-state-game ag k v))
                            (catch Exception e
                              (println (ex-message e))
                              (println (ex-data e))
@@ -319,4 +289,4 @@
 
 
 
-(defn next-user-games [])
+(defn next-state-user-games [])

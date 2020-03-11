@@ -175,16 +175,16 @@
   :args (s/cat)
   :ret :g/game)
 
-(defmulti next-game-state
+(defmulti next-state-game
   "Returns the next state of the game."
   {:arglists '([state key event])}
   (fn [state k ev] [(:ev/type ev)]))
 
-(defmethod next-game-state [:ev.c/delete-record]
+(defmethod next-state-game [:ev.c/delete-record]
   [state k ev]
   nil)
 
-(defmethod next-game-state [:ev.g.u/create]
+(defmethod next-state-game [:ev.g.u/create]
   [state k ev]
   (-> state
       (update-in [:g/roles]
@@ -192,49 +192,49 @@
                                      :g.r/host true
                                      :g.r/player nil})))
 
-(defmethod next-game-state [:ev.g.u/delete]
+(defmethod next-state-game [:ev.g.u/delete]
   [state k ev]
   nil)
 
-(defmethod next-game-state [:ev.g.u/configure]
+(defmethod next-state-game [:ev.g.u/configure]
   [state k ev]
   (when state
     (merge state ev)))
 
-(defmethod next-game-state [:ev.g.u/start]
+(defmethod next-state-game [:ev.g.u/start]
   [state k ev]
   state)
 
-(defmethod next-game-state [:ev.g.u/join]
+(defmethod next-state-game [:ev.g.u/join]
   [state k ev]
   (update-in state [:g/roles]
              assoc (ev :u/uuid) {:g.r/observer true
                                  :g.r/host false
                                  :g.r/player nil}))
 
-(defmethod next-game-state [:ev.g.u/update-role]
+(defmethod next-state-game [:ev.g.u/update-role]
   [state k ev]
   (update-in state [:g/roles]
              update (ev :u/uuid) merge (:g.r/role ev)))
 
-(defmethod next-game-state [:ev.g.u/leave]
+(defmethod next-state-game [:ev.g.u/leave]
   [state k ev]
   (update-in state [:g/roles]
              dissoc (ev :u/uuid)))
 
-(defmethod next-game-state [:ev.g.p/move-cape]
+(defmethod next-state-game [:ev.g.p/move-cape]
   [state k ev]
   state)
 
-(defmethod next-game-state [:ev.g.a/finish-game]
+(defmethod next-state-game [:ev.g.a/finish-game]
   [state k ev]
   state)
 
-(defmethod next-game-state [:ev.g.p/collect-tile-value]
+(defmethod next-state-game [:ev.g.p/collect-tile-value]
   [state k ev]
   state)
 
-(s/fdef next-game-state
+(s/fdef next-state-game
   :args (s/cat :state (s/nilable :g/game)
                :k uuid?
                :ev :ev.g/event)
@@ -243,16 +243,16 @@
 
 (comment
 
-  (ns-unmap *ns* 'next-game-state)
-  (stest/instrument [`next-game-state])
-  (stest/unstrument [`next-game-state])
+  (ns-unmap *ns* 'next-state-game)
+  (stest/instrument [`next-state-game])
+  (stest/unstrument [`next-state-game])
 
   (gen/sample (s/gen :ev.g.u/update-role) 10)
   (gen/sample (s/gen :ev.g.u/create) 10)
   (gen/sample (s/gen :g.r/role) 10)
 
 
-  (stest/check `next-game-state)
+  (stest/check `next-state-game)
 
   ;;
   )
@@ -277,7 +277,7 @@
 
 (defn next-state
   [ev]
-  (reset! state (next-game-state
+  (reset! state (next-state-game
                  @state
                  (:g/uuid @state)
                  (assoc ev :g/uuid (@state :g/uuid))))
