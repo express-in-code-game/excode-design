@@ -57,13 +57,14 @@
     - http://minikanren.org/
     - https://blog.taylorwood.io/2018/05/10/clojure-logic.html
     - https://jrheard.tumblr.com/post/43575891007/explorations-in-clojures-corelogic
+      - https://www.infoq.com/presentations/core-logic/#mainLogin/
     - http://swannodette.github.io/
     - https://web.archive.org/web/20130511050744/http://dosync.posterous.com/a-logic-programming-reading-list
     - http://tgk.github.io/2012/08/finding-cliques-in-graphs-using-core-logic.html
     - https://web.archive.org/web/20130511050720/http://dosync.posterous.com/know-your-bounds
-    - https://github.com/frenchy64/Logic-Starter/wiki
     - http://clojurelx.blogspot.com/2012/01/finite-state-machines-in-corelogic.html
     - http://clojurelx.blogspot.com/2012/01/lx-in-corelogic-2-jumps-flexible.html
+    - http://gigasquidsoftware.com/chemical-computing/index.html
 
 - cljs
   - antd
