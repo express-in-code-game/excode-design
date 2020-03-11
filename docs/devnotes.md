@@ -43,12 +43,9 @@
     - https://docs.oracle.com/javase/9/docs/api/java/util/regex/Pattern.html
   - logic
     - http://programming-puzzler.blogspot.com/2013/03/logic-programming-is-overrated.html
-      - https://github.com/krisajenkins/LogicPuzzles/blob/master/src/logicpuzzles/core.clj
-      - https://mattsenior.com/2014/02/using-clojures-core-logic-to-solve-simple-number-puzzles
-      - http://blog.jenkster.com/2013/02/solving-logic-puzzles-with-clojures-corelogic.html
-      - http://swannodette.github.io/2013/03/09/logic-programming-is-underrated
       - https://gist.github.com/Engelberg/5105806#file-logic1-clj
       - https://gist.github.com/Engelberg/5105820#file-logic2-clj
+      - http://swannodette.github.io/2013/03/09/logic-programming-is-underrated
       - https://gist.github.com/swannodette/5127144
       - https://gist.github.com/swannodette/5127150
     - https://github.com/clojure/core.logic
@@ -57,8 +54,8 @@
     - https://github.com/clojure/core.logic/tree/master/src/test/cljs/cljs/core/logic
     - https://github.com/clojure/core.logic/wiki/Features
     - https://github.com/clojure/core.logic/wiki/Examples
-    - https://blog.taylorwood.io/2018/05/10/clojure-logic.html
     - http://minikanren.org/
+    - https://blog.taylorwood.io/2018/05/10/clojure-logic.html
     - https://jrheard.tumblr.com/post/43575891007/explorations-in-clojures-corelogic
     - http://swannodette.github.io/
     - https://web.archive.org/web/20130511050744/http://dosync.posterous.com/a-logic-programming-reading-list
@@ -67,8 +64,6 @@
     - https://github.com/frenchy64/Logic-Starter/wiki
     - http://clojurelx.blogspot.com/2012/01/finite-state-machines-in-corelogic.html
     - http://clojurelx.blogspot.com/2012/01/lx-in-corelogic-2-jumps-flexible.html
-    - https://github.com/namin/logically
- 
 
 - cljs
   - antd
