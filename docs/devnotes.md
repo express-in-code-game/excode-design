@@ -60,9 +60,9 @@
     - http://clojurelx.blogspot.com/2012/01/lx-in-corelogic-2-jumps-flexible.html
     - https://github.com/namin/logically
     - http://programming-puzzler.blogspot.com/2013/03/logic-programming-is-overrated.html
+      - https://mattsenior.com/2014/02/using-clojures-core-logic-to-solve-simple-number-puzzles
       - http://blog.jenkster.com/2013/02/solving-logic-puzzles-with-clojures-corelogic.html
       - http://swannodette.github.io/2013/03/09/logic-programming-is-underrated
-    - 
 
 - cljs
   - antd
