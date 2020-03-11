@@ -21,6 +21,7 @@
   #?(:clj (:import clojure.core.logic.fd.IntervalFD)))
 
 ; http://gigasquidsoftware.com/chemical-computing/index.html
+; https://github.com/gigasquid/chemical-computing
 
 (defn prime?
   [n]
