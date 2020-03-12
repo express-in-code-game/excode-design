@@ -35,6 +35,7 @@
     - https://github.com/clojure/core.async/wiki
     - https://github.com/clojure/core.async/wiki/Pub-Sub
     - https://github.com/clojure/core.async/tree/master/examples
+    - https://github.com/halgari/clojure-conj-2013-core.async-examples/blob/master/src/clojure_conj_talk/core.clj
     - https://github.com/bhauman
       - https://rigsomelight.com/2013/07/18/clojurescript-core-async-todos.html
         - https://github.com/bhauman/async-explore
