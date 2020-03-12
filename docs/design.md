@@ -36,57 +36,6 @@
 - randomness on initial generation only
 - optimal game time ~15-90 min
 
-- v0.1
-  - players (azure and orange) start on the map, charachter is represented with a cape
-  - 1 hero, 3 research drones (represented with a colored sphere)
-  - missiondrone is represented with a large sphere (possible made of nanites) and orbiting supporting spheredrones
-  - map is visible and open to both opponents equally, 128x128
-  - players are not competing for resources, what one can get, the other can as well
-  - players choose their initial position on the map 
-  - research, collect, rebalance, by roaming the map
-  - players choose what to visit and collect, make choices, balance the missiondrone's and the team's characterisitics
-  - players see each others moves, but not choices (the missiondrone build, team's stats etc.)
-  - player can visit a fruit tree to improve certain skills of a hero, for example, or visit and select nanite modules for the missiondrone
-  - players have limited moves per day, limited days (say, 7)
-  - total time for 7 days - 15min
-  - every 5 mins there is an battle simulation, 30sec per move, 3rd battle is final
-  - in the battle goal is to disable(defeat) opponent's mission drone
-  - hero and research drones are engaged and support (they also develop skills and abilities)
-  - no distance
-    - movement in terms of energy spent at places, maybe increasable limit on how many places can be visited
-    - visiting a lot should not matter though 
-  - missiondrone attributes
-    - compute capabilities
-    - data bank
-    - knowledge bank
-    - independent agent programs (for unpredictability)
-    - fields
-    - networking range
-    - design quility
-    - human interface simplicity
-    - abstraction level (like an age in AoE)
-    - defensive/offensive resources
-    - energy
-    - ...
-  - hero
-    - accuracy
-    - decisionmaking
-    - resolve
-    - drone design 
-    - reach (movement)
-    - creativity(ideas)
-    - endurance (energy)
-    - vision
-  - reserach drone
-    - reach
-    - reserach capabilites
-    - absctraction level
-    - fields
-    - hull
-    - energy
-    - hoisting (carrying) capacity
-
-
 #### elements
 
   - goal is game completeness, balance, so complete set of entities, no bloating expansions
@@ -126,7 +75,22 @@
 - docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
 - https://github.com/localstack/localstack
 - persist data in kafka (as event/record store)
-- v0.1 assets
+- game state
+  - the game is powerful, so is the client
+  - game is not computed on the server
+  - game state is persisted on the server in compact form as {:default-game-events [] :game-events []}
+  - client being powerful, computes all the needed derived/queryable state for interactivity
+    - derived state may be a map {:derived1 {} :derived2 {} ..}
+    - on every event, relevant deriver fns are invoked (derived1 ctx evt), where ctx contains all refs
+    - derived1 computes and updates :derived1 key in the map
+    - also a derived-db may be used to store entities in in-memory db for querying with a proper lang e.g. datalog
+  - if client tab is closed
+    -  client reconnects
+    -  server sends the compact state 
+    -  client recomputes the game state as (apply next-state (into default-game-events game-events )) (recompute-derive-whaterver-is-needed ..)
+  - if no disconnect, client receives only new game events and updates the game state
+  - but server adds timestamps - so time is independent from the client
+- assets
   - use s-expressions to gen svg
   - colors, lines, shapes (for cape, spheres, facilities, skills, fruit tree etc.)
   - sound effect and better assets will grow
@@ -178,7 +142,8 @@
 - ignite
   - kafka
   - the core of the system via repl interface
-  - http interface
+  - game
+  - http interface, ws
   - ui
   - iterate
 - ui
@@ -186,29 +151,6 @@
   - /games : list of games or create a gam
 - search
   -  used only for events, games, users
-- time
-  - players send events to the ingame.events topic
-  - server as well sends events ingame.events (time and other arbiter-type events)
-  - streams.app.ingame-events-to-state updates a ktable via -> groupByKey reduce materialize.as(game.states.store)
-    - reduce recomputes a state of a single game
-      - so all events in ingame.events topic are keyed with a game's uuid
-  - game.states.store is streamed to game.states.downstream, consumer reads updates, broadcasts to players
-  - kafka ids
-    - topics
-      - ingame.events
-      - game.states.downstream
-    - stores
-      - game.states.store
-    - apps
-      - streams.app.arbiter
-        - reacts ingame.events , sends events on interval  
-      - streams.app.ingame-events-to-state
-    - restoring timeers ont the client after disconnect
-      - game state has server timestamps
-      - on reconnect server sends client the game state
-      - and adds server's current timestamp
-      - client receives the data and recomputes time-left using valid server timestamp
-      - or add server timestamp to every event from the server, in general
 - data and secutiry
   - user account data only exists in user.data
   - if user deletes their account, it gets removed from user.data (kafka tombstone event)
@@ -216,25 +158,7 @@
   - only events history, event placements, user wins/losses are persisted, not all games
   - user identity as email into uuid
   - after 0.1 add token, https, wss
-- 1 min games from repl
-  - arbiter emits on interval state updates
-  - map tiles show values (numbers), players step on tiles and eventually get into teleport
-  - the player with the higher value (sum) wins
-  - games-stream computes states from game.events topic
-  - broadcast-stream prints to the stdout
-    -  user1 cape is at [x x], sum is 123
-    -  user2 cape is at [y y], sum is -80
-  - step sequence to play from repl
-    - create user1, user2
-    - create a game
-    - configure game
-    - invite/join
-    - start game
-    - user1 moves their cape to x,x 
-    - user2 moves theier cape to y,y
-    - ...
-    - arbiter completes the game in 1 min
-- 0.1
+- v0.1 ux
   - users creates a game -> game.data
     - user presses create a game from /u/games list
     - once response/event arrives, list gets updated
@@ -248,3 +172,53 @@
   - all ingame events are sent through ingame.events topic
   - if user closes the tab, they can reopen it from 'ongoing games' list -> get current state snapshots from game.data and ingame.events
   - after the game has started, host can't cancel it
+- v0.1 gameplay
+  - players (azure and orange) start on the map, charachter is represented with a cape
+  - 1 hero, 3 research drones (represented with a colored sphere)
+  - missiondrone is represented with a large sphere (possible made of nanites) and orbiting supporting spheredrones
+  - map is visible and open to both opponents equally, 128x128
+  - players are not competing for resources, what one can get, the other can as well
+  - players choose their initial position on the map 
+  - research, collect, rebalance, by roaming the map
+  - players choose what to visit and collect, make choices, balance the missiondrone's and the team's characterisitics
+  - players see each others moves, but not choices (the missiondrone build, team's stats etc.)
+  - player can visit a fruit tree to improve certain skills of a hero, for example, or visit and select nanite modules for the missiondrone
+  - players have limited moves per day, limited days (say, 7)
+  - total time for 7 days - 15min
+  - every 5 mins there is an battle simulation, 30sec per move, 3rd battle is final
+  - in the battle goal is to disable(defeat) opponent's mission drone
+  - hero and research drones are engaged and support (they also develop skills and abilities)
+  - no distance
+    - movement in terms of energy spent at places, maybe increasable limit on how many places can be visited
+    - visiting a lot should not matter though 
+  - missiondrone attributes
+    - compute capabilities
+    - data bank
+    - knowledge bank
+    - independent agent programs (for unpredictability)
+    - fields
+    - networking range
+    - design quility
+    - human interface simplicity
+    - abstraction level (like an age in AoE)
+    - defensive/offensive resources
+    - energy
+    - ...
+  - hero
+    - accuracy
+    - decisionmaking
+    - resolve
+    - drone design 
+    - reach (movement)
+    - creativity(ideas)
+    - endurance (energy)
+    - vision
+  - reserach drone
+    - reach
+    - reserach capabilites
+    - absctraction level
+    - fields
+    - hull
+    - energy
+    - hoisting (carrying) capacity
+
