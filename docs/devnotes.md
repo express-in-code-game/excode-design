@@ -35,11 +35,14 @@
     - https://github.com/clojure/core.async/wiki
     - https://github.com/clojure/core.async/wiki/Pub-Sub
     - https://github.com/clojure/core.async/tree/master/examples
-    - https://rigsomelight.com/2013/07/18/clojurescript-core-async-todos.html
-      - https://github.com/bhauman/async-explore
-    - https://rigsomelight.com/2013/08/12/clojurescript-core-async-dots-game.html
-      - https://github.com/bhauman/dotsters
-    - https://github.com/swannodette/async-tests
+    - https://github.com/bhauman
+      - https://rigsomelight.com/2013/07/18/clojurescript-core-async-todos.html
+        - https://github.com/bhauman/async-explore
+      - https://rigsomelight.com/2013/08/12/clojurescript-core-async-dots-game.html  
+        - https://github.com/bhauman/dotsters
+    - https://github.com/swannodette/
+      - https://github.com/swannodette/async-tests
+      - http://swannodette.github.io/2013/07/12/communicating-sequential-processes
   - spec
     - guides
       - https://clojure.org/guides/spec
