@@ -80,6 +80,10 @@
   - game is not computed on the server
   - game state is persisted on the server in compact form as {:default-game-events [] :game-events []}
   - client being powerful, computes all the needed derived/queryable state for interactivity
+    - derived state may be a map {:derived1 {} :derived2 {} ..}
+    - on every event, relevant deriver fns are invoked (derived1 ctx evt), where ctx contains all refs
+    - derived1 computes and updates :derived1 key in the map
+    - also a derived-db may be used to store entities in in-memory db for querying with a proper lang e.g. datalog
   - if client tab is closed
     -  client reconnects
     -  server sends the compact state 
