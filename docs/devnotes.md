@@ -68,7 +68,10 @@
   - state abstractions
     - https://github.com/day8/re-frame
     - https://github.com/tonsky/datascript
+      - https://tonsky.me/blog/datascript-chat/
     - https://github.com/juxt/crux
+    - https://github.com/clojure/core.async
+      - https://www.infoq.com/presentations/clojure-core-async/
 
 - cljs
   - antd
