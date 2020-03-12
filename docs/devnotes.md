@@ -24,6 +24,14 @@
     - https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
 
 - clj
+  - async
+    - https://github.com/clojure/core.async
+    - https://github.com/clojure/core.async/wiki
+    - https://github.com/clojure/core.async/wiki/Pub-Sub
+    - https://www.infoq.com/presentations/clojure-core-async/
+      - "good programs should be made out of processes and queues"
+    - https://rigsomelight.com/2013/08/12/clojurescript-core-async-dots-game.html
+      - https://github.com/bhauman/dotsters
   - spec
     - guides
       - https://clojure.org/guides/spec
@@ -70,9 +78,6 @@
     - https://github.com/tonsky/datascript
       - https://tonsky.me/blog/datascript-chat/
     - https://github.com/juxt/crux
-    - https://github.com/clojure/core.async
-      - https://www.infoq.com/presentations/clojure-core-async/
-        - "good programs should be made out of processes and queues"
 
 - cljs
   - antd

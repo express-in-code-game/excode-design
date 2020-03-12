@@ -2,7 +2,6 @@
  :deps {}
  :aliases {:core {:extra-deps {org.clojure/clojure         {:mvn/version "1.10.1"}
                                org.clojure/clojurescript {:mvn/version "1.10.597"}
-                               org.clojure/core.async {:mvn/version "0.5.527"}
                                reagent {:mvn/version "0.9.1"}
                                reagent-utils {:mvn/version "0.3.3"}
                                re-frame {:mvn/version "0.11.0"}
