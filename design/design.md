@@ -78,9 +78,12 @@
 - game state
   - the game is powerful, so is the client
   - game is not computed on the server
-  - game state is persisted on the server as {:default {} :game-events []}
+  - game state is persisted on the server in compact form as {:default-game-events [] :game-events []}
   - client being powerful, computes all the needed derived/queryable state for interactivity
-  - if client tab is closed, client reconnects, server sends the state, client recomputes the game state as (apply next-state default-state game-events) (recompute-derive-whaterver-is-needed ..)
+  - if client tab is closed
+    -  client reconnects
+    -  server sends the compact state 
+    -  client recomputes the game state as (apply next-state (into default-game-events game-events )) (recompute-derive-whaterver-is-needed ..)
   - if no disconnect, client receives only new game events and updates the game state
   - but server adds timestamps - so time is independent from the client
 - assets
