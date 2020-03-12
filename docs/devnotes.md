@@ -72,6 +72,7 @@
     - https://github.com/juxt/crux
     - https://github.com/clojure/core.async
       - https://www.infoq.com/presentations/clojure-core-async/
+        - "good programs should be made out of processes and queues"
 
 - cljs
   - antd
