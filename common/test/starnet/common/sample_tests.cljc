@@ -79,6 +79,16 @@
   (bar [this a] [this a b] "bar doc")
   (baz [this x] "baz doc"))
 
+(extend-protocol P
+  clojure.lang.Keyword
+  (bar ([k a] [k a])
+    ([k a b] [k a b]))
+  (baz [k a] [k a])
+  clojure.lang.Symbol
+  (bar ([s a] [s a])
+    ([s a b] [s a b]))
+  (baz [s a] [s a]))
+
 (deftest protocol-1
   (let [x (reify
             P
@@ -88,7 +98,13 @@
     (are [x y] (= x y)
       (bar x 1) [1]
       (bar x 3 4) [3 4]
-      (baz x 5) [5])))
+      (baz x 5) [5]
+      (bar :a 1) [:a 1]
+      (bar :a 1 2) [:a 1 2]
+      (baz :a 1) [:a 1]
+      (bar 'a 1) ['a 1]
+      (bar 'a 1 2) ['a 1 2]
+      (baz 'a 1) ['a 1])))
 
 
 
