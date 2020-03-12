@@ -30,6 +30,7 @@
     - https://github.com/clojure/core.async/wiki/Pub-Sub
     - https://www.infoq.com/presentations/clojure-core-async/
       - "good programs should be made out of processes and queues"
+    - https://rigsomelight.com/2013/07/18/clojurescript-core-async-todos.html
     - https://rigsomelight.com/2013/08/12/clojurescript-core-async-dots-game.html
       - https://github.com/bhauman/dotsters
   - spec
