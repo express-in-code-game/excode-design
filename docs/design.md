@@ -36,7 +36,134 @@
 - randomness on initial generation only
 - optimal game time ~15-90 min
 
-- v0.1
+#### elements
+
+  - goal is game completeness, balance, so complete set of entities, no bloating expansions
+  - entities have tags(sets): gathering organic discovery etc.
+  - droids
+    - drive types 
+    - research abilities
+    - distance speed
+  - combine parts compute fields drives etc.
+  - research quality
+  - compute capabilities
+  - decision making accuracy, energy, vision, vitality
+
+## how
+
+- first, setup CD to the cloud - project must be live
+  - fixed single server instance
+    - run kafka stack and system stack separately
+    - update the system via pull, up -d
+    - ability to repl into production
+  - aws
+    - https://aws.amazon.com/ec2/instance-types/
+    - https://aws.amazon.com/blogs/compute/amazon-ecs-and-docker-volume-drivers-amazon-ebs/
+    - https://aws.amazon.com/ec2/pricing/reserved-instances/pricing/
+    - https://aws.amazon.com/ebs/pricing/
+  - build up to assets, deploy to aws, gen large seqs, sim gen daily
+- keep it simple, data files and fn files, repetetive if needed
+  - game is a seq of events
+- use repl from the start as it's the most powerful design tool, inform the design
+  - events, words, simple shapes; assets will form last
+- consider figwheel main if it's less cpu consuming than shadow-cljs
+- use DOM for the board, but keep it simple - details and info in windows/popups/panels
+- file per asset, little to no shared code, an asset as sexp, use lib, render into canvas/svg/png
+- gen assets into files, preload, set as sources to tiles
+- if needed, run assets as code (render into svg/canvas) in enetity information window, 
+- point is: assets are code, files are generated
+- docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
+- https://github.com/localstack/localstack
+- persist data in kafka (as event/record store)
+- game state
+  - the game is powerful, so is the client
+  - game is not computed on the server
+  - game state is persisted on the server in compact form as {:default-game-events [] :game-events []}
+  - client being powerful, computes all the needed derived/queryable state for interactivity
+    - derived state may be a map {:derived1 {} :derived2 {} ..}
+    - on every event, relevant deriver fns are invoked (derived1 ctx evt), where ctx contains all refs
+    - derived1 computes and updates :derived1 key in the map
+    - also a derived-db may be used to store entities in in-memory db for querying with a proper lang e.g. datalog
+  - if client tab is closed
+    -  client reconnects
+    -  server sends the compact state 
+    -  client recomputes the game state as (apply next-state (into default-game-events game-events )) (recompute-derive-whaterver-is-needed ..)
+  - if no disconnect, client receives only new game events and updates the game state
+  - but server adds timestamps - so time is independent from the client
+- assets
+  - use s-expressions to gen svg
+  - colors, lines, shapes (for cape, spheres, facilities, skills, fruit tree etc.)
+  - sound effect and better assets will grow
+
+## user experience
+
+- events (tournaments, matches) are at the center, home page contains official events and most upvoted
+  - games tend to have reasonable duration time, so most events have estimatable start and finish time, they can be  planned for
+  - event rounds start at X, no waiting for the opponent
+  - official events start at X, not when full
+  - users can create events (invite only or public), unset time constraints
+- players have rating, rating can be reset
+- all games are public and can be observed
+- the game opens in a tab, so can be always reopened/reconnected
+- users can
+  - press 'find an opponent' and be auto matched against most equal opponent (or can decline)
+  - enter an event
+  - create/configure an open/invite-only  event
+  - browse events (with a filter)
+  - join a game
+  - create an open/invite-only game (no title, match description has a format)
+  - browse open games (with a filter)
+- no chat
+- user profile has rating and event results (can be reset)
+- official and community map templates and configurable events
+- pre game bans, selections
+- observing
+  - select templates (simple detailed) for game info/stats [templates are components]
+- tournament time frames
+  - tounaments preferably have estimatable, evening/a day timeframe
+    - once signup ends, bracket is form, countdown to round 1 begins
+    - player sees 'upcoming match in X:X;
+    - game starts automatically or player can decline and take a default loss
+    - once round ends, next countdown begins
+    - players can see the brackets and schedule
+  - tounaments can be configured to have natuaral timeframe
+    - all standard
+    - to observe or play the game user clicks the match in the bracket, gets into the game lobby or game itself
+    - players can mutually agree to nullify the result and re-play
+
+## drawing board
+
+- ignite
+  - kafka
+  - the core of the system via repl interface
+  - game
+  - http interface, ws
+  - ui
+  - iterate
+- ui
+  - home page simple routes: /events /games
+  - /games : list of games or create a gam
+- search
+  -  used only for events, games, users
+- data and secutiry
+  - user account data only exists in user.data
+  - if user deletes their account, it gets removed from user.data (kafka tombstone event)
+  - in the system (event brackets, stats etc.) it get's shown as 'unknown' (only uuid is used in other topics)
+  - only events history, event placements, user wins/losses are persisted, not all games
+  - user identity as email into uuid
+  - after 0.1 add token, https, wss
+- v0.1 ux
+  - users creates a game -> game.data
+  - browser tab opens
+  - user changes settings of the game -> game.data
+  - once finished, user presses 'invite' or 'game ready' or 'open' -> game.data game becomes visible in the list and joinable
+  - opponent joins ( if rating >= specified by the host in settings) -> game.data
+  - more settings, bans, both press 'ready' -> game.data
+  - host presses 'start the game' -> game.data
+  - all ingame events are sent through ingame.events topic
+  - if user closes the tab, they can reopen it from 'ongoing games' list -> get current state snapshots from game.data and ingame.events
+  - after the game has started, host can't cancel it
+- v0.1 gameplay
   - players (azure and orange) start on the map, charachter is represented with a cape
   - 1 hero, 3 research drones (represented with a colored sphere)
   - missiondrone is represented with a large sphere (possible made of nanites) and orbiting supporting spheredrones
@@ -86,156 +213,3 @@
     - energy
     - hoisting (carrying) capacity
 
-
-#### elements
-
-  - goal is game completeness, balance, so complete set of entities, no bloating expansions
-  - entities have tags(sets): gathering organic discovery etc.
-  - droids
-    - drive types 
-    - research abilities
-    - distance speed
-  - combine parts compute fields drives etc.
-  - research quality
-  - compute capabilities
-  - decision making accuracy, energy, vision, vitality
-
-## how
-
-- first, setup CD to the cloud - project must be live
-  - fixed single server instance
-    - run kafka stack and system stack separately
-    - update the system via pull, up -d
-    - ability to repl into production
-  - aws
-    - https://aws.amazon.com/ec2/instance-types/
-    - https://aws.amazon.com/blogs/compute/amazon-ecs-and-docker-volume-drivers-amazon-ebs/
-    - https://aws.amazon.com/ec2/pricing/reserved-instances/pricing/
-    - https://aws.amazon.com/ebs/pricing/
-  - build up to assets, deploy to aws, gen large seqs, sim gen daily
-- keep it simple, data files and fn files, repetetive if needed
-  - game is a seq of events
-- use repl from the start as it's the most powerful design tool, inform the design
-  - events, words, simple shapes; assets will form last
-- consider figwheel main if it's less cpu consuming than shadow-cljs
-- use DOM for the board, but keep it simple - details and info in windows/popups/panels
-- file per asset, little to no shared code, an asset as sexp, use lib, render into canvas/svg/png
-- gen assets into files, preload, set as sources to tiles
-- if needed, run assets as code (render into svg/canvas) in enetity information window, 
-- point is: assets are code, files are generated
-- docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
-- https://github.com/localstack/localstack
-- persist data in kafka
-- v0.1 assets
-  - use s-expressions to gen svg
-  - colors, lines, shapes (for cape, spheres, facilities, skills, fruit tree etc.)
-  - sound effect and better assets will grow
-
-## user experience
-
-- events (tournaments, matches) are at the center, home page contains official events and most upvoted
-  - games tend to have reasonable duration time, so most events have estimatable start and finish time, they can be  planned for
-  - event rounds start at X, no waiting for the opponent
-  - official events start at X, not when full
-  - users can create events (invite only or public), unset time constraints
-- players have rating, rating can be reset
-- all games are public and can be observed
-- the game opens in a tab, so can be always reopened/reconnected
-- users can
-  - press 'find an opponent' and be auto matched against most equal opponent (or can decline)
-  - enter an event
-  - create/configure an open/invite-only  event
-  - browse events (with a filter)
-  - join a game
-  - create an open/invite-only game (no title, match description has a format)
-  - browse open games (with a filter)
-- no chat
-- user profile has rating and event results (can be reset)
-- official and community map templates and configurable events
-- pre game bans, selections
-- observing
-  - select templates (simple detailed) for game info/stats [templates are components]
-- tournament time frames
-  - tounaments preferably have estimatable, evening/a day timeframe
-    - once signup ends, bracket is form, countdown to round 1 begins
-    - player sees 'upcoming match in X:X;
-    - game starts automatically or player can decline and take a default loss
-    - once round ends, next countdown begins
-    - players can see the brackets and schedule
-  - tounaments can be configured to have natuaral timeframe
-    - all standard
-    - to observe or play the game user clicks the match in the bracket, gets into the game lobby or game itself
-    - players can mutually agree to nullify the result and re-play
-
-## drawing board
-
-- ignite
-  - kafka
-  - the core of the system via repl interface
-  - http interface
-  - ui
-  - iterate
-- ui
-  - home page simple routes: /events /games
-  - /games : list of games or create a gam
-- search
-  -  used only for events, games, users
-- time
-  - players send events to the ingame.events topic
-  - server as well sends events ingame.events (time and other arbiter-type events)
-  - streams.app.ingame-events-to-state updates a ktable via -> groupByKey reduce materialize.as(game.states.store)
-    - reduce recomputes a state of a single game
-      - so all events in ingame.events topic are keyed with a game's uuid
-  - game.states.store is streamed to game.states.downstream, consumer reads updates, broadcasts to players
-  - kafka ids
-    - topics
-      - ingame.events
-      - game.states.downstream
-    - stores
-      - game.states.store
-    - apps
-      - streams.app.arbiter
-        - reacts ingame.events , sends events on interval  
-      - streams.app.ingame-events-to-state
-    - restoring timeers ont the client after disconnect
-      - game state has server timestamps
-      - on reconnect server sends client the game state
-      - and adds server's current timestamp
-      - client receives the data and recomputes time-left using valid server timestamp
-      - or add server timestamp to every event from the server, in general
-- data and secutiry
-  - user account data only exists in user.data
-  - if user deletes their account, it gets removed from user.data (kafka tombstone event)
-  - in the system (event brackets, stats etc.) it get's shown as 'unknown' (only uuid is used in other topics)
-  - only events history, event placements, user wins/losses are persisted, not all games
-  - user identity as email into uuid
-  - after 0.1 add token, https, wss
-- 1 min games from repl
-  - arbiter emits on interval state updates
-  - map tiles show values (numbers), players step on tiles and eventually get into teleport
-  - the player with the higher value (sum) wins
-  - games-stream computes states from game.events topic
-  - broadcast-stream prints to the stdout
-    -  user1 cape is at [x x], sum is 123
-    -  user2 cape is at [y y], sum is -80
-  - step sequence to play from repl
-    - create user1, user2
-    - create a game
-    - configure game
-    - invite/join
-    - start game
-    - user1 moves their cape to x,x 
-    - user2 moves theier cape to y,y
-    - ...
-    - arbiter completes the game in 1 min
-- 0.1
-  - users creates a game -> game.data
-  - browser tab opens
-  - user changes settings of the game -> game.data
-  - once finished, user presses 'invite' or 'game ready' or 'open' -> game.data game becomes visible in the list and joinable
-  - opponent joins ( if rating >= specified by the host in settings) -> game.data
-  - more settings, bans, both press 'ready' -> game.data
-  - host presses 'start the game' -> game.data
-  - all ingame events are sent through ingame.events topic
-  - if user closes the tab, they can reopen it from 'ongoing games' list -> get current state snapshots from game.data and ingame.events
-  - after the game has started, host can't cancel it
