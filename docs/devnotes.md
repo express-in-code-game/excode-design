@@ -65,6 +65,10 @@
     - http://clojurelx.blogspot.com/2012/01/finite-state-machines-in-corelogic.html
     - http://clojurelx.blogspot.com/2012/01/lx-in-corelogic-2-jumps-flexible.html
     - http://gigasquidsoftware.com/chemical-computing/index.html
+  - state abstractions
+    - https://github.com/day8/re-frame
+    - https://github.com/tonsky/datascript
+    - https://github.com/juxt/crux
 
 - cljs
   - antd
