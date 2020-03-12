@@ -1,6 +1,7 @@
 (ns starnet.common.pad.async1
   (:require
-   [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go]]))
+   [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go
+                                     >!! <!! alt!! alts! alts!!]]))
 
 ; https://github.com/clojure/core.async/wiki/Pub-Sub
 
@@ -59,7 +60,7 @@
       (replica c query))
     c))
 
-(defn google [query]
+(defn google-go [query]
   (let [c (chan)
         t (timeout 80)]
     (go (>! c (<! (fastest query web1 web2))))
@@ -70,10 +71,84 @@
             ret
             (recur (inc i) (conj ret (alt! [c t] ([v] v)))))))))
 
+(defn google-async [query]
+  (let [c (chan)
+        t (timeout 80)]
+    (future (>!! c (<!! (fastest query web1 web2))))
+    (future (>!! c (<!! (fastest query image1 image2))))
+    (future (>!! c (<!! (fastest query video1 video2))))
+    (loop [i 0 ret []]
+      (if (= i 3)
+        ret
+        (recur (inc i) (conj ret (alt!! [c t] ([v] v))))))))
+
 (comment
 
-  (<!! (google "clojure"))
+  (<!! (google-go "clojure"))
+  (google-async "clojure")
+  
+  
 
   ;;
   )
 
+
+(defn fan-in [ins]
+  (let [c (chan)]
+    (go (while true
+          (let [[x c0] (alts! ins)]
+            (>! c x))))
+    c))
+
+(defn fan-out [in cs-or-n]
+  (let [cs (if (number? cs-or-n)
+             (repeatedly cs-or-n chan)
+             cs-or-n)]
+    (go (while true
+          (let [x (<! in)
+                outs (map #(vector % x) cs)]
+            (alts! outs))))
+    cs))
+
+
+
+(comment
+
+  (let [cout (chan)
+        cin (fan-in (fan-out cout (repeatedly 3 chan)))]
+    (go (dotimes [n 10]
+          (>! cout n)
+          (prn (<! cin))))
+    nil)
+  
+  ;;
+  )
+
+
+(defn fan-in-2 [ins]
+  (let [c (chan)]
+    (future (while true
+              (let [[x] (alts!! ins)]
+                (>!! c x))))
+    c))
+
+(defn fan-out-2 [in cs-or-n]
+  (let [cs (if (number? cs-or-n)
+             (repeatedly cs-or-n chan)
+             cs-or-n)]
+    (future (while true
+              (let [x (<!! in)
+                    outs (map #(vector % x) cs)]
+                (alts!! outs))))
+    cs))
+
+(comment
+
+  (let [cout (chan)
+        cin (fan-in-2 (fan-out-2 cout (repeatedly 3 chan)))]
+    (dotimes [n 10]
+      (>!! cout n)
+      (prn (<!! cin))))
+  
+  ;;
+  )

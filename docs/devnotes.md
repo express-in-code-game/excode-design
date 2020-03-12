@@ -29,6 +29,8 @@
       - "function chains are poor machines
       - "good programs should be made out of processes and queues
       - "the 'api du jours' events/calbacks - Definition of du jour. 1 : made for a particular day
+      - "external flow state
+      - https://clojure.org/news/2013/06/28/clojure-clore-async-channels
     - https://github.com/clojure/core.async
     - https://github.com/clojure/core.async/wiki
     - https://github.com/clojure/core.async/wiki/Pub-Sub
