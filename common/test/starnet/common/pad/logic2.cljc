@@ -21,19 +21,7 @@
 
 (comment
 
-  (defprotocol P
-    (bar [this a] [this a b] "bar doc")
-    (baz [this x] "baz doc"))
-
-  (def x (reify
-           P
-           (bar [_ a] [a])
-           (bar [_ a b] [a b])
-           (baz [_ x] [x])))
-
-  (bar x 1)
-  (bar x 3 4)
-  (baz x 5)
-
+  
+  
   ;;
   )
