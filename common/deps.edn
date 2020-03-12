@@ -4,4 +4,6 @@
  :deps {org.clojure/spec.alpha {:mvn/version "0.2.187"}
         org.clojure/test.check {:mvn/version "1.0.0"}
         org.clojure/core.logic {:mvn/version "1.0.0"}
-        net.mikera/core.matrix {:mvn/version "0.62.0"}}}
+        net.mikera/core.matrix {:mvn/version "0.62.0"}
+        org.clojure/core.async {:mvn/version "1.0.567"}
+        datascript {:mvn/version "0.18.10"}}}

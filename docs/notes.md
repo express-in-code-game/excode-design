@@ -24,6 +24,30 @@
     - https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
 
 - clj
+  - async
+    - https://www.infoq.com/presentations/clojure-core-async/
+      - "function chains are poor machines
+      - "good programs should be made out of processes and queues
+      - "the 'api du jours' events/calbacks - Definition of du jour. 1 : made for a particular day
+      - "external flow state
+      - https://clojure.org/news/2013/06/28/clojure-clore-async-channels
+    - https://github.com/clojure/core.async
+    - https://github.com/clojure/core.async/wiki
+    - https://github.com/clojure/core.async/wiki/Pub-Sub
+    - https://github.com/clojure/core.async/tree/master/examples
+    - https://github.com/halgari/clojure-conj-2013-core.async-examples/blob/master/src/clojure_conj_talk/core.clj
+    - https://github.com/bhauman
+      - https://rigsomelight.com/2013/07/18/clojurescript-core-async-todos.html
+        - https://github.com/bhauman/async-explore
+      - https://rigsomelight.com/2013/08/12/clojurescript-core-async-dots-game.html  
+        - https://github.com/bhauman/dotsters
+    - https://github.com/swannodette/
+      - https://github.com/swannodette/async-tests
+      - csp series
+        - http://swannodette.github.io/2013/07/12/communicating-sequential-processes
+        - http://swannodette.github.io/2013/07/31/extracting-processes
+        - http://swannodette.github.io/2013/08/17/comparative
+        - ...
   - spec
     - guides
       - https://clojure.org/guides/spec
@@ -68,6 +92,7 @@
   - state abstractions
     - https://github.com/day8/re-frame
     - https://github.com/tonsky/datascript
+      - https://tonsky.me/blog/datascript-chat/
     - https://github.com/juxt/crux
 
 - cljs

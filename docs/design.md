@@ -83,7 +83,7 @@
     - derived state may be a map {:derived1 {} :derived2 {} ..}
     - on every event, relevant deriver fns are invoked (derived1 ctx evt), where ctx contains all refs
     - derived1 computes and updates :derived1 key in the map
-    - also a derived-db may be used to store entities in in-memory db for querying with a proper lang e.g. datalog
+    - also a derived-db must be used (as a proper abstraction over joins) to store entities in in-memory, with a language like e.g. datalog
   - if client tab is closed
     -  client reconnects
     -  server sends the compact state 
