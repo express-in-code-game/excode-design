@@ -101,7 +101,7 @@
   (let [c (chan 1)]
     (sub p :kv c)
     (go (loop []
-          (when-let [[[t [k v]] _] (<! c)]
+          (when-let [[t [k v]] (<! c)]
             (do
               (swap! view assoc k v)))
           (recur))
@@ -125,8 +125,8 @@
                             (.whenComplete
                              (reify KafkaFuture$BiConsumer
                                (accept [this res err]
-                                 (println "topics created")
-                                 #_(>! out [:ktopics-created res]))))))
+                                       (println "topics created")
+                                       (>! out [:ktopics-created res]))))))
               :delete (delete-topics {:props props :names topics})))
           (recur))
         (println "proc-topics exiting"))
@@ -137,11 +137,11 @@
   (let [c (chan 1)]
     (sub p :kstreams c)
     (go (loop [app-state nil]
-          (when-let [[[t [k args]] _] (<! c)]
+          (when-let [[t [k args]] (<! c)]
             (condp = k
               :create (let [{:keys [create id]} args
                             app (create)]
-                        (>! out [:kv [:id app]])
+                        (>! out [:kv [id app]])
                         (recur app))
               :close (do
                        (.close (:kstreams app-state))
@@ -153,17 +153,26 @@
         (println "proc-streams exiting"))
     c))
 
-#_(proc-view sys-chan-1-pub view-1)
-#_(proc-topics sys-chan-1-pub sys-chan-1)
-#_(proc-streams sys-chan-1-pub sys-chan-1)
+(proc-view sys-chan-1-pub view-1)
+(proc-topics sys-chan-1-pub sys-chan-1)
+(proc-streams sys-chan-1-pub sys-chan-1)
 
 (comment
-  
+
   (put! sys-chan-1 [:ktopics :create])
   (list-topics {:props props})
   (put! sys-chan-1 [:ktopics :delete])
   (list-topics {:props props})
-  
+
+  (put! sys-chan-1 [:kstreams [:create {:create create-streams-user
+                                        :id :create-streams-user}]])
+
+  @view-1
+  (def streams-user (-> @view-1 :create-streams-user :kstreams))
+  (.isRunning (.state streams-user))
+  (put! sys-chan-1 [:kstreams [:start {}]])
+  (put! sys-chan-1 [:kstreams [:close {}]])
+
   ;;
   )
 
