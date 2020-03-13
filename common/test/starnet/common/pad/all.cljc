@@ -8,4 +8,5 @@
    [starnet.common.pad.game1]
    [starnet.common.pad.game2]
    [starnet.common.pad.datascript1]
-   [starnet.common.pad.async1]))
+   [starnet.common.pad.async1]
+   [starnet.common.pad.async2]))
