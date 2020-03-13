@@ -94,16 +94,16 @@
 
 (def sys-chan-1 (chan (a/sliding-buffer 10)))
 (def sys-chan-1-pub (pub sys-chan-1 first))
-(def view-1 (atom {}))
+(def derived-1 (atom {}))
 
 (defn proc-view
-  [p view]
+  [p derived]
   (let [c (chan 1)]
     (sub p :kv c)
     (go (loop []
           (when-let [[t [k v]] (<! c)]
             (do
-              (swap! view assoc k v)))
+              (swap! derived assoc k v)))
           (recur))
         (println "proc-view exiting"))
     c))
@@ -153,7 +153,7 @@
         (println "proc-streams exiting"))
     c))
 
-(proc-view sys-chan-1-pub view-1)
+(proc-view sys-chan-1-pub derived-1)
 (proc-topics sys-chan-1-pub sys-chan-1)
 (proc-streams sys-chan-1-pub sys-chan-1)
 
