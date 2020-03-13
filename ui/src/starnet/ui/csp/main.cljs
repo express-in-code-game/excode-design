@@ -22,7 +22,7 @@
 
 (def chan-1 (chan (a/sliding-buffer 10)))
 (def chan-1-pub (pub chan-1 first))
-(def view-1 (atom {}))
+(def derived-1 (atom {}))
 
 (defn proc-main
   [p out]
