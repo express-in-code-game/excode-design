@@ -2,7 +2,9 @@
   (:require
    [clojure.pprint :as pp]
    [clojure.spec.alpha :as s]
-   
+   [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go
+                                     >!! <!! alt!! alts! alts!! take! put!
+                                     thread pub sub]]
    [starnet.app.alpha.streams :refer [create-topics list-topics
                                       delete-topics produce-event
                                       future-call-consumer read-store
@@ -89,6 +91,81 @@
 (def observers {0 #uuid "46855899-838a-45fd-98b4-c76c08954645"
                 1 #uuid "ea1162e3-fe45-4652-9fa9-4f8dc6c78f71"
                 2 #uuid "4cd4b905-6859-4c22-bae7-ad5ec51dc3f8"})
+
+(def sys-chan-1 (chan (a/sliding-buffer 10)))
+(def sys-chan-1-pub (pub sys-chan-1 first))
+(def view-1 (atom {}))
+
+(defn proc-view
+  [p view]
+  (let [c (chan 1)]
+    (sub p :kv c)
+    (go (loop []
+          (when-let [[[t [k v]] _] (<! c)]
+            (do
+              (swap! view assoc k v)))
+          (recur))
+        (println "proc-view exiting"))
+    c))
+
+(defn proc-topics
+  [p out]
+  (let [c (chan 1)]
+    (sub p :ktopics c)
+    (go (loop []
+          (when-let [[t v] (<! c)]
+            (prn [t v])
+            (condp = v
+              :create (do
+                        (-> (create-topics {:props props
+                                            :names topics
+                                            :num-partitions 1
+                                            :replication-factor 1})
+                            (.all)
+                            (.whenComplete
+                             (reify KafkaFuture$BiConsumer
+                               (accept [this res err]
+                                 (println "topics created")
+                                 #_(>! out [:ktopics-created res]))))))
+              :delete (delete-topics {:props props :names topics})))
+          (recur))
+        (println "proc-topics exiting"))
+    c))
+
+(defn proc-streams
+  [p out]
+  (let [c (chan 1)]
+    (sub p :kstreams c)
+    (go (loop [app-state nil]
+          (when-let [[[t [k args]] _] (<! c)]
+            (condp = k
+              :create (let [{:keys [create id]} args
+                            app (create)]
+                        (>! out [:kv [:id app]])
+                        (recur app))
+              :close (do
+                       (.close (:kstreams app-state))
+                       (recur app-state))
+              :start (do (.start (:kstreams app-state))
+                         (recur app-state))
+              :cleanup (do (.cleanUp (:kstreams app-state))
+                           (recur app-state)))))
+        (println "proc-streams exiting"))
+    c))
+
+#_(proc-view sys-chan-1-pub view-1)
+#_(proc-topics sys-chan-1-pub sys-chan-1)
+#_(proc-streams sys-chan-1-pub sys-chan-1)
+
+(comment
+  
+  (put! sys-chan-1 [:ktopics :create])
+  (list-topics {:props props})
+  (put! sys-chan-1 [:ktopics :delete])
+  (list-topics {:props props})
+  
+  ;;
+  )
 
 (comment
 
