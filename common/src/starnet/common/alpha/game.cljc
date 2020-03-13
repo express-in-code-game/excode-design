@@ -9,12 +9,6 @@
    [starnet.common.alpha.core :refer [make-inst with-gen-fmap]]
    #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethods-for-a-set]]
       :clj  [starnet.common.alpha.macros :refer [defmethods-for-a-set]])
-
-   [clojure.core.logic.nominal :exclude [fresh hash] :as nom]
-   [clojure.core.logic :exclude [is] :as l :rename {== ?==} :refer :all]
-   [clojure.core.logic.pldb :as pldb :refer [db with-db db-rel db-fact]]
-   [clojure.core.logic.fd  :as fd]
-   [clojure.core.logic.unifier :as u]
    [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]))
 
 (defn make-game-state

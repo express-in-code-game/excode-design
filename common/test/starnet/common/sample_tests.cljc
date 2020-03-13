@@ -80,11 +80,13 @@
   (baz [this x] "baz doc"))
 
 (extend-protocol P
-  clojure.lang.Keyword
+  #?(:clj clojure.lang.Keyword
+     :cljs cljs.core/Keyword)
   (bar ([k a] [k a])
     ([k a b] [k a b]))
   (baz [k a] [k a])
-  clojure.lang.Symbol
+  #?(:clj clojure.lang.Symbol
+     :cljs cljs.core/Symbol)
   (bar ([s a] [s a])
     ([s a b] [s a b]))
   (baz [s a] [s a]))
