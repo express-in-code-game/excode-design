@@ -43,7 +43,11 @@
         - https://github.com/bhauman/dotsters
     - https://github.com/swannodette/
       - https://github.com/swannodette/async-tests
-      - http://swannodette.github.io/2013/07/12/communicating-sequential-processes
+      - csp series
+        - http://swannodette.github.io/2013/07/12/communicating-sequential-processes
+        - http://swannodette.github.io/2013/07/31/extracting-processes
+        - http://swannodette.github.io/2013/08/17/comparative
+        - ...
   - spec
     - guides
       - https://clojure.org/guides/spec
