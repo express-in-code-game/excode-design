@@ -259,7 +259,7 @@
   [ev]
   (or
    (-> ev :ev/type evtype-recordkey-map ev)
-   (java.util.UUID/randomUUID)))
+   (gen/generate gen/uuid)))
 
 (defn event-to-topic
   [ev]
