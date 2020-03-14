@@ -5,8 +5,7 @@
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go
                                      >!! <!! alt!! alts! alts!! take! put!
                                      thread pub sub]]
-   [starnet.app.alpha.streams :refer [create-topics list-topics
-                                      delete-topics produce-event
+   [starnet.app.alpha.streams :refer [produce-event
                                       future-call-consumer read-store
                                       send-event create-streams-game create-streams-user]])
   (:import
@@ -75,13 +74,6 @@
   ;;
   )
 
-(def props {"bootstrap.servers" "broker1:9092"})
-
-(def topics ["alpha.user"
-             "alpha.user.changes"
-             "alpha.game"
-             "alpha.game.changes"])
-
 (def games {0 #uuid "15108e92-959d-4089-98fe-b92bb7c571db"
             1 #uuid "461b65a8-0f24-46c9-8248-4bf6d7e1aa1a"})
 
@@ -92,104 +84,7 @@
                 1 #uuid "ea1162e3-fe45-4652-9fa9-4f8dc6c78f71"
                 2 #uuid "4cd4b905-6859-4c22-bae7-ad5ec51dc3f8"})
 
-(def sys-chan-1 (chan (a/sliding-buffer 10)))
-(def sys-chan-1-pub (pub sys-chan-1 first))
-(def derived-1 (atom {}))
-
-(defn proc-view
-  [p derived]
-  (let [c (chan 1)]
-    (sub p :kv c)
-    (go (loop []
-          (when-let [[t [k v]] (<! c)]
-            (do
-              (swap! derived assoc k v)))
-          (recur))
-        (println "proc-view exiting"))
-    c))
-
-(defn proc-topics
-  [p out]
-  (let [c (chan 1)]
-    (sub p :ktopics c)
-    (go (loop []
-          (when-let [[t v] (<! c)]
-            (prn [t v])
-            (condp = v
-              :create (do
-                        (-> (create-topics {:props props
-                                            :names topics
-                                            :num-partitions 1
-                                            :replication-factor 1})
-                            (.all)
-                            (.whenComplete
-                             (reify KafkaFuture$BiConsumer
-                               (accept [this res err]
-                                       (println "topics created")
-                                       (>! out [:ktopics-created res]))))))
-              :delete (delete-topics {:props props :names topics})))
-          (recur))
-        (println "proc-topics exiting"))
-    c))
-
-(defn proc-streams
-  [p out]
-  (let [c (chan 1)]
-    (sub p :kstreams c)
-    (go (loop [app-state nil]
-          (when-let [[t [k args]] (<! c)]
-            (condp = k
-              :create (let [{:keys [create id]} args
-                            app (create)]
-                        (>! out [:kv [id app]])
-                        (recur app))
-              :close (do
-                       (.close (:kstreams app-state))
-                       (recur app-state))
-              :start (do (.start (:kstreams app-state))
-                         (recur app-state))
-              :cleanup (do (.cleanUp (:kstreams app-state))
-                           (recur app-state)))))
-        (println "proc-streams exiting"))
-    c))
-
-(proc-view sys-chan-1-pub derived-1)
-(proc-topics sys-chan-1-pub sys-chan-1)
-(proc-streams sys-chan-1-pub sys-chan-1)
-
 (comment
-
-  (put! sys-chan-1 [:ktopics :create])
-  (list-topics {:props props})
-  (put! sys-chan-1 [:ktopics :delete])
-  (list-topics {:props props})
-
-  (put! sys-chan-1 [:kstreams [:create {:create create-streams-user
-                                        :id :create-streams-user}]])
-
-  @view-1
-  (def streams-user (-> @view-1 :create-streams-user :kstreams))
-  (.isRunning (.state streams-user))
-  (put! sys-chan-1 [:kstreams [:start {}]])
-  (put! sys-chan-1 [:kstreams [:close {}]])
-
-  ;;
-  )
-
-(comment
-
-  (-> (create-topics {:props props
-                      :names topics
-                      :num-partitions 1
-                      :replication-factor 1})
-      (.all)
-      (.whenComplete
-       (reify KafkaFuture$BiConsumer
-         (accept [this res err]
-           (println "; created topics " topics)))))
-
-  (delete-topics {:props props :names topics})
-  (list-topics {:props props})
 
   (def p (KafkaProducer.
           {"bootstrap.servers" "broker1:9092"

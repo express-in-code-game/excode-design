@@ -45,3 +45,29 @@
 
   ;;
   )
+
+
+(comment
+
+
+  (def c (go
+           (do
+             (<! (timeout 1000))
+             (println "done"))
+           [1 2]))
+
+  (take! c (fn [v] (println v)))
+
+
+  (def c (go
+           (let [c (chan 1)]
+             (do
+               (<! (timeout 1000))
+               (println "done")
+               (>! c [1 2])
+               c))))
+  
+  (take! c (fn [v] (println v)))
+
+  ;;
+  )
