@@ -13,7 +13,7 @@
                               :crux.kafka/doc-topic "crux-docs"
                               :crux.kafka/create-topics true
                               :crux.kafka/doc-partitions 1
-                              :crux.kafka/replication-factor 2
+                              :crux.kafka/replication-factor (short 1)
                               :crux.kv/db-dir "/tmp/crux"
                               :crux.kv/sync? false
                               :crux.kv/check-and-store-index-version true}))
