@@ -22,10 +22,9 @@
                               :crux.kafka/create-topics true
                               :crux.kafka/doc-partitions 1
                               :crux.kafka/replication-factor (short 1)
-                              :crux.kv/db-dir "/tmp/crux"
+                              :crux.kv/db-dir "/ctx/data/crux"
                               :crux.kv/sync? false
                               :crux.kv/check-and-store-index-version true}))
-
 
   (easy-ingest
    node
