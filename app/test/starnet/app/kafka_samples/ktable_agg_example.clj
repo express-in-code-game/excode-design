@@ -1,4 +1,4 @@
-(ns starnet.app.kafka.ktable-agg-example
+(ns starnet.app.kafka-samples.ktable-agg-example
   (:require
    [clojure.pprint :as pp]
    [starnet.app.alpha.aux.serdes])

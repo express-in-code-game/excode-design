@@ -11,7 +11,9 @@
    [starnet.common.pad.all]
 
    [starnet.app.alpha.repl]
-   [starnet.app.alpha.tests]))
+   [starnet.app.alpha.tests]
+   [starnet.app.crux-samples.core]
+   ))
 
 (defn env-optimized?
   []

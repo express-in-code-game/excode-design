@@ -1,4 +1,4 @@
-(ns starnet.app.kafka.serde-compare
+(ns starnet.app.kafka-samples.serde-compare
   (:require
    [clojure.pprint :as pp])
   (:import

@@ -1,4 +1,4 @@
-(ns starnet.app.kafka.aggregate-delete-example
+(ns starnet.app.kafka-samples.aggregate-delete-example
   (:require
    [clojure.pprint :as pp])
   (:import

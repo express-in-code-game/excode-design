@@ -12,7 +12,13 @@
           org.apache.kafka/kafka-streams {:mvn/version "2.4.0"}
 
           nrepl {:mvn/version "0.6.0"}
-          cider/cider-nrepl {:mvn/version "0.21.1"}}}
+          cider/cider-nrepl {:mvn/version "0.21.1"}
+          
+          juxt/crux-core {:mvn/version "20.03-1.8.0-alpha"}
+          juxt/crux-rocksdb {:mvn/version "20.03-1.8.0-alpha"}
+          juxt/crux-kafka {:mvn/version "20.03-1.8.0-alpha"}
+
+          }}
   :dev {:extra-deps
         {}}
   :optimized {:extra-deps {}}
