@@ -217,6 +217,8 @@
   -  client recomputes the game state as (apply next-state (into default-game-events game-events )) (recompute-derive-whaterver-is-needed ..)
 - if no disconnect, client receives only new game events and updates the game state
 - but server adds timestamps - so time is independent from the client
+- games are stored in db to be queryable/joinable: transacted on creation, completion or configuration
+- game state is a record of another topic, changed on in-game events
 
 ### assets
 
