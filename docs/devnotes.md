@@ -96,12 +96,14 @@
     - https://github.com/juxt/crux
   - http
     - https://github.com/ring-clojure/ring/wiki
-    - https://github.com/weavejester/compojure/wiki
     - https://github.com/pedestal
       - http://pedestal.io/guides/index
       - https://github.com/pedestal/pedestal/tree/master/samples
     - https://github.com/juxt/yada
       - https://juxt.pro/yada/manual/index.html
+      - https://juxt.pro/yada/manual/index.html#server-sent-events
+    - https://github.com/weavejester/compojure/wiki
+    - https://github.com/clojure-liberator/liberator
 
 - crux
   - https://github.com/juxt/crux
