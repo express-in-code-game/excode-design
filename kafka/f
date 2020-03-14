@@ -19,9 +19,6 @@ term(){
   dc exec $1 bash -c "bash;"
 }
 
-remove_volumes(){
-  docker volume rm starnet.kafka
-}
 
 permissions(){
   sudo chmod -R 777 volumes

@@ -29,6 +29,7 @@ dock() {
                 --network starnet \
                 -p 7788:7788 \
                 -v "$(cd ../ && pwd)":/ctx \
+                --mount type=volume,source=starnet.crux,target=/ctx/data,volume-nocopy=true \
                 -e "appenv={:optimized false}" \
                  starnet.app \
                  bash

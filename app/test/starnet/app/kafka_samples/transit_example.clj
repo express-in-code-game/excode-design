@@ -1,4 +1,4 @@
-(ns starnet.app.kafka.transit-example
+(ns starnet.app.kafka-samples.transit-example
   (:require
    [clojure.pprint :as pp]
    [starnet.app.alpha.aux.serdes])

@@ -1,4 +1,4 @@
-(ns starnet.app.kafka.wordcount-example
+(ns starnet.app.kafka-samples.wordcount-example
   (:require
    [clojure.pprint :as pp])
   (:import

@@ -1,4 +1,4 @@
-(ns starnet.app.kafka.streams-example
+(ns starnet.app.kafka-samples.streams-example
   (:require
    [clojure.pprint :as pp])
   (:import

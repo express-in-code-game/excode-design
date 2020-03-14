@@ -9,10 +9,18 @@
 
           com.cognitect/transit-clj {:mvn/version "1.0.324"}
           org.apache.kafka/kafka-clients {:mvn/version "2.4.0"}
-          org.apache.kafka/kafka-streams {:mvn/version "2.4.0"}
+          org.apache.kafka/kafka-streams {:mvn/version "2.4.0"
+                                          :exclusions [org.rocksdb/rocksdbjni]}
+          org.rocksdb/rocksdbjni {:mvn/version "6.5.3"} #_{:mvn/version "5.18.3"}
 
           nrepl {:mvn/version "0.6.0"}
-          cider/cider-nrepl {:mvn/version "0.21.1"}}}
+          cider/cider-nrepl {:mvn/version "0.21.1"}
+
+          juxt/crux-core {:mvn/version "20.03-1.8.0-alpha"}
+          juxt/crux-rocksdb {:mvn/version "20.03-1.8.0-alpha"
+                             :exclusions [org.rocksdb/rocksdbjni]}
+          juxt/crux-kafka {:mvn/version "20.03-1.8.0-alpha"
+                           :exclusions [org.apache.kafka/kafka-clients]}}}
   :dev {:extra-deps
         {}}
   :optimized {:extra-deps {}}
