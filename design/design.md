@@ -193,7 +193,7 @@
   - https://clojure.org/news/2013/06/28/clojure-clore-async-channels
   - https://github.com/clojure/core.async
 - kafka (as event/record store)
-- a datalog db
+- a datalog db for the user abstraction
 
 ### game state
 
@@ -235,14 +235,20 @@
 - add tests, pad
 - setup kafka, kafka docs, experiment
 - choose a datalog db
-- user enetities: identity, crud
+- user abstraction: identity, crud
 - add http(s)
 - auth tokens
-- user enetities: ui via CSP
+- user abstraction: ui via CSP
 - sockets
 - simple game: tiles with values
 
-### 
+### code
+
+- queues and processes
+- a thing for a purpose: abstract only if obvious immediate reuse
+- spec fns when needed
+- processes know only args: pass channels explicitly
+- main file creates channels, imports and starts processes
 
 ### considerations
 
@@ -267,6 +273,8 @@
   - all ingame events are sent through ingame.events topic
   - if user closes the tab, they can reopen it from 'ongoing games' list -> get current state snapshots from game.data and ingame.events
   - after the game has started, host can't cancel it
-
-
-
+- app's proc-streams is wrong: should be a process per streams app, imported and started exlicitly with args
+- buffer size 1 chans with peek and ? possible ? to convey db connections etc. Or is there another way ? Single process per connection + messages
+  - (recur conn) to be able to close or smth before new is taken from the queue
+- localStorage tokens: user1 token user2 token ... for multiple tabs
+- no ffing sessions
