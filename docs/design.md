@@ -1,99 +1,41 @@
 
-## game
+## what
 
-#### other games observations
+- Starnet
+  - a board-like game
+  - with a server and regular events(tournaments)
+  - complete, free and open to everyone
+  - to be worthy of a scene and community around
 
-  - homm3 
-    - AI battles are repetetive, needed as the role of combining is little: focus mostly on collecting
-    - graphics is a still dark and eyestraining
-    - simulteneous turns, mirror templates are genius
-  - aoe, starcraft
-    - micro heavy
-  - hearthstone battlegrounds
-    - mode is brilliant
-  - terraria
-    - softer graphics, but still dark
-    - amazing idea and design
- 
-#### lore
+## on games in general
 
-  - defend starnet, one shot opportunity of preventing launch of netconrol (controldrone)
-  - research, change, build, balance a missiondrone and a team (a hero and research drones)
-    - the winner's missiondrone and team will take on the mission of protecting startnet from netcontrol's takeover
-  - planets & teleports, remote controlled drones, ships
-  - single map
-  - start: teleport to the map (a planet)
-  - players play for competing/fighting team, both thinking their missiondrone and team will perform better than opponents, so better build wins
-  - entities vary, sets, tags, combinations: code,warp drives, fields, elements, fruit, self orient time .. etc.
-  - characters, reserach drones start from 0
-  
-#### gameplay
+- games are fundamentally magic, one of the better ways for beings to interact
+- games are being 'produced', but suprisingly, there are no events to play
+  - most games are micro heavy, dark, including the classics
+  - monetization noise is unhelathy and disturbing
+  - events(tournaments) are rare, not for everyone, brackets are on separate services
+  - prolifiration of the idea that the player must be an unhealthy aggry yob, seeking for life-replacing occupation that is also 10-hour-a-day-or-bust
+  - force into one mindset: compete for resources, collect more, bring opponent down
+- there is a glaring need for games that are
+  - simplier, lighter, have no micro
+  - have a map (board)
+  - are a service, can be played/observed in a browser, events and brackets included
+  - are complex and interesting enough to be worhty of a community around
+  - are moneytization free, come as whole available for everyone, no forced 'if you don't play, you have limit access to updates'
 
-- a tiled map
-- player collects varios items, chooses different options, experiencing effects to build a better missionship
-- game is values-transparent with little things to learn, provides calculations, more focuss on the picture and decisions, less arithmetics
-- maps , items quantities and even qualities are randomized
-- randomness on initial generation only
-- optimal game time ~15-90 min
+## observaions
 
-#### elements
-
-  - goal is game completeness, balance, so complete set of entities, no bloating expansions
-  - entities have tags(sets): gathering organic discovery etc.
-  - droids
-    - drive types 
-    - research abilities
-    - distance speed
-  - combine parts compute fields drives etc.
-  - research quality
-  - compute capabilities
-  - decision making accuracy, energy, vision, vitality
-
-## how
-
-- first, setup CD to the cloud - project must be live
-  - fixed single server instance
-    - run kafka stack and system stack separately
-    - update the system via pull, up -d
-    - ability to repl into production
-  - aws
-    - https://aws.amazon.com/ec2/instance-types/
-    - https://aws.amazon.com/blogs/compute/amazon-ecs-and-docker-volume-drivers-amazon-ebs/
-    - https://aws.amazon.com/ec2/pricing/reserved-instances/pricing/
-    - https://aws.amazon.com/ebs/pricing/
-  - build up to assets, deploy to aws, gen large seqs, sim gen daily
-- keep it simple, data files and fn files, repetetive if needed
-  - game is a seq of events
-- use repl from the start as it's the most powerful design tool, inform the design
-  - events, words, simple shapes; assets will form last
-- consider figwheel main if it's less cpu consuming than shadow-cljs
-- use DOM for the board, but keep it simple - details and info in windows/popups/panels
-- file per asset, little to no shared code, an asset as sexp, use lib, render into canvas/svg/png
-- gen assets into files, preload, set as sources to tiles
-- if needed, run assets as code (render into svg/canvas) in enetity information window, 
-- point is: assets are code, files are generated
-- docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
-- https://github.com/localstack/localstack
-- persist data in kafka (as event/record store)
-- game state
-  - the game is powerful, so is the client
-  - game is not computed on the server
-  - game state is persisted on the server in compact form as {:default-game-events [] :game-events []}
-  - client being powerful, computes all the needed derived/queryable state for interactivity
-    - derived state may be a map {:derived1 {} :derived2 {} ..}
-    - on every event, relevant deriver fns are invoked (derived1 ctx evt), where ctx contains all refs
-    - derived1 computes and updates :derived1 key in the map
-    - also a derived-db may be used to store entities in in-memory db for querying with a proper lang e.g. datalog
-  - if client tab is closed
-    -  client reconnects
-    -  server sends the compact state 
-    -  client recomputes the game state as (apply next-state (into default-game-events game-events )) (recompute-derive-whaterver-is-needed ..)
-  - if no disconnect, client receives only new game events and updates the game state
-  - but server adds timestamps - so time is independent from the client
-- assets
-  - use s-expressions to gen svg
-  - colors, lines, shapes (for cape, spheres, facilities, skills, fruit tree etc.)
-  - sound effect and better assets will grow
+- HoMM3
+  - AI battles are repetetive
+  - little role of combining enetities
+  - simulteneous turns save the day
+- AoE, Starcraft
+  - micro heavy
+- Hearthstone Battlegrounds
+  - mode is brilliant
+- Terraria
+  - softer graphics, but still dark
+  - amazing idea and design
 
 ## user experience
 
@@ -131,27 +73,191 @@
     - to observe or play the game user clicks the match in the bracket, gets into the game lobby or game itself
     - players can mutually agree to nullify the result and re-play
 
-## drawing board
+## starnet game
 
-- ignite
-  - kafka
-  - the core of the system via repl interface
-  - game
-  - http interface, ws
-  - ui
-  - iterate
-- ui
-  - home page simple routes: /events /games
-  - /games : list of games or create a gam
+### story
+
+  - defend starnet, one shot opportunity of preventing launch of netconrol (controldrone)
+  - research, change, build, balance a missiondrone and a team (a hero and research drones)
+    - the winner's missiondrone and team will take on the mission of protecting startnet from netcontrol's takeover
+  - planets & teleports, remote controlled drones, ships
+  - single map
+  - start: teleport to the map (a planet)
+  - players play for competing/fighting team, both thinking their missiondrone and team will perform better than opponents, so better build wins
+  - entities vary, sets, tags, combinations: code,warp drives, fields, elements, fruit, self orient time .. etc.
+  - characters, reserach drones start from 0
+
+### gameplay
+
+  - a tiled map
+  - player collects varios items, chooses different options, experiencing effects to build a better missionship
+  - game is values-transparent with little things to learn, provides calculations, more focuss on the picture and decisions, less arithmetics
+  - maps , items quantities and even qualities are randomized
+  - randomness on initial generation only
+  - optimal game time ~15-90 min
+
+### balance
+
+- goal is game completeness, balance, so complete set of entities, no bloating expansions
+  - entities have tags(sets): gathering organic discovery etc.
+  - droids
+    - drive types 
+    - research abilities
+    - distance speed
+  - combine parts compute fields drives etc.
+  - research quality
+  - compute capabilities
+  - decision making accuracy, energy, vision, vitality
+
+### game 0.1
+
+- players (azure and orange) start on the map, charachter is represented with a cape
+- 1 hero, 3 research drones (represented with a colored sphere)
+- missiondrone is represented with a large sphere (possible made of nanites) and orbiting supporting spheredrones
+- map is visible and open to both opponents equally, 128x128
+- players are not competing for resources, what one can get, the other can as well
+- players choose their initial position on the map 
+- research, collect, rebalance, by roaming the map
+- players choose what to visit and collect, make choices, balance the missiondrone's and the team's characterisitics
+- players see each others moves, but not choices (the missiondrone build, team's stats etc.)
+- player can visit a fruit tree to improve certain skills of a hero, for example, or visit and select nanite modules for the missiondrone
+- players have limited moves per day, limited days (say, 7)
+- total time for 7 days - 15min
+- every 5 mins there is an battle simulation, 30sec per move, 3rd battle is final
+- in the battle goal is to disable(defeat) opponent's mission drone
+- hero and research drones are engaged and support (they also develop skills and abilities)
+- no distance
+  - movement in terms of energy spent at places, maybe increasable limit on how many places can be visited
+  - visiting a lot should not matter though 
+- missiondrone attributes
+  - compute capabilities
+  - data bank
+  - knowledge bank
+  - independent agent programs (for unpredictability)
+  - fields
+  - networking range
+  - design quility
+  - human interface simplicity
+  - abstraction level (like an age in AoE)
+  - defensive/offensive resources
+  - energy
+  - ...
+- hero
+  - accuracy
+  - decisionmaking
+  - resolve
+  - drone design 
+  - reach (movement)
+  - creativity(ideas)
+  - endurance (energy)
+  - vision
+- reserach drone
+  - reach
+  - reserach capabilites
+  - absctraction level
+  - fields
+  - hull
+  - energy
+  - hoisting (carrying) capacity
+
+## how
+
+- use repl from the start as it's the most powerful design tool, will inform the design
+
+### cloud
+
+- first, setup CD to the cloud - project must live
+- fixed single server instance
+  - aws
+    - https://aws.amazon.com/ec2/instance-types/
+    - https://aws.amazon.com/blogs/compute/amazon-ecs-and-docker-volume-drivers-amazon-ebs/
+    - https://aws.amazon.com/ec2/pricing/reserved-instances/pricing/
+    - https://aws.amazon.com/ebs/pricing/
+  - https://github.com/localstack/localstack
+  - persist data via docker volumes and EBS
+
+### system
+
+- CPS communicating sequential processes
+  - https://www.infoq.com/presentations/clojure-core-async/
+    - "function chains are poor machines
+    - "good programs should be made out of processes and queues
+    - "the 'api du jours' events/calbacks - Definition of du jour. 1 : made for a particular day
+    - "external flow state
+  - https://clojure.org/news/2013/06/28/clojure-clore-async-channels
+  - https://github.com/clojure/core.async
+<br/><br/>
+- queues and processes
+- a thing for a purpose: abstract only if obvious immediate reuse
+- spec fns when needed
+- processes know only args: pass channels explicitly
+- main file creates channels, imports and starts processes
+<br/><br/>
+- kafka (as event/record store)
+- datalog db (crux) to index data
+  - most data (not write-intensive) is persisted in crux's topics
+  - in-game events (higher throughput) flow through a dedicated kafka topic
+  - game as an enetity (low throughput) is persisted without state (has a ref) and is queryable as users and other data
+
+### game state
+
+- the game is powerful, so is the client
+- game is not computed on the server
+- game state is persisted on the server in compact form as {:game-events []}
+- client being powerful, computes all the needed derived/queryable state for interactivity
+  - derived state may be a map {:derived1 {} :derived2 {} ..}
+  - on every event, relevant deriver fns are invoked (derived1 ctx evt), where ctx contains all refs
+  - derived1 computes and updates :derived1 key in the map
+  - also a derived-db must be used (as a proper abstraction over joins) to store entities in in-memory, with a language like e.g. datalog
+- if client tab is closed
+  -  client reconnects
+  -  server sends the compact state 
+  -  client recomputes the game state as (apply next-state (into default-game-events game-events )) (recompute-derive-whaterver-is-needed ..)
+- if no disconnect, client receives only new game events and updates the game state
+- but server adds timestamps - so time is independent from the client
+- games are stored in db to be queryable/joinable: transacted on creation, completion or configuration
+- game state is a record of another topic, changed on in-game events
+
+
+### assets
+
+- use s-expressions to gen svg
+- colors, lines, shapes (for cape, spheres, facilities, skills, fruit tree etc.)
+- use DOM for the board, but keep it simple - details and info in windows/popups/panels
+- file per asset, little to no shared code, an asset as sexp, use lib, render into canvas/svg/png
+- gen assets into files, preload, set as sources to tiles
+- if needed, run assets as code (render into svg/canvas) in enetity information window, 
+- point is: assets are code, files are generated
+- but first: events, words, simple shapes; assets will form last
+
+### documentation
+
+- github repo with .md files
+- docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
+
+### steps
+
+- setup clj cljs cljc
+- clojure.async clojure.spec test.check
+- add tests, pad
+- setup kafka, kafka docs, experiment
+- choose a datalog db
+- user abstraction: identity, crud
+- add http(s)
+- auth tokens
+- user abstraction: ui via CSP
+- sockets
+- simple game: tiles with values
+
+### considerations
+
+- figwheel main if it's less cpu consuming than shadow-cljs
 - search
-  -  used only for events, games, users
+  - used only for events, games, users
 - data and secutiry
   - user account data only exists in user.data
   - if user deletes their account, it gets removed from user.data (kafka tombstone event)
   - in the system (event brackets, stats etc.) it get's shown as 'unknown' (only uuid is used in other topics)
-  - only events history, event placements, user wins/losses are persisted, not all games
-  - user identity as email into uuid
-  - after 0.1 add token, https, wss
 - v0.1 ux
   - users creates a game -> game.data
   - browser tab opens
@@ -163,53 +269,9 @@
   - all ingame events are sent through ingame.events topic
   - if user closes the tab, they can reopen it from 'ongoing games' list -> get current state snapshots from game.data and ingame.events
   - after the game has started, host can't cancel it
-- v0.1 gameplay
-  - players (azure and orange) start on the map, charachter is represented with a cape
-  - 1 hero, 3 research drones (represented with a colored sphere)
-  - missiondrone is represented with a large sphere (possible made of nanites) and orbiting supporting spheredrones
-  - map is visible and open to both opponents equally, 128x128
-  - players are not competing for resources, what one can get, the other can as well
-  - players choose their initial position on the map 
-  - research, collect, rebalance, by roaming the map
-  - players choose what to visit and collect, make choices, balance the missiondrone's and the team's characterisitics
-  - players see each others moves, but not choices (the missiondrone build, team's stats etc.)
-  - player can visit a fruit tree to improve certain skills of a hero, for example, or visit and select nanite modules for the missiondrone
-  - players have limited moves per day, limited days (say, 7)
-  - total time for 7 days - 15min
-  - every 5 mins there is an battle simulation, 30sec per move, 3rd battle is final
-  - in the battle goal is to disable(defeat) opponent's mission drone
-  - hero and research drones are engaged and support (they also develop skills and abilities)
-  - no distance
-    - movement in terms of energy spent at places, maybe increasable limit on how many places can be visited
-    - visiting a lot should not matter though 
-  - missiondrone attributes
-    - compute capabilities
-    - data bank
-    - knowledge bank
-    - independent agent programs (for unpredictability)
-    - fields
-    - networking range
-    - design quility
-    - human interface simplicity
-    - abstraction level (like an age in AoE)
-    - defensive/offensive resources
-    - energy
-    - ...
-  - hero
-    - accuracy
-    - decisionmaking
-    - resolve
-    - drone design 
-    - reach (movement)
-    - creativity(ideas)
-    - endurance (energy)
-    - vision
-  - reserach drone
-    - reach
-    - reserach capabilites
-    - absctraction level
-    - fields
-    - hull
-    - energy
-    - hoisting (carrying) capacity
-
+- app's proc-streams is wrong: should be a process per streams app, imported and started exlicitly with args
+- buffer size 1 chans with peek and ? possible ? to convey db connections etc. Or is there another way ? Single process per connection + messages
+  - (recur conn) to be able to close or smth before new is taken from the queue
+- localStorage tokens: user1 token user2 token ... for multiple tabs
+- no ffing sessions
+- css via classes
