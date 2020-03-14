@@ -192,15 +192,14 @@
     - "external flow state
   - https://clojure.org/news/2013/06/28/clojure-clore-async-channels
   - https://github.com/clojure/core.async
-- data
-  - kafka (as event/record store)
-  - a datalog db for the user abstraction
-- code
-  - queues and processes
-  - a thing for a purpose: abstract only if obvious immediate reuse
-  - spec fns when needed
-  - processes know only args: pass channels explicitly
-  - main file creates channels, imports and starts processes
+- kafka (as event/record store)
+- a datalog db for the user abstraction
+<br/><br/>
+- queues and processes
+- a thing for a purpose: abstract only if obvious immediate reuse
+- spec fns when needed
+- processes know only args: pass channels explicitly
+- main file creates channels, imports and starts processes
 
 ### game state
 
@@ -277,3 +276,4 @@
   - (recur conn) to be able to close or smth before new is taken from the queue
 - localStorage tokens: user1 token user2 token ... for multiple tabs
 - no ffing sessions
+- css via classes
