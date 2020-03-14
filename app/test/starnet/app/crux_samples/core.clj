@@ -67,8 +67,6 @@
   (crux/entity (crux/db crux) :manifest)
 
 
-  ; https://juxt.pro/blog/posts/crux-tutorial-put.html
-
   (crux/submit-tx crux
                   [[:crux.tx/put
                     {:crux.db/id :commodity/Pu
@@ -196,11 +194,12 @@
      :density 1.73
      :radioactive false}])
 
-
   (crux/q (crux/db crux)
           '{:find [element]
             :where [[element :type :element/metal]]})
-  
+
+  ; quotiing
+
   (=
    (crux/q (crux/db crux)
            '{:find [element]
@@ -214,19 +213,355 @@
            (quote
             {:find [element]
              :where [[element :type :element/metal]]})))
-  
+
+  ; name
+
   (crux/q (crux/db crux)
           '{:find [name]
             :where [[e :type :element/metal]
                     [e :common-name name]]})
-  
+
+  ; more info
+
   (crux/q (crux/db crux)
           '{:find [name rho]
             :where [[e :density rho]
                     [e :common-name name]]})
-  
-  
 
+  ; arguments
+
+  (crux/q (crux/db crux)
+          {:find '[name]
+           :where '[[e :type t]
+                    [e :common-name name]]
+           :args [{'t :element/metal}]})
+
+
+  (defn filter-type
+    [type]
+    (crux/q (crux/db crux)
+            {:find '[name]
+             :where '[[e :type t]
+                      [e :common-name name]]
+             :args [{'t type}]}))
+
+  (defn filter-appearance
+    [description]
+    (crux/q (crux/db crux)
+            {:find '[name IUPAC]
+             :where '[[e :common-name name]
+                      [e :IUPAC-name IUPAC]
+                      [e :appearance appearance]]
+             :args [{'appearance description}]}))
+
+  (filter-type :element/metal)
+  (filter-appearance "white solid")
+
+  (crux/submit-tx
+   crux
+   [[:crux.tx/put
+     (assoc manifest :badges ["SETUP" "PUT" "DATALOG-QUERIES"])]])
+
+  (crux/submit-tx
+   crux
+   [[:crux.tx/put
+     {:crux.db/id :consumer/RJ29sUU
+      :consumer-id :RJ29sUU
+      :first-name "Jay"
+      :last-name "Rose"
+      :cover? true
+      :cover-type :Full}
+     #inst "2114-12-03"]])
+
+  (crux/submit-tx
+   crux
+   [[:crux.tx/put
+     {:crux.db/id :consumer/RJ29sUU
+      :consumer-id :RJ29sUU
+      :first-name "Jay"
+      :last-name "Rose"
+      :cover? true
+      :cover-type :Full}
+     #inst "2113-12-03" ;; Valid time start
+     #inst "2114-12-03"] ;; Valid time end
+
+    [:crux.tx/put
+     {:crux.db/id :consumer/RJ29sUU
+      :consumer-id :RJ29sUU
+      :first-name "Jay"
+      :last-name "Rose"
+      :cover? true
+      :cover-type :Full}
+     #inst "2112-12-03"
+     #inst "2113-12-03"]
+
+    [:crux.tx/put
+     {:crux.db/id :consumer/RJ29sUU
+      :consumer-id :RJ29sUU
+      :first-name "Jay"
+      :last-name "Rose"
+      :cover? false}
+     #inst "2112-06-03"
+     #inst "2112-12-02"]
+
+    [:crux.tx/put
+     {:crux.db/id :consumer/RJ29sUU
+      :consumer-id :RJ29sUU
+      :first-name "Jay"
+      :last-name "Rose"
+      :cover? true
+      :cover-type :Promotional}
+     #inst "2111-06-03"
+     #inst "2112-06-03"]])
+
+
+  (crux/q (crux/db crux #inst "2115-07-03")
+          '{:find [cover type]
+            :where [[e :consumer-id :RJ29sUU]
+                    [e :cover? cover]
+                    [e :cover-type type]]})
+
+  (crux/q (crux/db crux #inst "2111-07-03")
+          '{:find [cover type]
+            :where [[e :consumer-id :RJ29sUU]
+                    [e :cover? cover]
+                    [e :cover-type type]]})
+
+  (crux/q (crux/db crux #inst "2112-07-03")
+          '{:find [cover type]
+            :where [[e :consumer-id :RJ29sUU]
+                    [e :cover? cover]
+                    [e :cover-type type]]})
+
+  (crux/submit-tx
+   crux
+   [[:crux.tx/put
+     (assoc manifest :badges ["SETUP" "PUT" "DATALOG-QUERIES" "BITEMP"])]])
+
+
+  (easy-ingest
+   crux
+   [{:crux.db/id :gold-harmony
+     :company-name "Gold Harmony"
+     :seller? true
+     :buyer? false
+     :units/Au 10211
+     :credits 51}
+
+    {:crux.db/id :tombaugh-resources
+     :company-name "Tombaugh Resources Ltd."
+     :seller? true
+     :buyer? false
+     :units/Pu 50
+     :units/N 3
+     :units/CH4 92
+     :credits 51}
+
+    {:crux.db/id :encompass-trade
+     :company-name "Encompass Trade"
+     :seller? true
+     :buyer? true
+     :units/Au 10
+     :units/Pu 5
+     :units/CH4 211
+     :credits 1002}
+
+    {:crux.db/id :blue-energy
+     :seller? false
+     :buyer? true
+     :company-name "Blue Energy"
+     :credits 1000}])
+
+
+  (defn stock-check
+    [company-id item]
+    {:result (crux/q (crux/db crux)
+                     {:find '[name funds stock]
+                      :where ['[e :company-name name]
+                              '[e :credits funds]
+                              ['e item 'stock]]
+                      :args [{'e company-id}]})
+     :item item})
+
+
+  (defn format-stock-check
+    [{:keys [result item] :as stock-check}]
+    (for [[name funds commod] result]
+      (str "Name: " name ", Funds: " funds ", " item " " commod)))
+
+  (crux/submit-tx
+   crux
+   [[:crux.tx/cas
+   ;; Old doc
+     {:crux.db/id :blue-energy
+      :seller? false
+      :buyer? true
+      :company-name "Blue Energy"
+      :credits 1000}
+   ;; New doc
+     {:crux.db/id :blue-energy
+      :seller? false
+      :buyer? true
+      :company-name "Blue Energy"
+      :credits 900
+      :units/CH4 10}]
+
+    [:crux.tx/cas
+   ;; Old doc
+     {:crux.db/id :tombaugh-resources
+      :company-name "Tombaugh Resources Ltd."
+      :seller? true
+      :buyer? false
+      :units/Pu 50
+      :units/N 3
+      :units/CH4 92
+      :credits 51}
+   ;; New doc
+     {:crux.db/id :tombaugh-resources
+      :company-name "Tombaugh Resources Ltd."
+      :seller? true
+      :buyer? false
+      :units/Pu 50
+      :units/N 3
+      :units/CH4 82
+      :credits 151}]])
+
+  (format-stock-check (stock-check :tombaugh-resources :units/CH4))
+  (format-stock-check (stock-check :blue-energy :units/CH4))
+
+  (crux/submit-tx
+   crux
+   [[:crux.tx/cas
+   ;; Old doc
+     {:crux.db/id :gold-harmony
+      :company-name "Gold Harmony"
+      :seller? true
+      :buyer? false
+      :units/Au 10211
+      :credits 51}
+   ;; New doc
+     {:crux.db/id :gold-harmony
+      :company-name "Gold Harmony"
+      :seller? true
+      :buyer? false
+      :units/Au 211
+      :credits 51}]
+
+    [:crux.tx/cas
+   ;; Old doc
+     {:crux.db/id :encompass-trade
+      :company-name "Encompass Trade"
+      :seller? true
+      :buyer? true
+      :units/Au 10
+      :units/Pu 5
+      :units/CH4 211
+      :credits 100002}
+   ;; New doc
+     {:crux.db/id :encompass-trade
+      :company-name "Encompass Trade"
+      :seller? true
+      :buyer? true
+      :units/Au 10010
+      :units/Pu 5
+      :units/CH4 211
+      :credits 1002}]])
+
+  (format-stock-check (stock-check :gold-harmony :units/Au))
+  (format-stock-check (stock-check :encompass-trade :units/Au))
+
+  (crux/submit-tx
+   crux
+   [[:crux.tx/put
+     (assoc manifest :badges ["SETUP" "PUT" "DATALOG-QUERIES" "BITEMP" "CAS"])]])
+
+  (crux/q (crux/db crux)
+          {:find '[belongings]
+           :where '[[e :cargo belongings]]
+           :args [{'belongings "secret note"}]})
+
+
+  (crux/submit-tx crux
+                  [[:crux.tx/put {:crux.db/id :kaarlang/clients
+                                  :clients [:encompass-trade]}
+                    #inst "2110-01-01T09"
+                    #inst "2111-01-01T09"]
+
+                   [:crux.tx/put {:crux.db/id :kaarlang/clients
+                                  :clients [:encompass-trade :blue-energy]}
+                    #inst "2111-01-01T09"
+                    #inst "2113-01-01T09"]
+
+                   [:crux.tx/put {:crux.db/id :kaarlang/clients
+                                  :clients [:blue-energy]}
+                    #inst "2113-01-01T09"
+                    #inst "2114-01-01T09"]
+
+                   [:crux.tx/put {:crux.db/id :kaarlang/clients
+                                  :clients [:blue-energy :gold-harmony :tombaugh-resources]}
+                    #inst "2114-01-01T09"
+                    #inst "2115-01-01T09"]])
+
+  (crux/history-ascending
+   (crux/db crux)
+   (crux/new-snapshot (crux/db crux #inst "2116-01-01T09"))
+   :kaarlang/clients)
+
+  (crux/submit-tx crux
+                  [[:crux.tx/delete :kaarlang/clients #inst "2110-01-01" #inst "2116-01-01"]])
+
+  (crux/history-ascending
+   (crux/db crux)
+   (crux/new-snapshot (crux/db crux #inst "2116-01-01T09"))
+   :kaarlang/clients)
+
+
+
+  (crux/submit-tx crux
+                  [[:crux.tx/put
+                    {:crux.db/id :person/kaarlang
+                     :full-name "Kaarlang"
+                     :origin-planet "Mars"
+                     :identity-tag :KA01299242093
+                     :DOB #inst "2040-11-23"}]
+
+                   [:crux.tx/put
+                    {:crux.db/id :person/ilex
+                     :full-name "Ilex Jefferson"
+                     :origin-planet "Venus"
+                     :identity-tag :IJ01222212454
+                     :DOB #inst "2061-02-17"}]
+
+                   [:crux.tx/put
+                    {:crux.db/id :person/thadd
+                     :full-name "Thad Christover"
+                     :origin-moon "Titan"
+                     :identity-tag :IJ01222212454
+                     :DOB #inst "2101-01-01"}]
+
+                   [:crux.tx/put
+                    {:crux.db/id :person/johanna
+                     :full-name "Johanna"
+                     :origin-planet "Earth"
+                     :identity-tag :JA012992129120
+                     :DOB #inst "2090-12-07"}]])
+
+
+  (defn full-query
+    [node]
+    (crux/q
+     (crux/db node)
+     '{:find [id]
+       :where [[e :crux.db/id id]]
+       :full-results? true}))
+
+  (full-query crux)
+
+  (crux/submit-tx crux [[:crux.tx/evict :person/kaarlang]])
+
+  (crux/history-descending (crux/db crux)
+                           (crux/new-snapshot (crux/db crux))
+                           :person/kaarlang)
 
   ;;
   )
