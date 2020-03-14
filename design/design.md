@@ -192,8 +192,15 @@
     - "external flow state
   - https://clojure.org/news/2013/06/28/clojure-clore-async-channels
   - https://github.com/clojure/core.async
-- kafka (as event/record store)
-- a datalog db for the user abstraction
+- data
+  - kafka (as event/record store)
+  - a datalog db for the user abstraction
+- code
+  - queues and processes
+  - a thing for a purpose: abstract only if obvious immediate reuse
+  - spec fns when needed
+  - processes know only args: pass channels explicitly
+  - main file creates channels, imports and starts processes
 
 ### game state
 
@@ -241,14 +248,6 @@
 - user abstraction: ui via CSP
 - sockets
 - simple game: tiles with values
-
-### code
-
-- queues and processes
-- a thing for a purpose: abstract only if obvious immediate reuse
-- spec fns when needed
-- processes know only args: pass channels explicitly
-- main file creates channels, imports and starts processes
 
 ### considerations
 
