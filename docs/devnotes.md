@@ -95,6 +95,10 @@
       - https://tonsky.me/blog/datascript-chat/
     - https://github.com/juxt/crux
 
+- crux
+  - https://github.com/juxt/crux
+  - https://opencrux.com/docs#faqs
+
 - cljs
   - antd
     - 4.0 changes https://github.com/ant-design/ant-design/issues/16911

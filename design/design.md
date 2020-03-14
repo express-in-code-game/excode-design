@@ -192,14 +192,18 @@
     - "external flow state
   - https://clojure.org/news/2013/06/28/clojure-clore-async-channels
   - https://github.com/clojure/core.async
-- kafka (as event/record store)
-- a datalog db for the user abstraction
 <br/><br/>
 - queues and processes
 - a thing for a purpose: abstract only if obvious immediate reuse
 - spec fns when needed
 - processes know only args: pass channels explicitly
 - main file creates channels, imports and starts processes
+<br/><br/>
+- kafka (as event/record store)
+- datalog db (crux) to index data
+  - most data (not write-intensive) is persisted in crux's topics
+  - in-game events (higher throughput) flow through a dedicated kafka topic
+  - game as an enetity (low throughput) is persisted without state (has a ref) and is queryable as users and other data
 
 ### game state
 
@@ -219,6 +223,7 @@
 - but server adds timestamps - so time is independent from the client
 - games are stored in db to be queryable/joinable: transacted on creation, completion or configuration
 - game state is a record of another topic, changed on in-game events
+
 
 ### assets
 
