@@ -42,6 +42,8 @@
 
 (comment
 
+  ; https://juxt.pro/blog/posts/crux-tutorial-setup.html
+  
   (def crux
     (crux/start-node
      {:crux.node/topology :crux.standalone/topology
@@ -65,6 +67,19 @@
   (.close crux)
 
 
+  ;;
+  )
+
+
+(comment
+  
+  ; https://juxt.pro/blog/posts/crux-tutorial-put.html
+  
+  
+  
+  
+  
+  
   ;;
   )
 
