@@ -99,6 +99,7 @@
     - https://github.com/pedestal
       - http://pedestal.io/guides/index
       - https://github.com/pedestal/pedestal/tree/master/samples
+      - https://github.com/pedestal/pedestal/tree/master/samples/server-sent-events
     - https://github.com/juxt/yada
       - https://juxt.pro/yada/manual/index.html
       - https://juxt.pro/yada/manual/index.html#server-sent-events
