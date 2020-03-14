@@ -13,6 +13,7 @@
    [starnet.app.alpha.repl]
    [starnet.app.alpha.tests]
    [starnet.app.alpha.crux]
+   [starnet.app.alpha.http]
    [starnet.app.crux-samples.core]
    ))
 

@@ -97,9 +97,11 @@
   - http
     - https://github.com/ring-clojure/ring/wiki
     - https://github.com/weavejester/compojure/wiki
-    - http://pedestal.io/guides/index
+    - https://github.com/pedestal
+      - http://pedestal.io/guides/index
       - https://github.com/pedestal/pedestal/tree/master/samples
-    - https://juxt.pro/yada/manual/index.html
+    - https://github.com/juxt/yada
+      - https://juxt.pro/yada/manual/index.html
 
 - crux
   - https://github.com/juxt/crux

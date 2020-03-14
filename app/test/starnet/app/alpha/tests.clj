@@ -18,6 +18,7 @@
    [starnet.common.alpha.tests]
    [starnet.app.alpha.streams-test]
    [starnet.app.alpha.spec-test]
+   [starnet.app.alpha.http-test]
    [starnet.common.alpha.core :refer [rand-uuid]]))
 
 (defn -main []
