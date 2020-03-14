@@ -94,6 +94,12 @@
     - https://github.com/tonsky/datascript
       - https://tonsky.me/blog/datascript-chat/
     - https://github.com/juxt/crux
+  - http
+    - https://github.com/ring-clojure/ring/wiki
+    - https://github.com/weavejester/compojure/wiki
+    - http://pedestal.io/guides/index
+      - https://github.com/pedestal/pedestal/tree/master/samples
+    - https://juxt.pro/yada/manual/index.html
 
 - crux
   - https://github.com/juxt/crux
