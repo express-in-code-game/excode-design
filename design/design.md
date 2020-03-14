@@ -204,6 +204,9 @@
   - most data (not write-intensive) is persisted in crux's topics
   - in-game events (higher throughput) flow through a dedicated kafka topic
   - game as an enetity (low throughput) is persisted without state (has a ref) and is queryable as users and other data
+<br/><br/>
+- http5 server-sent-events for client-server stream
+  - https://github.com/pedestal/pedestal/tree/master/samples/server-sent-events
 
 ### game state
 
