@@ -193,7 +193,7 @@
   - https://clojure.org/news/2013/06/28/clojure-clore-async-channels
   - https://github.com/clojure/core.async
 - kafka (as event/record store)
-- a datalog db 
+- a datalog db
 
 ### game state
 
@@ -228,7 +228,23 @@
 - github repo with .md files
 - docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
 
-### consider
+### steps
+
+- setup clj cljs cljc
+- clojure.async clojure.spec test.check
+- add tests, pad
+- setup kafka, kafka docs, experiment
+- choose a datalog db
+- user enetities: identity, crud
+- add http(s)
+- auth tokens
+- user enetities: ui via CSP
+- sockets
+- simple game: tiles with values
+
+### 
+
+### considerations
 
 - figwheel main if it's less cpu consuming than shadow-cljs
 - search
@@ -252,7 +268,5 @@
   - if user closes the tab, they can reopen it from 'ongoing games' list -> get current state snapshots from game.data and ingame.events
   - after the game has started, host can't cancel it
 
-### actions
 
-- 
 
