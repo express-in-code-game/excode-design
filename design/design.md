@@ -288,9 +288,9 @@
   - share connections via channels ?
     - http db interceptor
   - some of the processes
-    - socket into-channel/connect/disconnect/broadcast
-    - kafka prdocuer
-    - arbiter
+    - connections: db
+    - socket: into-channel/connect/disconnect/broadcast
+    - kafka: producer arbiter
   - db is a lib, error handling in layers (http, socket, kafka)
   - db has all logic, interceptors only call
   - on no db in interceptors throw, appropriate response for errors (via match)
