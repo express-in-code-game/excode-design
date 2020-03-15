@@ -23,26 +23,43 @@
                                       delete-topics produce-event
                                       future-call-consumer read-store
                                       send-event create-streams-game create-streams-user]]
-   [starnet.app.alpha.http  :as app-http])
+   [starnet.app.alpha.http  :as app-http]
+   [starnet.app.alpha.crux  :refer [proc-cruxdb]])
   (:import
    org.apache.kafka.common.KafkaFuture$BiConsumer))
 
 (declare env-optimized? proc-main proc-http-server
-         proc-derived-1 proc-topics proc-streams)
+         proc-derived-1 proc-topics proc-streams proc-log)
 
-(def chan-main (chan 1))
-(def chan-system (chan (a/sliding-buffer 10)))
-(def chan-system-pub (pub chan-system first))
+(def cmain (chan 1))
+(def csys (chan (a/sliding-buffer 10)))
+(def psys (pub csys first))
 (def derived-1 (atom {}))
+(def cdb (chan 10))
 
 (defn -main  [& args]
-  (proc-derived-1  chan-system-pub derived-1)
-  (proc-topics chan-system-pub chan-system)
-  (proc-streams chan-system-pub chan-system)
-  (proc-http-server chan-system-pub chan-system)
-  (put! chan-system [:http-server :start])
-  (put! chan-main :start)
-  (<!! (proc-main chan-main)))
+  (proc-derived-1  psys derived-1)
+  (proc-topics psys csys)
+  (proc-streams psys csys)
+  (proc-http-server psys)
+  (proc-cruxdb psys cdb)
+  #_(put! csys [:cruxdb :start])
+  #_(put! csys [:http-server :start])
+  (put! cmain :start)
+  (<!! (proc-main cmain)))
+
+(comment
+
+  (put! csys [:http-server :start])
+
+  (put! csys [:cruxdb :start])
+  (put! csys [:cruxdb :close])
+  
+  (stest/unstrument)
+
+  (put! cmain :exit)
+  ;;
+  )
 
 (defn env-optimized?
   []
@@ -50,9 +67,9 @@
     (:optimized appenv)))
 
 (defn proc-main
-  [c]
+  [cmain]
   (go (loop [nrepl-server nil]
-        (when-let [v (<! c)]
+        (when-let [v (<! cmain)]
           (condp = v
             :start (let [sr (start-nrepl-server "0.0.0.0" 7788)]
                      (when-not (env-optimized?)
@@ -65,25 +82,26 @@
             :exit (System/exit 0))))
       (println "closing proc-main")))
 
-(comment
-
-  (stest/unstrument)
-
-  (put! chan-main :exit)
-
-  ;;
-  )
-
 (defn proc-http-server
-  [p out]
+  [psys]
   (let [c (chan 1)]
-    (sub p :http-server c)
+    (sub psys :http-server c)
     (go (loop [server nil]
-          (when-let [[t v] (<! c)]
+          (when-let [[_ v] (<! c)]
             (condp = v
               :start (let [sr (app-http/-main-dev)]
                        (recur sr))
               :stop (recur server))))
+        (println "closing proc-http-server"))))
+
+(defn proc-log
+  [psys]
+  (let [c (chan 1)]
+    (sub psys :log c)
+    (go (loop []
+          (if-let [[_ s] (<! c)]
+            (println (str "; " s))
+            (recur)))
         (println "closing proc-http-server"))))
 
 
@@ -95,12 +113,11 @@
              "alpha.game.changes"])
 
 (defn proc-topics
-  [p out]
+  [psys csys]
   (let [c (chan 1)]
-    (sub p :ktopics c)
+    (sub psys :ktopics c)
     (go (loop []
-          (when-let [[t v] (<! c)]
-            (prn [t v])
+          (when-let [[_ v] (<! c)]
             (condp = v
               :create (do
                         (-> (create-topics {:props props
@@ -112,7 +129,7 @@
                              (reify KafkaFuture$BiConsumer
                                (accept [this res err]
                                  (println "topics created")
-                                 (>! out [:ktopics-created res]))))))
+                                 (>! csys [:ktopics-created res]))))))
               :delete (delete-topics {:props props :names topics})))
           (recur))
         (println "proc-topics exiting"))
@@ -133,21 +150,21 @@
 
   (delete-topics {:props props :names topics})
   (list-topics {:props props})
-  
+
 
   ;;
   )
 
 (defn proc-streams
-  [p out]
+  [psys csys]
   (let [c (chan 1)]
-    (sub p :kstreams c)
+    (sub psys :kstreams c)
     (go (loop [app-state nil]
           (when-let [[t [k args]] (<! c)]
             (condp = k
               :create (let [{:keys [create id]} args
                             app (create)]
-                        (>! out [:kv [id app]])
+                        (>! csys [:kv [id app]])
                         (recur app))
               :close (do
                        (.close (:kstreams app-state))
@@ -160,9 +177,9 @@
     c))
 
 (defn proc-derived-1
-  [p derived]
+  [psys derived]
   (let [c (chan 1)]
-    (sub p :kv c)
+    (sub psys :kv c)
     (go (loop []
           (when-let [[t [k v]] (<! c)]
             (do
