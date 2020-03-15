@@ -284,3 +284,25 @@
 - localStorage tokens: user1 token user2 token ... for multiple tabs
 - no ffing sessions
 - css via classes
+- system
+  - share connections via channels ? yes
+    - db process handles db connection and db calls
+    - first interceptor does not add db conn to ctx: it adds db process channel
+    - query/tx interceptors open a go block, create a channel and put it on db channel with db fn symbol argv for db fn, and block until channel receives the result
+    - db ns contains fns that take conn and args, so can be arbitrarily complex
+    - the db channel takes all db calls - tx or queries - and launches non-blocking sub processes with that interceptor created channel and db args as args
+    - a sub process is a go block that awains the result of the db call and puts it directly on the interceptor channel
+    - interceptor go block returns with the db call result
+    - error handling and reporting ?
+    - testing
+      - generate data using spec and fdef for db fn when inside the subprocess's go block
+      - so in one case db request is made, in another generated data
+      - so spec query fns
+      - also test the chain fromthe request side with generated data
+  - some of the processes
+    - connections: db kafka
+    - socket: into-channel/connect/disconnect/broadcast
+    - kafka: producer arbiter
+  - db is a lib, error handling in layers (http, socket, kafka)
+  - db has all logic, interceptors only call
+  - on no db in interceptors throw, appropriate response for errors (via match)
