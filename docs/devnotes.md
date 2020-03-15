@@ -100,6 +100,7 @@
       - http://pedestal.io/guides/index
       - https://github.com/pedestal/pedestal/tree/master/samples
       - https://github.com/pedestal/pedestal/tree/master/samples/jetty-web-sockets
+      - http://pedestal.io/api/pedestal.service/io.pedestal.http.html#var-default-interceptors
     - https://github.com/juxt/yada
       - https://juxt.pro/yada/manual/index.html
       - https://juxt.pro/yada/manual/index.html#server-sent-events

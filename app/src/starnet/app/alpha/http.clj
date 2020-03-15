@@ -71,6 +71,9 @@
           :on-close (fn [num-code reason-text]
                       (log/info :msg "WS Closed:" :reason reason-text))}})
 
+(def port 8080)
+(def host "0.0.0.0")
+
 ;; Consumed by jetty-web-sockets.server/create-server
 ;; See http/default-interceptors for additional options you can configure
 (def service {:env :prod
@@ -88,6 +91,7 @@
               ;; "http://localhost:8080"
               ;;
               ;;::http/allowed-origins ["scheme://host:port"]
+              ;; ::http/allowed-origins ["*"]
 
               ;; Root for resource interceptor that is available by default.
               ::http/resource-path "/public"
@@ -95,12 +99,12 @@
               ;; Either :jetty, :immutant or :tomcat (see comments in project.clj)
               ::http/type :jetty
               ::http/container-options {:context-configurator #(ws/add-ws-endpoints % ws-paths)}
-              ;;::http/host "localhost"
-              ::http/port 8080})
+              ::http/host host
+              ::http/port port})
 
 (defn -main-dev
   [& args]
-  (println "\nCreating your [DEV] server...")
+  (println (str "; starting http server on " host ":" port))
   (-> service ;; start with production configuration
       (merge {:env :dev
               ;; do not block thread that starts web server
