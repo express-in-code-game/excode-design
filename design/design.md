@@ -306,3 +306,6 @@
   - db is a lib, error handling in layers (http, socket, kafka)
   - db has all logic, interceptors only call
   - on no db in interceptors throw, appropriate response for errors (via match)
+- tokens
+  - store in a kafak topic reduced into ktable (for efficiency)
+  
