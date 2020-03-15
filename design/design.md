@@ -288,8 +288,8 @@
   - share connections via channels ? yes
     - db process handles db connection and db calls
     - first interceptor does not add db conn to ctx: it adds db process channel
-    - query/tx interceptors open a go block, create a channel and put it on db channel with argv for db, and block until channel receives the result
-    - queries ns contains fns that return db arg vec or db data, is pure functional
+    - query/tx interceptors open a go block, create a channel and put it on db channel with db fn symbol argv for db fn, and block until channel receives the result
+    - db ns contains fns that take conn and args, so can be arbitrarily complex
     - the db channel takes all db calls - tx or queries - and launches non-blocking sub processes with that interceptor created channel and db args as args
     - a sub process is a go block that awains the result of the db call and puts it directly on the interceptor channel
     - interceptor go block returns with the db call result
