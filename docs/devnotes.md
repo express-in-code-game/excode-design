@@ -103,6 +103,8 @@
       - http://pedestal.io/api/pedestal.service/io.pedestal.http.html#var-default-interceptors
       - http://pedestal.io/reference/service-map
         - http://pedestal.io/reference/jetty
+        - http://pedestal.io/guides/your-first-api
+        - http://pedestal.io/reference/interceptors#_interceptor_return_values
     - https://github.com/juxt/yada
       - https://juxt.pro/yada/manual/index.html
       - https://juxt.pro/yada/manual/index.html#server-sent-events

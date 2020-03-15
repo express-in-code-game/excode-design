@@ -12,4 +12,5 @@
 (def service (::http/service-fn (http/create-servlet app-http/service)))
   
 (deftest route-tests
-  (is (= (response-for service :get "/todo"))))
+  (is (= (response-for service :get "/todo/abc/123")))
+  (is (= (response-for service :post "/todo?name=A-List"))))
