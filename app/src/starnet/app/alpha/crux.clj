@@ -41,7 +41,7 @@
   (let [c (chan 1)]
     (sub psys :cruxdb c)
     (go (loop [node nil]
-          (if-let [[vl port] (alts! (if node [c cdb] [c]))]
+          (if-let [[vl port] (alts! (if node [c cdb] [c]))] ; add check if node is valid
             (condp = port
               c (condp = (second vl)
                   :start (let [n (crux/start-node conf)]
