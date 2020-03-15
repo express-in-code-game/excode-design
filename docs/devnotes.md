@@ -101,11 +101,14 @@
       - https://github.com/pedestal/pedestal/tree/master/samples
       - https://github.com/pedestal/pedestal/tree/master/samples/jetty-web-sockets
       - http://pedestal.io/api/pedestal.service/io.pedestal.http.html#var-default-interceptors
+      - http://pedestal.io/reference/service-map
+        - http://pedestal.io/reference/jetty
     - https://github.com/juxt/yada
       - https://juxt.pro/yada/manual/index.html
       - https://juxt.pro/yada/manual/index.html#server-sent-events
     - https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events
       - https://github.com/pedestal/pedestal/tree/master/samples/server-sent-events
+    - https://github.com/funcool/buddy-auth/tree/master/examples
 
 - crux
   - https://github.com/juxt/crux

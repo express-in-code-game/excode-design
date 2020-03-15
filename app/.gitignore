@@ -46,3 +46,8 @@ __pycache__
 
 # data
 tmp
+
+
+# cert
+
+*.jks

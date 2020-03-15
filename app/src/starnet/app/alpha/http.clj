@@ -13,12 +13,6 @@
   (:import
    [org.eclipse.jetty.websocket.api Session]))
 
-(comment
-
-
-  ;;
-  )
-
 (defn about-page
   [request]
   (ring-resp/response (format "Clojure %s - served from %s"
@@ -72,10 +66,12 @@
                       (log/info :msg "WS Closed:" :reason reason-text))}})
 
 (def port 8080)
+(def port-ssl 8443)
 (def host "0.0.0.0")
 
 ;; Consumed by jetty-web-sockets.server/create-server
 ;; See http/default-interceptors for additional options you can configure
+;; http://pedestal.io/reference/service-map
 (def service {:env :prod
               ;; You can bring your own non-default interceptors. Make
               ;; sure you include routing and set it up right for
@@ -98,13 +94,23 @@
 
               ;; Either :jetty, :immutant or :tomcat (see comments in project.clj)
               ::http/type :jetty
-              ::http/container-options {:context-configurator #(ws/add-ws-endpoints % ws-paths)}
+              ;; http://pedestal.io/reference/jetty
+              ::http/container-options {:context-configurator #(ws/add-ws-endpoints % ws-paths)
+                                        ; :h2c? true
+                                        ; :h2? true
+                                        :ssl? true
+                                        :ssl-port port-ssl
+                                        :keystore "resources/keystore.jks"
+                                        :key-password "keystore"
+                                        }
               ::http/host host
               ::http/port port})
 
 (defn -main-dev
   [& args]
   (println (str "; starting http server on " host ":" port))
+  (when (get-in service [::http/container-options :ssl-port])
+    (println (str "; starting https server on " host ":" port-ssl)))
   (-> service ;; start with production configuration
       (merge {:env :dev
               ;; do not block thread that starts web server
