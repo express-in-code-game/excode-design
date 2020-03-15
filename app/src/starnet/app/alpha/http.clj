@@ -1,7 +1,6 @@
 (ns starnet.app.alpha.http
   (:require
    [clojure.repl :refer [doc]]
-   [io.pedestal.http :as http]
    [io.pedestal.log :as log]
    [io.pedestal.http.route :as route]
    [io.pedestal.http.body-params :as body-params]
@@ -9,7 +8,9 @@
    [ring.util.response :as ring-resp]
    [clojure.core.async :as async]
    [io.pedestal.http.jetty.websockets :as ws]
-   [io.pedestal.http :as server])
+   [io.pedestal.http :as http]
+   [io.pedestal.http :as server]
+   [io.pedestal.test :as test])
   (:import
    [org.eclipse.jetty.websocket.api Session]))
 
@@ -23,13 +24,45 @@
   [request]
   (ring-resp/response "Hello World!"))
 
-(defroutes routes
+(defn response [status body & {:as headers}]
+  {:status status :body body :headers headers})
+
+(def ok       (partial response 200))
+(def created  (partial response 201))
+(def accepted (partial response 202))
+
+(def echo
+  {:name :echo
+   :enter
+   (fn [context]
+     (let [request (:request context)
+           response (ok context)]
+       (assoc context :response response)))})
+
+(def routes
+  (route/expand-routes
+   #{["/todo"                    :post   echo :route-name :list-create]
+     ["/todo"                    :get    echo :route-name :list-query-form]
+     ["/todo/:list-id"           :get    echo :route-name :list-view]
+     ["/todo/:list-id"           :post   echo :route-name :list-item-create]
+     ["/todo/:list-id/:item-id"  :get    echo :route-name :list-item-view]
+     ["/todo/:list-id/:item-id"  :put    echo :route-name :list-item-update]
+     ["/todo/:list-id/:item-id"  :delete echo :route-name :list-item-delete]}))
+
+#_(defroutes routes
   ;; Defines "/" and "/about" routes with their associated :get handlers.
   ;; The interceptors defined after the verb map (e.g., {:get home-page}
   ;; apply to / and its children (/about).
-  [[["/" {:get home-page}
-     ^:interceptors [(body-params/body-params) http/html-body]
-     ["/about" {:get about-page}]]]])
+    [[["/" {:get home-page}
+       ^:interceptors [(body-params/body-params) http/html-body]
+       ["/about" {:get about-page}]]]])
+
+(comment
+  
+  
+  
+  ;;
+  )
 
 (def ws-clients (atom {}))
 
