@@ -20,7 +20,12 @@
           juxt/crux-rocksdb {:mvn/version "20.03-1.8.0-alpha"
                              :exclusions [org.rocksdb/rocksdbjni]}
           juxt/crux-kafka {:mvn/version "20.03-1.8.0-alpha"
-                           :exclusions [org.apache.kafka/kafka-clients]}}}
+                           :exclusions [org.apache.kafka/kafka-clients]}
+          
+          io.pedestal/pedestal.service {:mvn/version "0.5.7"}
+          io.pedestal/pedestal.jetty {:mvn/version "0.5.7"}
+          
+          }}
   :dev {:extra-deps
         {}}
   :optimized {:extra-deps {}}

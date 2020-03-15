@@ -22,11 +22,12 @@
    [starnet.app.alpha.streams :refer [create-topics list-topics
                                       delete-topics produce-event
                                       future-call-consumer read-store
-                                      send-event create-streams-game create-streams-user]])
+                                      send-event create-streams-game create-streams-user]]
+   [starnet.app.alpha.http  :as app-http])
   (:import
    org.apache.kafka.common.KafkaFuture$BiConsumer))
 
-(declare env-optimized? proc-main
+(declare env-optimized? proc-main proc-http-server
          proc-derived-1 proc-topics proc-streams)
 
 (def chan-main (chan 1))
@@ -38,7 +39,8 @@
   (proc-derived-1  chan-system-pub derived-1)
   (proc-topics chan-system-pub chan-system)
   (proc-streams chan-system-pub chan-system)
-  
+  (proc-http-server chan-system-pub chan-system)
+  (put! chan-system [:http-server :start])
   (put! chan-main :start)
   (<!! (proc-main chan-main)))
 
@@ -51,7 +53,6 @@
   [c]
   (go (loop [nrepl-server nil]
         (when-let [v (<! c)]
-          (prn v)
           (condp = v
             :start (let [sr (start-nrepl-server "0.0.0.0" 7788)]
                      (when-not (env-optimized?)
@@ -72,6 +73,19 @@
 
   ;;
   )
+
+(defn proc-http-server
+  [p out]
+  (let [c (chan 1)]
+    (sub p :http-server c)
+    (go (loop [server nil]
+          (when-let [[t v] (<! c)]
+            (condp = v
+              :start (let [sr (app-http/-main-dev)]
+                       (recur sr))
+              :stop (recur server))))
+        (println "closing proc-http-server"))))
+
 
 (def props {"bootstrap.servers" "broker1:9092"})
 
