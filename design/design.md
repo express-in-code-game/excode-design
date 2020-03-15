@@ -294,6 +294,10 @@
     - a sub process is a go block that awains the result of the db call and puts it directly on the interceptor channel
     - interceptor go block returns with the db call result
     - error handling and reporting ?
+    - testing
+      - generate data using spec and fdef for db fn when inse the subprocess's go block
+      - so in one case db request is made, in another generated data
+      - so spec query fns
   - some of the processes
     - connections: db kafka
     - socket: into-channel/connect/disconnect/broadcast
