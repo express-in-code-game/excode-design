@@ -284,3 +284,13 @@
 - localStorage tokens: user1 token user2 token ... for multiple tabs
 - no ffing sessions
 - css via classes
+- system
+  - share connections via channels ?
+    - http db interceptor
+  - some of the processes
+    - socket into-channel/connect/disconnect/broadcast
+    - kafka prdocuer
+    - arbiter
+  - db is a lib, error handling in layers (http, socket, kafka)
+  - db has all logic, interceptors only call
+  - on no db in interceptors throw, appropriate response for errors (via match)
