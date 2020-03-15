@@ -288,7 +288,7 @@
   - share connections via channels ?
     - http db interceptor
   - some of the processes
-    - connections: db
+    - connections: db kafka
     - socket: into-channel/connect/disconnect/broadcast
     - kafka: producer arbiter
   - db is a lib, error handling in layers (http, socket, kafka)
