@@ -103,8 +103,7 @@
     - https://github.com/juxt/yada
       - https://juxt.pro/yada/manual/index.html
       - https://juxt.pro/yada/manual/index.html#server-sent-events
-    - https://github.com/weavejester/compojure/wiki
-    - https://github.com/clojure-liberator/liberator
+    - https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events
 
 - crux
   - https://github.com/juxt/crux
