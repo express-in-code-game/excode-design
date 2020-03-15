@@ -306,3 +306,28 @@
   - db is a lib, error handling in layers (http, socket, kafka)
   - db has all logic, interceptors only call
   - on no db in interceptors throw, appropriate response for errors (via match)
+- authentication and authorization
+  - store in a kafka topic reduced into ktable(kstore) (for efficiency)
+    - proc-acesss
+      - reads from access kstore
+      - writes to tokens topic (by putting to channel kproducer)
+    - proc-kproducer
+      - sends evnts to kafka
+    - access store is a join from tokens topic and crux-docs topic
+    - keys are tokens, values user data user games and roles, events and roles
+    - when a request arrives, reading from the store by token retrieves data needed to authenticate/authorize user in subsequent interceptors
+    - to read from store, interceptor sends a key and a channel to put the value to
+  - request flow
+    - request -> interceptor chain
+    - intcptor adds db-channel and access channels to ctx
+    - intcptor retrives record from access store
+    - intcptor performs authentication
+    - intcptor performs authorization 
+    - intcptor retrives data from db
+    - intcptor makes a decision (assoc :result to ctx)
+    - intcptor makes tx
+    - intcptor forms a response
+  - on login token is created via proc-access and added to response header
+- namespacing
+  - consolidate processes in main
+  - crux, http, streams as a file

@@ -1,13 +1,16 @@
 (ns starnet.app.alpha.streams
   (:require
    [clojure.repl :refer [doc]]
+   [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go
+                                     >!! <!! alt!! alts! alts!! take! put!
+                                     thread pub sub sliding-buffer]]
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
    [clojure.spec.test.alpha :as stest]
    [clojure.test.check :as tc]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-   
+
    [starnet.common.alpha.spec :refer [event-to-topic event-to-recordkey]]
    [starnet.common.alpha.game :refer [next-state-game]]
    [starnet.common.alpha.user :refer [next-state-user]])
@@ -33,6 +36,8 @@
    org.apache.kafka.streams.kstream.ValueMapper
    org.apache.kafka.streams.kstream.KeyValueMapper
    org.apache.kafka.streams.KeyValue
+   org.apache.kafka.streams.KafkaStreams$StateListener
+
 
    org.apache.kafka.streams.kstream.Materialized
    org.apache.kafka.streams.kstream.Produced
@@ -42,6 +47,7 @@
 
    org.apache.kafka.streams.kstream.Initializer
    org.apache.kafka.streams.kstream.Aggregator
+   org.apache.kafka.common.KafkaFuture$BiConsumer
 
    java.util.ArrayList
    java.util.Locale
@@ -57,6 +63,41 @@
                 (mapv (fn [name]
                         (NewTopic. name num-partitions (short replication-factor))) names))]
     (.createTopics client topics)))
+
+(defn create-topics-async
+  [kprops ktopics]
+  (let [cout (chan 1)]
+    (go
+      (-> (create-topics {:props kprops
+                          :names ktopics
+                          :num-partitions 1
+                          :replication-factor 1})
+          (.all)
+          (.whenComplete
+           (reify KafkaFuture$BiConsumer
+             (accept [this res err]
+               (println "topics created")
+               (>! cout res))))))
+    cout))
+
+(defn create-store-async-TMP
+  [kstreams name]
+  (let [dur 3000
+        t (timeout dur)]
+    (go (loop []
+          (if-let [[vl port] (alts! [(timeout 300) t])]
+            (cond
+              (.isRunning kstreams) (create-kvstore kstreams name)
+              (= port t) (throw (ex-info (format "Could not create kstore within %s ms" 3000)
+                                         {:kstreams kstreams
+                                          :name name}))
+              :else (recur)))))))
+
+(defn create-kvstore
+  [kstreams name]
+  (.store kstreams
+          name
+          (QueryableStoreTypes/keyValueStore)))
 
 (defn delete-topics
   [{:keys [props
@@ -152,51 +193,64 @@
                           "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
                           "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"}))
         kstreams (KafkaStreams. topology props)
-        latch (CountDownLatch. 1)]
+        latch (CountDownLatch. 1)
+        ch-state (chan (sliding-buffer 1))
+        ch-running (chan (sliding-buffer 1))]
     (do
-      (add-shutdown-hook props kstreams latch))
+      (add-shutdown-hook props kstreams latch)
+      (.setStateListener kstreams (reify KafkaStreams$StateListener
+                                    (onChange [_ nw old]
+                                              (put! ch-state [:kstreams :state [appid (.isRunning nw)  nw old]])
+                                              (if (.isRunning nw)
+                                                (put! ch-running [:kstreams :running [appid (.isRunning nw) nw old]]))
+                                              (if (.isRunning nw)
+                                                (println (format "%s is running" appid))
+                                                (println (format "%s is not running" appid)))))))
     {:builder builder
+     :appid appid
      :stream stream
      :topology topology
      :props props
      :kstreams kstreams
-     :latch latch}))
+     :latch latch
+     :ch-state ch-state
+     :ch-running ch-running}))
 
 (defmulti send-event
   "Send kafka event. Topic is mapped by ev/type."
-  {:arglists '([ev kproducer]
-               [ev topic kproducer]
-               [ev uuidkey kproducer]
-               [ev topic uuidkey kproducer])}
-  (fn [ev & args]
+  {:arglists '([kproducer ev]
+               [kproducer ev topic]
+               [kproducer ev uuidkey]
+               [kproducer ev topic uuidkey])}
+  (fn [kproducer ev & args]
     (mapv type (into [ev] args))))
 
-(defmethod send-event [Object :isa/kproducer]
-  [ev kproducer]
+(defmethod send-event [:isa/kproducer Object]
+  [kproducer ev ]
   (.send kproducer
          (ProducerRecord.
           (event-to-topic ev)
           (event-to-recordkey ev)
           ev)))
 
-(defmethod send-event [Object String :isa/kproducer]
-  [ev topic kproducer]
+(defmethod send-event [:isa/kproducer Object String ]
+  [kproducer ev topic]
   (.send kproducer
          (ProducerRecord.
           topic
           (event-to-recordkey ev)
           ev)))
 
-(defmethod send-event [Object :isa/uuid :isa/kproducer]
-  [ev uuidkey kproducer]
+(defmethod send-event [:isa/kproducer Object :isa/uuid ]
+  [kproducer ev uuidkey ]
   (.send kproducer
          (ProducerRecord.
           (event-to-topic ev)
           uuidkey
           ev)))
 
-(defmethod send-event [Object String :isa/uuid :isa/kproducer]
-  [ev topic uuidkey kproducer]
+(defmethod send-event [:isa/kproducer Object String :isa/uuid]
+  [kproducer ev topic uuidkey]
   (.send kproducer
          (ProducerRecord.
           topic
@@ -204,14 +258,12 @@
           ev)))
 
 
-
-
-(defn create-streams-user
+(defn create-kstreams-access
   []
-  (create-streams "alpha.user.streams"
+  (create-streams "alpha.access.streams"
                   (fn [builder]
                     (-> builder
-                        (.stream "alpha.user")
+                        (.stream "alpha.token")
                         (.groupByKey)
                         (.aggregate (reify Initializer
                                       (apply [this]
@@ -219,11 +271,11 @@
                                     (reify Aggregator
                                       (apply [this k v ag]
                                         (next-state-user ag k v)))
-                                    (-> (Materialized/as "alpha.user.streams.store")
-                                        (.withKeySerde (TransitJsonSerde.))
+                                    (-> (Materialized/as "alpha.access.streams.store")
+                                        (.withKeySerde (Serdes/String))
                                         (.withValueSerde (TransitJsonSerde.))))
                         (.toStream)
-                        (.to "alpha.user.changes")))))
+                        (.to "alpha.access.changes")))))
 
 
 (defn assert-next-game-post [state] {:post [(s/assert :g/game %)]} state)
@@ -263,7 +315,7 @@
   ;;
   )
 
-(defn create-streams-game
+(defn create-kstreams-game
   []
   (create-streams "alpha.game.streams"
    (fn [builder]
