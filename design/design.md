@@ -295,9 +295,10 @@
     - interceptor go block returns with the db call result
     - error handling and reporting ?
     - testing
-      - generate data using spec and fdef for db fn when inse the subprocess's go block
+      - generate data using spec and fdef for db fn when inside the subprocess's go block
       - so in one case db request is made, in another generated data
       - so spec query fns
+      - also test the chain fromthe request side with generated data
   - some of the processes
     - connections: db kafka
     - socket: into-channel/connect/disconnect/broadcast
