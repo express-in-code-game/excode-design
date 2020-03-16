@@ -3,7 +3,7 @@
    [clojure.repl :refer [doc]]
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go
                                      >!! <!! alt!! alts! alts!! take! put!
-                                     thread pub sub]]
+                                     thread pub sub sliding-buffer]]
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
    [clojure.spec.test.alpha :as stest]
@@ -36,6 +36,8 @@
    org.apache.kafka.streams.kstream.ValueMapper
    org.apache.kafka.streams.kstream.KeyValueMapper
    org.apache.kafka.streams.KeyValue
+   org.apache.kafka.streams.KafkaStreams$StateListener
+
 
    org.apache.kafka.streams.kstream.Materialized
    org.apache.kafka.streams.kstream.Produced
@@ -191,16 +193,25 @@
                           "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
                           "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"}))
         kstreams (KafkaStreams. topology props)
-        latch (CountDownLatch. 1)]
+        latch (CountDownLatch. 1)
+        ch-state (chan (sliding-buffer 1))
+        ch-running (chan (sliding-buffer 1))]
     (do
-      (add-shutdown-hook props kstreams latch))
+      (add-shutdown-hook props kstreams latch)
+      (.setStateListener kstreams (reify KafkaStreams$StateListener
+                                    (onChange [_ nw old]
+                                      (put! ch-state [nw old])
+                                      (if (.isRunning nw)
+                                        (put! ch-running [nw old]))))))
     {:builder builder
      :appid appid
      :stream stream
      :topology topology
      :props props
      :kstreams kstreams
-     :latch latch}))
+     :latch latch
+     :ch-state ch-state
+     :ch-running ch-running}))
 
 (defmulti send-event
   "Send kafka event. Topic is mapped by ev/type."
