@@ -80,6 +80,12 @@
                (>! cout res))))))
     cout))
 
+(defn create-kvstore
+  [kstreams name]
+  (.store kstreams
+          name
+          (QueryableStoreTypes/keyValueStore)))
+
 (defn create-store-async-TMP
   [kstreams name]
   (let [dur 3000
@@ -92,12 +98,6 @@
                                          {:kstreams kstreams
                                           :name name}))
               :else (recur)))))))
-
-(defn create-kvstore
-  [kstreams name]
-  (.store kstreams
-          name
-          (QueryableStoreTypes/keyValueStore)))
 
 (defn delete-topics
   [{:keys [props

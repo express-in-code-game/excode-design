@@ -7,7 +7,7 @@
                                      thread pub sub]]
    [starnet.app.alpha.streams :refer [produce-event
                                       future-call-consumer read-store
-                                      send-event create-streams-game create-streams-user]])
+                                      send-event]])
   (:import
    starnet.app.alpha.aux.serdes.TransitJsonSerializer
    starnet.app.alpha.aux.serdes.TransitJsonDeserializer

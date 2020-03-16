@@ -2,7 +2,7 @@
   (:require
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go
                                      >!! <!! alt!! alts! alts!! take! put!
-                                     thread pub sub sliding-buffer]]
+                                     thread pub sub sliding-buffer mix admix unmix]]
    [clojure.set :refer [subset?]]
    [starnet.app.alpha.aux.nrepl :refer [start-nrepl-server]]
    [clojure.spec.alpha :as s]
@@ -36,18 +36,18 @@
     (:optimized appenv)))
 
 (declare  proc-main proc-http-server proc-nrepl
-          proc-derived-1  proc-streams proc-log proc-access-store
-          proc-cruxdb proc-kproducer )
+          proc-derived-1  proc-kstreams proc-log proc-access-store
+          proc-cruxdb proc-kproducer proc-nrepl-server )
 
 (def ch-main (chan 1))
-(def ch-sys (chan (a/sliding-buffer 10)))
-(def pub-sys (pub ch-sys first #(sliding-buffer 10)))
+(def ch-sys (chan (sliding-buffer 10)))
+(def pub-sys (pub ch-sys first (fn [_] (sliding-buffer 10))))
 (def a-derived-1 (atom {}))
 (def ch-db (chan 10))
 (def ch-kproducer (chan 10))
 (def ch-access-store (chan 10))
-(def ch-kstreams-states (a/sliding-buffer 10))
-(def pub-kstreams-states (pub ch-kstreams-states first #(sliding-buffer 10)))
+(def ch-kstreams-states (chan (sliding-buffer 10)))
+(def pub-kstreams-states (pub ch-kstreams-states first (fn [_] (sliding-buffer 10))))
 (def mix-kstreams-states (a/mix ch-kstreams-states))
 
 (defn -main  [& args]
@@ -65,10 +65,9 @@
         (when-let [vl (<! ch-main)]
           (condp = vl
             :start (do
+                     (proc-derived-1  pub-sys a-derived-1)
                      (proc-nrepl-server pub-sys)
                      (proc-http-server pub-sys)
-                     (proc-derived-1  pub-sys a-derived-1)
-                     (proc-streams pub-sys ch-sys)
                      (proc-cruxdb pub-sys ch-db)
                      (proc-kproducer pub-sys ch-kproducer)
                      (proc-kstreams pub-sys ch-sys mix-kstreams-states)
@@ -83,7 +82,8 @@
                      #_(put! ch-sys [:kproducer :open])
                      #_(put! ch-sys [:cruxdb :start])
                      #_(put! ch-sys [:http-server :start]))
-            :exit (System/exit 0))))
+            :exit (System/exit 0)))
+        (recur))
       (println "closing proc-main")))
 
 (comment
@@ -104,12 +104,14 @@
   (let [c (chan 1)]
     (sub pub-sys :nrepl-server c)
     (go (loop [server nil]
-          (when-let [[_ v] (<! c)]
+          (if-let [[_ v] (<! c)]
             (condp = v
               :start (let [sr (start-nrepl-server "0.0.0.0" 7788)]
-                       (recur sr))
-              :stop (recur server))))
+                       (recur sr)))
+            (recur server)))
         (println "closing proc-nrepl-server"))))
+
+
 
 (defn proc-http-server
   [pub-sys]
@@ -118,7 +120,7 @@
     (go (loop [server nil]
           (when-let [[_ v] (<! c)]
             (condp = v
-              :start (let [sr (app-http/-main-dev)]
+              :start (let [sr (app-http/start-dev [pub-sys ch-sys])]
                        (recur sr))
               :stop (recur server))))
         (println "closing proc-http-server"))))
@@ -164,7 +166,7 @@
                            (alter-var-root #'app-crux/node (constantly nil)) ; for dev purposes
                            (println "; crux node closed")
                            (recur nil)))
-              ch-db (let [[f args cout] v]
+              ch-db (let [[f args cout] vl]
                       (go
                         (let [x (f args)] ; db call here
                           (>! cout x) ; convey data
@@ -245,25 +247,27 @@
   (let [c (chan 1)]
     (sub pub-sys :kstreams c)
     (go (loop [app nil]
-          (if-not (subset? (set ktopics) (list-topics {:props kprops}))
-            (<! (create-topics-async kprops ktopics)))
           (if-let [[t [k args]] (<! c)]
-            (condp = k
-              :start (let [{:keys [create-fn repl-only-key]} args
-                           a ((resolve create-fn))]
-                       (swap! a-kstreams assoc repl-only-key a) ; for repl purposes
-                       (.start (:kstreams app))
-                       (a/admix mix-kstreams-states (:ch-state a))
-                       (a/admix mix-kstreams-states (:ch-running a))
-                       (recur a))
-              :close (do (when app
-                           (.close (:kstreams app))
-                           (a/unmix mix-kstreams-states (:ch-state app))
-                           (a/unmix mix-kstreams-states (:ch-running app)))
-                         (recur app))
-              :cleanup (do (.cleanUp (:kstreams app))
+            (do
+              (if-not (subset? (set ktopics) (list-topics {:props kprops}))
+                (<! (create-topics-async kprops ktopics)))
+              (condp = k
+                :start (let [{:keys [create-fn repl-only-key]} args
+                             a ((resolve create-fn))]
+                         (swap! a-kstreams assoc repl-only-key a) ; for repl purposes
+                         (.start (:kstreams app))
+                         (a/admix mix-kstreams-states (:ch-state a))
+                         (a/admix mix-kstreams-states (:ch-running a))
+                         (recur a))
+                :close (do (when app
+                             (.close (:kstreams app))
+                             (a/unmix mix-kstreams-states (:ch-state app))
+                             (a/unmix mix-kstreams-states (:ch-running app)))
                            (recur app))
-              (recur app))))
+                :cleanup (do (.cleanUp (:kstreams app))
+                             (recur app))
+                (recur app)))
+            ))
         (println (str "proc-kstreams exiting")))
     c))
 
