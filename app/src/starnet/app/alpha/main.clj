@@ -21,9 +21,9 @@
    [starnet.app.crux-samples.core]
 
    [starnet.app.alpha.streams :refer [create-topics-async list-topics
-                                      delete-topics produce-event
+                                      delete-topics produce-event create-kvstore
                                       future-call-consumer read-store
-                                      send-event create-streams-game create-streams-user]]
+                                      send-event create-kstreams-game create-kstreams-access]]
    [starnet.app.alpha.http  :as app-http]
    [starnet.app.alpha.crux :as app-crux]
    [crux.api :as crux])
@@ -32,7 +32,7 @@
 
 (declare env-optimized? proc-main proc-http-server
          proc-derived-1  proc-streams proc-log
-         proc-cruxdb proc-kproducer)
+         proc-cruxdb proc-kproducer proc-kstreams-access)
 
 (def ch-main (chan 1))
 (def ch-sys (chan (a/sliding-buffer 10)))
@@ -40,6 +40,7 @@
 (def a-derived-1 (atom {}))
 (def ch-db (chan 10))
 (def ch-kproducer (chan 10))
+(def ch-access-store (chan 10))
 
 (defn -main  [& args]
   (proc-derived-1  pub-sys a-derived-1)
@@ -47,10 +48,9 @@
   (proc-http-server pub-sys)
   (proc-cruxdb pub-sys ch-db)
   (proc-kproducer pub-sys ch-kproducer)
-  #_(put! ch-sys [:kstreams [:start {:create-fn 'starnet.app.alpha.streams/create-streams-access
-                                     :appid :access-streams}]])
-  #_(put! ch-sys [:kstreams [:start {:create-fn 'starnet.app.alpha.streams/create-streams-game
-                                     :appid :game-streams}]])
+  (proc-kstreams-access pub-sys ch-sys ch-access-store ch-kproducer)
+  #_(put! ch-sys [:kstreams-access :start])
+  #_(put! ch-sys [:kstreams-game :start])
   #_(put! ch-sys [:kproducer :open])
   #_(put! ch-sys [:cruxdb :start])
   #_(put! ch-sys [:http-server :start])
@@ -127,10 +127,6 @@
                 :crux.kv/sync? false
                 :crux.kv/check-and-store-index-version true})
 
-(defn proc-dbcall
-  [f args cout]
-  )
-
 (defn proc-cruxdb
   [pub-sys ch-db]
   (let [c (chan 1)]
@@ -175,18 +171,79 @@
                           (recur kp))
                   :close (do
                            (.close kproducer)
-                           (println "; kprodcuer closed")
+                           (println "; kproducer closed")
                            (recur nil)))
               ch-kproducer (let [[args cout] vl]
-                             (>! cout (apply send-event kproducer args))
+                             (>! cout (apply send-event kproducer args)) ; may deref future
                              (recur kproducer))))
           ))))
 
+; not used in the system, for repl purposes only
+(def ^:private a-kstreams (atom {}))
 
-(defn proc-access
-  []
-  
-  )
+(defn create-store-async
+  [kstreams name]
+  (let [dur 3000
+        t (timeout dur)]
+    (go (loop []
+          (if-let [[vl port] (alts! [(timeout 300) t])]
+            (cond
+              (.isRunning kstreams) (create-kvstore kstreams name)
+              (= port t) (throw (ex-info (format "Could not create kstore within %s ms" 3000)
+                                         {:kstreams kstreams
+                                          :name name}))
+              :else (recur)))))))
+
+(defn proc-kstreams-access
+  [pub-sys ch-sys ch-access-store ch-kproducer]
+  (let [csys (chan 1)]
+    (sub pub-sys :kstreams-access csys)
+    (go (loop [app nil
+               store nil]
+          (if-let [[vl port] (alts! (if (and app store) [csys ch-access-store] [csys]))]
+            (condp = port
+              csys (condp = (second vl)
+                     :start (let [a (create-kstreams-access)
+                                  _ (.start (:kstreams a))
+                                  s (<! (create-store-async (:kstreams a) "alpha.access.streams.store"))]
+                              (swap! a-kstreams assoc :kstreams-access a) ; for repl purposes
+                              (println (str "; :kstreams-access started "))
+                              (recur a s))
+                     :close (do (when app
+                                  (.close (:kstreams app))
+                                  (println (str "; :kstreams-access closed ")))
+                                (recur app store))
+                     :cleanup (do (.cleanUp (:kstreams app))
+                                  (recur app store))
+                     (recur app store))
+              ch-access-store (let [[op k cout] vl]
+                                (condp = op
+                                  :get (do (>! cout (.get k store))
+                                           (recur app store))
+                                  (recur app store))
+                                )))))))
+
+(defn proc-access-store
+  [pub-sys ch-sys ch-access-store ch-kproducer]
+  (let [csys (chan 1)]
+    (sub pub-sys :kstreams csys)
+    (go (loop [store nil]
+          (if-let [[vl port] (alts! (if store [csys ch-access-store] [csys]))]
+            (condp = port
+              csys (condp = (second vl)
+                     :started (let [[_ _ appid] vl
+                                    s (when (= appid "alpha.access.streams")
+                                        (.store streams-game
+                                                appid
+                                                (QueryableStoreTypes/keyValueStore)))]
+                                (recur s))
+                     :closed (do (.close store)
+                                 (recur nil)))
+              ch-access-store (let [[op token cout] vl]
+                                (condp = op
+                                  :get (do (>! cout (.get k store))
+                                           (recur store))
+                                  (recur store)))))))))
 
 (def kprops {"bootstrap.servers" "broker1:9092"})
 
@@ -203,8 +260,7 @@
   ;;
   )
 
-; not used in the system, for repl purposes only
-(def ^:private a-kstreams (atom {}))
+
 
 (defn proc-kstreams
   [pub-sys ch-sys]
@@ -220,12 +276,15 @@
                        (swap! a-kstreams assoc appid app) ; for repl purposes
                        (.start (:kstreams app))
                        (println (str "; proc-kstreams started "))
+                       (>! ch-sys [:kstreams :started appid])
                        (recur app))
-              :close (do
-                       (.close (:kstreams app-state))
-                       (recur app-state))
+              :close (do (when app-state
+                           (.close (:kstreams app-state))
+                           (>! ch-sys [:kstreams :closed (:appid app-state)]))
+                         (recur app-state))
               :cleanup (do (.cleanUp (:kstreams app-state))
-                           (recur app-state)))))
+                           (recur app-state))
+              (recur app-state))))
         (println (str "proc-kstreams exiting")))
     c))
 

@@ -310,7 +310,7 @@
   - store in a kafka topic reduced into ktable(kstore) (for efficiency)
     - proc-acesss
       - reads from access kstore
-      - writes to access topic (by putting to channel kproducer)
+      - writes to tokens topic (by putting to channel kproducer)
     - proc-kproducer
       - sends evnts to kafka
     - access store is a join from tokens topic and crux-docs topic

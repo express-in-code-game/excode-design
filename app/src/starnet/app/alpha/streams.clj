@@ -78,6 +78,12 @@
                (>! cout res))))))
     cout))
 
+(defn create-kvstore
+  [kstreams name]
+  (.store kstreams
+          name
+          (QueryableStoreTypes/keyValueStore)))
+
 (defn delete-topics
   [{:keys [props
            names] :as opts}]
@@ -225,7 +231,7 @@
           ev)))
 
 
-(defn create-streams-access
+(defn create-kstreams-access
   []
   (create-streams "alpha.access.streams"
                   (fn [builder]
@@ -282,7 +288,7 @@
   ;;
   )
 
-(defn create-streams-game
+(defn create-kstreams-game
   []
   (create-streams "alpha.game.streams"
    (fn [builder]
