@@ -156,6 +156,7 @@
     (do
       (add-shutdown-hook props kstreams latch))
     {:builder builder
+     :appid appid
      :stream stream
      :topology topology
      :props props
@@ -164,39 +165,39 @@
 
 (defmulti send-event
   "Send kafka event. Topic is mapped by ev/type."
-  {:arglists '([ev kproducer]
-               [ev topic kproducer]
-               [ev uuidkey kproducer]
-               [ev topic uuidkey kproducer])}
-  (fn [ev & args]
+  {:arglists '([kproducer ev]
+               [kproducer ev topic]
+               [kproducer ev uuidkey]
+               [kproducer ev topic uuidkey])}
+  (fn [kproducer ev & args]
     (mapv type (into [ev] args))))
 
-(defmethod send-event [Object :isa/kproducer]
-  [ev kproducer]
+(defmethod send-event [:isa/kproducer Object]
+  [kproducer ev ]
   (.send kproducer
          (ProducerRecord.
           (event-to-topic ev)
           (event-to-recordkey ev)
           ev)))
 
-(defmethod send-event [Object String :isa/kproducer]
-  [ev topic kproducer]
+(defmethod send-event [:isa/kproducer Object String ]
+  [kproducer ev topic]
   (.send kproducer
          (ProducerRecord.
           topic
           (event-to-recordkey ev)
           ev)))
 
-(defmethod send-event [Object :isa/uuid :isa/kproducer]
-  [ev uuidkey kproducer]
+(defmethod send-event [:isa/kproducer Object :isa/uuid ]
+  [kproducer ev uuidkey ]
   (.send kproducer
          (ProducerRecord.
           (event-to-topic ev)
           uuidkey
           ev)))
 
-(defmethod send-event [Object String :isa/uuid :isa/kproducer]
-  [ev topic uuidkey kproducer]
+(defmethod send-event [:isa/kproducer Object String :isa/uuid]
+  [kproducer ev topic uuidkey]
   (.send kproducer
          (ProducerRecord.
           topic
@@ -204,14 +205,12 @@
           ev)))
 
 
-
-
-(defn create-streams-user
+(defn create-streams-access
   []
-  (create-streams "alpha.user.streams"
+  (create-streams "alpha.access.streams"
                   (fn [builder]
                     (-> builder
-                        (.stream "alpha.user")
+                        (.stream "alpha.tokens")
                         (.groupByKey)
                         (.aggregate (reify Initializer
                                       (apply [this]
@@ -219,11 +218,11 @@
                                     (reify Aggregator
                                       (apply [this k v ag]
                                         (next-state-user ag k v)))
-                                    (-> (Materialized/as "alpha.user.streams.store")
-                                        (.withKeySerde (TransitJsonSerde.))
+                                    (-> (Materialized/as "alpha.access.streams.store")
+                                        (.withKeySerde (Serdes/String))
                                         (.withValueSerde (TransitJsonSerde.))))
                         (.toStream)
-                        (.to "alpha.user.changes")))))
+                        (.to "alpha.access.changes")))))
 
 
 (defn assert-next-game-post [state] {:post [(s/assert :g/game %)]} state)

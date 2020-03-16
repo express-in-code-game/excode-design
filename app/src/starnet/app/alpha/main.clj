@@ -27,11 +27,12 @@
    [starnet.app.alpha.crux :as app-crux]
    [crux.api :as crux])
   (:import
-   org.apache.kafka.common.KafkaFuture$BiConsumer))
+   org.apache.kafka.common.KafkaFuture$BiConsumer
+   org.apache.kafka.clients.producer.KafkaProducer))
 
 (declare env-optimized? proc-main proc-http-server
          proc-derived-1 proc-topics proc-streams proc-log
-         proc-cruxdb)
+         proc-cruxdb proc-kproducer)
 
 (def ch-main (chan 1))
 (def ch-sys (chan (a/sliding-buffer 10)))
@@ -46,6 +47,12 @@
   (proc-streams pub-sys ch-sys)
   (proc-http-server pub-sys)
   (proc-cruxdb pub-sys ch-db)
+  (proc-kproducer pub-sys ch-kproducer)
+  #_(put! ch-sys [:kstreams [:start {:create-fn 'starnet.app.alpha.streams/create-streams-access
+                                     :appid :access-streams}]])
+  #_(put! ch-sys [:kstreams [:start {:create-fn 'starnet.app.alpha.streams/create-streams-game
+                                     :appid :game-streams}]])
+  #_(put! ch-sys [:kproducer :open])
   #_(put! ch-sys [:cruxdb :start])
   #_(put! ch-sys [:http-server :start])
   (put! ch-main :start)
@@ -53,6 +60,8 @@
 
 (comment
 
+  
+  
   (put! ch-sys [:http-server :start])
 
   (put! ch-sys [:cruxdb :start])
@@ -152,16 +161,47 @@
         (println "closing proc-cruxdb"))))
 
 
-(defn proc-access
-  []
-  )
+
 
 (def kprops {"bootstrap.servers" "broker1:9092"})
 
-(def ktopics ["alpha.user"
-              "alpha.user.changes"
+(def ktopics ["alpha.access"
+              "alpha.access.changes"
               "alpha.game"
               "alpha.game.changes"])
+
+(defn proc-topics
+  [pub-sys ch-sys]
+  (let [c (chan 1)]
+    (sub pub-sys :ktopics c)
+    (go (loop []
+          (when-let [[_ v] (<! c)]
+            (condp = v
+              :create (do
+                        (-> (create-topics {:props kprops
+                                            :names ktopics
+                                            :num-partitions 1
+                                            :replication-factor 1})
+                            (.all)
+                            (.whenComplete
+                             (reify KafkaFuture$BiConsumer
+                               (accept [this res err]
+                                 (println "topics created")
+                                 (>! ch-sys [:ktopics-created res]))))))
+              :delete (delete-topics {:props kprops :names ktopics})))
+          (recur))
+        (println "proc-topics exiting"))
+    c))
+
+(comment
+
+  (list-topics {:props kprops})
+  (type (resolve #'starnet.app.alpha.streams/list-topics))
+  (type 'starnet.app.alpha.streams/list-topics)
+  ((resolve 'starnet.app.alpha.streams/list-topics) {:props kprops})
+
+  ;;
+  )
 
 (def kprops-producer {"bootstrap.servers" "broker1:9092"
                       "auto.commit.enable" "true"
@@ -188,29 +228,11 @@
                              (recur kproducer))))
           ))))
 
-(defn proc-topics
-  [pub-sys ch-sys]
-  (let [c (chan 1)]
-    (sub pub-sys :ktopics c)
-    (go (loop []
-          (when-let [[_ v] (<! c)]
-            (condp = v
-              :create (do
-                        (-> (create-topics {:props kprops
-                                            :names ktopics
-                                            :num-partitions 1
-                                            :replication-factor 1})
-                            (.all)
-                            (.whenComplete
-                             (reify KafkaFuture$BiConsumer
-                               (accept [this res err]
-                                 (println "topics created")
-                                 (>! ch-sys [:ktopics-created res]))))))
-              :delete (delete-topics {:props kprops :names ktopics})))
-          (recur))
-        (println "proc-topics exiting"))
-    c))
 
+(defn proc-access
+  []
+  
+  )
 
 (comment
 
@@ -227,29 +249,31 @@
   (delete-topics {:props kprops :names ktopics})
   (list-topics {:props kprops})
 
-
   ;;
   )
 
-(defn proc-streams
+; not used in the system, for repl purposes only
+(def ^:private a-kstreams (atom {}))
+
+(defn proc-kstreams
   [pub-sys ch-sys]
   (let [c (chan 1)]
     (sub pub-sys :kstreams c)
     (go (loop [app-state nil]
           (when-let [[t [k args]] (<! c)]
             (condp = k
-              :create (let [{:keys [create id]} args
-                            app (create)]
-                        (>! ch-sys [:kv [id app]])
-                        (recur app))
+              :start (let [{:keys [create-fn appid]} args
+                           app ((resolve create-fn))]
+                       (swap! a-kstreams assoc appid app) ; for repl purposes
+                       (.start (:kstreams app))
+                       (println (str "; proc-kstreams started "))
+                       (recur app))
               :close (do
                        (.close (:kstreams app-state))
                        (recur app-state))
-              :start (do (.start (:kstreams app-state))
-                         (recur app-state))
               :cleanup (do (.cleanUp (:kstreams app-state))
                            (recur app-state)))))
-        (println "proc-streams exiting"))
+        (println (str "proc-kstreams exiting")))
     c))
 
 (defn proc-derived-1
@@ -271,8 +295,8 @@
   (put! sys-chan-1 [:ktopics :delete])
   (list-topics {:props props})
 
-  (put! sys-chan-1 [:kstreams [:create {:create create-streams-user
-                                        :id :create-streams-user}]])
+  (put! sys-chan-1 [:kstreams [:create {:create-fn create-streams-user
+                                        :appid :create-streams-user}]])
 
   @view-1
   (def streams-user (-> @view-1 :create-streams-user :kstreams))
