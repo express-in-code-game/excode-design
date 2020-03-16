@@ -111,6 +111,8 @@
     - https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events
       - https://github.com/pedestal/pedestal/tree/master/samples/server-sent-events
     - https://github.com/funcool/buddy-auth/tree/master/examples
+  - datomic
+    - https://docs.datomic.com/cloud/client/client-api.html#connection
 
 - crux
   - https://github.com/juxt/crux

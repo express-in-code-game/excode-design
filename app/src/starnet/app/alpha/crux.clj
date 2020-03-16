@@ -23,7 +23,7 @@
 
 
 (comment
-
+  
   (easy-ingest
    node
    [{:crux.db/id :commodity/Pu
