@@ -117,6 +117,7 @@
 - crux
   - https://github.com/juxt/crux
   - https://opencrux.com/docs#faqs
+  - https://github.com/juxt/crux/tree/master/crux-test/test/crux
 
 - cljs
   - antd
