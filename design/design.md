@@ -316,6 +316,7 @@
     - access store is a join from tokens topic and crux-docs topic
     - keys are tokens, values user data user games and roles, events and roles
     - when a request arrives, reading from the store by token retrieves data needed to authenticate/authorize user in subsequent interceptors
+    - to read from store, interceptor sends a key and a channel to put the value to
   - request flow
     - request -> interceptor chain
     - intcptor adds db-channel and access channels to ctx

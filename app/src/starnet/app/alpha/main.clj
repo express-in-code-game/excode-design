@@ -106,6 +106,20 @@
             (recur)))
         (println "closing proc-http-server"))))
 
+
+
+(def crux-conf {:crux.node/topology '[crux.kafka/topology
+                                      crux.kv.rocksdb/kv-store]
+                :crux.kafka/bootstrap-servers "broker1:9092"
+                :crux.kafka/tx-topic "crux-transaction-log"
+                :crux.kafka/doc-topic "crux-docs"
+                :crux.kafka/create-topics true
+                :crux.kafka/doc-partitions 1
+                :crux.kafka/replication-factor (short 1)
+                :crux.kv/db-dir "/ctx/data/crux"
+                :crux.kv/sync? false
+                :crux.kv/check-and-store-index-version true})
+
 (defn proc-dbcall
   [f args cout]
   (go
@@ -120,7 +134,7 @@
           (if-let [[vl port] (alts! (if node [c cdb] [c]))] ; add check if node is valid
             (condp = port
               c (condp = (second vl)
-                  :start (let [n (crux/start-node app-crux/conf)]
+                  :start (let [n (crux/start-node crux-conf)]
                            (alter-var-root #'app-crux/node (constantly n)) ; for dev purposes
                            (println "; crux node started")
                            (recur n))
@@ -135,12 +149,12 @@
         (println "closing proc-cruxdb"))))
 
 
-(def props {"bootstrap.servers" "broker1:9092"})
+(def kprops {"bootstrap.servers" "broker1:9092"})
 
-(def topics ["alpha.user"
-             "alpha.user.changes"
-             "alpha.game"
-             "alpha.game.changes"])
+(def ktopics ["alpha.user"
+              "alpha.user.changes"
+              "alpha.game"
+              "alpha.game.changes"])
 
 (defn proc-topics
   [psys csys]
@@ -150,8 +164,8 @@
           (when-let [[_ v] (<! c)]
             (condp = v
               :create (do
-                        (-> (create-topics {:props props
-                                            :names topics
+                        (-> (create-topics {:props kprops
+                                            :names ktopics
                                             :num-partitions 1
                                             :replication-factor 1})
                             (.all)
@@ -160,7 +174,7 @@
                                (accept [this res err]
                                  (println "topics created")
                                  (>! csys [:ktopics-created res]))))))
-              :delete (delete-topics {:props props :names topics})))
+              :delete (delete-topics {:props kprops :names ktopics})))
           (recur))
         (println "proc-topics exiting"))
     c))
@@ -168,18 +182,18 @@
 
 (comment
 
-  (-> (create-topics {:props props
-                      :names topics
+  (-> (create-topics {:props kprops
+                      :names ktopics
                       :num-partitions 1
                       :replication-factor 1})
       (.all)
       (.whenComplete
        (reify KafkaFuture$BiConsumer
          (accept [this res err]
-           (println "; created topics " topics)))))
+           (println "; created topics " ktopics)))))
 
-  (delete-topics {:props props :names topics})
-  (list-topics {:props props})
+  (delete-topics {:props kprops :names ktopics})
+  (list-topics {:props kprops})
 
 
   ;;
