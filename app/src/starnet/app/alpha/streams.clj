@@ -199,13 +199,14 @@
     (do
       (add-shutdown-hook props kstreams latch)
       (.setStateListener kstreams (reify KafkaStreams$StateListener
-                                    (onChange [_ nw old]
-                                              (put! ch-state [:kstreams :state [appid (.isRunning nw)  nw old]])
-                                              (if (.isRunning nw)
-                                                (put! ch-running [:kstreams :running [appid (.isRunning nw) nw old]]))
-                                              (if (.isRunning nw)
-                                                (println (format "%s is running" appid))
-                                                (println (format "%s is not running" appid)))))))
+                                    (onChange
+                                     [_ nw old]
+                                     (put! ch-state [appid [(.isRunning nw)  nw old kstreams]])
+                                     (if (.isRunning nw)
+                                       (put! ch-running [appid [(.isRunning nw) nw old kstreams]]))
+                                     (if (.isRunning nw)
+                                       (println (format "%s is running" appid))
+                                       (println (format "%s is not running" appid)))))))
     {:builder builder
      :appid appid
      :stream stream

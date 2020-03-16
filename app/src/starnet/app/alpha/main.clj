@@ -36,17 +36,19 @@
     (:optimized appenv)))
 
 (declare  proc-main proc-http-server proc-nrepl
-          proc-derived-1  proc-streams proc-log
-          proc-cruxdb proc-kproducer proc-kstreams-access)
+          proc-derived-1  proc-streams proc-log proc-access-store
+          proc-cruxdb proc-kproducer )
 
 (def ch-main (chan 1))
 (def ch-sys (chan (a/sliding-buffer 10)))
 (def pub-sys (pub ch-sys first #(sliding-buffer 10)))
-(def mix-sys (a/mix ch-sys))
 (def a-derived-1 (atom {}))
 (def ch-db (chan 10))
 (def ch-kproducer (chan 10))
 (def ch-access-store (chan 10))
+(def ch-kstreams-states (a/sliding-buffer 10))
+(def pub-kstreams-states (pub ch-kstreams-states first #(sliding-buffer 10)))
+(def mix-kstreams-states (a/mix ch-kstreams-states))
 
 (defn -main  [& args]
   (when-not (env-optimized?)
@@ -69,10 +71,15 @@
                      (proc-streams pub-sys ch-sys)
                      (proc-cruxdb pub-sys ch-db)
                      (proc-kproducer pub-sys ch-kproducer)
-                     (proc-kstreams-access pub-sys ch-sys)
+                     (proc-kstreams pub-sys ch-sys mix-kstreams-states)
+                     (proc-access-store  pub-sys ch-sys ch-access-store ch-kproducer  pub-kstreams-states)
                      (put! ch-sys [:nrepl-server :start])
-                     #_(put! ch-sys [:kstreams-access :start])
-                     #_(put! ch-sys [:kstreams-game :start])
+                     #_(put! ch-sys [:kstreams [:start {:create-fn
+                                                        'starnet.app.alpha.streams/create-kstreams-access
+                                                        :repl-only-key :kstreams-access}]])
+                     #_(put! ch-sys [:kstreams [:start {:create-fn
+                                                        'starnet.app.alpha.streams/create-kstreams-game
+                                                        :repl-only-key :kstreams-game}]])
                      #_(put! ch-sys [:kproducer :open])
                      #_(put! ch-sys [:cruxdb :start])
                      #_(put! ch-sys [:http-server :start]))
@@ -192,24 +199,26 @@
           ))))
 
 (defn proc-access-store
-  [pub-sys ch-sys ch-access-store ch-kproducer]
-  (let [csys (chan 1)]
+  [pub-sys ch-sys ch-access-store ch-kproducer pub-kstreams-states]
+  (let [csys (chan 1)
+        cstates (chan 1)
+        store-name "alpha.access.streams"]
     (sub pub-sys :kstreams csys)
+    (sub pub-kstreams-states store-name cstates)
     (go (loop [store nil]
-          (if-let [[vl port] (alts! (if store [csys ch-access-store] [csys]))]
+          (if-let [[vl port] (alts! (if store [cstates ch-access-store] [cstates]))]
             (condp = port
-              csys (condp = (second vl)
-                     :started (let [[_ _ appid] vl
-                                    s (when (= appid "alpha.access.streams")
-                                        (.store streams-game
-                                                "alpha.access.streams.store"
-                                                (QueryableStoreTypes/keyValueStore)))]
-                                (recur s))
-                     :closed (do (.close store)
-                                 (recur nil)))
+              cstates (let [[appid [running? nw old kstreams]] vl]
+                        (cond
+                          (some? running?) (let [s (create-kvstore kstreams store-name)]
+                                             (recur s))
+                          (not running?) (when store
+                                           (do (.close store)
+                                               (recur nil)))
+                          :else (recur nil)))
               ch-access-store (let [[op token cout] vl]
                                 (condp = op
-                                  :get (do (>! cout (.get k store))
+                                  :get (do (>! cout (.get token store))
                                            (recur store))
                                   (recur store)))))))))
 
@@ -232,7 +241,7 @@
 (def ^:private a-kstreams (atom {}))
 
 (defn proc-kstreams
-  [pub-sys ch-sys mix-sys]
+  [pub-sys ch-sys mix-kstreams-states]
   (let [c (chan 1)]
     (sub pub-sys :kstreams c)
     (go (loop [app nil]
@@ -240,17 +249,17 @@
             (<! (create-topics-async kprops ktopics)))
           (if-let [[t [k args]] (<! c)]
             (condp = k
-              :start (let [{:keys [create-fn appid]} args
+              :start (let [{:keys [create-fn repl-only-key]} args
                            a ((resolve create-fn))]
-                       (swap! a-kstreams assoc appid a) ; for repl purposes
+                       (swap! a-kstreams assoc repl-only-key a) ; for repl purposes
                        (.start (:kstreams app))
-                       (a/admix mix-sys (:ch-state a))
-                       (a/admix mix-sys (:ch-running a))
+                       (a/admix mix-kstreams-states (:ch-state a))
+                       (a/admix mix-kstreams-states (:ch-running a))
                        (recur a))
               :close (do (when app
                            (.close (:kstreams app))
-                           (a/unmix mix-sys (:ch-state a))
-                           (a/unmix mix-sys (:ch-running a)))
+                           (a/unmix mix-kstreams-states (:ch-state app))
+                           (a/unmix mix-kstreams-states (:ch-running app)))
                          (recur app))
               :cleanup (do (.cleanUp (:kstreams app))
                            (recur app))
