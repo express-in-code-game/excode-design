@@ -30,9 +30,14 @@
   (:import
    org.apache.kafka.clients.producer.KafkaProducer))
 
-(declare env-optimized? proc-main proc-http-server
-         proc-derived-1  proc-streams proc-log
-         proc-cruxdb proc-kproducer proc-kstreams-access)
+(defn env-optimized?
+  []
+  (let [appenv (read-string (System/getenv "appenv"))]
+    (:optimized appenv)))
+
+(declare  proc-main proc-http-server proc-nrepl
+          proc-derived-1  proc-streams proc-log
+          proc-cruxdb proc-kproducer proc-kstreams-access)
 
 (def ch-main (chan 1))
 (def ch-sys (chan (a/sliding-buffer 10)))
@@ -43,53 +48,60 @@
 (def ch-access-store (chan 10))
 
 (defn -main  [& args]
-  (proc-derived-1  pub-sys a-derived-1)
-  (proc-streams pub-sys ch-sys)
-  (proc-http-server pub-sys)
-  (proc-cruxdb pub-sys ch-db)
-  (proc-kproducer pub-sys ch-kproducer)
-  (proc-kstreams-access pub-sys ch-sys)
-  #_(put! ch-sys [:kstreams-access :start])
-  #_(put! ch-sys [:kstreams-game :start])
-  #_(put! ch-sys [:kproducer :open])
-  #_(put! ch-sys [:cruxdb :start])
-  #_(put! ch-sys [:http-server :start])
+  (when-not (env-optimized?)
+    (stest/instrument)
+    (s/check-asserts true))
+  (when (env-optimized?)
+    (alter-var-root #'clojure.test/*load-tests* (fn [_] false)))
   (put! ch-main :start)
   (<!! (proc-main ch-main)))
 
+(defn proc-main
+  [ch-main]
+  (go (loop []
+        (when-let [vl (<! ch-main)]
+          (condp = vl
+            :start (do
+                     (proc-nrepl-server pub-sys)
+                     (proc-http-server pub-sys)
+                     (proc-derived-1  pub-sys a-derived-1)
+                     (proc-streams pub-sys ch-sys)
+                     (proc-cruxdb pub-sys ch-db)
+                     (proc-kproducer pub-sys ch-kproducer)
+                     (proc-kstreams-access pub-sys ch-sys)
+                     (put! ch-sys [:nrepl-server :start])
+                     #_(put! ch-sys [:kstreams-access :start])
+                     #_(put! ch-sys [:kstreams-game :start])
+                     #_(put! ch-sys [:kproducer :open])
+                     #_(put! ch-sys [:cruxdb :start])
+                     #_(put! ch-sys [:http-server :start]))
+            :exit (System/exit 0))))
+      (println "closing proc-main")))
+
 (comment
-  
+
   (put! ch-sys [:http-server :start])
 
   (put! ch-sys [:cruxdb :start])
   (put! ch-sys [:cruxdb :close])
-  
+
   (stest/unstrument)
 
   (put! ch-main :exit)
   ;;
   )
 
-(defn env-optimized?
-  []
-  (let [appenv (read-string (System/getenv "appenv"))]
-    (:optimized appenv)))
-
-(defn proc-main
-  [ch-main]
-  (go (loop [nrepl-server nil]
-        (when-let [v (<! ch-main)]
-          (condp = v
-            :start (let [sr (start-nrepl-server "0.0.0.0" 7788)]
-                     (when-not (env-optimized?)
-                       (stest/instrument)
-                       (s/check-asserts true))
-                     (when (env-optimized?)
-                       (alter-var-root #'clojure.test/*load-tests* (fn [_] false)))
-                     (recur sr))
-            :stop (recur nrepl-server)
-            :exit (System/exit 0))))
-      (println "closing proc-main")))
+(defn proc-nrepl-server
+  [pub-sys]
+  (let [c (chan 1)]
+    (sub pub-sys :nrepl-server c)
+    (go (loop [server nil]
+          (when-let [[_ v] (<! c)]
+            (condp = v
+              :start (let [sr (start-nrepl-server "0.0.0.0" 7788)]
+                       (recur sr))
+              :stop (recur server))))
+        (println "closing proc-nrepl-server"))))
 
 (defn proc-http-server
   [pub-sys]
