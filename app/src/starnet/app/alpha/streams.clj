@@ -78,6 +78,19 @@
                (>! cout res))))))
     cout))
 
+(defn create-store-async-TMP
+  [kstreams name]
+  (let [dur 3000
+        t (timeout dur)]
+    (go (loop []
+          (if-let [[vl port] (alts! [(timeout 300) t])]
+            (cond
+              (.isRunning kstreams) (create-kvstore kstreams name)
+              (= port t) (throw (ex-info (format "Could not create kstore within %s ms" 3000)
+                                         {:kstreams kstreams
+                                          :name name}))
+              :else (recur)))))))
+
 (defn create-kvstore
   [kstreams name]
   (.store kstreams
