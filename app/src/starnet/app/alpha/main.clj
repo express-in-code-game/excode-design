@@ -3,6 +3,7 @@
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go
                                      >!! <!! alt!! alts! alts!! take! put!
                                      thread pub sub]]
+   [clojure.set :refer [subset?]]
    [starnet.app.alpha.aux.nrepl :refer [start-nrepl-server]]
    [clojure.spec.alpha :as s]
    [clojure.spec.test.alpha :as stest]
@@ -19,7 +20,7 @@
    [starnet.app.alpha.http]
    [starnet.app.crux-samples.core]
 
-   [starnet.app.alpha.streams :refer [create-topics list-topics
+   [starnet.app.alpha.streams :refer [create-topics-async list-topics
                                       delete-topics produce-event
                                       future-call-consumer read-store
                                       send-event create-streams-game create-streams-user]]
@@ -27,11 +28,10 @@
    [starnet.app.alpha.crux :as app-crux]
    [crux.api :as crux])
   (:import
-   org.apache.kafka.common.KafkaFuture$BiConsumer
    org.apache.kafka.clients.producer.KafkaProducer))
 
 (declare env-optimized? proc-main proc-http-server
-         proc-derived-1 proc-topics proc-streams proc-log
+         proc-derived-1  proc-streams proc-log
          proc-cruxdb proc-kproducer)
 
 (def ch-main (chan 1))
@@ -43,7 +43,6 @@
 
 (defn -main  [& args]
   (proc-derived-1  pub-sys a-derived-1)
-  (proc-topics pub-sys ch-sys)
   (proc-streams pub-sys ch-sys)
   (proc-http-server pub-sys)
   (proc-cruxdb pub-sys ch-db)
@@ -59,8 +58,6 @@
   (<!! (proc-main ch-main)))
 
 (comment
-
-  
   
   (put! ch-sys [:http-server :start])
 
@@ -160,49 +157,6 @@
               )))
         (println "closing proc-cruxdb"))))
 
-
-
-
-(def kprops {"bootstrap.servers" "broker1:9092"})
-
-(def ktopics ["alpha.access"
-              "alpha.access.changes"
-              "alpha.game"
-              "alpha.game.changes"])
-
-(defn proc-topics
-  [pub-sys ch-sys]
-  (let [c (chan 1)]
-    (sub pub-sys :ktopics c)
-    (go (loop []
-          (when-let [[_ v] (<! c)]
-            (condp = v
-              :create (do
-                        (-> (create-topics {:props kprops
-                                            :names ktopics
-                                            :num-partitions 1
-                                            :replication-factor 1})
-                            (.all)
-                            (.whenComplete
-                             (reify KafkaFuture$BiConsumer
-                               (accept [this res err]
-                                 (println "topics created")
-                                 (>! ch-sys [:ktopics-created res]))))))
-              :delete (delete-topics {:props kprops :names ktopics})))
-          (recur))
-        (println "proc-topics exiting"))
-    c))
-
-(comment
-
-  (list-topics {:props kprops})
-  (type (resolve #'starnet.app.alpha.streams/list-topics))
-  (type 'starnet.app.alpha.streams/list-topics)
-  ((resolve 'starnet.app.alpha.streams/list-topics) {:props kprops})
-
-  ;;
-  )
-
 (def kprops-producer {"bootstrap.servers" "broker1:9092"
                       "auto.commit.enable" "true"
                       "key.serializer" "starnet.app.alpha.aux.serdes.TransitJsonSerializer"
@@ -234,21 +188,18 @@
   
   )
 
+(def kprops {"bootstrap.servers" "broker1:9092"})
+
+(def ktopics ["alpha.token"
+              "alpha.access.changes"
+              "alpha.game"
+              "alpha.game.changes"])
+
 (comment
 
-  (-> (create-topics {:props kprops
-                      :names ktopics
-                      :num-partitions 1
-                      :replication-factor 1})
-      (.all)
-      (.whenComplete
-       (reify KafkaFuture$BiConsumer
-         (accept [this res err]
-           (println "; created topics " ktopics)))))
-
-  (delete-topics {:props kprops :names ktopics})
   (list-topics {:props kprops})
-
+  (delete-topics {:props kprops :names ktopics})
+  
   ;;
   )
 
@@ -260,7 +211,9 @@
   (let [c (chan 1)]
     (sub pub-sys :kstreams c)
     (go (loop [app-state nil]
-          (when-let [[t [k args]] (<! c)]
+          (if-not (subset? (set ktopics) (list-topics {:props kprops}))
+            (<! (create-topics-async kprops ktopics)))
+          (if-let [[t [k args]] (<! c)]
             (condp = k
               :start (let [{:keys [create-fn appid]} args
                            app ((resolve create-fn))]
@@ -288,22 +241,4 @@
         (println "proc-view exiting"))
     c))
 
-(comment
-
-  (put! sys-chan-1 [:ktopics :create])
-  (list-topics {:props props})
-  (put! sys-chan-1 [:ktopics :delete])
-  (list-topics {:props props})
-
-  (put! sys-chan-1 [:kstreams [:create {:create-fn create-streams-user
-                                        :appid :create-streams-user}]])
-
-  @view-1
-  (def streams-user (-> @view-1 :create-streams-user :kstreams))
-  (.isRunning (.state streams-user))
-  (put! sys-chan-1 [:kstreams [:start {}]])
-  (put! sys-chan-1 [:kstreams [:close {}]])
-
-  ;;
-  )
 

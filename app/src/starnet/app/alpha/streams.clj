@@ -1,13 +1,16 @@
 (ns starnet.app.alpha.streams
   (:require
    [clojure.repl :refer [doc]]
+   [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go
+                                     >!! <!! alt!! alts! alts!! take! put!
+                                     thread pub sub]]
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
    [clojure.spec.test.alpha :as stest]
    [clojure.test.check :as tc]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-   
+
    [starnet.common.alpha.spec :refer [event-to-topic event-to-recordkey]]
    [starnet.common.alpha.game :refer [next-state-game]]
    [starnet.common.alpha.user :refer [next-state-user]])
@@ -42,6 +45,7 @@
 
    org.apache.kafka.streams.kstream.Initializer
    org.apache.kafka.streams.kstream.Aggregator
+   org.apache.kafka.common.KafkaFuture$BiConsumer
 
    java.util.ArrayList
    java.util.Locale
@@ -57,6 +61,22 @@
                 (mapv (fn [name]
                         (NewTopic. name num-partitions (short replication-factor))) names))]
     (.createTopics client topics)))
+
+(defn create-topics-async
+  [kprops ktopics]
+  (let [cout (chan 1)]
+    (go
+      (-> (create-topics {:props kprops
+                          :names ktopics
+                          :num-partitions 1
+                          :replication-factor 1})
+          (.all)
+          (.whenComplete
+           (reify KafkaFuture$BiConsumer
+             (accept [this res err]
+               (println "topics created")
+               (>! cout res))))))
+    cout))
 
 (defn delete-topics
   [{:keys [props
@@ -210,7 +230,7 @@
   (create-streams "alpha.access.streams"
                   (fn [builder]
                     (-> builder
-                        (.stream "alpha.tokens")
+                        (.stream "alpha.token")
                         (.groupByKey)
                         (.aggregate (reify Initializer
                                       (apply [this]
