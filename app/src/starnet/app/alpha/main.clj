@@ -2,7 +2,7 @@
   (:require
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go
                                      >!! <!! alt!! alts! alts!! take! put!
-                                     thread pub sub]]
+                                     thread pub sub sliding-buffer]]
    [clojure.set :refer [subset?]]
    [starnet.app.alpha.aux.nrepl :refer [start-nrepl-server]]
    [clojure.spec.alpha :as s]
@@ -41,7 +41,8 @@
 
 (def ch-main (chan 1))
 (def ch-sys (chan (a/sliding-buffer 10)))
-(def pub-sys (pub ch-sys first))
+(def pub-sys (pub ch-sys first #(sliding-buffer 10)))
+(def mix-sys (a/mix ch-sys))
 (def a-derived-1 (atom {}))
 (def ch-db (chan 10))
 (def ch-kproducer (chan 10))
@@ -190,29 +191,6 @@
                              (recur kproducer))))
           ))))
 
-; not used in the system, for repl purposes only
-(def ^:private a-kstreams (atom {}))
-
-(defn proc-kstreams-access
-  [pub-sys ch-sys]
-  (let [csys (chan 1)]
-    (sub pub-sys :kstreams-access csys)
-    (go (loop [app nil]
-          (if-let [[_ vl] (<! csys)]
-            (condp = vl
-              :start (let [a (create-kstreams-access)]
-                       (.start (:kstreams a))
-                       (swap! a-kstreams assoc :kstreams-access a) ; for repl purposes
-                       (println (str "; :kstreams-access started "))
-                       (recur a))
-              :close (do (when app
-                           (.close (:kstreams app))
-                           (println (str "; :kstreams-access closed ")))
-                         (recur app ))
-              :cleanup (do (.cleanUp (:kstreams app))
-                           (recur app ))
-              (recur app)))))))
-
 (defn proc-access-store
   [pub-sys ch-sys ch-access-store ch-kproducer]
   (let [csys (chan 1)]
@@ -250,31 +228,33 @@
   ;;
   )
 
-
+; not used in the system, for repl purposes only
+(def ^:private a-kstreams (atom {}))
 
 (defn proc-kstreams
-  [pub-sys ch-sys]
+  [pub-sys ch-sys mix-sys]
   (let [c (chan 1)]
     (sub pub-sys :kstreams c)
-    (go (loop [app-state nil]
+    (go (loop [app nil]
           (if-not (subset? (set ktopics) (list-topics {:props kprops}))
             (<! (create-topics-async kprops ktopics)))
           (if-let [[t [k args]] (<! c)]
             (condp = k
               :start (let [{:keys [create-fn appid]} args
-                           app ((resolve create-fn))]
-                       (swap! a-kstreams assoc appid app) ; for repl purposes
+                           a ((resolve create-fn))]
+                       (swap! a-kstreams assoc appid a) ; for repl purposes
                        (.start (:kstreams app))
-                       (println (str "; proc-kstreams started "))
-                       (>! ch-sys [:kstreams :started appid])
-                       (recur app))
-              :close (do (when app-state
-                           (.close (:kstreams app-state))
-                           (>! ch-sys [:kstreams :closed (:appid app-state)]))
-                         (recur app-state))
-              :cleanup (do (.cleanUp (:kstreams app-state))
-                           (recur app-state))
-              (recur app-state))))
+                       (a/admix mix-sys (:ch-state a))
+                       (a/admix mix-sys (:ch-running a))
+                       (recur a))
+              :close (do (when app
+                           (.close (:kstreams app))
+                           (a/unmix mix-sys (:ch-state a))
+                           (a/unmix mix-sys (:ch-running a)))
+                         (recur app))
+              :cleanup (do (.cleanUp (:kstreams app))
+                           (recur app))
+              (recur app))))
         (println (str "proc-kstreams exiting")))
     c))
 
