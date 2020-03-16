@@ -24,12 +24,14 @@
                                       future-call-consumer read-store
                                       send-event create-streams-game create-streams-user]]
    [starnet.app.alpha.http  :as app-http]
-   [starnet.app.alpha.crux  :refer [proc-cruxdb]])
+   [starnet.app.alpha.crux :as app-crux]
+   [crux.api :as crux])
   (:import
    org.apache.kafka.common.KafkaFuture$BiConsumer))
 
 (declare env-optimized? proc-main proc-http-server
-         proc-derived-1 proc-topics proc-streams proc-log)
+         proc-derived-1 proc-topics proc-streams proc-log
+         proc-cruxdb)
 
 (def cmain (chan 1))
 (def csys (chan (a/sliding-buffer 10)))
@@ -103,6 +105,34 @@
             (println (str "; " s))
             (recur)))
         (println "closing proc-http-server"))))
+
+(defn proc-dbcall
+  [f args cout]
+  (go
+    (let [x (f args)]
+      (>! cout x))))
+
+(defn proc-cruxdb
+  [psys cdb]
+  (let [c (chan 1)]
+    (sub psys :cruxdb c)
+    (go (loop [node nil]
+          (if-let [[vl port] (alts! (if node [c cdb] [c]))] ; add check if node is valid
+            (condp = port
+              c (condp = (second vl)
+                  :start (let [n (crux/start-node app-crux/conf)]
+                           (alter-var-root #'app-crux/node (constantly n)) ; for dev purposes
+                           (println "; crux node started")
+                           (recur n))
+                  :close (do
+                           (.close node)
+                           (alter-var-root #'app-crux/node (constantly nil)) ; for dev purposes
+                           (println "; crux node closed")
+                           (recur nil)))
+              cdb (do
+                    (apply proc-dbcall vl)
+                    (recur node)))))
+        (println "closing proc-cruxdb"))))
 
 
 (def props {"bootstrap.servers" "broker1:9092"})

@@ -28,35 +28,9 @@
                          [:crux.tx/put doc]))))
 
 ; not used in the system, for repl purposes only
+; this value is set from main/proc-cruxdb
 (def ^:private node nil)
 
-(defn proc-dbcall
-  [f args cout]
-  (go
-    (let [x (f args)]
-      (>! cout x))))
-
-(defn proc-cruxdb
-  [psys cdb]
-  (let [c (chan 1)]
-    (sub psys :cruxdb c)
-    (go (loop [node nil]
-          (if-let [[vl port] (alts! (if node [c cdb] [c]))] ; add check if node is valid
-            (condp = port
-              c (condp = (second vl)
-                  :start (let [n (crux/start-node conf)]
-                           (alter-var-root #'node (constantly n))
-                           (println "; crux node started")
-                           (recur n))
-                  :close (do
-                           (.close node)
-                           (alter-var-root #'node (constantly nil))
-                           (println "; crux node closed")
-                           (recur nil)))
-              cdb (do
-                    (apply proc-dbcall vl)
-                    (recur node)))))
-        (println "closing proc-cruxdb"))))
 
 (comment
 
