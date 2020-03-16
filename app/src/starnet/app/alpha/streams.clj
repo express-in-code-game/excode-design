@@ -48,6 +48,7 @@
    org.apache.kafka.streams.kstream.Initializer
    org.apache.kafka.streams.kstream.Aggregator
    org.apache.kafka.common.KafkaFuture$BiConsumer
+   org.apache.kafka.streams.KafkaStreams$State
 
    java.util.ArrayList
    java.util.Locale
@@ -80,6 +81,12 @@
                (>! cout res))))))
     cout))
 
+(defn create-kvstore
+  [kstreams name]
+  (.store kstreams
+          name
+          (QueryableStoreTypes/keyValueStore)))
+
 (defn create-store-async-TMP
   [kstreams name]
   (let [dur 3000
@@ -92,12 +99,6 @@
                                          {:kstreams kstreams
                                           :name name}))
               :else (recur)))))))
-
-(defn create-kvstore
-  [kstreams name]
-  (.store kstreams
-          name
-          (QueryableStoreTypes/keyValueStore)))
 
 (defn delete-topics
   [{:keys [props
@@ -120,7 +121,7 @@
                           (run []
                             (when (.isRunning (.state streams))
                               (.println (System/out))
-                              (println "; closing" (.get props "application.id"))
+                              (println (format "; %s streams-shutdown-hook" (.get props "application.id")))
                               (.close streams))
                             (.countDown latch))))))
 
@@ -199,13 +200,14 @@
     (do
       (add-shutdown-hook props kstreams latch)
       (.setStateListener kstreams (reify KafkaStreams$StateListener
-                                    (onChange [_ nw old]
-                                              (put! ch-state [:kstreams :state [appid (.isRunning nw)  nw old]])
-                                              (if (.isRunning nw)
-                                                (put! ch-running [:kstreams :running [appid (.isRunning nw) nw old]]))
-                                              (if (.isRunning nw)
-                                                (println (format "%s is running" appid))
-                                                (println (format "%s is not running" appid)))))))
+                                    (onChange
+                                     [_ nw old]
+                                     (let [running? (= KafkaStreams$State/RUNNING nw)]
+                                       (put! ch-state [appid [running?  nw old kstreams]])
+                                       (when running?
+                                         (put! ch-running [appid [running? nw old kstreams]]))
+                                       (println (format "; %s %s" appid (.name nw))))
+                                     ))))
     {:builder builder
      :appid appid
      :stream stream
@@ -257,6 +259,15 @@
           uuidkey
           ev)))
 
+(defmulti next-state-kstreams-access
+  (fn [_ k ev ag]
+    (:ev/type ev)))
+(defmethod next-state-kstreams-access :ev.access/create
+  [_ k ev ag]
+  (:access/record ev))
+(defmethod next-state-kstreams-access :ev.access/delete
+  [_ k ev ag]
+  nil)
 
 (defn create-kstreams-access
   []
@@ -269,8 +280,8 @@
                                       (apply [this]
                                         nil))
                                     (reify Aggregator
-                                      (apply [this k v ag]
-                                        (next-state-user ag k v)))
+                                      (apply [this k ev ag]
+                                             (apply next-state-kstreams-access [this k ev ag])))
                                     (-> (Materialized/as "alpha.access.streams.store")
                                         (.withKeySerde (Serdes/String))
                                         (.withValueSerde (TransitJsonSerde.))))

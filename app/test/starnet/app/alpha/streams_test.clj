@@ -13,7 +13,7 @@
    [starnet.app.alpha.streams :refer [create-topics list-topics
                                       delete-topics produce-event
                                       future-call-consumer
-                                      send-event create-streams-game create-streams-user]])
+                                      send-event]])
   (:import
    org.apache.kafka.clients.consumer.KafkaConsumer
    org.apache.kafka.clients.producer.KafkaProducer))

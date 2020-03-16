@@ -190,68 +190,68 @@
           :on-close (fn [num-code reason-text]
                       (log/info :msg "WS Closed:" :reason reason-text))}})
 
+;; http://pedestal.io/reference/service-map
+
 (def port 8080)
 (def port-ssl 8443)
 (def host "0.0.0.0")
 
-;; Consumed by jetty-web-sockets.server/create-server
-;; See http/default-interceptors for additional options you can configure
-;; http://pedestal.io/reference/service-map
 (def service {:env :prod
-              ;; You can bring your own non-default interceptors. Make
-              ;; sure you include routing and set it up right for
-              ;; dev-mode. If you do, many other keys for configuring
-              ;; default interceptors will be ignored.
-              ;; ::http/interceptors []
               ::http/routes routes
-
-              ;; Uncomment next line to enable CORS support, add
-              ;; string(s) specifying scheme, host and port for
-              ;; allowed source(s):
-              ;;
-              ;; "http://localhost:8080"
-              ;;
-              ;;::http/allowed-origins ["scheme://host:port"]
-              ;; ::http/allowed-origins ["*"]
-
-              ;; Root for resource interceptor that is available by default.
+                    ;; ::http/allowed-origins ["*"]
               ::http/resource-path "/public"
-
-              ;; Either :jetty, :immutant or :tomcat (see comments in project.clj)
               ::http/type :jetty
-              ;; http://pedestal.io/reference/jetty
+                   ;; http://pedestal.io/reference/jetty
               ::http/container-options {:context-configurator #(ws/add-ws-endpoints % ws-paths)
                                         ; :h2c? true
                                         ; :h2? true
                                         :ssl? true
                                         :ssl-port port-ssl
                                         :keystore "resources/keystore.jks"
-                                        :key-password "keystore"
-                                        }
+                                        :key-password "keystore"}
               ::http/host host
               ::http/port port})
 
-(defn -main-dev
-  [& args]
+(defn create-channels-interceptor
+  [channels]
+  {:name :channels-interceptor
+   :enter
+   (fn [context]
+     (assoc context :channels channels))
+   :leave
+   (fn [context]
+     context)})
+
+(defn create-deafult-interceptors
+  [channels]
+  (fn [service-map]
+    (update-in service-map [::interceptors]
+               #(vec (->> %
+                          (conj (create-channels-interceptor channels)))))))
+
+(defn start-dev
+  [channels]
   (println (str "; starting http server on " host ":" port))
   (when (get-in service [::http/container-options :ssl-port])
     (println (str "; starting https server on " host ":" port-ssl)))
-  (-> service ;; start with production configuration
-      (merge {:env :dev
+  (let [default-interceptors (create-deafult-interceptors channels)]
+    (-> service
+        (merge {:env :dev
               ;; do not block thread that starts web server
-              ::server/join? false
+                ::server/join? false
               ;; Routes can be a function that resolve routes,
               ;;  we can use this to set the routes to be reloadable
-              ::server/routes #(deref #'routes)
+                ::server/routes #(deref #'routes)
               ;; all origins are allowed in dev mode
-              ::server/allowed-origins {:creds true :allowed-origins (constantly true)}})
+                ::server/allowed-origins {:creds true :allowed-origins (constantly true)}})
       ;; Wire up interceptor chains
-      server/default-interceptors
-      server/dev-interceptors
-      server/create-server
-      server/start))
+        server/default-interceptors
+        server/dev-interceptors
+        default-interceptors
+        server/create-server
+        server/start)))
 
-(defn -main
+(defn start
   "The entry-point for 'lein run'"
   [& args]
   ;; This is an adapted service map, that can be started and stopped

@@ -2,7 +2,7 @@
   (:require
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go
                                      >!! <!! alt!! alts! alts!! take! put!
-                                     thread pub sub sliding-buffer]]
+                                     thread pub sub sliding-buffer mix admix unmix]]
    [clojure.set :refer [subset?]]
    [starnet.app.alpha.aux.nrepl :refer [start-nrepl-server]]
    [clojure.spec.alpha :as s]
@@ -28,7 +28,8 @@
    [starnet.app.alpha.crux :as app-crux]
    [crux.api :as crux])
   (:import
-   org.apache.kafka.clients.producer.KafkaProducer))
+   org.apache.kafka.clients.producer.KafkaProducer
+   org.apache.kafka.clients.producer.ProducerRecord))
 
 (defn env-optimized?
   []
@@ -36,17 +37,27 @@
     (:optimized appenv)))
 
 (declare  proc-main proc-http-server proc-nrepl
-          proc-derived-1  proc-streams proc-log
-          proc-cruxdb proc-kproducer proc-kstreams-access)
+          proc-derived-1  proc-kstreams proc-log proc-access-store
+          proc-cruxdb proc-kproducer proc-nrepl-server start-kstreams-access start-kstreams-game)
 
-(def ch-main (chan 1))
-(def ch-sys (chan (a/sliding-buffer 10)))
-(def pub-sys (pub ch-sys first #(sliding-buffer 10)))
-(def mix-sys (a/mix ch-sys))
-(def a-derived-1 (atom {}))
-(def ch-db (chan 10))
-(def ch-kproducer (chan 10))
-(def ch-access-store (chan 10))
+(def channels (let [ch-main (chan 1)
+                    ch-sys (chan (sliding-buffer 10))
+                    pb-sys (pub ch-sys first (fn [_] (sliding-buffer 10)))
+                    ch-db (chan 10)
+                    ch-kproducer (chan 10)
+                    ch-access-store (chan 10)
+                    ch-kstreams-states (chan (sliding-buffer 10))
+                    pb-kstreams-states (pub ch-kstreams-states first (fn [_] (sliding-buffer 10)))
+                    mx-kstreams-states (a/mix ch-kstreams-states)]
+                {:ch-main ch-main
+                 :ch-sys ch-sys
+                 :pb-sys pb-sys
+                 :ch-db ch-db
+                 :ch-kproducer ch-kproducer
+                 :ch-access-store ch-access-store
+                 :ch-kstreams-states ch-kstreams-states
+                 :pb-kstreams-states pb-kstreams-states
+                 :mx-kstreams-states mx-kstreams-states}))
 
 (defn -main  [& args]
   (when-not (env-optimized?)
@@ -54,79 +65,87 @@
     (s/check-asserts true))
   (when (env-optimized?)
     (alter-var-root #'clojure.test/*load-tests* (fn [_] false)))
-  (put! ch-main :start)
-  (<!! (proc-main ch-main)))
+  (put! (channels :ch-main) :start)
+  (<!! (proc-main (select-keys channels [:ch-main :ch-sys]))))
 
 (defn proc-main
-  [ch-main]
-  (go (loop []
-        (when-let [vl (<! ch-main)]
-          (condp = vl
-            :start (do
-                     (proc-nrepl-server pub-sys)
-                     (proc-http-server pub-sys)
-                     (proc-derived-1  pub-sys a-derived-1)
-                     (proc-streams pub-sys ch-sys)
-                     (proc-cruxdb pub-sys ch-db)
-                     (proc-kproducer pub-sys ch-kproducer)
-                     (proc-kstreams-access pub-sys ch-sys)
-                     (put! ch-sys [:nrepl-server :start])
-                     #_(put! ch-sys [:kstreams-access :start])
-                     #_(put! ch-sys [:kstreams-game :start])
-                     #_(put! ch-sys [:kproducer :open])
-                     #_(put! ch-sys [:cruxdb :start])
-                     #_(put! ch-sys [:http-server :start]))
-            :exit (System/exit 0))))
-      (println "closing proc-main")))
+  [{:keys [ch-main ch-sys]}]
+  (go
+    (loop []
+      (when-let [vl (<! ch-main)]
+        (condp = vl
+          :start
+          (do
+            (proc-nrepl-server (select-keys channels [:pb-sys]))
+            (proc-http-server (select-keys channels [:pb-sys]) channels)
+            (proc-cruxdb (select-keys channels [:pb-sys :ch-db]))
+            (proc-kproducer (select-keys channels [:pb-sys :ch-kproducer]))
+            (proc-kstreams (select-keys channels [:pb-sys :ch-sys :mx-kstreams-states]))
+            (proc-access-store (select-keys channels [:pb-sys :ch-sys :ch-access-store
+                                                      :ch-kproducer :pb-kstreams-states]))
+
+            (put! ch-sys [:nrepl-server :start])
+            (put! ch-sys [:kproducer :start])
+            (start-kstreams-access (select-keys channels [:ch-sys]))
+            #_(start-kstreams-game (select-keys channels [:ch-sys]))
+            #_(put! ch-sys [:kproducer :open])
+            #_(put! ch-sys [:cruxdb :start])
+            #_(put! ch-sys [:http-server :start]))
+          :exit (System/exit 0)))
+      (recur))
+    (println "closing proc-main")))
 
 (comment
 
-  (put! ch-sys [:http-server :start])
+  (put! (channels :ch-sys) [:http-server :start])
 
-  (put! ch-sys [:cruxdb :start])
-  (put! ch-sys [:cruxdb :close])
+  (put! (channels :ch-sys) [:cruxdb :start])
+  (put! (channels :ch-sys) [:cruxdb :close])
 
   (stest/unstrument)
 
-  (put! ch-main :exit)
+  (put! (channels :ch-main) :exit)
+  
+  (<!! (a/into [] (channels :ch-kstreams-states)) )
+
   ;;
   )
 
 (defn proc-nrepl-server
-  [pub-sys]
+  [{:keys [pb-sys]}]
   (let [c (chan 1)]
-    (sub pub-sys :nrepl-server c)
+    (sub pb-sys :nrepl-server c)
     (go (loop [server nil]
-          (when-let [[_ v] (<! c)]
+          (if-let [[_ v] (<! c)]
             (condp = v
               :start (let [sr (start-nrepl-server "0.0.0.0" 7788)]
-                       (recur sr))
-              :stop (recur server))))
+                       (recur sr)))
+            (recur server)))
         (println "closing proc-nrepl-server"))))
 
+
+
 (defn proc-http-server
-  [pub-sys]
+  [{:keys [pb-sys]} channels]
   (let [c (chan 1)]
-    (sub pub-sys :http-server c)
+    (sub pb-sys :http-server c)
     (go (loop [server nil]
           (when-let [[_ v] (<! c)]
             (condp = v
-              :start (let [sr (app-http/-main-dev)]
+              :start (let [sr (app-http/start-dev channels)]
                        (recur sr))
               :stop (recur server))))
         (println "closing proc-http-server"))))
 
 (defn proc-log
-  [pub-sys]
+  [{:keys [pb-sys]}]
   (let [c (chan 1)]
-    (sub pub-sys :log c)
+    (sub pb-sys :log c)
     (go (loop []
           (if-let [[_ s] (<! c)]
             (println (str "; " s))
             (recur)))
         (println "closing proc-http-server"))))
-
-
 
 (def crux-conf {:crux.node/topology '[crux.kafka/topology
                                       crux.kv.rocksdb/kv-store]
@@ -141,9 +160,9 @@
                 :crux.kv/check-and-store-index-version true})
 
 (defn proc-cruxdb
-  [pub-sys ch-db]
+  [{:keys [pb-sys ch-db]} ]
   (let [c (chan 1)]
-    (sub pub-sys :cruxdb c)
+    (sub pb-sys :cruxdb c)
     (go (loop [node nil]
           (if-let [[vl port] (alts! (if node [c ch-db] [c]))] ; add check if node is valid
             (condp = port
@@ -157,7 +176,7 @@
                            (alter-var-root #'app-crux/node (constantly nil)) ; for dev purposes
                            (println "; crux node closed")
                            (recur nil)))
-              ch-db (let [[f args cout] v]
+              ch-db (let [[f args cout] vl]
                       (go
                         (let [x (f args)] ; db call here
                           (>! cout x) ; convey data
@@ -172,46 +191,87 @@
                       "value.serializer" "starnet.app.alpha.aux.serdes.TransitJsonSerializer"})
 
 (defn proc-kproducer
-  [pub-sys ch-kproducer]
+  [{:keys [pb-sys ch-kproducer]}]
   (let [c (chan 1)]
-    (sub pub-sys :kproducer c)
+    (sub pb-sys :kproducer c)
     (go (loop [kproducer nil]
           (if-let [[vl port] (alts! (if kproducer [c ch-kproducer] [c]))]
             (condp = port
               c (condp = (second vl)
-                  :open (let [kp (KafkaProducer. kprops-producer)]
+                  :start (let [kp (KafkaProducer. kprops-producer)]
                           (println "; kprodcuer created")
                           (recur kp))
                   :close (do
                            (.close kproducer)
                            (println "; kproducer closed")
                            (recur nil)))
-              ch-kproducer (let [[args cout] vl]
-                             (>! cout (apply send-event kproducer args)) ; may deref future
+              ch-kproducer (let [[[topic k ev] cout] vl]
+                             (>! cout (.send kproducer
+                                             (ProducerRecord.
+                                              topic
+                                              k
+                                              ev))) ; probably should deref kfuture
                              (recur kproducer))))
           ))))
 
 (defn proc-access-store
-  [pub-sys ch-sys ch-access-store ch-kproducer]
-  (let [csys (chan 1)]
-    (sub pub-sys :kstreams csys)
+  [{:keys [pb-sys ch-sys ch-access-store ch-kproducer pb-kstreams-states]}]
+  (let [csys (chan 1)
+        cstates (chan 1)
+        appid "alpha.access.streams"
+        store-name "alpha.access.streams.store"]
+    (sub pb-sys :kstreams csys)
+    (sub pb-kstreams-states appid cstates)
     (go (loop [store nil]
-          (if-let [[vl port] (alts! (if store [csys ch-access-store] [csys]))]
+          (if-let [[vl port] (alts! (if store [cstates ch-access-store] [cstates]))]
             (condp = port
-              csys (condp = (second vl)
-                     :started (let [[_ _ appid] vl
-                                    s (when (= appid "alpha.access.streams")
-                                        (.store streams-game
-                                                "alpha.access.streams.store"
-                                                (QueryableStoreTypes/keyValueStore)))]
-                                (recur s))
-                     :closed (do (.close store)
-                                 (recur nil)))
+              cstates (let [[appid [running? nw old kstreams]] vl]
+                        (cond
+                          (true? running?) (let [s (create-kvstore kstreams store-name)]
+                                             (println (format "; kv-store for %s created" appid))
+                                             (recur s))
+                          (not running?) (do (when store
+                                               (println (format "; kv-store for %s closed" appid)))
+                                             (recur store))
+                          :else (recur store)))
               ch-access-store (let [[op token cout] vl]
                                 (condp = op
-                                  :get (do (>! cout (.get k store))
+                                  :get (do (>! cout (.get token store))
                                            (recur store))
-                                  (recur store)))))))))
+                                  :read-store (do (>! cout (read-store store))
+                                                  (recur store))
+                                  :delete (let [c (chan 1)]
+                                            (>! ch-kproducer [["alpha.token" 
+                                                               token
+                                                               {:ev/type :ev.access/delete
+                                                                :access/token token}
+                                                               ] c])
+                                            (<! c) ; need to utilize kafka-future to actually wait for it
+                                            (>! cout true)
+                                            (recur store))
+                                  :create (let [tok (.toString (java.util.UUID/randomUUID))
+                                                c (chan 1)
+                                                record {:access/token tok
+                                                        :access/inst-create (java.util.Date.)}]
+                                            (>! ch-kproducer [["alpha.token"
+                                                               tok
+                                                               {:ev/type :ev.access/create
+                                                                :access/record  record}] c])
+                                            (<! c)  ; need to utilize kafka-future to actually wait for it
+                                            (>! cout record)
+                                            (recur store))
+                                  (recur store))))))
+        (println "proc-access-store exiting"))))
+
+(comment
+  (def c-out (chan 1))
+  (put! (channels :ch-access-store) [:create "abc" c-out])
+  (put! (channels :ch-access-store) [:read-store "abc" c-out])
+  (def t (:access/token (<!! c-out)))
+  (put! (channels :ch-access-store) [:delete "4d08a1f1-5442-4db4-8c19-539617665f42" c-out])
+
+  ;;
+  )
 
 (def kprops {"bootstrap.servers" "broker1:9092"})
 
@@ -231,37 +291,51 @@
 ; not used in the system, for repl purposes only
 (def ^:private a-kstreams (atom {}))
 
+
 (defn proc-kstreams
-  [pub-sys ch-sys mix-sys]
+  [{:keys [pb-sys ch-sys mx-kstreams-states]}]
   (let [c (chan 1)]
-    (sub pub-sys :kstreams c)
+    (sub pb-sys :kstreams c)
     (go (loop [app nil]
-          (if-not (subset? (set ktopics) (list-topics {:props kprops}))
-            (<! (create-topics-async kprops ktopics)))
           (if-let [[t [k args]] (<! c)]
-            (condp = k
-              :start (let [{:keys [create-fn appid]} args
-                           a ((resolve create-fn))]
-                       (swap! a-kstreams assoc appid a) ; for repl purposes
-                       (.start (:kstreams app))
-                       (a/admix mix-sys (:ch-state a))
-                       (a/admix mix-sys (:ch-running a))
-                       (recur a))
-              :close (do (when app
-                           (.close (:kstreams app))
-                           (a/unmix mix-sys (:ch-state a))
-                           (a/unmix mix-sys (:ch-running a)))
-                         (recur app))
-              :cleanup (do (.cleanUp (:kstreams app))
+            (do
+              (if-not (subset? (set ktopics) (list-topics {:props kprops}))
+                (<! (create-topics-async kprops ktopics)))
+              (condp = k
+                :start (let [{:keys [create-fn repl-only-key]} args
+                             a (create-fn)]
+                         (swap! a-kstreams assoc repl-only-key a) ; for repl purposes
+                         (.start (:kstreams a))
+                         (a/admix mx-kstreams-states (:ch-state a))
+                         #_(a/admix mx-kstreams-states (:ch-running a))
+                         (recur a))
+                :close (do (when app
+                             (.close (:kstreams app))
+                             (a/unmix mx-kstreams-states (:ch-state app))
+                             #_(a/unmix mx-kstreams-states (:ch-running app)))
                            (recur app))
-              (recur app))))
+                :cleanup (do (.cleanUp (:kstreams app))
+                             (recur app))
+                (recur app)))))
         (println (str "proc-kstreams exiting")))
     c))
 
+
+(defn start-kstreams-access
+  [{:keys [ch-sys]}]
+  (put! ch-sys [:kstreams [:start {:create-fn create-kstreams-access
+                                   :repl-only-key :kstreams-access}]]))
+
+(defn start-kstreams-game
+  [{:keys [ch-sys]}]
+  (put! ch-sys [:kstreams [:start {:create-fn create-kstreams-game
+                                   :repl-only-key :kstreams-game}]]))
+
+
 (defn proc-derived-1
-  [pub-sys derived]
+  [{:keys [pb-sys]} derived]
   (let [c (chan 1)]
-    (sub pub-sys :kv c)
+    (sub pb-sys :kv c)
     (go (loop []
           (when-let [[t [k v]] (<! c)]
             (do
