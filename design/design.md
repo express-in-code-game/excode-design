@@ -336,3 +336,4 @@
   - but logic like 'is user authorized?' is not solely http layer
   - solution: perform such logic in fns that return a channel and invoke from interceptors or elswhere
   - fns are processes (go blocks), rely on arguments only, are in a separate ns
+  - pass channels explicitly in main within http process
