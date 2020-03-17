@@ -216,23 +216,20 @@
   [{:keys [pb-sys ch-sys ch-access-store ch-kproducer pb-kstreams-states]}]
   (let [csys (chan 1)
         cstates (chan 1)
+        appid "alpha.access.streams"
         store-name "alpha.access.streams.store"]
     (sub pb-sys :kstreams csys)
-    (sub pb-kstreams-states store-name cstates)
+    (sub pb-kstreams-states appid cstates)
     (go (loop [store nil]
-          (println "loop")
-          (if-let [[vl port] (alts! (if store [cstates ch-access-store] [cstates]))
-                   _ (println vl)]
+          (if-let [[vl port] (alts! (if store [cstates ch-access-store] [cstates]))]
             (condp = port
               cstates (let [[appid [running? nw old kstreams]] vl]
-                        (println (format "running? is %s " running?))
                         (cond
                           (true? running?) (let [s (create-kvstore kstreams store-name)]
                                              (println (format "; kv-store for %s created" appid))
                                              (recur s))
                           (not running?) (do (when store
-                                               (do (.close store)
-                                                   (println (format "; kv-store for %s closed" appid))))
+                                               (println (format "; kv-store for %s closed" appid)))
                                              (recur store))
                           :else (recur store)))
               ch-access-store (let [[op token cout] vl]
@@ -258,7 +255,8 @@
                                             (<! c)  ; need to utilize kafka-future to actually wait for it
                                             (>! cout record)
                                             (recur store))
-                                  (recur store)))))))))
+                                  (recur store))))))
+        (println "proc-access-store exiting"))))
 
 (def kprops {"bootstrap.servers" "broker1:9092"})
 
@@ -294,12 +292,12 @@
                          (swap! a-kstreams assoc repl-only-key a) ; for repl purposes
                          (.start (:kstreams a))
                          (a/admix mx-kstreams-states (:ch-state a))
-                         (a/admix mx-kstreams-states (:ch-running a))
+                         #_(a/admix mx-kstreams-states (:ch-running a))
                          (recur a))
                 :close (do (when app
                              (.close (:kstreams app))
                              (a/unmix mx-kstreams-states (:ch-state app))
-                             (a/unmix mx-kstreams-states (:ch-running app)))
+                             #_(a/unmix mx-kstreams-states (:ch-running app)))
                            (recur app))
                 :cleanup (do (.cleanUp (:kstreams app))
                              (recur app))
