@@ -37,7 +37,7 @@
 
 (declare  proc-main proc-http-server proc-nrepl
           proc-derived-1  proc-kstreams proc-log proc-access-store
-          proc-cruxdb proc-kproducer proc-nrepl-server )
+          proc-cruxdb proc-kproducer proc-nrepl-server start-kstreams-access start-kstreams-game)
 
 (def channels (let [ch-main (chan 1)
                     ch-sys (chan (sliding-buffer 10))
@@ -82,13 +82,11 @@
             (proc-kstreams (select-keys channels [:pb-sys :ch-sys :mx-kstreams-states]))
             (proc-access-store (select-keys channels [:pb-sys :ch-sys :ch-access-store
                                                       :ch-kproducer :pb-kstreams-states]))
+
             (put! ch-sys [:nrepl-server :start])
-            #_(put! ch-sys [:kstreams [:start {:create-fn
-                                               'starnet.app.alpha.streams/create-kstreams-access
-                                               :repl-only-key :kstreams-access}]])
-            #_(put! ch-sys [:kstreams [:start {:create-fn
-                                               'starnet.app.alpha.streams/create-kstreams-game
-                                               :repl-only-key :kstreams-game}]])
+            (put! ch-sys [:kproducer :start])
+            (start-kstreams-access (select-keys channels [:ch-sys]))
+            #_(start-kstreams-game (select-keys channels [:ch-sys]))
             #_(put! ch-sys [:kproducer :open])
             #_(put! ch-sys [:cruxdb :start])
             #_(put! ch-sys [:http-server :start]))
@@ -106,6 +104,9 @@
   (stest/unstrument)
 
   (put! (channels :ch-main) :exit)
+  
+  (<!! (a/into [] (channels :ch-kstreams-states)) )
+
   ;;
   )
 
@@ -196,17 +197,28 @@
           (if-let [[vl port] (alts! (if kproducer [c ch-kproducer] [c]))]
             (condp = port
               c (condp = (second vl)
-                  :open (let [kp (KafkaProducer. kprops-producer)]
+                  :start (let [kp (KafkaProducer. kprops-producer)]
                           (println "; kprodcuer created")
                           (recur kp))
                   :close (do
                            (.close kproducer)
                            (println "; kproducer closed")
                            (recur nil)))
-              ch-kproducer (let [[args cout] vl]
-                             (>! cout (apply send-event kproducer args)) ; may deref future
+              ch-kproducer (let [[[topic k v] cout] vl]
+                             (>! cout (.send kproducer
+                                             topic
+                                             k
+                                             v)) ; may deref future
                              (recur kproducer))))
           ))))
+
+(def c (chan 1))
+(sub (channels :pb-kstreams-states) "alpha.access.streams" c)
+(go
+  (loop []
+    (when-let [vl (<! c)]
+      (println (format "value from c %" (-> vl second first))))
+    (recur)))
 
 (defn proc-access-store
   [{:keys [pb-sys ch-sys ch-access-store ch-kproducer pb-kstreams-states]}]
@@ -219,17 +231,39 @@
           (if-let [[vl port] (alts! (if store [cstates ch-access-store] [cstates]))]
             (condp = port
               cstates (let [[appid [running? nw old kstreams]] vl]
+                        (println (format "running? is %s " running?))
                         (cond
-                          (some? running?) (let [s (create-kvstore kstreams store-name)]
+                          (true? running?) (let [s (create-kvstore kstreams store-name)]
+                                             (println (format "; kv-store for %s created" appid))
                                              (recur s))
                           (not running?) (when store
                                            (do (.close store)
+                                               (println (format "; kv-store for %s closed" appid))
                                                (recur nil)))
                           :else (recur nil)))
               ch-access-store (let [[op token cout] vl]
                                 (condp = op
                                   :get (do (>! cout (.get token store))
                                            (recur store))
+                                  :read-store (do (>! cout (read-store store))
+                                            (recur store))
+                                  :delete (let [c (chan 1)]
+                                            (>! ch-kproducer [["alpha.token" token
+                                                               (fn [_ k ag]
+                                                                 nil)] c])
+                                            (<! c) ; need to utilize kafka-future to actually wait for it
+                                            (>! cout true)
+                                            (recur store))
+                                  :create (let [tok (.toString (java.util.UUID/randomUUID))
+                                                c (chan 1)
+                                                record {:token tok
+                                                        :inst-create (java.util.Date.)}]
+                                            (>! ch-kproducer [["alpha.token" tok
+                                                               (fn [_ k ag]
+                                                                 record)] c])
+                                            (<! c)  ; need to utilize kafka-future to actually wait for it
+                                            (>! cout record)
+                                            (recur store))
                                   (recur store)))))))))
 
 (def kprops {"bootstrap.servers" "broker1:9092"})
@@ -261,9 +295,9 @@
                 (<! (create-topics-async kprops ktopics)))
               (condp = k
                 :start (let [{:keys [create-fn repl-only-key]} args
-                             a ((resolve create-fn))]
+                             a (create-fn)]
                          (swap! a-kstreams assoc repl-only-key a) ; for repl purposes
-                         (.start (:kstreams app))
+                         (.start (:kstreams a))
                          (a/admix mx-kstreams-states (:ch-state a))
                          (a/admix mx-kstreams-states (:ch-running a))
                          (recur a))
@@ -278,6 +312,18 @@
             ))
         (println (str "proc-kstreams exiting")))
     c))
+
+
+(defn start-kstreams-access
+  [{:keys [ch-sys]}]
+  (put! ch-sys [:kstreams [:start {:create-fn create-kstreams-access
+                                   :repl-only-key :kstreams-access}]]))
+
+(defn start-kstreams-game
+  [{:keys [ch-sys]}]
+  (put! ch-sys [:kstreams [:start {:create-fn create-kstreams-game
+                                   :repl-only-key :kstreams-game}]]))
+
 
 (defn proc-derived-1
   [{:keys [pb-sys]} derived]

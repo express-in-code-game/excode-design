@@ -48,6 +48,7 @@
    org.apache.kafka.streams.kstream.Initializer
    org.apache.kafka.streams.kstream.Aggregator
    org.apache.kafka.common.KafkaFuture$BiConsumer
+   org.apache.kafka.streams.KafkaStreams$State
 
    java.util.ArrayList
    java.util.Locale
@@ -201,12 +202,12 @@
       (.setStateListener kstreams (reify KafkaStreams$StateListener
                                     (onChange
                                      [_ nw old]
-                                     (put! ch-state [appid [(.isRunning nw)  nw old kstreams]])
-                                     (if (.isRunning nw)
-                                       (put! ch-running [appid [(.isRunning nw) nw old kstreams]]))
-                                     (if (.isRunning nw)
-                                       (println (format "%s is running" appid))
-                                       (println (format "%s is not running" appid)))))))
+                                     (let [running? (= KafkaStreams$State/RUNNING nw)]
+                                       (put! ch-state [appid [running?  nw old kstreams]])
+                                       (when running?
+                                         (put! ch-running [appid [running? nw old kstreams]]))
+                                       (println (format "; %s %s" appid (.name nw))))
+                                     ))))
     {:builder builder
      :appid appid
      :stream stream
@@ -258,7 +259,6 @@
           uuidkey
           ev)))
 
-
 (defn create-kstreams-access
   []
   (create-streams "alpha.access.streams"
@@ -270,8 +270,10 @@
                                       (apply [this]
                                         nil))
                                     (reify Aggregator
-                                      (apply [this k v ag]
-                                        (next-state-user ag k v)))
+                                      (apply [this k next-fn ag]
+                                        ; trying the approach of consolidating logic inside the process
+                                        ; prefer events and mutimethod if this approach turns incorrect
+                                             (apply next-fn [this k ag])))
                                     (-> (Materialized/as "alpha.access.streams.store")
                                         (.withKeySerde (Serdes/String))
                                         (.withValueSerde (TransitJsonSerde.))))
