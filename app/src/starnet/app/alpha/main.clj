@@ -212,23 +212,17 @@
                              (recur kproducer))))
           ))))
 
-(def c (chan 1))
-(sub (channels :pb-kstreams-states) "alpha.access.streams" c)
-(go
-  (loop []
-    (when-let [vl (<! c)]
-      (println (format "value from c %" (-> vl second first))))
-    (recur)))
-
 (defn proc-access-store
   [{:keys [pb-sys ch-sys ch-access-store ch-kproducer pb-kstreams-states]}]
   (let [csys (chan 1)
         cstates (chan 1)
-        store-name "alpha.access.streams"]
+        store-name "alpha.access.streams.store"]
     (sub pb-sys :kstreams csys)
     (sub pb-kstreams-states store-name cstates)
     (go (loop [store nil]
-          (if-let [[vl port] (alts! (if store [cstates ch-access-store] [cstates]))]
+          (println "loop")
+          (if-let [[vl port] (alts! (if store [cstates ch-access-store] [cstates]))
+                   _ (println vl)]
             (condp = port
               cstates (let [[appid [running? nw old kstreams]] vl]
                         (println (format "running? is %s " running?))
@@ -236,17 +230,17 @@
                           (true? running?) (let [s (create-kvstore kstreams store-name)]
                                              (println (format "; kv-store for %s created" appid))
                                              (recur s))
-                          (not running?) (when store
-                                           (do (.close store)
-                                               (println (format "; kv-store for %s closed" appid))
-                                               (recur nil)))
-                          :else (recur nil)))
+                          (not running?) (do (when store
+                                               (do (.close store)
+                                                   (println (format "; kv-store for %s closed" appid))))
+                                             (recur store))
+                          :else (recur store)))
               ch-access-store (let [[op token cout] vl]
                                 (condp = op
                                   :get (do (>! cout (.get token store))
                                            (recur store))
                                   :read-store (do (>! cout (read-store store))
-                                            (recur store))
+                                                  (recur store))
                                   :delete (let [c (chan 1)]
                                             (>! ch-kproducer [["alpha.token" token
                                                                (fn [_ k ag]
@@ -284,6 +278,7 @@
 ; not used in the system, for repl purposes only
 (def ^:private a-kstreams (atom {}))
 
+
 (defn proc-kstreams
   [{:keys [pb-sys ch-sys mx-kstreams-states]}]
   (let [c (chan 1)]
@@ -308,8 +303,7 @@
                            (recur app))
                 :cleanup (do (.cleanUp (:kstreams app))
                              (recur app))
-                (recur app)))
-            ))
+                (recur app)))))
         (println (str "proc-kstreams exiting")))
     c))
 

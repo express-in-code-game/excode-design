@@ -121,7 +121,7 @@
                           (run []
                             (when (.isRunning (.state streams))
                               (.println (System/out))
-                              (println "; closing" (.get props "application.id"))
+                              (println (format "; %s streams-shutdown-hook" (.get props "application.id")))
                               (.close streams))
                             (.countDown latch))))))
 
