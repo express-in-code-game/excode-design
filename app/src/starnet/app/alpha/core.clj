@@ -7,27 +7,17 @@
    [clojure.java.io :as io]))
 
 (defn authorized?
-  [{:keys {} :as channels}]
-  (go
-    
-    )
-  )
+  [{:keys [ch-cruxdb] :as channels}])
 
-(defn create-token
-  [{:keys [ch-access-store] :as channels}]
-  (let []
-    
-    )
-       :get (do (>! cout (.get token store))
-                                           (recur store))
-                                  :delete (do
-                                            (>! ch-kproducer [["alpha.token" token
-                                                               (fn [_ k ag]
-                                                                 nil)] cout])
-                                            (recur store))
-                                  :update (do
-                                            (>! ch-kproducer [["alpha.token" token
-                                                               (fn [_ k ag]
-                                                                 (update ag : )
-                                                                 )] cout])
-  )
+(defn db-tx
+  [{:keys [ch-cruxdb] :as channels} tx-data]
+  (let [c-out (chan 1)]
+    (put! ch-cruxdb {:cruxdb/op :tx
+                     :cruxdb/tx-data tx-data
+                     :ch/c-out c-out})
+    c-out))
+
+(defn create-user
+  [channels tx-data]
+  (db-tx channels tx-data))
+

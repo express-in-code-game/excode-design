@@ -26,6 +26,7 @@
                                       send-event create-kstreams-game create-kstreams-access]]
    [starnet.app.alpha.http  :as app-http]
    [starnet.app.alpha.crux :as app-crux]
+   [starnet.app.alpha.core :as appcore]
    [crux.api :as crux])
   (:import
    org.apache.kafka.clients.producer.KafkaProducer
@@ -43,7 +44,7 @@
 (def channels (let [ch-proc-main (chan 1)
                     ch-sys (chan (sliding-buffer 10))
                     pb-sys (pub ch-sys :ch/topic (fn [_] (sliding-buffer 10)))
-                    ch-db (chan 10)
+                    ch-cruxdb (chan 10)
                     ch-kproducer (chan 10)
                     ch-access-store (chan 10)
                     ch-kstreams-states (chan (sliding-buffer 10))
@@ -52,7 +53,7 @@
                 {:ch-proc-main ch-proc-main
                  :ch-sys ch-sys
                  :pb-sys pb-sys
-                 :ch-db ch-db
+                 :ch-cruxdb ch-cruxdb
                  :ch-kproducer ch-kproducer
                  :ch-access-store ch-access-store
                  :ch-kstreams-states ch-kstreams-states
@@ -78,7 +79,7 @@
           (do
             (proc-nrepl-server (select-keys channels [:pb-sys]))
             (proc-http-server (select-keys channels [:pb-sys]) channels)
-            (proc-cruxdb (select-keys channels [:pb-sys :ch-db]))
+            (proc-cruxdb (select-keys channels [:pb-sys :ch-cruxdb]))
             (proc-kproducer (select-keys channels [:pb-sys :ch-kproducer]))
             (proc-kstreams (select-keys channels [:pb-sys :ch-sys :mx-kstreams-states]))
             (proc-access-store (select-keys channels [:pb-sys :ch-sys :ch-access-store
@@ -86,10 +87,10 @@
 
             (put! ch-sys {:ch/topic :nrepl-server :proc/op :start})
             (put! ch-sys {:ch/topic :kproducer :proc/op :start})
-            (start-kstreams-access (select-keys channels [:ch-sys]))
+            #_(start-kstreams-access (select-keys channels [:ch-sys]))
+            #_(put! ch-sys {:ch/topic :cruxdb :proc/op :start})
             #_(start-kstreams-game (select-keys channels [:ch-sys]))
             #_(put! ch-sys [:kproducer :open])
-            #_(put! ch-sys [:cruxdb :start])
             #_(put! ch-sys [:http-server :start]))
           :exit (System/exit 0)))
       (recur))
@@ -99,8 +100,7 @@
 
   (put! (channels :ch-sys) {:ch/topic :http-server :proc/op :start})
 
-  (put! (channels :ch-sys) {:ch/topic :cruxdb :proc/op :start})
-  (put! (channels :ch-sys) {:ch/topic :cruxdb :proc/op :close})
+
 
   (stest/unstrument)
 
@@ -158,11 +158,11 @@
                 :crux.kv/check-and-store-index-version true})
 
 (defn proc-cruxdb
-  [{:keys [pb-sys ch-db]} ]
+  [{:keys [pb-sys ch-cruxdb]}]
   (let [c (chan 1)]
     (sub pb-sys :cruxdb c)
     (go (loop [node nil]
-          (if-let [[v port] (alts! (if node [c ch-db] [c]))] ; add check if node is valid
+          (if-let [[v port] (alts! (if node [c ch-cruxdb] [c]))] ; add check if node is valid
             (condp = port
               c (condp = (:proc/op v)
                   :start (let [n (crux/start-node crux-conf)]
@@ -174,14 +174,31 @@
                            (alter-var-root #'app-crux/node (constantly nil)) ; for dev purposes
                            (println "; crux node closed")
                            (recur nil)))
-              ch-db (let [{:keys [f args ch/c-out]} v]
-                      (go
-                        (let [x (f args)] ; db call here
-                          (>! c-out x) ; convey data
-                          ))
-                      (recur node))
-              )))
+              ch-cruxdb (let [{:keys [cruxdb/op cruxdb/tx-data ch/c-out cruxdb/query-data]} v]
+                          (condp = op
+                            :query (go
+                                     (let [res (crux/q (crux/db node) query-data)] ;
+                                       (>! c-out res)))
+                            :tx (go
+                                  (let [res (crux/submit-tx node tx-data)]
+                                    (>! c-out res))))
+                          (recur node)))))
         (println "closing proc-cruxdb"))))
+
+
+(comment
+  (put! (channels :ch-sys) {:ch/topic :cruxdb :proc/op :start})
+  (put! (channels :ch-sys) {:ch/topic :cruxdb :proc/op :close})
+
+  (let [c-out (chan 1)]
+    (put! (channels :ch-cruxdb) {:cruxdb/op :query
+                                 :ch/c-out c-out
+                                 :cruxdb/query-data '{:find [element]
+                                                      :where [[element :type :element/metal]]}})
+    (first (alts!! [c-out (timeout 100)])))
+
+  ;;
+  )
 
 (def kprops-producer {"bootstrap.servers" "broker1:9092"
                       "auto.commit.enable" "true"
