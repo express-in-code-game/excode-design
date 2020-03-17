@@ -22,6 +22,8 @@
 
     - http://kafka.apache.org/documentation.html#consumerconfigs
     - https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
+  - joins
+    - https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html#joining
 
 - clj
   - async
