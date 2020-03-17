@@ -5,7 +5,8 @@
                                      >!! <!! alt!! alts! alts!! take! put!
                                      thread pub sub]]
    [crux.api :as crux]
-   [clojure.java.io :as io]))
+   [clojure.java.io :as io]
+   [starnet.app.alpha.streams :refer [future-call-consumer]]))
 
 
 
@@ -70,6 +71,39 @@
             :where [[element :type :element/metal]]})
 
   (.close node)
+
+  ;;
+  )
+
+
+(comment
+
+  (def fu-consumer-user-changes
+    (future-call-consumer {:topic "crux-docs"
+                          ;;  :key-des "crux.kafka.edn.EdnDeserializer"
+                          ;;  :value-des "crux.kafka.edn.EdnDeserializer"
+
+                          ;;  :key-des "crux.kafka.json.JsonDeserializer"
+                          ;;  :value-des "crux.kafka.json.JsonDeserializer"
+
+                          ;;  :key-des "org.apache.kafka.common.serialization.StringDeserializer"
+                          ;;  :value-des "crux.kafka.json.JsonDeserializer"
+
+                          ;;  :key-des "org.apache.kafka.common.serialization.StringDeserializer"
+                          ;;  :value-des "org.apache.kafka.common.serialization.StringDeserializer"
+
+                          ;;  :key-des "org.apache.kafka.common.serialization.StringDeserializer"
+                          ;;  :value-des "crux.kafka.edn.EdnDeserializer"
+
+                           :key-des "crux.kafka.nippy.NippyDeserializer"
+                           :value-des "crux.kafka.nippy.NippyDeserializer"
+
+                           :recordf (fn [rec]
+                                      (println ";")
+                                      (println (.key rec))
+                                      (println (.value rec)))}))
+  
+  (future-cancel fu-consumer-user-changes)
 
   ;;
   )

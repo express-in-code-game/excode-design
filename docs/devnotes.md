@@ -24,6 +24,7 @@
     - https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
   - joins
     - https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html#joining
+    - https://www.confluent.io/blog/crossing-streams-joins-apache-kafka/
 
 - clj
   - async
