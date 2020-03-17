@@ -87,8 +87,11 @@
 
             (put! ch-sys {:ch/topic :nrepl-server :proc/op :start})
             (put! ch-sys {:ch/topic :kproducer :proc/op :start})
-            #_(start-kstreams-access (select-keys channels [:ch-sys]))
-            #_(put! ch-sys {:ch/topic :cruxdb :proc/op :start})
+            (go
+              (let [c-out (chan 1)]
+                (put! ch-sys {:ch/topic :cruxdb :proc/op :start :ch/c-out c-out})
+                (<! c-out)
+                (start-kstreams-access (select-keys channels [:ch-sys]))))
             #_(start-kstreams-game (select-keys channels [:ch-sys]))
             #_(put! ch-sys [:kproducer :open])
             #_(put! ch-sys [:http-server :start]))
@@ -165,13 +168,17 @@
           (if-let [[v port] (alts! (if node [c ch-cruxdb] [c]))] ; add check if node is valid
             (condp = port
               c (condp = (:proc/op v)
-                  :start (let [n (crux/start-node crux-conf)]
+                  :start (let [{:keys [ch/c-out]} v
+                               n (crux/start-node crux-conf)]
                            (alter-var-root #'app-crux/node (constantly n)) ; for dev purposes
+                           (>! c-out true)
                            (println "; crux node started")
                            (recur n))
                   :close (do
-                           (.close node)
-                           (alter-var-root #'app-crux/node (constantly nil)) ; for dev purposes
+                           (when node
+                             (.close node)
+                             (alter-var-root #'app-crux/node (constantly nil))  ; for dev purposes
+                             )
                            (println "; crux node closed")
                            (recur nil)))
               ch-cruxdb (let [{:keys [cruxdb/op cruxdb/tx-data ch/c-out cruxdb/query-data]} v]
@@ -284,21 +291,24 @@
         (println "proc-access-store exiting"))))
 
 (comment
-  (def c-out (chan 1))
 
-  (put! (channels :ch-access-store) {:kstore/op :create
-                                     :access/token ""
-                                     :ch/c-out c-out})
+  (let [c-out (chan 1)]
+    (put! (channels :ch-access-store) {:kstore/op :create
+                                       :access/token ""
+                                       :ch/c-out c-out})
+    (first (alts!! [c-out (timeout 100)])))
 
-  (put! (channels :ch-access-store) {:kstore/op :read-store
-                                     :access/token ""
-                                     :ch/c-out c-out})
+  (let [c-out (chan 1)]
+    (put! (channels :ch-access-store) {:kstore/op :read-store
+                                       :access/token ""
+                                       :ch/c-out c-out})
+    (first (alts!! [c-out (timeout 100)])))
 
-  (first (alts!! [c-out (timeout 100)]))
-
-  (put! (channels :ch-access-store) {:kstore/op :delete
-                                     :access/token "f95cdcf1-6811-4ceb-80e2-e83a3ad10c17"
-                                     :ch/c-out c-out})
+  (let [c-out (chan 1)]
+    (put! (channels :ch-access-store) {:kstore/op :delete
+                                       :access/token "f95cdcf1-6811-4ceb-80e2-e83a3ad10c17"
+                                       :ch/c-out c-out})
+    (first (alts!! [c-out (timeout 100)])))
 
 
   ;;
