@@ -23,7 +23,7 @@
    [starnet.app.alpha.streams :refer [create-topics-async list-topics
                                       delete-topics produce-event create-kvstore
                                       future-call-consumer read-store
-                                      send-event create-kstreams-game create-kstreams-access]]
+                                      send-event create-kstreams-game create-kstreams-access create-kstreams-crux-docs]]
    [starnet.app.alpha.http  :as app-http]
    [starnet.app.alpha.crux :as app-crux]
    [starnet.app.alpha.core :as appcore]
@@ -39,7 +39,8 @@
 
 (declare  proc-main proc-http-server proc-nrepl
           proc-derived-1  proc-kstreams proc-log proc-access-store
-          proc-cruxdb proc-kproducer proc-nrepl-server start-kstreams-access start-kstreams-game)
+          proc-cruxdb proc-kproducer proc-nrepl-server start-kstreams-access start-kstreams-game
+          start-kstreams-crux-docs)
 
 (def channels (let [ch-proc-main (chan 1)
                     ch-sys (chan (sliding-buffer 10))
@@ -91,6 +92,7 @@
               (let [c-out (chan 1)]
                 (put! ch-sys {:ch/topic :cruxdb :proc/op :start :ch/c-out c-out})
                 (<! c-out)
+                (start-kstreams-crux-docs (select-keys channels [:ch-sys]))
                 (start-kstreams-access (select-keys channels [:ch-sys]))))
             #_(start-kstreams-game (select-keys channels [:ch-sys]))
             #_(put! ch-sys [:kproducer :open])
@@ -230,10 +232,10 @@
               ch-kproducer (let [{:kafka/keys [topic k ev]
                                   c-out :ch/c-out} v]
                              (>! c-out (.send kproducer
-                                            (ProducerRecord.
-                                             topic
-                                             k
-                                             ev))) ; probably should deref kfuture
+                                              (ProducerRecord.
+                                               topic
+                                               k
+                                               ev))) ; probably should deref kfuture
                              (recur kproducer))))
           ))))
 
@@ -242,7 +244,7 @@
   (let [csys (chan 1)
         cstates (chan 1)
         appid "alpha.access.streams"
-        store-name "alpha.access.streams.store"]
+        store-name "alpha.access.globalktable"]
     (sub pb-sys :kstreams csys)
     (sub pb-kstreams-states appid cstates)
     (go (loop [store nil]
@@ -252,86 +254,60 @@
                              :kafka/keys [kstreams running?]} v]
                         (cond
                           (true? running?) (let [s (create-kvstore kstreams store-name)]
-                                             (println (format "; kv-store for %s created" appid))
+                                             (println (format "; kv-store %s created" store-name))
                                              (recur s))
                           (not running?) (do (when store
-                                               (println (format "; kv-store for %s closed" appid)))
+                                               (println (format "; kv-store %s closed" store-name)))
                                              (recur store))
                           :else (recur store)))
               ch-access-store (let [{op :kstore/op
-                                     token :access/token
+                                     k :kafka/k
+                                     ev :kafka/ev
                                      c-out :ch/c-out} v]
                                 (condp = op
-                                  :get (do (>! c-out (.get token store))
+                                  :get (do (>! c-out (.get k store))
                                            (recur store))
-                                  :read-store (do (>! c-out (read-store store))
-                                                  (recur store))
+                                  :read-store (do
+                                                (>! c-out (read-store store))
+                                                (recur store))
                                   :delete (let [c (chan 1)]
                                             (>! ch-kproducer {:kafka/topic "alpha.token"
-                                                              :kafka/k token
-                                                              :kafka/ev {:ev/type :ev.access/delete
-                                                                         :access/token token}
+                                                              :kafka/k k
+                                                              :kafka/ev {:record/delete? true}
                                                               :ch/c-out c})
-                                            (<! c) ; need to utilize kafka-future to actually wait for it
+                                            (<! c)
                                             (>! c-out true)
                                             (recur store))
-                                  :create (let [tok (.toString (java.util.UUID/randomUUID))
-                                                c (chan 1)
-                                                record {:access/token tok
-                                                        :access/inst-create (java.util.Date.)}]
+                                  :update (let [c (chan 1)]
                                             (>! ch-kproducer {:kafka/topic "alpha.token"
-                                                              :kafka/k tok
-                                                              :kafka/ev {:ev/type :ev.access/create
-                                                                         :access/record  record}
+                                                              :kafka/k k
+                                                              :kafka/ev ev
                                                               :ch/c-out c})
-                                            (<! c)  ; need to utilize kafka-future to actually wait for it
-                                            (>! c-out record)
+                                            (<! c)
+                                            (>! c-out ev)
                                             (recur store))
                                   (recur store))))))
         (println "proc-access-store exiting"))))
 
-(comment
-
-  (let [c-out (chan 1)]
-    (put! (channels :ch-access-store) {:kstore/op :create
-                                       :access/token ""
-                                       :ch/c-out c-out})
-    (first (alts!! [c-out (timeout 100)])))
-
-  (let [c-out (chan 1)]
-    (put! (channels :ch-access-store) {:kstore/op :read-store
-                                       :access/token ""
-                                       :ch/c-out c-out})
-    (first (alts!! [c-out (timeout 100)])))
-
-  (let [c-out (chan 1)]
-    (put! (channels :ch-access-store) {:kstore/op :delete
-                                       :access/token "f95cdcf1-6811-4ceb-80e2-e83a3ad10c17"
-                                       :ch/c-out c-out})
-    (first (alts!! [c-out (timeout 100)])))
-
-
-  ;;
-  )
 
 (def kprops {"bootstrap.servers" "broker1:9092"})
 
 (def ktopics ["alpha.token"
-              "alpha.access.changes"
               "alpha.game"
-              "alpha.game.changes"])
+              "alpha.crux-docs"
+              "alpha.user.changelog"
+              "alpha.access.changelog"])
 
 (comment
 
   (list-topics {:props kprops})
   (delete-topics {:props kprops :names ktopics})
-  
+
   ;;
   )
 
 ; not used in the system, for repl purposes only
 (def ^:private a-kstreams (atom {}))
-
 
 (defn proc-kstreams
   [{:keys [pb-sys ch-sys mx-kstreams-states]}]
@@ -340,7 +316,7 @@
     (go (loop [app nil]
           (if-let [{:keys [proc/op create-kstreams-f repl-only-key]} (<! c)]
             (do
-              (if-not (subset? (set ktopics) (list-topics {:props kprops}))
+              (when-not (subset? (set ktopics) (list-topics {:props kprops}))
                 (<! (create-topics-async kprops ktopics)))
               (condp = op
                 :start (let [a (create-kstreams-f)]
@@ -373,6 +349,30 @@
                 :proc/op :start
                 :create-kstreams-f create-kstreams-game
                 :repl-only-key :kstreams-game}))
+
+(defn start-kstreams-crux-docs
+  [{:keys [ch-sys]}]
+  (put! ch-sys {:ch/topic :kstreams
+                :proc/op :start
+                :create-kstreams-f create-kstreams-crux-docs
+                :repl-only-key :kstreams-crux-docs}))
+
+(comment
+
+  (def app (:kstreams-access @a-kstreams))
+  (def kstream (:kstreams app))
+
+  (def store (create-kvstore  kstream "alpha.access.streams.store"))
+  (read-store store)
+
+  (def token-store (create-kvstore  kstream "alpha.access.globalktable"))
+  (read-store token-store)
+
+  (def user-store (create-kvstore  kstream "alpha.access.streams.user-store1"))
+  (read-store user-store)
+  
+  ;;
+  )
 
 
 (defn proc-derived-1

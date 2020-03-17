@@ -357,3 +357,12 @@
     - and into test/perf/alpha-refs1
     - change refs1, test both
     - this way is better to reason about what option is better, than comlecting src files to handle all cases
+- sockets
+  - proc-socket accepts connections
+  - proc-socket spawn sub-porcess per created game, which broadcasts events from users and sends them to kafka
+  - once game is closed, sub-proc closes connections
+  - when user reconnects, subproc conveys msg that game state is needed, gets it and sends to the reconnected user
+  - games are looked up in a globalktable
+  - only finished/selected games and events are persisted to db
+  - user events, processed by subproc, are sent (non-block) to kafka and globalktable gets updated
+  - kconsumer may not be required

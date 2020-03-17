@@ -1,6 +1,7 @@
 (ns starnet.app.alpha.aux.serdes
   (:require
-   [cognitect.transit :as transit])
+   [cognitect.transit :as transit]
+   #_[crux.codec])
   (:import
    java.io.ByteArrayInputStream
    java.io.ByteArrayOutputStream
@@ -8,7 +9,12 @@
    org.apache.kafka.common.serialization.Deserializer
    org.apache.kafka.common.serialization.Serde
    org.apache.kafka.common.errors.SerializationException
-   java.io.IOException)
+   crux.kafka.nippy.NippyDeserializer
+   crux.kafka.nippy.NippySerializer
+   java.io.IOException
+   com.cognitect.transit.WriteHandler
+   com.cognitect.transit.ReadHandler
+   #_crux.codec.Id)
   (:gen-class))
 
 #_(compile 'starnet.app.alpha.aux.serdes)
@@ -32,17 +38,30 @@
   ;
   )
 
+#_(def ext-write-handlers
+  {crux.codec.Id
+   (reify WriteHandler
+     (tag [_ _] "cruxid")
+     (rep [_ x] (.toString x))
+     (stringRep [this x] (.rep this x))
+     (getVerboseHandler [_] nil))})
+
+#_(def ext-read-handlers
+  {"cruxid"
+   (reify ReadHandler
+     (fromRep [_ o] o))})
+
 (defn transit-write-bytes
   [format data]
   (let [out (ByteArrayOutputStream. #_4096)
-        writer (transit/writer out format)]
+        writer (transit/writer out format #_{:handlers ext-write-handlers})]
     (transit/write writer data)
     (.toByteArray out)))
 
 (defn transit-read-bytes
   [format data]
   (let [in (ByteArrayInputStream. data)
-        reader (transit/reader in format)]
+        reader (transit/reader in format #_{:handlers ext-read-handlers})]
     (transit/read reader)))
 
 #_(transit-read-bytes :json (transit-write-bytes :json #{1 2 3}))
@@ -89,6 +108,16 @@
     (TransitJsonSerializer.))
   (deserializer [this]
     (TransitJsonDeserializer.)))
+
+(deftype NippySerde
+         []
+  Serde
+  (configure [this _ _])
+  (close [this])
+  (serializer [this]
+    (NippySerializer.))
+  (deserializer [this]
+    (NippyDeserializer.)))
 
 
 

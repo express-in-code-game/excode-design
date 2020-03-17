@@ -23,7 +23,6 @@ link_spaces(){
 
 }
 
-
 remove_volumes(){
   docker volume rm starnet.kafka
   docker volume rm starnet.crux

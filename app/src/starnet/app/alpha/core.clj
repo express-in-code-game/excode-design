@@ -31,6 +31,27 @@
                     ;; #inst "2112-12-03"
                     ;; #inst "2113-12-03"
                     ]]))
+
+(defn create-token
+  [channels user-uuid]
+  (let [c-out (chan 1)]
+    (put! (channels :ch-access-store) {:kstore/op :update
+                                       :kafka/k user-uuid
+                                       :kafka/ev {:access.token/token (.toString (java.util.UUID/randomUUID))
+                                                  :access.token/inst-create (java.util.Date.)
+                                                  :access.token/valid? true}
+                                       :ch/c-out c-out})
+    c-out))
+
+(defn invalidate-token
+  [channels user-uuid]
+  (let [c-out (chan 1)]
+    (put! (channels :ch-access-store) {:kstore/op :update
+                                       :kafka/k user-uuid
+                                       :kafka/ev {:access.token/valid? false}
+                                       :ch/c-out c-out})
+    c-out))
+
 (defn evict-user
   [channels u-uuid]
   (db-tx channels [[:crux.tx/evict
@@ -52,9 +73,27 @@
                                  :cruxdb/tx-data tx-data})
     (first (alts!! [c-out (timeout 100)]))))
 
+(defn repl-read-access-store
+  [channels]
+  (let [c-out (chan 1)]
+    (put! (channels :ch-access-store) {:kstore/op :read-store
+                                       :ch/c-out c-out})
+    (first (alts!! [c-out (timeout 100)]))))
+
 (defn <!!soft
   [c]
   (first (alts!! [c (timeout 100)])))
+
+(defn repl-users
+  [channels]
+  (->
+   (repl-query channels '{:find [id]
+                          :where [[e :u/uuid id]]
+                          :full-results? true})
+
+   (vec)
+   (flatten)
+   (vec)))
 
 (comment
 
@@ -66,23 +105,40 @@
                          :where [[e :crux.db/id id]]
                          :full-results? true})
 
+
+  (dotimes [n 10]
+    (->
+     (create-user channels (gen/generate (s/gen :u/user)))
+     (<!!soft)))
+
+  (count (repl-users channels))
+
+  (repl-query channels {:find '[e]
+                        :where '[[e :crux.db/id id]]
+                        :args [{'id (-> (repl-users channels) (rand-nth) :u/uuid)}]
+                        :full-results? true})
+
+  (def users (repl-users channels))
+
   (->
-   (create-user channels (gen/generate (s/gen :u/user)))
+   (evict-user channels (-> users (rand-nth) :u/uuid))
    (<!!soft))
 
-  (def users (->
-              (repl-query channels '{:find [id]
-                                     :where [[e :u/uuid id]]
-                                     :full-results? true})
+  (def user (-> (repl-users channels) (rand-nth)))
 
-              (vec)
-              (flatten)
-              (vec)))
-  
   (->
-   (evict-user channels (-> users (nth 0) :u/uuid))
+   (create-token channels (:u/uuid user))
    (<!!soft))
 
+  (->
+   (invalidate-token channels (:u/uuid user))
+   (<!!soft))
+
+  (doseq [user (repl-users channels)]
+    (create-token channels (:u/uuid user)))
+
+
+  (repl-read-access-store channels)
 
   ;;
   )

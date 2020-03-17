@@ -18,6 +18,7 @@
    starnet.app.alpha.aux.serdes.TransitJsonSerializer
    starnet.app.alpha.aux.serdes.TransitJsonDeserializer
    starnet.app.alpha.aux.serdes.TransitJsonSerde
+   starnet.app.alpha.aux.serdes.NippySerde
 
    org.apache.kafka.common.serialization.Serdes
    org.apache.kafka.streams.KafkaStreams
@@ -36,6 +37,8 @@
    org.apache.kafka.streams.kstream.ValueMapper
    org.apache.kafka.streams.kstream.KeyValueMapper
    org.apache.kafka.streams.KeyValue
+   org.apache.kafka.streams.kstream.Consumed
+
    org.apache.kafka.streams.KafkaStreams$StateListener
 
 
@@ -49,6 +52,8 @@
    org.apache.kafka.streams.kstream.Aggregator
    org.apache.kafka.common.KafkaFuture$BiConsumer
    org.apache.kafka.streams.KafkaStreams$State
+   org.apache.kafka.streams.kstream.Predicate
+   org.apache.kafka.streams.kstream.ValueJoiner
 
    java.util.ArrayList
    java.util.Locale
@@ -67,19 +72,18 @@
 
 (defn create-topics-async
   [kprops ktopics]
-  (let [cout (chan 1)]
-    (go
-      (-> (create-topics {:props kprops
-                          :names ktopics
-                          :num-partitions 1
-                          :replication-factor 1})
-          (.all)
-          (.whenComplete
-           (reify KafkaFuture$BiConsumer
-             (accept [this res err]
-               (println "topics created")
-               (>! cout res))))))
-    cout))
+  (let [c-out (chan 1)]
+    (-> (create-topics {:props kprops
+                        :names ktopics
+                        :num-partitions 1
+                        :replication-factor 1})
+        (.all)
+        (.whenComplete
+         (reify KafkaFuture$BiConsumer
+           (accept [this res err]
+                   (println "; topics created")
+                   (put! c-out true)))))
+    c-out))
 
 (defn create-kvstore
   [kstreams name]
@@ -173,6 +177,7 @@
                       "auto.commit.enable" "false"
                       "group.id" (.toString (java.util.UUID/randomUUID))
                       "consumer.timeout.ms" "5000"
+                      "max.poll.interval.ms" "2000"
                       "key.deserializer" key-des
                       "value.deserializer" value-des})]
        (.subscribe consumer (Arrays/asList (object-array [topic])))
@@ -183,16 +188,11 @@
              (recordf rec))))))))
 
 (defn create-streams
-  [appid topology-fn]
-  (let [builder (StreamsBuilder.)
-        stream (topology-fn builder)
-        topology (.build builder)
+  [props topology-fn]
+  (let [topology (topology-fn)
         props (doto (Properties.)
-                (.putAll {"application.id" appid
-                          "bootstrap.servers" "broker1:9092"
-                          "auto.offset.reset" "earliest" #_"latest"
-                          "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
-                          "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"}))
+                (.putAll props ))
+        appid (get props "application.id")
         kstreams (KafkaStreams. topology props)
         latch (CountDownLatch. 1)
         ch-state (chan (sliding-buffer 1))
@@ -201,21 +201,18 @@
       (add-shutdown-hook props kstreams latch)
       (.setStateListener kstreams (reify KafkaStreams$StateListener
                                     (onChange
-                                     [_ nw old]
-                                     (let [running? (= KafkaStreams$State/RUNNING nw)
-                                           v {:ch/topic appid
+                                      [_ nw old]
+                                      (let [running? (= KafkaStreams$State/RUNNING nw)
+                                            v {:ch/topic appid
                                                :kafka/running? running?
                                                :kafka/new-state nw
                                                :kafka/old-state old
                                                :kafka/kstreams kstreams}]
-                                       (put! ch-state v)
-                                       (when running?
-                                         (put! ch-running v))
-                                       (println (format "; %s %s" appid (.name nw))))
-                                     ))))
-    {:builder builder
-     :appid appid
-     :stream stream
+                                        (put! ch-state v)
+                                        (when running?
+                                          (put! ch-running v))
+                                        (println (format "; %s %s" appid (.name nw))))))))
+    {:appid appid
      :topology topology
      :props props
      :kstreams kstreams
@@ -264,35 +261,147 @@
           uuidkey
           ev)))
 
-(defmulti next-state-kstreams-access
-  (fn [_ k ev ag]
-    (:ev/type ev)))
-(defmethod next-state-kstreams-access :ev.access/create
-  [_ k ev ag]
-  (:access/record ev))
-(defmethod next-state-kstreams-access :ev.access/delete
-  [_ k ev ag]
-  nil)
+;; (defmulti next-state-kstreams-access
+;;   (fn [_ k ev ag]
+;;     (:ev/type ev)))
+;; (defmethod next-state-kstreams-access :ev.access/create
+;;   [_ k ev ag]
+;;   (:access/record ev))
+;; (defmethod next-state-kstreams-access :ev.access/delete
+;;   [_ k ev ag]
+;;   nil)
+
+
+
+(defn create-kstreams-access-1
+  []
+  (let [props {"application.id" "alpha.access.streams"
+               "bootstrap.servers" "broker1:9092"
+               "auto.offset.reset" "earliest" #_"latest"
+               "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
+               "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
+               "topology.optimization" "all"}]
+    (create-streams
+     props
+     (fn []
+       (let [builder (StreamsBuilder.)
+             kstream1 (-> builder
+                          (.stream "alpha.crux-docs")
+                          (.filter (reify Predicate
+                                     (test [_ k v]
+                                       (contains? v :u/uuid))))
+                          (.groupBy (reify KeyValueMapper
+                                      (apply [_ k v]
+                                        (let [k (:u/uuid v)]
+                                          k  #_(KeyValue. k v))))
+                                    (Grouped/with
+                                     (TransitJsonSerde.) (TransitJsonSerde.)))
+                          (.reduce (reify Reducer
+                                     (apply [_ v1 v2]
+                                       v2))
+                                   (-> (Materialized/as "alpha.access.streams.user-store1")
+                                       (.withKeySerde (TransitJsonSerde.))
+                                       (.withValueSerde (TransitJsonSerde.)))))
+             kstream2 (-> builder
+                          (.stream "alpha.token")
+                          (.groupByKey)
+                          (.aggregate (reify Initializer
+                                        (apply [this]
+                                          nil))
+                                      (reify Aggregator
+                                        (apply [this k ev ag]
+                                          (if (contains? ev :record/delete?)
+                                            nil
+                                            (merge ag ev))
+                                          #_(apply next-state-kstreams-access [this k ev ag])))
+                                      (-> (Materialized/as "alpha.access.streams.token-store1")
+                                          (.withKeySerde (TransitJsonSerde.))
+                                          (.withValueSerde (TransitJsonSerde.)))))
+             _ (-> kstream1
+                   (.join kstream2
+                          (reify ValueJoiner
+                            (apply [_ v1 v2]
+                                   #_(do (println "joining")
+                                         (println v1)
+                                         (println "; ")
+                                         (println v2)
+                                         (println "; ---"))
+                                   (merge v1 v2)))
+                          (-> (Materialized/as "alpha.access.streams.store")
+                              (.withKeySerde (TransitJsonSerde.))
+                              (.withValueSerde (TransitJsonSerde.)))))]
+         (.build builder (doto (Properties.)
+                           (.putAll props))))))))
+
+(defn create-kstreams-crux-docs
+  []
+  (let [props {"application.id" "alpha.crux-docs.streams"
+               "bootstrap.servers" "broker1:9092"
+               "auto.offset.reset" "earliest" #_"latest"
+               "default.key.serde" "starnet.app.alpha.aux.serdes.NippySerde"
+               "default.value.serde" "starnet.app.alpha.aux.serdes.NippySerde"
+               "topology.optimization" "all"}]
+    (create-streams
+     props
+     (fn []
+       (let [builder (StreamsBuilder.)
+             _ (-> builder
+                   (.stream "crux-docs")
+                   (.through "alpha.crux-docs")
+                   (.filter (reify Predicate
+                              (test [_ k v]
+                                (contains? v :u/uuid))))
+                   (.selectKey (reify KeyValueMapper
+                                 (apply [_ k v]
+                                   (let [k (:u/uuid v)]
+                                     k))))
+                   (.to "alpha.user.changelog"
+                        (Produced/with (TransitJsonSerde.) (TransitJsonSerde.))))]
+         (.build builder (doto (Properties.)
+                           (.putAll props))))))))
 
 (defn create-kstreams-access
   []
-  (create-streams "alpha.access.streams"
-                  (fn [builder]
-                    (-> builder
-                        (.stream "alpha.token")
-                        (.groupByKey)
-                        (.aggregate (reify Initializer
-                                      (apply [this]
-                                        nil))
-                                    (reify Aggregator
-                                      (apply [this k ev ag]
-                                             (apply next-state-kstreams-access [this k ev ag])))
-                                    (-> (Materialized/as "alpha.access.streams.store")
-                                        (.withKeySerde (Serdes/String))
-                                        (.withValueSerde (TransitJsonSerde.))))
-                        (.toStream)
-                        (.to "alpha.access.changes")))))
+  (let [props {"application.id" "alpha.access.streams"
+               "bootstrap.servers" "broker1:9092"
+               "auto.offset.reset" "earliest" #_"latest"
+               "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
+               "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
+               "topology.optimization" "all"}]
+    (create-streams
+     props
+     (fn []
+       (let [builder (StreamsBuilder.)
+             gt1 (-> builder
+                     (.globalTable "alpha.user.changelog"
+                                   (-> (Materialized/as "alpha.user.store")
+                                       (.withKeySerde (TransitJsonSerde.))
+                                       (.withValueSerde (TransitJsonSerde.)))))
 
+             s1 (-> builder
+                    (.stream "alpha.token"))
+             _ (-> s1
+                   (.join gt1
+                          (reify KeyValueMapper
+                            (apply [_ lk lv]
+                              lk))
+                          (reify ValueJoiner
+                            (apply [_ lv rv]
+                                   #_(do (println "joining")
+                                         (println lv)
+                                         (println "; ")
+                                         (println rv)
+                                         (println "; ---"))
+                                   #_(println (format "join %s" (java.util.Date.)))
+                                   (merge rv lv))))
+                   (.to "alpha.access.changelog"))
+             _ (-> builder
+                   (.globalTable "alpha.access.changelog"
+                                 (-> (Materialized/as "alpha.access.globalktable")
+                                     (.withKeySerde (TransitJsonSerde.))
+                                     (.withValueSerde (TransitJsonSerde.)))))]
+         (.build builder (doto (Properties.)
+                           (.putAll props))))))))
 
 (defn assert-next-game-post [state] {:post [(s/assert :g/game %)]} state)
 (defn assert-next-game-body [state]
@@ -333,27 +442,34 @@
 
 (defn create-kstreams-game
   []
-  (create-streams "alpha.game.streams"
-   (fn [builder]
-     (-> builder
-         (.stream "alpha.game")
-         (.groupByKey)
-         (.aggregate (reify Initializer
-                       (apply [this]
-                         nil))
-                     (reify Aggregator
-                       (apply [this k v ag]
-                         (try
-                           (assert-next-game-body (next-state-game ag k v))
-                           (catch Exception e
-                             (println (ex-message e))
-                             (println (ex-data e))
-                             ag))))
-                     (-> (Materialized/as "alpha.game.streams.store")
-                         (.withKeySerde (TransitJsonSerde.))
-                         (.withValueSerde (TransitJsonSerde.))))
-         (.toStream)
-         (.to "alpha.game.changes")))))
+  (create-streams
+   {"application.id" "alpha.game.streams"
+    "bootstrap.servers" "broker1:9092"
+    "auto.offset.reset" "earliest" #_"latest"
+    "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
+    "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"}
+   (fn []
+     (let [builder (StreamsBuilder.)
+           kstream (-> builder
+                       (.stream "alpha.game")
+                       (.groupByKey)
+                       (.aggregate (reify Initializer
+                                     (apply [this]
+                                       nil))
+                                   (reify Aggregator
+                                     (apply [this k v ag]
+                                       (try
+                                         (assert-next-game-body (next-state-game ag k v))
+                                         (catch Exception e
+                                           (println (ex-message e))
+                                           (println (ex-data e))
+                                           ag))))
+                                   (-> (Materialized/as "alpha.game.streams.store")
+                                       (.withKeySerde (TransitJsonSerde.))
+                                       (.withValueSerde (TransitJsonSerde.))))
+                       (.toStream)
+                       (.to "alpha.game.changes"))]
+       (.build builder)))))
 
 
 

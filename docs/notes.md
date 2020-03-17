@@ -24,6 +24,11 @@
     - https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
   - joins
     - https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html#joining
+    - https://www.confluent.io/blog/crossing-streams-joins-apache-kafka/
+    - https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html#ktable-ktable-equi-join
+    - https://www.confluent.io/blog/optimizing-kafka-streams-applications/
+    - https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html#streams_concepts_globalktable
+    - https://cwiki.apache.org/confluence/display/KAFKA/KIP-99%3A+Add+Global+Tables+to+Kafka+Streams
 
 - clj
   - async
@@ -122,6 +127,8 @@
   - https://github.com/juxt/crux
   - https://opencrux.com/docs#faqs
   - https://github.com/juxt/crux/tree/master/crux-test/test/crux
+  - crux.codec.Id
+    - https://github.com/juxt/crux/blob/master/crux-core/src/crux/codec.clj#L346
 
 - cljs
   - antd
