@@ -85,17 +85,17 @@
          ; https://kafka.apache.org/24/javadoc/org/apache/kafka/streams/kstream/ValueMapper.html
            (reify ValueMapper
            ; https://stackoverflow.com/questions/34902518/errors-extending-a-java-interface-in-clojure
-             (apply [this vl]
+             (apply [this v]
                (.println System/out ".flatMapValues apply call:")
-               (.println System/out vl)
-               (.println System/out (-> vl (.toLowerCase (Locale/getDefault)) (.split " ")))
-               (Arrays/asList (-> vl (.toLowerCase (Locale/getDefault)) (.split " "))))))
+               (.println System/out v)
+               (.println System/out (-> v (.toLowerCase (Locale/getDefault)) (.split " ")))
+               (Arrays/asList (-> v (.toLowerCase (Locale/getDefault)) (.split " "))))))
           (.groupBy
            (reify KeyValueMapper
-             (apply [this k vl]
+             (apply [this k v]
                (.println System/out ".groupBy apply call:")
-               (.println System/out vl)
-               vl)))
+               (.println System/out v)
+               v)))
           (.count)))
 
     (-> counts
