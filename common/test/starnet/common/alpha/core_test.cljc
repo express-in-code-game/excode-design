@@ -30,8 +30,8 @@
                     (prn spec)
                     (gen/fmap (fn [x]
                                 (merge x changes)) (s/gen spec))))
-              vl (gen/generate (s/gen s))]
-          (subset? (set changes) (set vl)))
+              v (gen/generate (s/gen s))]
+          (subset? (set changes) (set v)))
         "with-gen-cyclic works"))
   (testing "reader conditionals functions from core.cljc"
     (is (uuid? (rand-uuid))

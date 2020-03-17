@@ -92,8 +92,8 @@
                   (.groupByKey)
                   (.reduce (reify
                              Reducer
-                             (apply [this ag vl]
-                               (merge ag vl)))
+                             (apply [this ag v]
+                               (merge ag v)))
                            (-> (Materialized/as "reduce.example.user.data.streams.store")
                                (.withKeySerde (Serdes/String))
                                (.withValueSerde (TransitJsonSerde.))))))

@@ -92,7 +92,7 @@
   (let [dur 3000
         t (timeout dur)]
     (go (loop []
-          (if-let [[vl port] (alts! [(timeout 300) t])]
+          (if-let [[v port] (alts! [(timeout 300) t])]
             (cond
               (.isRunning kstreams) (create-kvstore kstreams name)
               (= port t) (throw (ex-info (format "Could not create kstore within %s ms" 3000)
@@ -202,10 +202,15 @@
       (.setStateListener kstreams (reify KafkaStreams$StateListener
                                     (onChange
                                      [_ nw old]
-                                     (let [running? (= KafkaStreams$State/RUNNING nw)]
-                                       (put! ch-state [appid [running?  nw old kstreams]])
+                                     (let [running? (= KafkaStreams$State/RUNNING nw)
+                                           v {:ch/topic appid
+                                               :kafka/running? running?
+                                               :kafka/new-state nw
+                                               :kafka/old-state old
+                                               :kafka/kstreams kstreams}]
+                                       (put! ch-state v)
                                        (when running?
-                                         (put! ch-running [appid [running? nw old kstreams]]))
+                                         (put! ch-running v))
                                        (println (format "; %s %s" appid (.name nw))))
                                      ))))
     {:builder builder

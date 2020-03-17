@@ -113,6 +113,8 @@
     - https://github.com/funcool/buddy-auth/tree/master/examples
   - datomic
     - https://docs.datomic.com/cloud/client/client-api.html#connection
+  - destructring fully qualified
+    - https://clojure.org/guides/destructuring#_namespaced_keywords
 
 - crux
   - https://github.com/juxt/crux

@@ -165,8 +165,8 @@
     (-> source
         (.flatMapValues
          (reify ValueMapper
-           (apply [this vl]
-             (Arrays/asList (.split vl "\\W+")))))
+           (apply [this v]
+             (Arrays/asList (.split v "\\W+")))))
         (.to "streams-linesplit-output"))
 
     (def topology (.build builder))
@@ -275,12 +275,12 @@
     (-> source
         (.flatMapValues
          (reify ValueMapper
-           (apply [this vl]
-             (Arrays/asList (-> vl (.toLowerCase (Locale/getDefault)) (.split "\\W+"))))))
+           (apply [this v]
+             (Arrays/asList (-> v (.toLowerCase (Locale/getDefault)) (.split "\\W+"))))))
         (.groupBy
          (reify KeyValueMapper
-           (apply [this k vl]
-             vl)))
+           (apply [this k v]
+             v)))
         (.count (Materialized/as "counts-store"))
         (.toStream)
         (.to "streams-wordcount-stateful-output" (Produced/with (Serdes/String) (Serdes/Long))))

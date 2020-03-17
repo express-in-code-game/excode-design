@@ -38,11 +38,11 @@
               nspec (s/with-gen spec
                       #(gen/bind
                         (s/gen spec)
-                        (fn [vl]
+                        (fn [v]
                           (gen/fmap (fn [x]
                                       (merge
                                        x
-                                       changes)) (gen/return vl)))))
+                                       changes)) (gen/return v)))))
               nvl (gen/generate (s/gen nspec))]
           (subset? (set changes) (set nvl)))
         "change (with-gen)spec generated value using gen/bind")
