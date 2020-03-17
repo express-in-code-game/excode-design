@@ -31,6 +31,10 @@
                     ;; #inst "2112-12-03"
                     ;; #inst "2113-12-03"
                     ]]))
+(defn evict-user
+  [channels u-uuid]
+  (db-tx channels [[:crux.tx/evict
+                    u-uuid]]))
 
 (defn repl-query
   [channels query-data]
@@ -66,12 +70,18 @@
    (create-user channels (gen/generate (s/gen :u/user)))
    (<!!soft))
 
-  (repl-query channels '{:find [id]
-                         :where [[e :u/uuid id]]
-                         :full-results? true})
+  (def users (->
+              (repl-query channels '{:find [id]
+                                     :where [[e :u/uuid id]]
+                                     :full-results? true})
 
-
-
+              (vec)
+              (flatten)
+              (vec)))
+  
+  (->
+   (evict-user channels (-> users (nth 0) :u/uuid))
+   (<!!soft))
 
 
   ;;
