@@ -42,12 +42,12 @@
 
 (def channels (let [ch-proc-main (chan 1)
                     ch-sys (chan (sliding-buffer 10))
-                    pb-sys (pub ch-sys :topic (fn [_] (sliding-buffer 10)))
+                    pb-sys (pub ch-sys :chan/topic (fn [_] (sliding-buffer 10)))
                     ch-db (chan 10)
                     ch-kproducer (chan 10)
                     ch-access-store (chan 10)
                     ch-kstreams-states (chan (sliding-buffer 10))
-                    pb-kstreams-states (pub ch-kstreams-states :topic (fn [_] (sliding-buffer 10)))
+                    pb-kstreams-states (pub ch-kstreams-states :chan/topic (fn [_] (sliding-buffer 10)))
                     mx-kstreams-states (a/mix ch-kstreams-states)]
                 {:ch-proc-main ch-proc-main
                  :ch-sys ch-sys
@@ -111,19 +111,21 @@
   ;;
   )
 
+(defn x [{:keys [a b]}]
+  [a b]
+  )
+
 (defn proc-nrepl-server
   [{:keys [pb-sys]}]
   (let [c (chan 1)]
     (sub pb-sys :nrepl-server c)
     (go (loop [server nil]
-          (if-let [[_ v] (<! c)]
+          (if-let [{} (<! c)]
             (condp = v
               :start (let [sr (start-nrepl-server "0.0.0.0" 7788)]
                        (recur sr)))
             (recur server)))
         (println "closing proc-nrepl-server"))))
-
-
 
 (defn proc-http-server
   [{:keys [pb-sys]} channels]
