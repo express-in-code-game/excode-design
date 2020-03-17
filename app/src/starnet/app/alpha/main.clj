@@ -98,14 +98,14 @@
 
 (comment
 
-  (put! ch-sys [:http-server :start])
+  (put! (channels :ch-sys) [:http-server :start])
 
-  (put! ch-sys [:cruxdb :start])
-  (put! ch-sys [:cruxdb :close])
+  (put! (channels :ch-sys) [:cruxdb :start])
+  (put! (channels :ch-sys) [:cruxdb :close])
 
   (stest/unstrument)
 
-  (put! ch-main :exit)
+  (put! (channels :ch-main) :exit)
   ;;
   )
 
