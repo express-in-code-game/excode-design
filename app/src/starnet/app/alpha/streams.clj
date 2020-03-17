@@ -259,6 +259,16 @@
           uuidkey
           ev)))
 
+(defmulti next-state-kstreams-access
+  (fn [_ k ev ag]
+    (:ev/type ev)))
+(defmethod next-state-kstreams-access :ev.access/create
+  [_ k ev ag]
+  (:access/record ev))
+(defmethod next-state-kstreams-access :ev.access/delete
+  [_ k ev ag]
+  nil)
+
 (defn create-kstreams-access
   []
   (create-streams "alpha.access.streams"
@@ -270,10 +280,8 @@
                                       (apply [this]
                                         nil))
                                     (reify Aggregator
-                                      (apply [this k next-fn ag]
-                                        ; trying the approach of consolidating logic inside the process
-                                        ; prefer events and mutimethod if this approach turns incorrect
-                                             (apply next-fn [this k ag])))
+                                      (apply [this k ev ag]
+                                             (apply next-state-kstreams-access [this k ev ag])))
                                     (-> (Materialized/as "alpha.access.streams.store")
                                         (.withKeySerde (Serdes/String))
                                         (.withValueSerde (TransitJsonSerde.))))

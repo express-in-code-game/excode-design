@@ -204,11 +204,12 @@
                            (.close kproducer)
                            (println "; kproducer closed")
                            (recur nil)))
-              ch-kproducer (let [[[topic k v] cout] vl]
+              ch-kproducer (let [[[topic k ev] cout] vl]
                              (>! cout (.send kproducer
-                                             topic
-                                             k
-                                             v)) ; may deref future
+                                             (ProducerRecord.
+                                              topic
+                                              k
+                                              ev))) ; probably should deref kfuture
                              (recur kproducer))))
           ))))
 
@@ -239,24 +240,34 @@
                                   :read-store (do (>! cout (read-store store))
                                                   (recur store))
                                   :delete (let [c (chan 1)]
-                                            (>! ch-kproducer [["alpha.token" token
-                                                               (fn [_ k ag]
-                                                                 nil)] c])
+                                            (>! ch-kproducer [["alpha.token" 
+                                                               token
+                                                               {:ev/type :ev.access/delete
+                                                                :access/token token}
+                                                               ] c])
                                             (<! c) ; need to utilize kafka-future to actually wait for it
                                             (>! cout true)
                                             (recur store))
                                   :create (let [tok (.toString (java.util.UUID/randomUUID))
                                                 c (chan 1)
-                                                record {:token tok
-                                                        :inst-create (java.util.Date.)}]
-                                            (>! ch-kproducer [["alpha.token" tok
-                                                               (fn [_ k ag]
-                                                                 record)] c])
+                                                record {:access/token tok
+                                                        :access/inst-create (java.util.Date.)}]
+                                            (>! ch-kproducer [["alpha.token"
+                                                               tok
+                                                               {:ev/type :ev.access/create
+                                                                :access/record  record}] c])
                                             (<! c)  ; need to utilize kafka-future to actually wait for it
                                             (>! cout record)
                                             (recur store))
                                   (recur store))))))
         (println "proc-access-store exiting"))))
+
+(comment
+  (def c-out (chan 1))
+  (put! (channels :ch-access-store) [:create "abc" c-out])
+
+  ;;
+  )
 
 (def kprops {"bootstrap.servers" "broker1:9092"})
 
