@@ -40,16 +40,16 @@
           proc-derived-1  proc-kstreams proc-log proc-access-store
           proc-cruxdb proc-kproducer proc-nrepl-server start-kstreams-access start-kstreams-game)
 
-(def channels (let [ch-main (chan 1)
+(def channels (let [ch-proc-main (chan 1)
                     ch-sys (chan (sliding-buffer 10))
-                    pb-sys (pub ch-sys first (fn [_] (sliding-buffer 10)))
+                    pb-sys (pub ch-sys :topic (fn [_] (sliding-buffer 10)))
                     ch-db (chan 10)
                     ch-kproducer (chan 10)
                     ch-access-store (chan 10)
                     ch-kstreams-states (chan (sliding-buffer 10))
-                    pb-kstreams-states (pub ch-kstreams-states first (fn [_] (sliding-buffer 10)))
+                    pb-kstreams-states (pub ch-kstreams-states :topic (fn [_] (sliding-buffer 10)))
                     mx-kstreams-states (a/mix ch-kstreams-states)]
-                {:ch-main ch-main
+                {:ch-proc-main ch-proc-main
                  :ch-sys ch-sys
                  :pb-sys pb-sys
                  :ch-db ch-db
@@ -65,15 +65,15 @@
     (s/check-asserts true))
   (when (env-optimized?)
     (alter-var-root #'clojure.test/*load-tests* (fn [_] false)))
-  (put! (channels :ch-main) :start)
-  (<!! (proc-main (select-keys channels [:ch-main :ch-sys]))))
+  (put! (channels :ch-proc-main) {:proc/op :start})
+  (<!! (proc-main (select-keys channels [:ch-proc-main :ch-sys]))))
 
 (defn proc-main
-  [{:keys [ch-main ch-sys]}]
+  [{:keys [ch-proc-main ch-sys]}]
   (go
     (loop []
-      (when-let [vl (<! ch-main)]
-        (condp = vl
+      (when-let [{op :sys/op} (<! ch-proc-main)]
+        (condp = op
           :start
           (do
             (proc-nrepl-server (select-keys channels [:pb-sys]))
@@ -84,8 +84,8 @@
             (proc-access-store (select-keys channels [:pb-sys :ch-sys :ch-access-store
                                                       :ch-kproducer :pb-kstreams-states]))
 
-            (put! ch-sys [:nrepl-server :start])
-            (put! ch-sys [:kproducer :start])
+            (put! ch-sys {:chan/topic :nrepl-server :proc/op :start})
+            (put! ch-sys {:chan/topic :kproducer :proc/op :start})
             (start-kstreams-access (select-keys channels [:ch-sys]))
             #_(start-kstreams-game (select-keys channels [:ch-sys]))
             #_(put! ch-sys [:kproducer :open])
@@ -97,16 +97,16 @@
 
 (comment
 
-  (put! (channels :ch-sys) [:http-server :start])
+  (put! (channels :ch-sys) {:chan/topic :http-server :proc/op :start})
 
-  (put! (channels :ch-sys) [:cruxdb :start])
-  (put! (channels :ch-sys) [:cruxdb :close])
+  (put! (channels :ch-sys) {:chan/topic :cruxdb :proc/op :start})
+  (put! (channels :ch-sys) {:chan/topic :cruxdb :proc/op :close})
 
   (stest/unstrument)
 
-  (put! (channels :ch-main) :exit)
-  
-  (<!! (a/into [] (channels :ch-kstreams-states)) )
+  (put! (channels :ch-main) {:sys/op :start})
+
+  (<!! (a/into [] (channels :ch-kstreams-states)))
 
   ;;
   )
@@ -302,8 +302,8 @@
               (if-not (subset? (set ktopics) (list-topics {:props kprops}))
                 (<! (create-topics-async kprops ktopics)))
               (condp = k
-                :start (let [{:keys [create-fn repl-only-key]} args
-                             a (create-fn)]
+                :start (let [{:keys [create-kstreams-f repl-only-key]} args
+                             a (create-kstreams-f)]
                          (swap! a-kstreams assoc repl-only-key a) ; for repl purposes
                          (.start (:kstreams a))
                          (a/admix mx-kstreams-states (:ch-state a))
@@ -323,13 +323,17 @@
 
 (defn start-kstreams-access
   [{:keys [ch-sys]}]
-  (put! ch-sys [:kstreams [:start {:create-fn create-kstreams-access
-                                   :repl-only-key :kstreams-access}]]))
+  (put! ch-sys {:chan/topic :kstreams
+                :proc/op :start
+                :create-kstreams-f create-kstreams-access
+                :repl-only-key :kstreams-access}))
 
 (defn start-kstreams-game
   [{:keys [ch-sys]}]
-  (put! ch-sys [:kstreams [:start {:create-fn create-kstreams-game
-                                   :repl-only-key :kstreams-game}]]))
+  (put! ch-sys {:chan/topic :kstreams
+                :proc/op :start
+                :create-kstreams-f create-kstreams-game
+                :repl-only-key :kstreams-game}))
 
 
 (defn proc-derived-1
