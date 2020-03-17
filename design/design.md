@@ -337,3 +337,23 @@
   - solution: perform such logic in fns that return a channel and invoke from interceptors or elswhere
   - fns are processes (go blocks), rely on arguments only, are in a separate ns
   - pass channels explicitly in main within http process
+- channels
+  - def channels as a map :name (chan)
+  - destructure arg in proc itself
+  - pass to process with (select-keys) to explicitly see what process depends on
+  - it's infinitely worth it to use both (sleect-keys) + destructiring 
+- interceptors and channels
+  - pedestal server is already a process
+  - interceptors allow to make decisions inside that process
+  - interceptors handle http (forming response maps), not actual domain logic
+  - put logic into core ns, where each fn takes 1 arg - channels and returns a channel
+  - this way interceptors are free of non-http decision making
+- performance
+  - performance-wise it is a question, whether or not connection should be accessed via a process or as a ref
+  - and other considerations may arise
+  - approach
+    - test/perf will contain independent ns (apps) with their own entry points
+    - once user abstraction is implemented and tested, copy a snapthot of the app into test/perf/alpha-channels1
+    - and into test/perf/alpha-refs1
+    - change refs1, test both
+    - this way is better to reason about what option is better, than comlecting src files to handle all cases
