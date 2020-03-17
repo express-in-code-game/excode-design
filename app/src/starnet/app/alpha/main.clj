@@ -28,7 +28,8 @@
    [starnet.app.alpha.crux :as app-crux]
    [crux.api :as crux])
   (:import
-   org.apache.kafka.clients.producer.KafkaProducer))
+   org.apache.kafka.clients.producer.KafkaProducer
+   org.apache.kafka.clients.producer.ProducerRecord))
 
 (defn env-optimized?
   []
@@ -265,6 +266,9 @@
 (comment
   (def c-out (chan 1))
   (put! (channels :ch-access-store) [:create "abc" c-out])
+  (put! (channels :ch-access-store) [:read-store "abc" c-out])
+  (def t (:access/token (<!! c-out)))
+  (put! (channels :ch-access-store) [:delete "4d08a1f1-5442-4db4-8c19-539617665f42" c-out])
 
   ;;
   )
