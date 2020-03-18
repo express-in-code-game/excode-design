@@ -259,7 +259,8 @@
                                              (recur store))
                           :else (recur store)))
               ch-access-store (let [{op :kstore/op
-                                     token :access/token
+                                     k :kafka/k
+                                     ev :kafka/ev
                                      c-out :ch/c-out} v]
                                 (condp = op
                                   :get (do (>! c-out (.get token store))
@@ -268,58 +269,29 @@
                                                   (recur store))
                                   :delete (let [c (chan 1)]
                                             (>! ch-kproducer {:kafka/topic "alpha.token"
-                                                              :kafka/k token
-                                                              :kafka/ev {:ev/type :ev.access/delete
-                                                                         :access/token token}
+                                                              :kafka/k k
+                                                              :kafka/ev {:record/delete? true}
                                                               :ch/c-out c})
-                                            (<! c) ; need to utilize kafka-future to actually wait for it
+                                            (<! c)
                                             (>! c-out true)
                                             (recur store))
-                                  :create (let [tok (.toString (java.util.UUID/randomUUID))
-                                                c (chan 1)
-                                                record {:access/token tok
-                                                        :access/inst-create (java.util.Date.)}]
+                                  :create (let [c (chan 1)]
                                             (>! ch-kproducer {:kafka/topic "alpha.token"
-                                                              :kafka/k tok
-                                                              :kafka/ev {:ev/type :ev.access/create
-                                                                         :access/record  record}
+                                                              :kafka/k k
+                                                              :kafka/ev ev
                                                               :ch/c-out c})
-                                            (<! c)  ; need to utilize kafka-future to actually wait for it
-                                            (>! c-out record)
+                                            (<! c)
+                                            (>! c-out ev)
                                             (recur store))
                                   (recur store))))))
         (println "proc-access-store exiting"))))
 
-(comment
 
-  (let [c-out (chan 1)]
-    (put! (channels :ch-access-store) {:kstore/op :create
-                                       :access/token ""
-                                       :ch/c-out c-out})
-    (first (alts!! [c-out (timeout 100)])))
-
-  (let [c-out (chan 1)]
-    (put! (channels :ch-access-store) {:kstore/op :read-store
-                                       :access/token ""
-                                       :ch/c-out c-out})
-    (first (alts!! [c-out (timeout 100)])))
-
-  (let [c-out (chan 1)]
-    (put! (channels :ch-access-store) {:kstore/op :delete
-                                       :access/token "f95cdcf1-6811-4ceb-80e2-e83a3ad10c17"
-                                       :ch/c-out c-out})
-    (first (alts!! [c-out (timeout 100)])))
-
-
-  ;;
-  )
 
 (def kprops {"bootstrap.servers" "broker1:9092"})
 
 (def ktopics ["alpha.token"
-              "alpha.access.changes"
-              "alpha.game"
-              "alpha.game.changes"])
+              "alpha.game"])
 
 (comment
 

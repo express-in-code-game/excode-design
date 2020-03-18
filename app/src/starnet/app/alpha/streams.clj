@@ -260,15 +260,15 @@
           uuidkey
           ev)))
 
-(defmulti next-state-kstreams-access
-  (fn [_ k ev ag]
-    (:ev/type ev)))
-(defmethod next-state-kstreams-access :ev.access/create
-  [_ k ev ag]
-  (:access/record ev))
-(defmethod next-state-kstreams-access :ev.access/delete
-  [_ k ev ag]
-  nil)
+;; (defmulti next-state-kstreams-access
+;;   (fn [_ k ev ag]
+;;     (:ev/type ev)))
+;; (defmethod next-state-kstreams-access :ev.access/create
+;;   [_ k ev ag]
+;;   (:access/record ev))
+;; (defmethod next-state-kstreams-access :ev.access/delete
+;;   [_ k ev ag]
+;;   nil)
 
 (defn create-kstreams-access
   []
@@ -279,8 +279,8 @@
     "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
     "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"}
    (fn []
-     (let [builder0 (StreamsBuilder.)
-           kstream0 (-> builder0
+     (let [builder1 (StreamsBuilder.)
+           kstream1 (-> builder1
                         (.stream "crux-docs"
                                  (Consumed/with (Serdes/String) (NippySerde.)))
                         (.filter (reify Predicate
@@ -289,34 +289,42 @@
                         (.groupBy (reify KeyValueMapper
                                     (apply [_ k v]
                                       (let [k (:u/uuid v)]
-                                        #_(KeyValue. k v)
-                                        k)))
+                                        k  #_(KeyValue. k v))))
                                   (Grouped/with
                                    (TransitJsonSerde.) (TransitJsonSerde.)))
                         (.reduce (reify Reducer
                                    (apply [_ v1 v2]
-                                     (println "vals")
-                                     (println v1)
-                                     (println v2)
                                      v2))
                                  (-> (Materialized/as "alpha.access.streams.user-store1")
                                      (.withKeySerde (TransitJsonSerde.))
                                      (.withValueSerde (TransitJsonSerde.)))))
 
-           builder (StreamsBuilder.)
-           kstream (-> builder
-                       (.stream "alpha.token")
-                       (.groupByKey)
-                       (.aggregate (reify Initializer
-                                     (apply [this]
-                                       nil))
-                                   (reify Aggregator
-                                     (apply [this k ev ag]
-                                       (apply next-state-kstreams-access [this k ev ag])))
-                                   (-> (Materialized/as "alpha.access.streams.store")
-                                       (.withKeySerde (Serdes/String))
-                                       (.withValueSerde (TransitJsonSerde.)))))]
-       (.build builder0)))))
+           builder2 (StreamsBuilder.)
+           kstream2 (-> builder2
+                        (.stream "alpha.token")
+                        (.groupByKey)
+                        (.aggregate (reify Initializer
+                                      (apply [this]
+                                        nil))
+                                    (reify Aggregator
+                                      (apply [this k ev ag]
+                                        (if (contains? ev :record/delete?)
+                                          nil
+                                          ev)
+                                        #_(apply next-state-kstreams-access [this k ev ag])))
+                                    (-> (Materialized/as "alpha.access.streams.token-store1")
+                                        (.withKeySerde (TransitJsonSerde.))
+                                        (.withValueSerde (TransitJsonSerde.)))))
+
+           kstream3 (-> kstream1
+                        (.join kstream2
+                               (reify ValueJoiner
+                                 (apply [_ v1 v2]
+                                   (merge v1 v2)))
+                               (-> (Materialized/as "alpha.access.streams.store")
+                                   (.withKeySerde (TransitJsonSerde.))
+                                   (.withValueSerde (TransitJsonSerde.)))))]
+       (.build builder1)))))
 
 
 (comment

@@ -78,11 +78,21 @@
               (vec)
               (flatten)
               (vec)))
-  
+
   (->
    (evict-user channels (-> users (nth 0) :u/uuid))
    (<!!soft))
 
+
+  (let [c-out (chan 1)]
+    (put! (channels :ch-access-store) {:kstore/op :create
+                                       :kafka/k ""
+                                       :kafka/ev {:access.token/token (.toString (java.util.UUID/randomUUID))
+                                                  :access.token/inst-create (java.util.Date.)}
+                                       :ch/c-out c-out})
+    (first (alts!! [c-out (timeout 100)])))
+
+  
 
   ;;
   )
