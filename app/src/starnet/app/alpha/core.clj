@@ -35,7 +35,7 @@
 (defn create-token
   [channels user-uuid]
   (let [c-out (chan 1)]
-    (put! (channels :ch-access-store) {:kstore/op :create
+    (put! (channels :ch-access-store) {:kstore/op :update
                                        :kafka/k user-uuid
                                        :kafka/ev {:access.token/token (.toString (java.util.UUID/randomUUID))
                                                   :access.token/inst-create (java.util.Date.)
@@ -46,7 +46,7 @@
 (defn invalidate-token
   [channels user-uuid]
   (let [c-out (chan 1)]
-    (put! (channels :ch-access-store) {:kstore/op :delete
+    (put! (channels :ch-access-store) {:kstore/op :update
                                        :kafka/k user-uuid
                                        :kafka/ev {:access.token/invalid? true}
                                        :ch/c-out c-out})

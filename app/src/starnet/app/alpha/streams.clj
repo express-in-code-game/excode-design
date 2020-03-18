@@ -198,19 +198,19 @@
         ch-running (chan (sliding-buffer 1))]
     (do
       (add-shutdown-hook props kstreams latch)
-      #_(.setStateListener kstreams (reify KafkaStreams$StateListener
-                                      (onChange
-                                        [_ nw old]
-                                        (let [running? (= KafkaStreams$State/RUNNING nw)
-                                              v {:ch/topic appid
-                                                 :kafka/running? running?
-                                                 :kafka/new-state nw
-                                                 :kafka/old-state old
-                                                 :kafka/kstreams kstreams}]
-                                          (put! ch-state v)
-                                          (when running?
-                                            (put! ch-running v))
-                                          (println (format "; %s %s" appid (.name nw))))))))
+      (.setStateListener kstreams (reify KafkaStreams$StateListener
+                                    (onChange
+                                      [_ nw old]
+                                      (let [running? (= KafkaStreams$State/RUNNING nw)
+                                            v {:ch/topic appid
+                                               :kafka/running? running?
+                                               :kafka/new-state nw
+                                               :kafka/old-state old
+                                               :kafka/kstreams kstreams}]
+                                        (put! ch-state v)
+                                        (when running?
+                                          (put! ch-running v))
+                                        (println (format "; %s %s" appid (.name nw))))))))
     {:appid (get props "application.id")
      :topology topology
      :props props
@@ -307,11 +307,11 @@
                                         nil))
                                     (reify Aggregator
                                       (apply [this k ev ag]
-                                        (println ev)
-                                        (if (contains? ev :record/delete?)
-                                          nil
-                                          ev)
-                                        #_(apply next-state-kstreams-access [this k ev ag])))
+                                             (println ev)
+                                             (if (contains? ev :record/delete?)
+                                               nil
+                                               (merge ag ev))
+                                             #_(apply next-state-kstreams-access [this k ev ag])))
                                     (-> (Materialized/as "alpha.access.streams.token-store1")
                                         (.withKeySerde (TransitJsonSerde.))
                                         (.withValueSerde (TransitJsonSerde.)))))
@@ -331,25 +331,7 @@
        (.build builder)))))
 
 
-(comment
 
-  (def app (create-kstreams-access))
-  (def kstream (:kstreams app))
-  (.state kstream)
-  (.start kstream)
-  (.stop kstream)
-
-  (def store (.store kstream "alpha.access.streams.store" (QueryableStoreTypes/keyValueStore)))
-  (read-store store)
-
-  (def token-store (.store kstream "alpha.access.streams.token-store1" (QueryableStoreTypes/keyValueStore)))
-  (read-store token-store)
-
-  (def user-store (.store kstream "alpha.access.streams.user-store1" (QueryableStoreTypes/keyValueStore)))
-  (read-store user-store)
-
-  ;;
-  )
 
 (defn assert-next-game-post [state] {:post [(s/assert :g/game %)]} state)
 (defn assert-next-game-body [state]

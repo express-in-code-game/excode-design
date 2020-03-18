@@ -91,7 +91,7 @@
               (let [c-out (chan 1)]
                 (put! ch-sys {:ch/topic :cruxdb :proc/op :start :ch/c-out c-out})
                 (<! c-out)
-                #_(start-kstreams-access (select-keys channels [:ch-sys]))))
+                (start-kstreams-access (select-keys channels [:ch-sys]))))
             #_(start-kstreams-game (select-keys channels [:ch-sys]))
             #_(put! ch-sys [:kproducer :open])
             #_(put! ch-sys [:http-server :start]))
@@ -229,11 +229,15 @@
                            (recur nil)))
               ch-kproducer (let [{:kafka/keys [topic k ev]
                                   c-out :ch/c-out} v]
+                             (println "ch-kproducer sending")
+                             (println topic)
+                             (println k)
+                             (println ev)
                              (>! c-out (.send kproducer
-                                            (ProducerRecord.
-                                             topic
-                                             k
-                                             ev))) ; probably should deref kfuture
+                                              (ProducerRecord.
+                                               topic
+                                               k
+                                               ev))) ; probably should deref kfuture
                              (recur kproducer))))
           ))))
 
@@ -265,7 +269,8 @@
                                 (condp = op
                                   :get (do (>! c-out (.get k store))
                                            (recur store))
-                                  :read-store (do (>! c-out (read-store store))
+                                  :read-store (do (println "ch-access-store :read-store")
+                                                  (>! c-out (read-store store))
                                                   (recur store))
                                   :delete (let [c (chan 1)]
                                             (>! ch-kproducer {:kafka/topic "alpha.token"
@@ -275,7 +280,8 @@
                                             (<! c)
                                             (>! c-out true)
                                             (recur store))
-                                  :create (let [c (chan 1)]
+                                  :update (let [c (chan 1)]
+                                            (println "ch-access-store :update")
                                             (>! ch-kproducer {:kafka/topic "alpha.token"
                                                               :kafka/k k
                                                               :kafka/ev ev
@@ -344,6 +350,23 @@
                 :proc/op :start
                 :create-kstreams-f create-kstreams-game
                 :repl-only-key :kstreams-game}))
+
+(comment
+
+  (def app (:kstreams-access @a-kstreams))
+  (def kstream (:kstreams app))
+
+  (def store (create-kvstore  kstream "alpha.access.streams.store"))
+  (read-store store)
+
+  (def token-store (create-kvstore  kstream "alpha.access.streams.token-store1"))
+  (read-store token-store)
+
+  (def user-store (create-kvstore  kstream "alpha.access.streams.user-store1"))
+  (read-store user-store)
+  
+  ;;
+  )
 
 
 (defn proc-derived-1
