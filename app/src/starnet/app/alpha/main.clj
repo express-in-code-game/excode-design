@@ -93,7 +93,7 @@
                 (put! ch-sys {:ch/topic :cruxdb :proc/op :start :ch/c-out c-out})
                 (<! c-out)
                 (start-kstreams-crux-docs (select-keys channels [:ch-sys]))
-                #_(start-kstreams-access (select-keys channels [:ch-sys]))))
+                (start-kstreams-access (select-keys channels [:ch-sys]))))
             #_(start-kstreams-game (select-keys channels [:ch-sys]))
             #_(put! ch-sys [:kproducer :open])
             #_(put! ch-sys [:http-server :start]))
@@ -244,7 +244,7 @@
   (let [csys (chan 1)
         cstates (chan 1)
         appid "alpha.access.streams"
-        store-name "alpha.access.streams.store"]
+        store-name "alpha.acess.globalktable"]
     (sub pb-sys :kstreams csys)
     (sub pb-kstreams-states appid cstates)
     (go (loop [store nil]
@@ -254,10 +254,10 @@
                              :kafka/keys [kstreams running?]} v]
                         (cond
                           (true? running?) (let [s (create-kvstore kstreams store-name)]
-                                             (println (format "; kv-store for %s created" appid))
+                                             (println (format "; kv-store %s created" store-name))
                                              (recur s))
                           (not running?) (do (when store
-                                               (println (format "; kv-store for %s closed" appid)))
+                                               (println (format "; kv-store %s closed" store-name)))
                                              (recur store))
                           :else (recur store)))
               ch-access-store (let [{op :kstore/op
@@ -294,7 +294,9 @@
 
 (def ktopics ["alpha.token"
               "alpha.game"
-              "alpha.crux-docs"])
+              "alpha.crux-docs"
+              "alpha.user.changelog"
+              "alpha.access.changelog"])
 
 (comment
 
@@ -319,6 +321,7 @@
                 (<! (create-topics-async kprops ktopics)))
               (condp = op
                 :start (let [a (create-kstreams-f)]
+                         (println "; will :start")
                          (swap! a-kstreams assoc repl-only-key a) ; for repl purposes
                          (.start (:kstreams a))
                          (a/admix mx-kstreams-states (:ch-state a))

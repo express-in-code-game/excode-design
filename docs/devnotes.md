@@ -28,6 +28,7 @@
     - https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html#ktable-ktable-equi-join
     - https://www.confluent.io/blog/optimizing-kafka-streams-applications/
     - https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html#streams_concepts_globalktable
+    - https://cwiki.apache.org/confluence/display/KAFKA/KIP-99%3A+Add+Global+Tables+to+Kafka+Streams
 
 - clj
   - async

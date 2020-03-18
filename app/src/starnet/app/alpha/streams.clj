@@ -82,7 +82,7 @@
           (.whenComplete
            (reify KafkaFuture$BiConsumer
              (accept [this res err]
-               (println "topics created")
+               (println "; topics created")
                (>! cout res))))))
     cout))
 
@@ -271,26 +271,9 @@
 ;;   [_ k ev ag]
 ;;   nil)
 
-(defn create-kstreams-crux-docs
-  []
-  (let [props {"application.id" "alpha.crux-docs.streams"
-               "bootstrap.servers" "broker1:9092"
-               "auto.offset.reset" "earliest" #_"latest"
-               "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
-               "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
-               "topology.optimization" "all"}]
-    (create-streams
-     props
-     (fn []
-       (let [builder (StreamsBuilder.)
-             _ (-> builder
-                   (.stream "crux-docs"
-                            (Consumed/with (Serdes/String) (NippySerde.)))
-                   (.to "alpha.crux-docs"))]
-         (.build builder (doto (Properties.)
-                           (.putAll props))))))))
 
-(defn create-kstreams-access
+
+(defn create-kstreams-access-1
   []
   (let [props {"application.id" "alpha.access.streams"
                "bootstrap.servers" "broker1:9092"
@@ -350,7 +333,76 @@
          (.build builder (doto (Properties.)
                            (.putAll props))))))))
 
+(defn create-kstreams-crux-docs
+  []
+  (let [props {"application.id" "alpha.crux-docs.streams"
+               "bootstrap.servers" "broker1:9092"
+               "auto.offset.reset" "earliest" #_"latest"
+               "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
+               "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
+               "topology.optimization" "all"}]
+    (create-streams
+     props
+     (fn []
+       (let [builder (StreamsBuilder.)
+             _ (-> builder
+                   (.stream "crux-docs"
+                            (Consumed/with (Serdes/String) (NippySerde.)))
+                   (.through "alpha.crux-docs"
+                             (Produced/with
+                              (TransitJsonSerde.) (TransitJsonSerde.)))
+                   (.filter (reify Predicate
+                              (test [_ k v]
+                                (contains? v :u/uuid))))
+                   (.selectKey (reify KeyValueMapper
+                                 (apply [_ k v]
+                                   (let [k (:u/uuid v)]
+                                     k))))
+                   (.to "alpha.user.changelog"))]
+         (.build builder (doto (Properties.)
+                           (.putAll props))))))))
 
+(defn create-kstreams-access
+  []
+  (let [props {"application.id" "alpha.access.streams"
+               "bootstrap.servers" "broker1:9092"
+               "auto.offset.reset" "earliest" #_"latest"
+               "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
+               "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
+               "topology.optimization" "all"}]
+    (create-streams
+     props
+     (fn []
+       (let [builder (StreamsBuilder.)
+             gt1 (-> builder
+                     (.globalTable "alpha.user.changelog"
+                                   (-> (Materialized/as "alpha.user.store")
+                                       (.withKeySerde (TransitJsonSerde.))
+                                       (.withValueSerde (TransitJsonSerde.)))))
+
+             s1 (-> builder
+                    (.stream "alpha.token"))
+             _ (-> s1
+                   (.join gt1
+                          (reify KeyValueMapper
+                            (apply [_ lk lv]
+                              lk))
+                          (reify ValueJoiner
+                            (apply [_ lv rv]
+                              (println "joining")
+                              (println lv)
+                              (println "; ")
+                              (println rv)
+                              (println "; ---")
+                              (merge rv lv))))
+                   (.to "alpha.access.changelog"))
+             _ (-> builder
+                   (.globalTable "alpha.access.changelog"
+                                 (-> (Materialized/as "alpha.acess.globalktable")
+                                     (.withKeySerde (TransitJsonSerde.))
+                                     (.withValueSerde (TransitJsonSerde.)))))]
+         (.build builder (doto (Properties.)
+                           (.putAll props))))))))
 
 (defn assert-next-game-post [state] {:post [(s/assert :g/game %)]} state)
 (defn assert-next-game-body [state]

@@ -106,9 +106,10 @@
                          :full-results? true})
 
 
-  (->
-   (create-user channels (gen/generate (s/gen :u/user)))
-   (<!!soft))
+  (dotimes [n 10]
+    (->
+     (create-user channels (gen/generate (s/gen :u/user)))
+     (<!!soft)))
 
   (repl-users channels)
 
@@ -131,7 +132,13 @@
    (invalidate-token channels (:u/uuid user))
    (<!!soft))
 
+  (doseq [u (repl-users channels)]
+    (create-token channels (:u/uuid user)))
+
+
   (repl-read-access-store channels)
+
+
 
 
 
