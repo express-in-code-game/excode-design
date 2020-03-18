@@ -309,7 +309,6 @@
 ; not used in the system, for repl purposes only
 (def ^:private a-kstreams (atom {}))
 
-
 (defn proc-kstreams
   [{:keys [pb-sys ch-sys mx-kstreams-states]}]
   (let [c (chan 1)]
@@ -318,12 +317,9 @@
           (if-let [{:keys [proc/op create-kstreams-f repl-only-key]} (<! c)]
             (do
               (when-not (subset? (set ktopics) (list-topics {:props kprops}))
-                (<! (create-topics-async kprops ktopics))
-                (println "; did create topics")
-                (println "; op will be " op))
+                (<! (create-topics-async kprops ktopics)))
               (condp = op
                 :start (let [a (create-kstreams-f)]
-                         (println "; will :start")
                          (swap! a-kstreams assoc repl-only-key a) ; for repl purposes
                          (.start (:kstreams a))
                          (a/admix mx-kstreams-states (:ch-state a))
