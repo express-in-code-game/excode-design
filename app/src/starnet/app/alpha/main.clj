@@ -263,7 +263,7 @@
                                      ev :kafka/ev
                                      c-out :ch/c-out} v]
                                 (condp = op
-                                  :get (do (>! c-out (.get token store))
+                                  :get (do (>! c-out (.get k store))
                                            (recur store))
                                   :read-store (do (>! c-out (read-store store))
                                                   (recur store))

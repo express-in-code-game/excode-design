@@ -73,12 +73,19 @@
                                  :cruxdb/tx-data tx-data})
     (first (alts!! [c-out (timeout 100)]))))
 
+(defn repl-read-access-store
+  [channels]
+  (let [c-out (chan 1)]
+    (put! (channels :ch-access-store) {:kstore/op :read-store
+                                       :ch/c-out c-out})
+    (first (alts!! [c-out (timeout 100)]))))
+
 (defn <!!soft
   [c]
   (first (alts!! [c (timeout 100)])))
 
 (defn repl-users
-  []
+  [channels]
   (->
    (repl-query channels '{:find [id]
                           :where [[e :u/uuid id]]
@@ -103,18 +110,18 @@
    (create-user channels (gen/generate (s/gen :u/user)))
    (<!!soft))
 
-  (repl-users)
+  (repl-users channels)
 
   (repl-query channels {:find '[e]
                         :where '[[e :crux.db/id id]]
-                        :args [{'id (-> (repl-users) (rand-nth) :u/uuid)}]
+                        :args [{'id (-> (repl-users channels) (rand-nth) :u/uuid)}]
                         :full-results? true})
 
   (->
-   (evict-user channels (-> (repl-users) (rand-nth) :u/uuid))
+   (evict-user channels (-> (repl-users channels) (rand-nth) :u/uuid))
    (<!!soft))
 
-  (def user (-> (repl-users) (rand-nth)))
+  (def user (-> (repl-users channels) (rand-nth)))
 
   (->
    (create-token channels (:u/uuid user))
@@ -124,6 +131,7 @@
    (invalidate-token channels (:u/uuid user))
    (<!!soft))
 
+  (repl-read-access-store channels)
 
 
 

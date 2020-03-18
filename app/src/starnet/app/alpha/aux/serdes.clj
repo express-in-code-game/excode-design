@@ -38,8 +38,6 @@
   [format data]
   (let [out (ByteArrayOutputStream. #_4096)
         writer (transit/writer out format)]
-    (println "data")
-    (println data)
     (transit/write writer data)
     (.toByteArray out)))
 
