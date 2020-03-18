@@ -27,6 +27,7 @@
     - https://www.confluent.io/blog/crossing-streams-joins-apache-kafka/
     - https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html#ktable-ktable-equi-join
     - https://www.confluent.io/blog/optimizing-kafka-streams-applications/
+    - https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html#streams_concepts_globalktable
 
 - clj
   - async

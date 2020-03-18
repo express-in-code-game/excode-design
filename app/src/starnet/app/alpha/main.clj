@@ -23,7 +23,7 @@
    [starnet.app.alpha.streams :refer [create-topics-async list-topics
                                       delete-topics produce-event create-kvstore
                                       future-call-consumer read-store
-                                      send-event create-kstreams-game create-kstreams-access]]
+                                      send-event create-kstreams-game create-kstreams-access create-kstreams-crux-docs]]
    [starnet.app.alpha.http  :as app-http]
    [starnet.app.alpha.crux :as app-crux]
    [starnet.app.alpha.core :as appcore]
@@ -39,7 +39,8 @@
 
 (declare  proc-main proc-http-server proc-nrepl
           proc-derived-1  proc-kstreams proc-log proc-access-store
-          proc-cruxdb proc-kproducer proc-nrepl-server start-kstreams-access start-kstreams-game)
+          proc-cruxdb proc-kproducer proc-nrepl-server start-kstreams-access start-kstreams-game
+          start-kstreams-crux-docs)
 
 (def channels (let [ch-proc-main (chan 1)
                     ch-sys (chan (sliding-buffer 10))
@@ -91,7 +92,8 @@
               (let [c-out (chan 1)]
                 (put! ch-sys {:ch/topic :cruxdb :proc/op :start :ch/c-out c-out})
                 (<! c-out)
-                (start-kstreams-access (select-keys channels [:ch-sys]))))
+                (start-kstreams-crux-docs (select-keys channels [:ch-sys]))
+                #_(start-kstreams-access (select-keys channels [:ch-sys]))))
             #_(start-kstreams-game (select-keys channels [:ch-sys]))
             #_(put! ch-sys [:kproducer :open])
             #_(put! ch-sys [:http-server :start]))
@@ -346,6 +348,13 @@
                 :proc/op :start
                 :create-kstreams-f create-kstreams-game
                 :repl-only-key :kstreams-game}))
+
+(defn start-kstreams-crux-docs
+  [{:keys [ch-sys]}]
+  (put! ch-sys {:ch/topic :kstreams
+                :proc/op :start
+                :create-kstreams-f create-kstreams-crux-docs
+                :repl-only-key :kstreams-crux-docs}))
 
 (comment
 

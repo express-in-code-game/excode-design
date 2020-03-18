@@ -271,6 +271,25 @@
 ;;   [_ k ev ag]
 ;;   nil)
 
+(defn create-kstreams-crux-docs
+  []
+  (let [props {"application.id" "alpha.crux-docs.streams"
+               "bootstrap.servers" "broker1:9092"
+               "auto.offset.reset" "earliest" #_"latest"
+               "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
+               "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
+               "topology.optimization" "all"}]
+    (create-streams
+     props
+     (fn []
+       (let [builder (StreamsBuilder.)
+             _ (-> builder
+                   (.stream "crux-docs"
+                            (Consumed/with (Serdes/String) (NippySerde.)))
+                   (.to "alpha.crux-docs"))]
+         (.build builder (doto (Properties.)
+                           (.putAll props))))))))
+
 (defn create-kstreams-access
   []
   (let [props {"application.id" "alpha.access.streams"
@@ -284,9 +303,7 @@
      (fn []
        (let [builder (StreamsBuilder.)
              kstream1 (-> builder
-                          (.stream "crux-docs"
-                                   (Consumed/with (Serdes/String) (NippySerde.)))
-                          (.through "alpha.crux-docs")
+                          (.stream "alpha.crux-docs")
                           (.filter (reify Predicate
                                      (test [_ k v]
                                        (contains? v :u/uuid))))
@@ -321,17 +338,19 @@
                    (.join kstream2
                           (reify ValueJoiner
                             (apply [_ v1 v2]
-                                   (println "joining")
-                                   (println v1)
-                                   (println "; ")
-                                   (println v2)
-                                   (println "; ---")
-                                   (merge v1 v2)))
+                              (println "joining")
+                              (println v1)
+                              (println "; ")
+                              (println v2)
+                              (println "; ---")
+                              (merge v1 v2)))
                           (-> (Materialized/as "alpha.access.streams.store")
                               (.withKeySerde (TransitJsonSerde.))
                               (.withValueSerde (TransitJsonSerde.)))))]
          (.build builder (doto (Properties.)
                            (.putAll props))))))))
+
+
 
 (defn assert-next-game-post [state] {:post [(s/assert :g/game %)]} state)
 (defn assert-next-game-body [state]
