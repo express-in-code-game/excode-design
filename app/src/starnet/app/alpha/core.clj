@@ -31,6 +31,27 @@
                     ;; #inst "2112-12-03"
                     ;; #inst "2113-12-03"
                     ]]))
+
+(defn create-token
+  [channels user-uuid]
+  (let [c-out (chan 1)]
+    (put! (channels :ch-access-store) {:kstore/op :create
+                                       :kafka/k user-uuid
+                                       :kafka/ev {:access.token/token (.toString (java.util.UUID/randomUUID))
+                                                  :access.token/inst-create (java.util.Date.)
+                                                  :access.token/invalid? false}
+                                       :ch/c-out c-out})
+    c-out))
+
+(defn invalidate-token
+  [channels user-uuid]
+  (let [c-out (chan 1)]
+    (put! (channels :ch-access-store) {:kstore/op :delete
+                                       :kafka/k user-uuid
+                                       :kafka/ev {:access.token/invalid? true}
+                                       :ch/c-out c-out})
+    c-out))
+
 (defn evict-user
   [channels u-uuid]
   (db-tx channels [[:crux.tx/evict
@@ -56,6 +77,17 @@
   [c]
   (first (alts!! [c (timeout 100)])))
 
+(defn repl-users
+  []
+  (->
+   (repl-query channels '{:find [id]
+                          :where [[e :u/uuid id]]
+                          :full-results? true})
+
+   (vec)
+   (flatten)
+   (vec)))
+
 (comment
 
   (def channels @(resolve 'starnet.app.alpha.main/channels))
@@ -66,33 +98,35 @@
                          :where [[e :crux.db/id id]]
                          :full-results? true})
 
+
   (->
    (create-user channels (gen/generate (s/gen :u/user)))
    (<!!soft))
 
-  (def users (->
-              (repl-query channels '{:find [id]
-                                     :where [[e :u/uuid id]]
-                                     :full-results? true})
+  (repl-users)
 
-              (vec)
-              (flatten)
-              (vec)))
+  (repl-query channels {:find '[e]
+                        :where '[[e :crux.db/id id]]
+                        :args [{'id (-> (repl-users) (rand-nth) :u/uuid)}]
+                        :full-results? true})
 
   (->
-   (evict-user channels (-> users (nth 0) :u/uuid))
+   (evict-user channels (-> (repl-users) (rand-nth) :u/uuid))
+   (<!!soft))
+
+  (def user (-> (repl-users) (rand-nth)))
+
+  (->
+   (create-token channels (:u/uuid user))
+   (<!!soft))
+
+  (->
+   (invalidate-token channels (:u/uuid user))
    (<!!soft))
 
 
-  (let [c-out (chan 1)]
-    (put! (channels :ch-access-store) {:kstore/op :create
-                                       :kafka/k ""
-                                       :kafka/ev {:access.token/token (.toString (java.util.UUID/randomUUID))
-                                                  :access.token/inst-create (java.util.Date.)}
-                                       :ch/c-out c-out})
-    (first (alts!! [c-out (timeout 100)])))
 
-  
+
 
   ;;
   )
