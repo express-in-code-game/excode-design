@@ -8,6 +8,8 @@
    org.apache.kafka.common.serialization.Deserializer
    org.apache.kafka.common.serialization.Serde
    org.apache.kafka.common.errors.SerializationException
+   crux.kafka.nippy.NippyDeserializer
+   crux.kafka.nippy.NippySerializer
    java.io.IOException)
   (:gen-class))
 
@@ -36,6 +38,8 @@
   [format data]
   (let [out (ByteArrayOutputStream. #_4096)
         writer (transit/writer out format)]
+    (println "data")
+    (println data)
     (transit/write writer data)
     (.toByteArray out)))
 
@@ -89,6 +93,16 @@
     (TransitJsonSerializer.))
   (deserializer [this]
     (TransitJsonDeserializer.)))
+
+(deftype NippySerde
+         []
+  Serde
+  (configure [this _ _])
+  (close [this])
+  (serializer [this]
+    (NippySerializer.))
+  (deserializer [this]
+    (NippyDeserializer.)))
 
 
 

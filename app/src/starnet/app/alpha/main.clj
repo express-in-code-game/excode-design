@@ -91,7 +91,7 @@
               (let [c-out (chan 1)]
                 (put! ch-sys {:ch/topic :cruxdb :proc/op :start :ch/c-out c-out})
                 (<! c-out)
-                (start-kstreams-access (select-keys channels [:ch-sys]))))
+                #_(start-kstreams-access (select-keys channels [:ch-sys]))))
             #_(start-kstreams-game (select-keys channels [:ch-sys]))
             #_(put! ch-sys [:kproducer :open])
             #_(put! ch-sys [:http-server :start]))
