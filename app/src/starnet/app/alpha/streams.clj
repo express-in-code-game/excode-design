@@ -177,7 +177,7 @@
                       "auto.commit.enable" "false"
                       "group.id" (.toString (java.util.UUID/randomUUID))
                       "consumer.timeout.ms" "5000"
-                      "max.poll.interval.ms" "1000"
+                      "max.poll.interval.ms" "2000"
                       "key.deserializer" key-des
                       "value.deserializer" value-des})]
        (.subscribe consumer (Arrays/asList (object-array [topic])))
