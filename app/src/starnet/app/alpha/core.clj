@@ -111,15 +111,17 @@
      (create-user channels (gen/generate (s/gen :u/user)))
      (<!!soft)))
 
-  (repl-users channels)
+  (count (repl-users channels))
 
   (repl-query channels {:find '[e]
                         :where '[[e :crux.db/id id]]
                         :args [{'id (-> (repl-users channels) (rand-nth) :u/uuid)}]
                         :full-results? true})
 
+  (def users (repl-users channels))
+
   (->
-   (evict-user channels (-> (repl-users channels) (rand-nth) :u/uuid))
+   (evict-user channels (-> users (rand-nth) :u/uuid))
    (<!!soft))
 
   (def user (-> (repl-users channels) (rand-nth)))
@@ -137,11 +139,6 @@
 
 
   (repl-read-access-store channels)
-
-
-
-
-
 
   ;;
   )

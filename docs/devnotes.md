@@ -127,6 +127,8 @@
   - https://github.com/juxt/crux
   - https://opencrux.com/docs#faqs
   - https://github.com/juxt/crux/tree/master/crux-test/test/crux
+  - crux.codec.Id
+    - https://github.com/juxt/crux/blob/master/crux-core/src/crux/codec.clj#L346
 
 - cljs
   - antd

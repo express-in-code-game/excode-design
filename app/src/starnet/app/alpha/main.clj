@@ -244,7 +244,7 @@
   (let [csys (chan 1)
         cstates (chan 1)
         appid "alpha.access.streams"
-        store-name "alpha.acess.globalktable"]
+        store-name "alpha.access.globalktable"]
     (sub pb-sys :kstreams csys)
     (sub pb-kstreams-states appid cstates)
     (go (loop [store nil]
@@ -365,7 +365,7 @@
   (def store (create-kvstore  kstream "alpha.access.streams.store"))
   (read-store store)
 
-  (def token-store (create-kvstore  kstream "alpha.access.streams.token-store1"))
+  (def token-store (create-kvstore  kstream "alpha.access.globalktable"))
   (read-store token-store)
 
   (def user-store (create-kvstore  kstream "alpha.access.streams.user-store1"))

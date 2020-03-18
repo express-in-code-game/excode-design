@@ -338,19 +338,16 @@
   (let [props {"application.id" "alpha.crux-docs.streams"
                "bootstrap.servers" "broker1:9092"
                "auto.offset.reset" "earliest" #_"latest"
-               "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
-               "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
+               "default.key.serde" "starnet.app.alpha.aux.serdes.NippySerde"
+               "default.value.serde" "starnet.app.alpha.aux.serdes.NippySerde"
                "topology.optimization" "all"}]
     (create-streams
      props
      (fn []
        (let [builder (StreamsBuilder.)
              _ (-> builder
-                   (.stream "crux-docs"
-                            (Consumed/with (Serdes/String) (NippySerde.)))
-                   (.through "alpha.crux-docs"
-                             (Produced/with
-                              (TransitJsonSerde.) (TransitJsonSerde.)))
+                   (.stream "crux-docs")
+                   (.through "alpha.crux-docs")
                    (.filter (reify Predicate
                               (test [_ k v]
                                 (contains? v :u/uuid))))
@@ -358,7 +355,8 @@
                                  (apply [_ k v]
                                    (let [k (:u/uuid v)]
                                      k))))
-                   (.to "alpha.user.changelog"))]
+                   (.to "alpha.user.changelog"
+                        (Produced/with (TransitJsonSerde.) (TransitJsonSerde.))))]
          (.build builder (doto (Properties.)
                            (.putAll props))))))))
 
@@ -389,16 +387,17 @@
                               lk))
                           (reify ValueJoiner
                             (apply [_ lv rv]
-                              (println "joining")
-                              (println lv)
-                              (println "; ")
-                              (println rv)
-                              (println "; ---")
-                              (merge rv lv))))
+                                   #_(do (println "joining")
+                                         (println lv)
+                                         (println "; ")
+                                         (println rv)
+                                         (println "; ---"))
+                                   #_(println (format "join %s" (java.util.Date.)))
+                                   (merge rv lv))))
                    (.to "alpha.access.changelog"))
              _ (-> builder
                    (.globalTable "alpha.access.changelog"
-                                 (-> (Materialized/as "alpha.acess.globalktable")
+                                 (-> (Materialized/as "alpha.access.globalktable")
                                      (.withKeySerde (TransitJsonSerde.))
                                      (.withValueSerde (TransitJsonSerde.)))))]
          (.build builder (doto (Properties.)

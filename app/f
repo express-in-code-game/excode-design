@@ -4,7 +4,7 @@
 compile(){
   mkdir -p classes
   rm -rf classes/*
-  clojure -A:core:dev -m starnet.app.alpha.compile
+  clojure -A:core:dev:local -m starnet.app.alpha.compile
 }
 
 test(){
