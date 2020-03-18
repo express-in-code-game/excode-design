@@ -357,3 +357,8 @@
     - and into test/perf/alpha-refs1
     - change refs1, test both
     - this way is better to reason about what option is better, than comlecting src files to handle all cases
+- sockets
+  - proc-socket accepts connections
+  - it takes updates from game queue (vals come to queue from a kstream)
+  - proc-socket spawn sub-porcess per created game, which broadcasts events from users and sends them to kafka
+  - once game is closed, sub-proc closes connections
