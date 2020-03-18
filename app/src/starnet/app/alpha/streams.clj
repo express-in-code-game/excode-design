@@ -72,19 +72,18 @@
 
 (defn create-topics-async
   [kprops ktopics]
-  (let [cout (chan 1)]
-    (go
-      (-> (create-topics {:props kprops
-                          :names ktopics
-                          :num-partitions 1
-                          :replication-factor 1})
-          (.all)
-          (.whenComplete
-           (reify KafkaFuture$BiConsumer
-             (accept [this res err]
-               (println "; topics created")
-               (>! cout res))))))
-    cout))
+  (let [c-out (chan 1)]
+    (-> (create-topics {:props kprops
+                        :names ktopics
+                        :num-partitions 1
+                        :replication-factor 1})
+        (.all)
+        (.whenComplete
+         (reify KafkaFuture$BiConsumer
+           (accept [this res err]
+                   (println "; topics created")
+                   (put! c-out true)))))
+    c-out))
 
 (defn create-kvstore
   [kstreams name]

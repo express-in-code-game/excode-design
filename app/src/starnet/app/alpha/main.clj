@@ -302,7 +302,7 @@
 
   (list-topics {:props kprops})
   (delete-topics {:props kprops :names ktopics})
-  
+
   ;;
   )
 
@@ -317,8 +317,10 @@
     (go (loop [app nil]
           (if-let [{:keys [proc/op create-kstreams-f repl-only-key]} (<! c)]
             (do
-              (if-not (subset? (set ktopics) (list-topics {:props kprops}))
-                (<! (create-topics-async kprops ktopics)))
+              (when-not (subset? (set ktopics) (list-topics {:props kprops}))
+                (<! (create-topics-async kprops ktopics))
+                (println "; did create topics")
+                (println "; op will be " op))
               (condp = op
                 :start (let [a (create-kstreams-f)]
                          (println "; will :start")
