@@ -229,10 +229,6 @@
                            (recur nil)))
               ch-kproducer (let [{:kafka/keys [topic k ev]
                                   c-out :ch/c-out} v]
-                             (println "ch-kproducer sending")
-                             (println topic)
-                             (println k)
-                             (println ev)
                              (>! c-out (.send kproducer
                                               (ProducerRecord.
                                                topic
@@ -269,9 +265,9 @@
                                 (condp = op
                                   :get (do (>! c-out (.get k store))
                                            (recur store))
-                                  :read-store (do (println "ch-access-store :read-store")
-                                                  (>! c-out (read-store store))
-                                                  (recur store))
+                                  :read-store (do
+                                                (>! c-out (read-store store))
+                                                (recur store))
                                   :delete (let [c (chan 1)]
                                             (>! ch-kproducer {:kafka/topic "alpha.token"
                                                               :kafka/k k
@@ -281,7 +277,6 @@
                                             (>! c-out true)
                                             (recur store))
                                   :update (let [c (chan 1)]
-                                            (println "ch-access-store :update")
                                             (>! ch-kproducer {:kafka/topic "alpha.token"
                                                               :kafka/k k
                                                               :kafka/ev ev

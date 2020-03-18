@@ -308,7 +308,6 @@
                                         nil))
                                     (reify Aggregator
                                       (apply [this k ev ag]
-                                             (println ev)
                                              (if (contains? ev :record/delete?)
                                                nil
                                                (merge ag ev))
@@ -323,8 +322,9 @@
                           (apply [_ v1 v2]
                                  (println "; joining")
                                  (println v1)
+                                 (println ";")
                                  (println v2)
-                                 (println "--")
+                                 (println "; ---")
                                  (merge v1 v2)))
                         (-> (Materialized/as "alpha.access.streams.store")
                             (.withKeySerde (TransitJsonSerde.))
