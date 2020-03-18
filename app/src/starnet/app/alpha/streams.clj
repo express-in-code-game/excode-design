@@ -192,6 +192,7 @@
   (let [topology (topology-fn)
         props (doto (Properties.)
                 (.putAll props ))
+        appid (get props "application.id")
         kstreams (KafkaStreams. topology props)
         latch (CountDownLatch. 1)
         ch-state (chan (sliding-buffer 1))
@@ -211,7 +212,7 @@
                                         (when running?
                                           (put! ch-running v))
                                         (println (format "; %s %s" appid (.name nw))))))))
-    {:appid (get props "application.id")
+    {:appid appid
      :topology topology
      :props props
      :kstreams kstreams
