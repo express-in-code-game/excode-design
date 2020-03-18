@@ -39,7 +39,7 @@
                                        :kafka/k user-uuid
                                        :kafka/ev {:access.token/token (.toString (java.util.UUID/randomUUID))
                                                   :access.token/inst-create (java.util.Date.)
-                                                  :access.token/invalid? false}
+                                                  :access.token/valid? true}
                                        :ch/c-out c-out})
     c-out))
 
@@ -48,7 +48,7 @@
   (let [c-out (chan 1)]
     (put! (channels :ch-access-store) {:kstore/op :update
                                        :kafka/k user-uuid
-                                       :kafka/ev {:access.token/invalid? true}
+                                       :kafka/ev {:access.token/valid? false}
                                        :ch/c-out c-out})
     c-out))
 
@@ -132,7 +132,7 @@
    (invalidate-token channels (:u/uuid user))
    (<!!soft))
 
-  (doseq [u (repl-users channels)]
+  (doseq [user (repl-users channels)]
     (create-token channels (:u/uuid user)))
 
 

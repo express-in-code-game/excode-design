@@ -320,12 +320,12 @@
                    (.join kstream2
                           (reify ValueJoiner
                             (apply [_ v1 v2]
-                              (println "joining")
-                              (println v1)
-                              (println "; ")
-                              (println v2)
-                              (println "; ---")
-                              (merge v1 v2)))
+                                   #_(do (println "joining")
+                                         (println v1)
+                                         (println "; ")
+                                         (println v2)
+                                         (println "; ---"))
+                                   (merge v1 v2)))
                           (-> (Materialized/as "alpha.access.streams.store")
                               (.withKeySerde (TransitJsonSerde.))
                               (.withValueSerde (TransitJsonSerde.)))))]
