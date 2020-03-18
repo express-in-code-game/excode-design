@@ -291,7 +291,8 @@
 (def kprops {"bootstrap.servers" "broker1:9092"})
 
 (def ktopics ["alpha.token"
-              "alpha.game"])
+              "alpha.game"
+              "alpha.crux-docs"])
 
 (comment
 
