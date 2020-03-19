@@ -22,7 +22,7 @@
    [clojure.spec.gen.alpha :as sgen]
    [clojure.spec.test.alpha :as stest]
    [clojure.test.check.generators :as gen]
-   [starnet.app.alpha.core :as acore])
+   [starnet.app.alpha.core :as app.core])
   (:import
    [org.eclipse.jetty.websocket.api Session]))
 
@@ -176,11 +176,14 @@
    (fn [ctx]
      (go
        (let [headers (get-in ctx [:request :headers])
-             body (get-in ctx [:request :edn-params])]
-         (println body)
-         (println (type body))
-         (assoc ctx :response (ok body)))
-       ))})
+             user-data (get-in ctx [:request :edn-params])
+             channels (:channels ctx)]
+         #_(println body)
+         #_(println (type body))
+         (let [o (<! (app.core/create-user channels user-data))]
+           (if o
+             (assoc ctx :response (ok o))
+             (throw (ex-info "app.core/create-user failed" {:user-data user-data})))))))})
 
 (def itr-user-list
   {:name :user-list
