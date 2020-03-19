@@ -38,9 +38,9 @@
     (:optimized appenv)))
 
 (declare  proc-main proc-http-server proc-nrepl
-          proc-derived-1  proc-kstreams proc-log proc-kstore-game
+          proc-derived-1  proc-kstreams proc-log proc-kstore-game proc-kstore-user
           proc-cruxdb proc-kproducer proc-nrepl-server start-kstreams-game start-kstreams-game
-          start-kstreams-crux-docs)
+          start-kstreams-crux-docs )
 
 (def channels (let [ch-proc-main (chan 1)
                     ch-sys (chan (sliding-buffer 10))
@@ -48,6 +48,7 @@
                     ch-cruxdb (chan 10)
                     ch-kproducer (chan 10)
                     ch-kstore-game (chan 10)
+                    ch-kstore-user (chan 10)
                     ch-kstreams-states (chan (sliding-buffer 10))
                     pb-kstreams-states (pub ch-kstreams-states :ch/topic (fn [_] (sliding-buffer 10)))
                     mx-kstreams-states (a/mix ch-kstreams-states)]
@@ -57,6 +58,7 @@
                  :ch-cruxdb ch-cruxdb
                  :ch-kproducer ch-kproducer
                  :ch-kstore-game ch-kstore-game
+                 :ch-kstore-user ch-kstore-user
                  :ch-kstreams-states ch-kstreams-states
                  :pb-kstreams-states pb-kstreams-states
                  :mx-kstreams-states mx-kstreams-states}))
@@ -84,8 +86,9 @@
             (proc-kproducer (select-keys channels [:pb-sys :ch-kproducer]))
             (proc-kstreams (select-keys channels [:pb-sys :ch-sys :mx-kstreams-states]))
             (proc-kstore-game (select-keys channels [:pb-sys :ch-sys :ch-kstore-game
-                                                      :ch-kproducer :pb-kstreams-states]))
-
+                                                     :ch-kproducer :pb-kstreams-states]))
+            (proc-kstore-user (select-keys channels [:pb-sys :ch-sys :ch-kstore-user
+                                                     :ch-kproducer :pb-kstreams-states]))
             (put! ch-sys {:ch/topic :nrepl-server :proc/op :start})
             (put! ch-sys {:ch/topic :kproducer :proc/op :start})
             (go
@@ -239,6 +242,40 @@
                              (recur kproducer))))
           ))))
 
+(defn proc-kstore-user
+  [{:keys [pb-sys ch-sys ch-kstore-user ch-kproducer pb-kstreams-states]}]
+  (let [csys (chan 1)
+        cstates (chan 1)
+        appid "alpha.kstreams.game"
+        store-name "alpha.gktable.user-changelog"]
+    (sub pb-sys :kstreams csys)
+    (sub pb-kstreams-states appid cstates)
+    (go (loop [store nil]
+          (if-let [[v port] (alts! (if store [cstates ch-kstore-user] [cstates]))]
+            (condp = port
+              cstates (let [{topic :ch/topic
+                             :kafka/keys [kstreams running?]} v]
+                        (cond
+                          (true? running?) (let [s (create-kvstore kstreams store-name)]
+                                             (println (format "; kv-store %s created" store-name))
+                                             (recur s))
+                          (not running?) (do (when store
+                                               (println (format "; kv-store %s closed" store-name)))
+                                             (recur store))
+                          :else (recur store)))
+              ch-kstore-user (let [{op :kstore/op
+                                    k :kafka/k
+                                    ev :kafka/ev
+                                    c-out :ch/c-out} v]
+                               (condp = op
+                                 :get (do (>! c-out (.get k store))
+                                          (recur store))
+                                 :read-store (do
+                                               (>! c-out (read-store store))
+                                               (recur store))
+                                 (recur store))))))
+        (println "proc-kstore-user exiting"))))
+
 (defn proc-kstore-game
   [{:keys [pb-sys ch-sys ch-kstore-game ch-kproducer pb-kstreams-states]}]
   (let [csys (chan 1)
@@ -288,6 +325,8 @@
                                             (recur store))
                                   (recur store))))))
         (println "proc-kstore-game exiting"))))
+
+
 
 
 (def kprops {"bootstrap.servers" "broker1:9092"})

@@ -97,6 +97,11 @@
 
   (def user (-> (repl-users channels) (rand-nth)))
 
+  (let [c-out (chan 1)]
+    (put! (channels :ch-kstore-user) {:kstore/op :read-store
+                                      :ch/c-out c-out})
+    (first (alts!! [c-out (timeout 100)])))
+
 
   ;;
   )
