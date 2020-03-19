@@ -177,6 +177,8 @@
      (go
        (let [headers (get-in ctx [:request :headers])
              body (get-in ctx [:request :edn-params])]
+         (println body)
+         (println (type body))
          (assoc ctx :response (ok body)))
        ))})
 
