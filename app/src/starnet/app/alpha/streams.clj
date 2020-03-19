@@ -271,71 +271,69 @@
 ;;   [_ k ev ag]
 ;;   nil)
 
-
-
-(defn create-kstreams-access-1
-  []
-  (let [props {"application.id" "alpha.access.streams"
-               "bootstrap.servers" "broker1:9092"
-               "auto.offset.reset" "earliest" #_"latest"
-               "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
-               "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
-               "topology.optimization" "all"}]
-    (create-streams
-     props
-     (fn []
-       (let [builder (StreamsBuilder.)
-             kstream1 (-> builder
-                          (.stream "alpha.crux-docs")
-                          (.filter (reify Predicate
-                                     (test [_ k v]
-                                       (contains? v :u/uuid))))
-                          (.groupBy (reify KeyValueMapper
-                                      (apply [_ k v]
-                                        (let [k (:u/uuid v)]
-                                          k  #_(KeyValue. k v))))
-                                    (Grouped/with
-                                     (TransitJsonSerde.) (TransitJsonSerde.)))
-                          (.reduce (reify Reducer
-                                     (apply [_ v1 v2]
-                                       v2))
-                                   (-> (Materialized/as "alpha.access.streams.user-store1")
-                                       (.withKeySerde (TransitJsonSerde.))
-                                       (.withValueSerde (TransitJsonSerde.)))))
-             kstream2 (-> builder
-                          (.stream "alpha.token")
-                          (.groupByKey)
-                          (.aggregate (reify Initializer
-                                        (apply [this]
-                                          nil))
-                                      (reify Aggregator
-                                        (apply [this k ev ag]
-                                          (if (contains? ev :record/delete?)
-                                            nil
-                                            (merge ag ev))
-                                          #_(apply next-state-kstreams-access [this k ev ag])))
-                                      (-> (Materialized/as "alpha.access.streams.token-store1")
-                                          (.withKeySerde (TransitJsonSerde.))
-                                          (.withValueSerde (TransitJsonSerde.)))))
-             _ (-> kstream1
-                   (.join kstream2
-                          (reify ValueJoiner
-                            (apply [_ v1 v2]
-                                   #_(do (println "joining")
-                                         (println v1)
-                                         (println "; ")
-                                         (println v2)
-                                         (println "; ---"))
-                                   (merge v1 v2)))
-                          (-> (Materialized/as "alpha.access.streams.store")
-                              (.withKeySerde (TransitJsonSerde.))
-                              (.withValueSerde (TransitJsonSerde.)))))]
-         (.build builder (doto (Properties.)
-                           (.putAll props))))))))
+#_(defn create-kstreams-gktable-game-1
+    []
+    (let [props {"application.id" "alpha.access.streams"
+                 "bootstrap.servers" "broker1:9092"
+                 "auto.offset.reset" "earliest" #_"latest"
+                 "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
+                 "default.value.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
+                 "topology.optimization" "all"}]
+      (create-streams
+       props
+       (fn []
+         (let [builder (StreamsBuilder.)
+               kstream1 (-> builder
+                            (.stream "alpha.crux-docs")
+                            (.filter (reify Predicate
+                                       (test [_ k v]
+                                         (contains? v :u/uuid))))
+                            (.groupBy (reify KeyValueMapper
+                                        (apply [_ k v]
+                                          (let [k (:u/uuid v)]
+                                            k  #_(KeyValue. k v))))
+                                      (Grouped/with
+                                       (TransitJsonSerde.) (TransitJsonSerde.)))
+                            (.reduce (reify Reducer
+                                       (apply [_ v1 v2]
+                                         v2))
+                                     (-> (Materialized/as "alpha.access.streams.user-store1")
+                                         (.withKeySerde (TransitJsonSerde.))
+                                         (.withValueSerde (TransitJsonSerde.)))))
+               kstream2 (-> builder
+                            (.stream "alpha.topic.game")
+                            (.groupByKey)
+                            (.aggregate (reify Initializer
+                                          (apply [this]
+                                            nil))
+                                        (reify Aggregator
+                                          (apply [this k ev ag]
+                                            (if (contains? ev :record/delete?)
+                                              nil
+                                              (merge ag ev))
+                                            #_(apply next-state-kstreams-access [this k ev ag])))
+                                        (-> (Materialized/as "alpha.access.streams.token-store1")
+                                            (.withKeySerde (TransitJsonSerde.))
+                                            (.withValueSerde (TransitJsonSerde.)))))
+               _ (-> kstream1
+                     (.join kstream2
+                            (reify ValueJoiner
+                              (apply [_ v1 v2]
+                                #_(do (println "joining")
+                                      (println v1)
+                                      (println "; ")
+                                      (println v2)
+                                      (println "; ---"))
+                                (merge v1 v2)))
+                            (-> (Materialized/as "alpha.access.streams.store")
+                                (.withKeySerde (TransitJsonSerde.))
+                                (.withValueSerde (TransitJsonSerde.)))))]
+           (.build builder (doto (Properties.)
+                             (.putAll props))))))))
 
 (defn create-kstreams-crux-docs
   []
-  (let [props {"application.id" "alpha.crux-docs.streams"
+  (let [props {"application.id" "alpha.kstreams.crux-docs"
                "bootstrap.servers" "broker1:9092"
                "auto.offset.reset" "earliest" #_"latest"
                "default.key.serde" "starnet.app.alpha.aux.serdes.NippySerde"
@@ -347,7 +345,7 @@
        (let [builder (StreamsBuilder.)
              _ (-> builder
                    (.stream "crux-docs")
-                   (.through "alpha.crux-docs")
+                   (.through "alpha.topic.crux-docs")
                    (.filter (reify Predicate
                               (test [_ k v]
                                 (contains? v :u/uuid))))
@@ -355,14 +353,14 @@
                                  (apply [_ k v]
                                    (let [k (:u/uuid v)]
                                      k))))
-                   (.to "alpha.user.changelog"
+                   (.to "alpha.topic.user-changelog"
                         (Produced/with (TransitJsonSerde.) (TransitJsonSerde.))))]
          (.build builder (doto (Properties.)
                            (.putAll props))))))))
 
-(defn create-kstreams-access
+(defn create-kstreams-gktable-game
   []
-  (let [props {"application.id" "alpha.access.streams"
+  (let [props {"application.id" "alpha.kstreams.gktable-game"
                "bootstrap.servers" "broker1:9092"
                "auto.offset.reset" "earliest" #_"latest"
                "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
@@ -373,13 +371,13 @@
      (fn []
        (let [builder (StreamsBuilder.)
              gt1 (-> builder
-                     (.globalTable "alpha.user.changelog"
-                                   (-> (Materialized/as "alpha.user.store")
+                     (.globalTable "alpha.topic.user-changelog"
+                                   (-> (Materialized/as "alpha.gktable.user-changelog")
                                        (.withKeySerde (TransitJsonSerde.))
                                        (.withValueSerde (TransitJsonSerde.)))))
 
              s1 (-> builder
-                    (.stream "alpha.token"))
+                    (.stream "alpha.topic.game"))
              _ (-> s1
                    (.join gt1
                           (reify KeyValueMapper
@@ -387,17 +385,17 @@
                               lk))
                           (reify ValueJoiner
                             (apply [_ lv rv]
-                                   #_(do (println "joining")
-                                         (println lv)
-                                         (println "; ")
-                                         (println rv)
-                                         (println "; ---"))
-                                   #_(println (format "join %s" (java.util.Date.)))
-                                   (merge rv lv))))
-                   (.to "alpha.access.changelog"))
+                              #_(do (println "joining")
+                                    (println lv)
+                                    (println "; ")
+                                    (println rv)
+                                    (println "; ---"))
+                              #_(println (format "join %s" (java.util.Date.)))
+                              (merge rv lv))))
+                   (.to "alpha.topic.game-join-example"))
              _ (-> builder
-                   (.globalTable "alpha.access.changelog"
-                                 (-> (Materialized/as "alpha.access.globalktable")
+                   (.globalTable "alpha.topic.game-join-example"
+                                 (-> (Materialized/as "alpha.gktable.game-join-example")
                                      (.withKeySerde (TransitJsonSerde.))
                                      (.withValueSerde (TransitJsonSerde.)))))]
          (.build builder (doto (Properties.)
@@ -440,7 +438,7 @@
   ;;
   )
 
-(defn create-kstreams-game
+(defn create-kstreams-tmp-1
   []
   (create-streams
    {"application.id" "alpha.game.streams"

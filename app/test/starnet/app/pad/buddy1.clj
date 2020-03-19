@@ -183,7 +183,7 @@
 
   ; ... login-handler same as JWS
   
-  
+  ; https://funcool.github.io/buddy-auth/latest/#authorization
   
 
   ;;
