@@ -29,7 +29,7 @@
           buddy/buddy-auth {:mvn/version "2.2.0"}
           buddy/buddy-sign {:mvn/version "3.1.0"}
           clj-time {:mvn/version "0.15.2"}
-          }}
+          cheshire {:mvn/version "5.10.0"}}}
   :dev {:extra-deps
         {}}
   :optimized {:extra-deps {}}

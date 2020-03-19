@@ -13,7 +13,8 @@
    [buddy.core.bytes :as bytes]
    [buddy.sign.compact :as cm]
    [buddy.auth.backends :as backends]
-   [buddy.auth.middleware :refer [wrap-authentication]]))
+   [buddy.auth.middleware :refer [wrap-authentication]]
+   [cheshire.core :as json]))
 
 
 (comment
@@ -104,6 +105,9 @@
 (comment
 
   ; https://funcool.github.io/buddy-auth/latest/
+  ; https://github.com/funcool/buddy-auth/tree/master/examples
+
+  ;;;; Token
 
   ;; Define a in-memory relation between tokens and users:
   (def tokens {:2f904e245c1f5 :admin
@@ -120,7 +124,7 @@
 
   ;; Create an instance
   (def backend (backends/token {:authfn my-authfn}))
-  
+
   ;; The authfn should return something that will be associated to the :identity key in the request.
 
   (defn my-handler
@@ -128,13 +132,59 @@
 
   ;; This is a possible aspect of the authorization header
   ;; Authorization: Token 45c1f5e3f05d0
-  
+
   ;; Wrap the ring handler.
   (def app (-> my-handler
                (wrap-authentication backend)))
-  
-  
 
+  ;;;; https://funcool.github.io/buddy-auth/latest/#signed-jwt
+  ;;;; https://github.com/funcool/buddy-auth/tree/master/examples/jws
+
+  (def secret "mysecret")
+  (def backend (backends/jws {:secret secret}))
+
+  ;; and wrap your ring application with
+  ;; the authentication middleware
+
+  (def app (-> 'your-ring-app
+               (wrap-authentication backend)))
+
+
+  ;; Now you should have a login endpoint in your ring application that will have the responsibility of generating valid tokens:
+  ;; complete example ->
+  (defn login-handler
+    [request]
+    (let [data (:form-params request)
+          user (find-user (:username data)   ;; (implementation ommited)
+                          (:password data))
+          token (jwt/sign {:user (:id user)} secret)]
+      {:status 200
+       :body (json/encode {:token token})
+       :headers {:content-type "application/json"}}))
+
+
+
+  ;;;; https://funcool.github.io/buddy-auth/latest/#encrypted-jwt
+  ;;;; https://github.com/funcool/buddy-auth/blob/master/examples/jwe/src/authexample/web.clj
+
+  (def pubkey (keys/public-key "pubkey.pem"))
+  (def privkey (keys/private-key "privkey.pem"))
+
+  (def backend
+    (backends/jwe {:secret privkey
+                   :options {:alg :rsa-oaep
+                             :enc :a128-hs256}}))
+
+  ;; and wrap your ring application with
+  ;; the authentication middleware
+
+  (def app (-> your-ring-app
+               (wrap-authentication backend)))
+
+  ; ... login-handler same as JWS
+  
+  
+  
 
   ;;
   )
