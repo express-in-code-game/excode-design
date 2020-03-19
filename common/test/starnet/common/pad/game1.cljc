@@ -257,19 +257,19 @@
   ;;
   )
 
-(def users {:A {:u/name "mighty A"
+(def users {:A {:u/username "mighty A"
                 :u/alias :A
                 :u/uuid  (gen/generate gen/uuid)}
-            :B {:u/name "curious B"
+            :B {:u/username "curious B"
                 :u/alias :B
                 :u/uuid  (gen/generate gen/uuid)}
-            :C {:u/name "new C"
+            :C {:u/username "new C"
                 :u/alias :C
                 :u/uuid  (gen/generate gen/uuid)}
-            :D {:u/name "D the seeker"
+            :D {:u/username "D the seeker"
                 :u/alias :D
                 :u/uuid  (gen/generate gen/uuid)}
-            :E {:u/name "E'vo"
+            :E {:u/username "E'vo"
                 :u/alias :E
                 :u/uuid  (gen/generate gen/uuid)}})
 
@@ -308,7 +308,7 @@
     :else x))
 
 (comment
-  (s/explain (s/map-of keyword? (s/keys :req [:u/name :u/uuid])) users)
+  (s/explain (s/map-of keyword? (s/keys :req [:u/username :u/uuid])) users)
 
   @state
 

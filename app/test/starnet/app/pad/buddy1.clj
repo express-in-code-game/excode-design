@@ -6,11 +6,13 @@
    [buddy.auth.http :as http]
    [buddy.auth :refer [authenticated?]]
    [buddy.sign.jwt :as jwt]
+   [buddy.sign.jwe :as jwe]
    [buddy.core.hash :as hash]
    [buddy.core.keys :as keys]
    [buddy.sign.jws :as jws]
    [buddy.core.nonce :as nonce]
    [buddy.core.bytes :as bytes]
+   [buddy.hashers :as hashers]
    [buddy.sign.compact :as cm]
    [buddy.auth.backends :as backends]
    [buddy.auth.middleware :refer [wrap-authentication]]
@@ -75,6 +77,9 @@
                                    {:alg :rsa-oaep
                                     :enc :a128cbc-hs256}))
 
+  jwe/encrypt
+  jwe/decrypt
+
 
   ;; JSON Web Signature (JWS)
 
@@ -96,7 +101,7 @@
 
   (def data (cm/sign #{:foo :bar} "secret"))
   (cm/unsign data "secret")
-  
+
   (cm/unsign data "secret" {:max-age (* 15 60)})
 
 
@@ -186,6 +191,24 @@
   
   ; https://funcool.github.io/buddy-auth/latest/#authorization
   
+
+  ;;
+  )
+
+(comment
+
+  ; https://funcool.github.io/buddy-hashers/latest
+
+  (def s "passwordpassw sword a1 ")
+
+  (def h (hashers/derive s {:alg :bcrypt+sha512 :iterations 4}))
+  (def h (hashers/derive s {:alg :pbkdf2+sha512 :iterations 50000}))
+  (def h (hashers/derive s {:alg :pbkdf2+sha256 :iterations 50000}))
+
+  (count h)
+  
+  (hashers/check s h)
+
 
   ;;
   )

@@ -11,17 +11,46 @@
       :clj  [starnet.common.alpha.macros :refer [defmethods-for-a-set]])))
 
 (def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
-(s/def :u/uuid uuid?)
-(s/def :record/uuid uuid?)
-(s/def :u/name string?)
-(s/def :u/email (s/with-gen
-                  (s/and string? #(re-matches email-regex %))
-                  #(sgen/fmap (fn [s]
-                                (str s "@gmail.com"))
-                              (sgen/such-that (fn [s] (not= s ""))
-                                              (sgen/string-alphanumeric)))))
 
-(s/def :u/user (s/keys :req [:u/uuid :u/name :u/email]))
+(defn spec-email
+  []
+  (let []
+    (s/with-gen
+      (s/and string? #(re-matches email-regex %))
+      #(sgen/fmap (fn [s]
+                    (str s "@gmail.com"))
+                  (gen/such-that (fn [s] (not= s ""))
+                                 gen/string-alphanumeric)))))
+
+(defn spec-string-in-range
+  [min max & {:keys [gen-char] :or {gen-char gen/char-alphanumeric}}]
+  (s/with-gen
+    string?
+    #(gen/fmap (fn [v] (apply str v)) (gen/vector gen-char min max))))
+
+(comment
+
+  (gen/generate gen/string)
+  (gen/generate gen/string-ascii)
+  (gen/generate gen/string-alphanumeric)
+
+  (gen/generate (s/gen (spec-string-in-range 4 16 :gen-char gen/char-ascii)))
+  (gen/generate (s/gen (spec-string-in-range 4 16 :gen-char gen/char)))
+
+  ;;
+  )
+
+
+(s/def :u/uuid uuid?) 
+(s/def :u/username (spec-string-in-range 4 16 :gen-char gen/char-alphanumeric))
+(s/def :u/fullname (spec-string-in-range 4 32 :gen-char gen/char-ascii))
+(s/def :u/password (spec-string-in-range 8 64 :gen-char gen/char-alphanumeric))
+(s/def :u/info string?)
+(s/def :u/email (spec-email))
+
+(s/def :u/user (s/keys :req [:u/uuid :u/username :u/email
+                             :u/password :u/fullname :u/info]))
+
 
 (def setof-ev-event
   #{:ev.c/delete-record :ev.u/create
@@ -36,18 +65,17 @@
 (s/def :ev/type setof-ev-event)
 
 (s/def :ev.c/delete-record (with-gen-fmap
-                             (s/keys :req [:ev/type]
-                                     :opt [:record/uuid])
+                             (s/keys :req [:ev/type])
                              #(assoc %  :ev/type :ev.c/delete-record)))
 
 (s/def :ev.u/create (with-gen-fmap
-                      (s/keys :req [:ev/type :u/uuid :u/email :u/name]
+                      (s/keys :req [:ev/type :u/uuid :u/email :u/username]
                               :opt [])
                       #(assoc %  :ev/type :ev.u/create)))
 
 (s/def :ev.u/update (with-gen-fmap
                       (s/keys :req [:ev/type]
-                              :opt [:u/email :u/name])
+                              :opt [:u/email :u/username])
                       #(assoc %  :ev/type :ev.u/update)))
 
 (s/def :ev.u/delete (with-gen-fmap

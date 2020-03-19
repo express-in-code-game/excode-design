@@ -1,28 +1,40 @@
 (ns starnet.app.alpha.http
   (:require
    [clojure.repl :refer [doc]]
+   [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go
+                                     >!! <!! alt!! alts! alts!! take! put!
+                                     thread pub sub sliding-buffer mix admix unmix]]
    [io.pedestal.log :as log]
    [io.pedestal.http.route :as route]
-   [io.pedestal.http.body-params :as body-params]
+   [io.pedestal.http.body-params :refer [body-params]]
    [io.pedestal.http.route.definition :refer [defroutes]]
    [ring.util.response :as ring-resp]
    [clojure.core.async :as async]
    [io.pedestal.http.jetty.websockets :as ws]
    [io.pedestal.http :as http]
+   [io.pedestal.http.cors :as cors]
+   [io.pedestal.interceptor :refer [interceptor]]
    [io.pedestal.http :as server]
-   [io.pedestal.test :as test])
+   [io.pedestal.test :as test :refer [response-for raw-response-for]]
+   [io.pedestal.http.content-negotiation :as conneg]
+   [io.pedestal.test :as test]
+   [buddy.auth :as auth]
+   [clj-time.core :as time]
+   
+   [buddy.auth.backends.token :refer [jwe-backend]]
+   [buddy.auth.middleware :as auth.middleware]
+   [io.pedestal.interceptor.chain :as interceptor.chain]
+   [io.pedestal.interceptor.error :refer [error-dispatch]]
+   [buddy.core.keys :as keys]
+   [buddy.sign.jwt :as jwt]
+   [clojure.spec.alpha :as s]
+   [clojure.spec.gen.alpha :as sgen]
+   [clojure.spec.test.alpha :as stest]
+   [clojure.test.check.generators :as gen]
+   [starnet.app.alpha.core :as app.core])
   (:import
    [org.eclipse.jetty.websocket.api Session]))
 
-(defn about-page
-  [request]
-  (ring-resp/response (format "Clojure %s - served from %s"
-                              (clojure-version)
-                              (route/url-for ::about-page))))
-
-(defn home-page
-  [request]
-  (ring-resp/response "Hello World!"))
 
 (defn response [status body & {:as headers}]
   {:status status :body body :headers headers})
@@ -30,131 +42,164 @@
 (def ok       (partial response 200))
 (def created  (partial response 201))
 (def accepted (partial response 202))
+(def r403 (partial response 403))
 
-(def echo
-  {:name :echo
-   :enter
-   (fn [context]
-     (let [request (:request context)
-           response (ok request)]
-       (assoc context :response response)))})
+(defn home
+  [request]
+  (if-not (auth/authenticated? request)
+    (auth/throw-unauthorized)
+    (ok {:status "Logged" :message (str "hello logged user "
+                                        (:identity request))})))
 
-(defonce database (atom {}))
+(def authentication-interceptor
+  (interceptor
+   {:name ::authenticate
+    :enter (fn [ctx]
+             (let [backend (get-in ctx [:app/ctx :backend])]
+               (update ctx :request auth.middleware/authentication-request backend)))}))
 
-(def db-interceptor
-  {:name :database-interceptor
-   :enter
-   (fn [context]
-     (update context :request assoc :database @database))
+(def authorization-interceptor
+  (error-dispatch [ctx ex]
+                  [{:exception-type :clojure.lang.ExceptionInfo :stage :enter}]
+                  (try
+                    (assoc ctx
+                           :response
+                           (auth.middleware/authorization-error (:request ctx)
+                                                                ex
+                                                                (get-in ctx [:app/ctx :backend])))
+                    (catch Exception e
+                      (assoc ctx ::interceptor.chain/error e)))
+
+                  :else (assoc ctx ::interceptor.chain/error ex)))
+
+(def user-create
+  {:name :user-create
    :leave
-   (fn [context]
-     (if-let [[op & args] (:tx-data context)]
-       (do
-         (apply swap! database op args)
-         (assoc-in context [:request :database] @database))
-       context))})
+   (fn [ctx]
+     (go
+       (let [headers (get-in ctx [:request :headers])
+             user-data (get-in ctx [:request :edn-params])
+             channels (get-in ctx [:app/ctx :channels])
+             o (<! (app.core/create-user channels user-data))]
+         (if o
+           ctx
+           (throw (ex-info "app.core/create-user failed" {:user-data user-data}))))))})
 
-(defn make-list [nm]
-  {:name  nm
-   :items {}})
 
-(defn make-list-item [nm]
-  {:name  nm
-   :done? false})
-
-(def list-create
-  {:name :list-create
-   :enter
-   (fn [context]
-     (let [nm       (get-in context [:request :query-params :name] "Unnamed List")
-           new-list (make-list nm)
-           db-id    (str (gensym "l"))
-           url      (route/url-for :list-view :params {:list-id db-id})]
-       (assoc context
-              :response (created new-list "Location" url)
-              :tx-data [assoc db-id new-list])))})
-
-(defn find-list-by-id [dbval db-id]
-  (get dbval db-id))
-
-(def list-view
-  {:name :list-view
-   :enter
-   (fn [context]
-     (if-let [db-id (get-in context [:request :path-params :list-id])]
-       (if-let [the-list (find-list-by-id (get-in context [:request :database]) db-id)]
-         (assoc context :result the-list)
-         context)
-       context))})
-
-(def entity-render                                                                      
-  {:name :entity-render
+(def user-delete
+  {:name :user-delete
    :leave
-   (fn [context]
-     (if-let [item (:result context)]
-       (assoc context :response (ok item))
-       context))})
+   (fn [ctx]
+     (go
+       (let [headers (get-in ctx [:request :headers])
+             user-data (get-in ctx [:request :edn-params])
+             channels (get-in ctx [:app/ctx :channels])]
+         (let [o (<! (app.core/evict-user channels user-data))]
+           (if o
+             (assoc ctx :response (ok o))
+             (throw (ex-info "app.core/evict-user failed" user-data)))))))})
 
-(defn find-list-item-by-ids [dbval list-id item-id]
-  (get-in dbval [list-id :items item-id] nil))
-
-(def list-item-view                                                                     
-  {:name :list-item-view
+(def user-list
+  {:name :user-list
    :leave
-   (fn [context]
-     (if-let [list-id (get-in context [:request :path-params :list-id])]
-       (if-let [item-id (get-in context [:request :path-params :item-id])]
-         (if-let [item (find-list-item-by-ids (get-in context [:request :database]) list-id item-id)]
-           (assoc context :result item)                                                 
-           context)
-         context)
-       context))})
+   (fn [ctx]
+     (go
+       (let [headers (get-in ctx [:request :headers])
+             d (get-in ctx [:request :edn-params])]
+         (println "; user-list1")
+         (println (get-in ctx [:app/ctx :backend]))
+         (println (get-in ctx [:request :identity]))
+         (println d)
+         (assoc ctx :response (ok "list")))
+       ))})
 
-(defn list-item-add
-  [dbval list-id item-id new-item]
-  (if (contains? dbval list-id)
-    (assoc-in dbval [list-id :items item-id] new-item)
-    dbval))
+(def common-interceptors [(body-params)
+                          http/html-body
+                          authentication-interceptor
+                          ])
+(def user-login
+  {:name :user-login
+   :leave
+   (fn [ctx]
+     (go
+       (let [headers (get-in ctx [:request :headers])
+             channels (get-in ctx [:app/ctx :channels])
+             pubkey (get-in ctx [:app/ctx :pubkey])
+             data (get-in ctx [:request :edn-params])
+             user (<! (app.core/user-by-username channels data))
+             raw (or (:u/password-TMP data) (:u/password data))
+             valid? (and user (hashers/check raw (:u/password user)))]
+         (if valid?
+           (let [token (jwt/encrypt {:val (select-keys data [:u/uuid])
+                                     :exp (time/plus (time/now) (time/seconds 3600))}
+                                    pubkey
+                                    {:alg :rsa-oaep
+                                     :enc :a128cbc-hs256})]
+             (assoc ctx :response {:status 200
+                                   :body (select-keys data [:u/uuid])
+                                   :headers {"Authorization" (format "Token %s" token)}}))
+           (assoc ctx :response (r403 "Invalid credentials"))))))})
 
-(def list-item-create
-  {:name :list-item-create
-   :enter
-   (fn [context]
-     (if-let [list-id (get-in context [:request :path-params :list-id])]
-       (let [nm       (get-in context [:request :query-params :name] "Unnamed Item")
-             new-item (make-list-item nm)
-             item-id  (str (gensym "i"))]
-         (-> context
-             (assoc :tx-data  [list-item-add list-id item-id new-item])
-             (assoc-in [:request :path-params :item-id] item-id)))
-       context))})
-
-(def routes
+(defn routes
+  []
   (route/expand-routes
-   #{["/todo"                    :post   [db-interceptor list-create]]
-     ["/todo"                    :get    echo :route-name :list-query-form]
-     ["/todo/:list-id"           :get    [entity-render db-interceptor list-view]]
-     ["/todo/:list-id"           :post   [entity-render list-item-view db-interceptor list-item-create]]
-     ["/todo/:list-id/:item-id"  :get    [entity-render list-item-view db-interceptor]]
-     ["/todo/:list-id/:item-id"  :put    echo :route-name :list-item-update]
-     ["/todo/:list-id/:item-id"  :delete echo :route-name :list-item-delete]}))
-
-
-
-#_(defroutes routes
-  ;; Defines "/" and "/about" routes with their associated :get handlers.
-  ;; The interceptors defined after the verb map (e.g., {:get home-page}
-  ;; apply to / and its children (/about).
-    [[["/" {:get home-page}
-       ^:interceptors [(body-params/body-params) http/html-body]
-       ["/about" {:get about-page}]]]])
+   #{["/user" :get (conj common-interceptors user-list) :route-name :get/user]
+     ["/user" :post (conj common-interceptors user-create user-login) :route-name :post/user]
+     ["/user" :delete (conj common-interceptors user-delete) :route-name :delete/user]
+     ["/login" :post (conj common-interceptors user-login) :route-name :post/login]}))
 
 (comment
-  
-  
-  
+
+  ;https://github.com/pedestal/pedestal/blob/master/service/src/io/pedestal/test.clj
+  ;http://pedestal.io/reference/parameters#_body_parameters
+
+  (def channels @(resolve 'starnet.app.alpha.main/channels))
+  (def app-ctx {:channels channels
+                :privkey (keys/private-key "resources/privkey.pem" (slurp "resources/passphrase.tmp"))
+                :pubkey (keys/public-key "resources/pubkey.pem")})
+
+  (def service (::http/service-fn (http/create-servlet (service-config app-ctx (routes)))))
+
+  (def token (jwt/encrypt {:user :hello
+                           :exp (time/plus (time/now) (time/seconds 3600))} (:pubkey app-ctx)
+                          {:alg :rsa-oaep
+                           :enc :a128cbc-hs256}))
+  (def decrypted-data (jwt/decrypt token (:privkey app-ctx)
+                                   {:alg :rsa-oaep
+                                    :enc :a128cbc-hs256}))
+
+  (count (app.core/repl-users channels))
+  (-> (app.core/repl-users channels) (rand-nth))
+
+  (response-for service :get "/user" :headers {"Authorization" (format "Token %s" token)})
+
+  (response-for service :post "/user"
+                :body (str (gen/generate (s/gen :u/user)))
+                :headers {"Content-Type" "application/edn"})
+
+  (response-for service :delete "/user"
+                :body (str (-> (app.core/repl-users channels) (rand-nth)))
+                :headers {"Content-Type" "application/edn"})
+
+  ; valid
+  (response-for service :post "/login"
+                :body (str (-> (app.core/repl-users channels) (rand-nth)))
+                :headers {"Content-Type" "application/edn"})
+
+  ; invalid
+  (response-for service :post "/login"
+                :body (str {:u/username "mock" :u/password "mock"})
+                :headers {"Content-Type" "application/edn"})
+
+  (->
+   (app.core/user-by-username channels (-> (app.core/repl-users channels) (rand-nth)))
+   (app.core/<!!soft))
+
+
+
   ;;
   )
+
 
 (def ws-clients (atom {}))
 
@@ -176,7 +221,7 @@
 (defn send-message-to-all!
   [message]
   (doseq [[^Session session channel] @ws-clients]
-    ;; The Pedestal Websocket API performs all defensive checks before sending,
+    ;; The Pedestal Websocket API performs all defenmake-service-fullsive checks before sending,
     ;;  like `.isOpen`, but this example shows you can make calls directly on
     ;;  on the Session object if you need to
     (when (.isOpen session)
@@ -190,72 +235,80 @@
           :on-close (fn [num-code reason-text]
                       (log/info :msg "WS Closed:" :reason reason-text))}})
 
-;; http://pedestal.io/reference/service-map
 
-(def port 8080)
-(def port-ssl 8443)
-(def host "0.0.0.0")
+(def supported-types ["text/html" "application/edn"  "text/plain" "application/transit+json"])
 
-(def service {:env :prod
-              ::http/routes routes
-                    ;; ::http/allowed-origins ["*"]
-              ::http/resource-path "/public"
-              ::http/type :jetty
-                   ;; http://pedestal.io/reference/jetty
-              ::http/container-options {:context-configurator #(ws/add-ws-endpoints % ws-paths)
-                                        ; :h2c? true
-                                        ; :h2? true
-                                        :ssl? true
-                                        :ssl-port port-ssl
-                                        :keystore "resources/keystore.jks"
-                                        :key-password "keystore"}
-              ::http/host host
-              ::http/port port})
+(def content-neg-intc (conneg/negotiate-content supported-types))
 
-(defn create-channels-interceptor
-  [channels]
-  {:name :channels-interceptor
-   :enter
-   (fn [context]
-     (assoc context :channels channels))
-   :leave
-   (fn [context]
-     context)})
+(defn app-ctx-interceptor
+  [app-ctx]
+  (interceptor
+   {:name :app-ctx-interceptor
+    :error nil
+    :enter
+    (fn [context]
+      (let [privkey (get-in app-ctx [:privkey])
+            backend (jwe-backend {:secret privkey
+                                  :options {:alg :rsa-oaep
+                                            :enc :a128cbc-hs256}
+                                  :authfn (fn [req]
+                                            (println "req")
+                                            (println privkey)
+                                            (println req)
+                                            (assoc req :identity true))})
+            app-ctx (assoc app-ctx :backend backend)]
+        (assoc context :app/ctx app-ctx)))
+    :leave
+    (fn [context]
+      context)}))
 
-(defn create-deafult-interceptors
-  [channels]
+(defn create-app-default-interceptors
+  [app-ctx]
   (fn [service-map]
-    (update-in service-map [::interceptors]
-               #(vec (->> %
-                          (conj (create-channels-interceptor channels)))))))
+    (update-in service-map [::http/interceptors]
+               #(vec (-> %
+                         (conj (app-ctx-interceptor app-ctx))
+                         (conj content-neg-intc))))))
 
-(defn start-dev
-  [channels]
-  (println (str "; starting http server on " host ":" port))
-  (when (get-in service [::http/container-options :ssl-port])
-    (println (str "; starting https server on " host ":" port-ssl)))
-  (let [default-interceptors (create-deafult-interceptors channels)]
-    (-> service
-        (merge {:env :dev
-              ;; do not block thread that starts web server
-                ::server/join? false
-              ;; Routes can be a function that resolve routes,
-              ;;  we can use this to set the routes to be reloadable
-                ::server/routes #(deref #'routes)
-              ;; all origins are allowed in dev mode
-                ::server/allowed-origins {:creds true :allowed-origins (constantly true)}})
-      ;; Wire up interceptor chains
-        server/default-interceptors
-        server/dev-interceptors
-        default-interceptors
-        server/create-server
-        server/start)))
+;; http://pedestal.io/reference/service-map
+(defn service-config
+  [app-ctx routes]
+  (let [app-default-interceptors (create-app-default-interceptors app-ctx)
+        port 8080
+        port-ssl 8443
+        host "0.0.0.0"]
+    (->
+     {:env :prod
+      ::http/routes routes
+      ::http/resource-path "/public"
+      ::http/type :jetty
+      ::http/container-options {:context-configurator #(ws/add-ws-endpoints % ws-paths)
+                                ; :h2c? true
+                                ; :h2? true
+                                :ssl? true
+                                :ssl-port port-ssl
+                                :keystore "resources/keystore.jks"
+                                :key-password "keystore"}
+      ::http/host host
+      ::http/port port}
+     (merge {:env :dev
+             ::http/join? false
+             ::http/allowed-origins {:creds true :allowed-origins (constantly true)}})
+     http/default-interceptors
+     http/dev-interceptors
+     app-default-interceptors)))
 
 (defn start
-  "The entry-point for 'lein run'"
-  [& args]
-  ;; This is an adapted service map, that can be started and stopped
-  ;; From the REPL you can call server/start and server/stop on this service
-  (defonce runnable-service (server/create-server service))
-  (println "\nCreating your server...")
-  (server/start runnable-service))
+  [app-ctx]
+  (let [service (service-config app-ctx (routes))
+        host (::http/host service)
+        port (::http/port service)
+        ssl-port (get-in service [::http/container-options :ssl-port])]
+    (println (str "; starting http server on " host ":" port))
+    (when ssl-port
+      (println (str "; starting https server on " host ":" ssl-port)))
+    (-> service
+        (server/create-server)
+        (server/start))))
+
+

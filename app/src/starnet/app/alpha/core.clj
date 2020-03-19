@@ -10,6 +10,7 @@
    [clojure.spec.test.alpha :as stest]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
+   [buddy.hashers :as hashers]
    [starnet.common.alpha.spec]))
 
 
@@ -23,17 +24,35 @@
 
 (defn create-user
   [channels data]
-  (db-tx channels [[:crux.tx/put
-                    (-> data
-                        (merge {:crux.db/id (:u/uuid data)}))
+  (let [password (:u/password data)
+        hashed (hashers/derive password {:alg :bcrypt+sha512 :iterations 4})
+        data (merge data  {:u/password hashed
+                           :u/password-TMP password})]
+    (db-tx channels [[:crux.tx/put
+                      (-> data
+                          (merge {:crux.db/id (:u/uuid data)}))
                     ;; #inst "2112-12-03"
                     ;; #inst "2113-12-03"
-                    ]]))
+                      ]])))
 
+(defn user-by-username
+  [channels data]
+  (let [{:keys [u/username]} data
+        q {:find '[e]
+           :where [['e :u/username username]]
+           :full-results? true}]
+    (go
+      (let [c-out (chan 1)]
+        (>! (channels :ch-cruxdb) {:cruxdb/op :query
+                                   :ch/c-out c-out
+                                   :cruxdb/query-data q})
+        (let [o (<! c-out)]
+          (ffirst o))))))
+   
 (defn evict-user
-  [channels u-uuid]
+  [channels user-data]
   (db-tx channels [[:crux.tx/evict
-                    u-uuid]]))
+                    (:u/uuid user-data)]]))
 
 (defn repl-query
   [channels query-data]
@@ -66,12 +85,13 @@
    (flatten)
    (vec)))
 
+
+
 (comment
 
   (def channels @(resolve 'starnet.app.alpha.main/channels))
 
   ; all entities
-
   (repl-query channels '{:find [id]
                          :where [[e :crux.db/id id]]
                          :full-results? true})
@@ -97,11 +117,17 @@
 
   (def user (-> (repl-users channels) (rand-nth)))
 
-  (let [c-out (chan 1)]
-    (put! (channels :ch-kstore-user) {:kstore/op :read-store
-                                      :ch/c-out c-out})
-    (first (alts!! [c-out (timeout 100)])))
+  (->
+   (let [c-out (chan 1)]
+     (put! (channels :ch-kstore-user) {:kstore/op :read-store
+                                       :ch/c-out c-out})
+     (first (alts!! [c-out (timeout 100)])))
+   (count))
 
+
+  (->
+   (user-by-username channels (-> (repl-users channels) (rand-nth)))
+   (<!!soft))
 
   ;;
   )
