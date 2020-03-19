@@ -348,3 +348,8 @@
   - no need to [username user-rec] lookup: on login db query will do
   - authenticaiton is stateless using JWS/JWE, encoding user uuid and expiration
   - on requests, token is decoded into uuid and user record (with authorization info as well) is looked up in gktable
+- proc-arbiter
+  - on game events (:created :started) vals will be put on queue with insts and (timeout x) for when arbiter needs to emit and event to game
+  - so if no events happen , timeouts (but not intervals, created by events) will be (alts!) and proc will close/remove the game
+  - would be nice not to interval for every game, queue is preferred
+  - once-a-few hours (timeout []) may be enqueued to remove stale games
