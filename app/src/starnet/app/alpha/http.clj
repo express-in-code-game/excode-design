@@ -6,7 +6,7 @@
                                      thread pub sub sliding-buffer mix admix unmix]]
    [io.pedestal.log :as log]
    [io.pedestal.http.route :as route]
-   [io.pedestal.http.body-params :as body-params]
+   [io.pedestal.http.body-params :refer [body-params]]
    [io.pedestal.http.route.definition :refer [defroutes]]
    [ring.util.response :as ring-resp]
    [clojure.core.async :as async]
@@ -34,7 +34,7 @@
 (def accepted (partial response 202))
 
 
-(def i-user-create
+(def user-create
   {:name :user-create
    :leave
    (fn [ctx]
@@ -42,12 +42,13 @@
        (let [headers (get-in ctx [:request :headers])
              user-data (get-in ctx [:request :edn-params])
              channels (:channels ctx)]
+         ctx
          (let [o (<! (app.core/create-user channels user-data))]
            (if o
              (assoc ctx :response (ok o))
              (throw (ex-info "app.core/create-user failed" {:user-data user-data})))))))})
 
-(def i-user-delete
+(def user-delete
   {:name :user-delete
    :leave
    (fn [ctx]
@@ -60,7 +61,7 @@
              (assoc ctx :response (ok o))
              (throw (ex-info "app.core/evict-user failed" {:user-data user-data})))))))})
 
-(def i-user-list
+(def user-list
   {:name :user-list
    :leave
    (fn [ctx]
@@ -77,9 +78,9 @@
 (defn routes
   []
   (route/expand-routes
-   #{["/user" :get [i-user-list]]
-     ["/user" :post [i-user-create]]
-     ["/user" :delete [i-user-delete]]}))
+   #{["/user" :get [user-list]]
+     ["/user" :post [(body-params) user-create]]
+     ["/user" :delete [(body-params) user-delete]]}))
 
 
 (comment
@@ -93,15 +94,9 @@
 
   (def service (::http/service-fn (http/create-servlet (service-config channels (routes)))))
 
-  (response-for service :get "/todo/abc/123")
-
-  (response-for service :post "/todo?name=list1")
-  (response-for service :get "/todo/l61086")
-  (response-for service :post "/todo/l62740?name=item1")
-
   (response-for service :get "/user")
   (response-for service :post "/user"
-                :body (str (gen/generate (s/gen :u/user)))
+                :body (gen/generate (s/gen :u/user))
                 :headers {"Content-Type" "application/edn"})
 
   (response-for service :delete "/user"
