@@ -178,12 +178,23 @@
        (let [headers (get-in ctx [:request :headers])
              user-data (get-in ctx [:request :edn-params])
              channels (:channels ctx)]
-         #_(println body)
-         #_(println (type body))
          (let [o (<! (app.core/create-user channels user-data))]
            (if o
              (assoc ctx :response (ok o))
              (throw (ex-info "app.core/create-user failed" {:user-data user-data})))))))})
+
+(def itr-user-delete
+  {:name :user-delete
+   :leave
+   (fn [ctx]
+     (go
+       (let [headers (get-in ctx [:request :headers])
+             user-data (get-in ctx [:request :edn-params])
+             channels (:channels ctx)]
+         (let [o (<! (app.core/evict-user channels (:u/uuid user-data)))]
+           (if o
+             (assoc ctx :response (ok o))
+             (throw (ex-info "app.core/evict-user failed" {:user-data user-data})))))))})
 
 (def itr-user-list
   {:name :user-list
@@ -211,11 +222,12 @@
      ["/todo/:list-id/:item-id"  :put    echo :route-name :list-item-update]
      ["/todo/:list-id/:item-id"  :delete echo :route-name :list-item-delete]
      ["/user" :get [itr-user-list]]
-     ["/user" :post [(body-params/body-params) http/html-body itr-user-create]]}))
+     ["/user" :post [(body-params/body-params) http/html-body itr-user-create]]
+     ["/user" :delete [(body-params/body-params) http/html-body itr-user-delete]]}))
 
 
 (comment
-  
+
   ;https://github.com/pedestal/pedestal/blob/master/service/src/io/pedestal/test.clj
   ;http://pedestal.io/reference/parameters#_body_parameters
 
@@ -232,15 +244,18 @@
   (response-for service :post "/todo/l62740?name=item1")
 
   (response-for service :get "/user")
-  (response-for service
-                :post "/user"
+  (response-for service :post "/user"
                 :body (str (gen/generate (s/gen :u/user)))
                 :headers {"Content-Type" "application/edn"})
-  
-  
-  
-  
-  
+
+  (response-for service :delete "/user"
+                :body (str (-> (app.core/repl-users channels) (rand-nth)))
+                :headers {"Content-Type" "application/edn"})
+
+  (count (app.core/repl-users channels))
+  (def user (-> (app.core/repl-users channels) (rand-nth)))
+
+
 
 
   ;;
