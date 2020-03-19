@@ -17,6 +17,10 @@
    [io.pedestal.http :as server]
    [io.pedestal.test :as test :refer [response-for]]
    [io.pedestal.test :as test]
+   [clojure.spec.alpha :as s]
+   [clojure.spec.gen.alpha :as sgen]
+   [clojure.spec.test.alpha :as stest]
+   [clojure.test.check.generators :as gen]
    [starnet.app.alpha.core :as acore])
   (:import
    [org.eclipse.jetty.websocket.api Session]))
@@ -154,24 +158,10 @@
    :leave
    (fn [ctx]
      (go
-       (let [headers (get-in ctx [:headers])
-             body (get-in ctx [:body])]
-         (println "123")
-         (println (:channels ctx))
-         (println headers)
-         (println body))
-       (assoc ctx :response (ok "list"))))})
-
-(def itr-game-list
-  {:name :game-list
-   :leave
-   (fn [ctx]
-     (go
        (let [headers (get-in ctx [:request :headers])
              body (get-in ctx [:request :body])]
-         (println "321")
-         (doseq [l (partition 3 (keys ctx))]
-           (println l))
+         (println "123")
+         (println (:channels ctx))
          (println headers)
          (println body))
        (assoc ctx :response (ok "list"))))})
@@ -187,15 +177,14 @@
      ["/todo/:list-id/:item-id"  :put    echo :route-name :list-item-update]
      ["/todo/:list-id/:item-id"  :delete echo :route-name :list-item-delete]
      ["/user" :get [itr-user-list]]
-     ["/user" :post [(body-params/body-params) http/html-body itr-user-create]]
-     ["/game" :get [itr-game-list]]}))
+     ["/user" :post [(body-params/body-params) http/html-body itr-user-create]]}))
 
 
 (comment
 
-  (def channels @(resolve 'starnet.app.alpha.main/channels))
+  (cors/allow-origin [])
 
-  @database
+  (def channels @(resolve 'starnet.app.alpha.main/channels))
 
   (def service (::http/service-fn (http/create-servlet (make-service-full channels))))
 
@@ -205,11 +194,13 @@
   (response-for service :get "/todo/l61086")
   (response-for service :post "/todo/l62740?name=item1")
 
-  (response-for service :get "/game")
   (response-for service :get "/user")
-  (response-for service :post "/user" :body (pr-str {:a 1}) :headers {"Content-Type" "text/html;charset=UTF-8"})
+  (response-for service
+                :post "/user"
+                :body (str (gen/generate (s/gen :u/user)))
+                :headers {"Content-Type" "text/html;charset=UTF-8"})
+  
 
-  (cors/allow-origin [])
 
   ;;
   )
@@ -296,12 +287,12 @@
     :error nil
     :enter
     (fn [context]
-      (println "channels-interceptor enter")
+      #_(println "channels-interceptor enter")
       (assoc context :channels channels))
     :leave
     (fn [context]
-      (println "channels-interceptor leave")
-      (println (:channels context))
+      #_(println "channels-interceptor leave")
+      #_(println (:channels context))
       context)}))
 
 (defn create-deafult-interceptors
