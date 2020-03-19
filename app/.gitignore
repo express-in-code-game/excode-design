@@ -52,3 +52,4 @@ tmp
 
 resources/*.jks
 resources/*.pem
+resources/*.tmp

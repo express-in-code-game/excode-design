@@ -61,7 +61,8 @@
 
 
   ;; Create keys instances
-  (def privkey (keys/private-key "resources/privkey.pem" "pass"))
+  (def passphrase (slurp "resources/passphrase.tmp"))
+  (def privkey (keys/private-key "resources/privkey.pem" passphrase))
   (def pubkey (keys/public-key "resources/pubkey.pem"))
 
   ;; Encrypt data

@@ -27,6 +27,8 @@
    [starnet.app.alpha.http  :as app-http]
    [starnet.app.alpha.crux :as app-crux]
    [starnet.app.alpha.core :as appcore]
+   [clojure.java.shell :refer [sh]]
+   [clojure.java.io :as io]
    [crux.api :as crux])
   (:import
    org.apache.kafka.clients.producer.KafkaProducer
@@ -37,7 +39,7 @@
   (let [appenv (read-string (System/getenv "appenv"))]
     (:optimized appenv)))
 
-(declare  proc-main proc-http-server proc-nrepl
+(declare  proc-main proc-http-server proc-nrepl proc-keys
           proc-derived-1  proc-kstreams proc-log proc-kstore-game proc-kstore-user
           proc-cruxdb proc-kproducer proc-nrepl-server start-kstreams-game start-kstreams-game
           start-kstreams-crux-docs )
@@ -80,6 +82,7 @@
         (condp = op
           :start
           (do
+            (<! (proc-keys channels))
             (proc-nrepl-server (select-keys channels [:pb-sys]))
             (proc-http-server (select-keys channels [:pb-sys]) channels)
             (proc-cruxdb (select-keys channels [:pb-sys :ch-cruxdb]))
@@ -419,3 +422,16 @@
     c))
 
 
+(defn proc-keys
+  [{:keys [pb-sys]}]
+  (let [script "
+                bash f gen_ec
+                bash f gen_rsa
+                "]
+    (go
+      (if-not (and (.exists (io/file "resources/privkey.pem"))
+                   (.exists (io/file "resources/pubkey.pem")))
+        (do
+          (println "; generating keys")
+          (sh "bash" "-c" script :dir "/ctx/app"))
+        (println "; keys exist")))))

@@ -51,8 +51,13 @@ gen_ec(){
 
 gen_rsa(){
   # https://funcool.github.io/buddy-sign/latest/#generate-keypairs
-  openssl genrsa -aes256 -out resources/privkey.pem 2048
-  openssl rsa -pubout -in resources/privkey.pem -out resources/pubkey.pem
+  RANDOMSTRING=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+  OUTPUT=resources/passphrase.tmp
+  rm $OUTPUT
+  printf $RANDOMSTRING >> $OUTPUT
+  PASSOUT=file:resources/passphrase.tmp
+  openssl genrsa -aes256 -passout $PASSOUT -out resources/privkey.pem 2048
+  openssl rsa -pubout -passin $PASSOUT  -in resources/privkey.pem -out resources/pubkey.pem
 }
 
 "$@"
