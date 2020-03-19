@@ -46,6 +46,7 @@ gen_ec(){
   openssl ecparam -name prime256v1 -out resources/ecparams.pem
   openssl ecparam -in resources/ecparams.pem -genkey -noout -out resources/ecprivkey.pem
   openssl ec -in resources/ecprivkey.pem -pubout -out resources/ecpubkey.pem
+  chmod -R 777 resources
 
 }
 
@@ -58,6 +59,8 @@ gen_rsa(){
   PASSOUT=file:resources/passphrase.tmp
   openssl genrsa -aes256 -passout $PASSOUT -out resources/privkey.pem 2048
   openssl rsa -pubout -passin $PASSOUT  -in resources/privkey.pem -out resources/pubkey.pem
+  chmod -R 777 resources
+
 }
 
 "$@"
