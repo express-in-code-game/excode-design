@@ -35,7 +35,7 @@
 (defn create-token
   [channels user-uuid]
   (let [c-out (chan 1)]
-    (put! (channels :ch-gktable-game) {:kstore/op :update
+    (put! (channels :ch-kstore-game) {:kstore/op :update
                                        :kafka/k user-uuid
                                        :kafka/ev {:access.token/token (.toString (java.util.UUID/randomUUID))
                                                   :access.token/inst-create (java.util.Date.)
@@ -46,7 +46,7 @@
 (defn invalidate-token
   [channels user-uuid]
   (let [c-out (chan 1)]
-    (put! (channels :ch-gktable-game) {:kstore/op :update
+    (put! (channels :ch-kstore-game) {:kstore/op :update
                                        :kafka/k user-uuid
                                        :kafka/ev {:access.token/valid? false}
                                        :ch/c-out c-out})
@@ -76,7 +76,7 @@
 (defn repl-read-access-store
   [channels]
   (let [c-out (chan 1)]
-    (put! (channels :ch-gktable-game) {:kstore/op :read-store
+    (put! (channels :ch-kstore-game) {:kstore/op :read-store
                                        :ch/c-out c-out})
     (first (alts!! [c-out (timeout 100)]))))
 

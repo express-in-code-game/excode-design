@@ -23,7 +23,7 @@
    [starnet.app.alpha.streams :refer [create-topics-async list-topics
                                       delete-topics produce-event create-kvstore
                                       future-call-consumer read-store
-                                      send-event create-kstreams-gktable-game-1 create-kstreams-gktable-game create-kstreams-crux-docs]]
+                                      send-event  create-kstreams-game create-kstreams-crux-docs]]
    [starnet.app.alpha.http  :as app-http]
    [starnet.app.alpha.crux :as app-crux]
    [starnet.app.alpha.core :as appcore]
@@ -38,8 +38,8 @@
     (:optimized appenv)))
 
 (declare  proc-main proc-http-server proc-nrepl
-          proc-derived-1  proc-kstreams proc-log proc-gktable-game
-          proc-cruxdb proc-kproducer proc-nrepl-server start-kstreams-gktable-game start-kstreams-game
+          proc-derived-1  proc-kstreams proc-log proc-kstore-game
+          proc-cruxdb proc-kproducer proc-nrepl-server start-kstreams-game start-kstreams-game
           start-kstreams-crux-docs)
 
 (def channels (let [ch-proc-main (chan 1)
@@ -47,7 +47,7 @@
                     pb-sys (pub ch-sys :ch/topic (fn [_] (sliding-buffer 10)))
                     ch-cruxdb (chan 10)
                     ch-kproducer (chan 10)
-                    ch-gktable-game (chan 10)
+                    ch-kstore-game (chan 10)
                     ch-kstreams-states (chan (sliding-buffer 10))
                     pb-kstreams-states (pub ch-kstreams-states :ch/topic (fn [_] (sliding-buffer 10)))
                     mx-kstreams-states (a/mix ch-kstreams-states)]
@@ -56,7 +56,7 @@
                  :pb-sys pb-sys
                  :ch-cruxdb ch-cruxdb
                  :ch-kproducer ch-kproducer
-                 :ch-gktable-game ch-gktable-game
+                 :ch-kstore-game ch-kstore-game
                  :ch-kstreams-states ch-kstreams-states
                  :pb-kstreams-states pb-kstreams-states
                  :mx-kstreams-states mx-kstreams-states}))
@@ -83,7 +83,7 @@
             (proc-cruxdb (select-keys channels [:pb-sys :ch-cruxdb]))
             (proc-kproducer (select-keys channels [:pb-sys :ch-kproducer]))
             (proc-kstreams (select-keys channels [:pb-sys :ch-sys :mx-kstreams-states]))
-            (proc-gktable-game (select-keys channels [:pb-sys :ch-sys :ch-gktable-game
+            (proc-kstore-game (select-keys channels [:pb-sys :ch-sys :ch-kstore-game
                                                       :ch-kproducer :pb-kstreams-states]))
 
             (put! ch-sys {:ch/topic :nrepl-server :proc/op :start})
@@ -93,7 +93,7 @@
                 (put! ch-sys {:ch/topic :cruxdb :proc/op :start :ch/c-out c-out})
                 (<! c-out)
                 (start-kstreams-crux-docs (select-keys channels [:ch-sys]))
-                (start-kstreams-gktable-game (select-keys channels [:ch-sys]))))
+                (start-kstreams-game (select-keys channels [:ch-sys]))))
             #_(start-kstreams-game (select-keys channels [:ch-sys]))
             #_(put! ch-sys [:kproducer :open])
             #_(put! ch-sys [:http-server :start]))
@@ -239,16 +239,16 @@
                              (recur kproducer))))
           ))))
 
-(defn proc-gktable-game
-  [{:keys [pb-sys ch-sys ch-gktable-game ch-kproducer pb-kstreams-states]}]
+(defn proc-kstore-game
+  [{:keys [pb-sys ch-sys ch-kstore-game ch-kproducer pb-kstreams-states]}]
   (let [csys (chan 1)
         cstates (chan 1)
-        appid "alpha.kstreams.gktable-game"
+        appid "alpha.kstreams.game"
         store-name "alpha.gktable.game-join-example"]
     (sub pb-sys :kstreams csys)
     (sub pb-kstreams-states appid cstates)
     (go (loop [store nil]
-          (if-let [[v port] (alts! (if store [cstates ch-gktable-game] [cstates]))]
+          (if-let [[v port] (alts! (if store [cstates ch-kstore-game] [cstates]))]
             (condp = port
               cstates (let [{topic :ch/topic
                              :kafka/keys [kstreams running?]} v]
@@ -260,7 +260,7 @@
                                                (println (format "; kv-store %s closed" store-name)))
                                              (recur store))
                           :else (recur store)))
-              ch-gktable-game (let [{op :kstore/op
+              ch-kstore-game (let [{op :kstore/op
                                      k :kafka/k
                                      ev :kafka/ev
                                      c-out :ch/c-out} v]
@@ -287,7 +287,7 @@
                                             (>! c-out ev)
                                             (recur store))
                                   (recur store))))))
-        (println "proc-gktable-game exiting"))))
+        (println "proc-kstore-game exiting"))))
 
 
 (def kprops {"bootstrap.servers" "broker1:9092"})
@@ -335,11 +335,11 @@
         (println (str "proc-kstreams exiting")))
     c))
 
-(defn start-kstreams-gktable-game
+(defn start-kstreams-game
   [{:keys [ch-sys]}]
   (put! ch-sys {:ch/topic :kstreams
                 :proc/op :start
-                :create-kstreams-f create-kstreams-gktable-game
+                :create-kstreams-f create-kstreams-game
                 :repl-only-key :kstreams-access}))
 
 (defn start-kstreams-crux-docs

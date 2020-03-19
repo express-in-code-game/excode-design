@@ -271,7 +271,7 @@
 ;;   [_ k ev ag]
 ;;   nil)
 
-#_(defn create-kstreams-gktable-game-1
+#_(defn create-kstreams-game-1
     []
     (let [props {"application.id" "alpha.access.streams"
                  "bootstrap.servers" "broker1:9092"
@@ -358,9 +358,9 @@
          (.build builder (doto (Properties.)
                            (.putAll props))))))))
 
-(defn create-kstreams-gktable-game
+(defn create-kstreams-game
   []
-  (let [props {"application.id" "alpha.kstreams.gktable-game"
+  (let [props {"application.id" "alpha.kstreams.game"
                "bootstrap.servers" "broker1:9092"
                "auto.offset.reset" "earliest" #_"latest"
                "default.key.serde" "starnet.app.alpha.aux.serdes.TransitJsonSerde"
