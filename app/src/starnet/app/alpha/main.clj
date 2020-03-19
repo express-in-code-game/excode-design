@@ -18,7 +18,7 @@
    [starnet.app.alpha.tests]
    [starnet.app.alpha.crux]
    [starnet.app.alpha.http]
-   [starnet.app.crux-samples.core]
+   [starnet.app.pad.all]
 
    [starnet.app.alpha.streams :refer [create-topics-async list-topics
                                       delete-topics produce-event create-kvstore

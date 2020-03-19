@@ -118,6 +118,19 @@
                         :args [{'id (-> (repl-users channels) (rand-nth) :u/uuid)}]
                         :full-results? true})
 
+  (repl-read-access-store channels)
+
+  (->
+   (invalidate-token channels (:u/uuid user))
+   (<!!soft))
+
+  (doseq [user (repl-users channels)]
+    (create-token channels (:u/uuid user)))
+
+  (doseq [user (repl-users channels)]
+    (invalidate-token channels (:u/uuid user)))
+
+
   (def users (repl-users channels))
 
   (->
@@ -129,16 +142,6 @@
   (->
    (create-token channels (:u/uuid user))
    (<!!soft))
-
-  (->
-   (invalidate-token channels (:u/uuid user))
-   (<!!soft))
-
-  (doseq [user (repl-users channels)]
-    (create-token channels (:u/uuid user)))
-
-
-  (repl-read-access-store channels)
 
   ;;
   )

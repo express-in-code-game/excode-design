@@ -122,6 +122,10 @@
     - https://docs.datomic.com/cloud/client/client-api.html#connection
   - destructring fully qualified
     - https://clojure.org/guides/destructuring#_namespaced_keywords
+  - sign, encrypt, auth
+    - https://funcool.github.io/buddy-sign/latest/
+    - https://funcool.github.io/buddy-sign/latest/#generate-keypairs
+    - https://funcool.github.io/buddy-auth/latest/
 
 - crux
   - https://github.com/juxt/crux
