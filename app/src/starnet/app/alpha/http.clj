@@ -15,7 +15,8 @@
    [io.pedestal.http.cors :as cors]
    [io.pedestal.interceptor :refer [interceptor]]
    [io.pedestal.http :as server]
-   [io.pedestal.test :as test :refer [response-for]]
+   [io.pedestal.test :as test :refer [response-for raw-response-for]]
+   [io.pedestal.http.content-negotiation :as conneg]
    [io.pedestal.test :as test]
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
@@ -140,17 +141,43 @@
              (assoc-in [:request :path-params :item-id] item-id)))
        context))})
 
+(def supported-types ["text/html" "application/edn"  "text/plain"])
+
+(def content-neg-intc (conneg/negotiate-content supported-types))
+
+(defn accepted-type
+  [context]
+  (get-in context [:request :accept :field] "text/plain"))
+
+(defn transform-content
+  [body content-type]
+  (case content-type
+    "text/html"        body
+    "text/plain"       body
+    "application/edn"  (pr-str body)))
+
+(defn coerce-to
+  [response content-type]
+  (-> response
+      (update :body transform-content content-type)
+      (assoc-in [:headers "Content-Type"] content-type)))
+
+(def coerce-body
+  {:name ::coerce-body
+   :leave
+   (fn [context]
+     (cond-> context
+       (nil? (get-in context [:response :headers "Content-Type"]))                    
+       (update-in [:response] coerce-to (accepted-type context))))})
+
 (def itr-user-create
   {:name :user-create
    :leave
    (fn [ctx]
      (go
        (let [headers (get-in ctx [:request :headers])
-             body (get-in ctx [:request :body])]
-         (println (:channels ctx))
-         (println headers)
-         (println (str body))
-         (assoc ctx :response (ok "created")))
+             body (get-in ctx [:request :edn-params])]
+         (assoc ctx :response (ok body)))
        ))})
 
 (def itr-user-list
@@ -165,6 +192,8 @@
          (println headers)
          (println body))
        (assoc ctx :response (ok "list"))))})
+
+
 
 (defn routes
   []
@@ -181,6 +210,9 @@
 
 
 (comment
+  
+  ;https://github.com/pedestal/pedestal/blob/master/service/src/io/pedestal/test.clj
+  ;http://pedestal.io/reference/parameters#_body_parameters
 
   (cors/allow-origin [])
 
@@ -198,7 +230,11 @@
   (response-for service
                 :post "/user"
                 :body (str (gen/generate (s/gen :u/user)))
-                :headers {"Content-Type" "text/html;charset=UTF-8"})
+                :headers {"Content-Type" "application/edn"})
+  
+  
+  
+  
   
 
 
