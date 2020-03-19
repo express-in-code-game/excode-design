@@ -30,6 +30,9 @@
                     ;; #inst "2113-12-03"
                     ]]))
 
+(defn user-by-username
+  [])
+   
 (defn evict-user
   [channels u-uuid]
   (db-tx channels [[:crux.tx/evict
@@ -97,10 +100,12 @@
 
   (def user (-> (repl-users channels) (rand-nth)))
 
-  (let [c-out (chan 1)]
-    (put! (channels :ch-kstore-user) {:kstore/op :read-store
-                                      :ch/c-out c-out})
-    (first (alts!! [c-out (timeout 100)])))
+  (->
+   (let [c-out (chan 1)]
+     (put! (channels :ch-kstore-user) {:kstore/op :read-store
+                                       :ch/c-out c-out})
+     (first (alts!! [c-out (timeout 100)])))
+   (count))
 
 
   ;;

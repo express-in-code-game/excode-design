@@ -8,6 +8,8 @@
    [clojure.spec.alpha :as s]
    [clojure.spec.test.alpha :as stest]
 
+   
+   
    [starnet.app.alpha.aux.serdes]
 
    [starnet.common.alpha.spec]
@@ -42,7 +44,7 @@
 (declare  proc-main proc-http-server proc-nrepl proc-keys
           proc-derived-1  proc-kstreams proc-log proc-kstore-game proc-kstore-user
           proc-cruxdb proc-kproducer proc-nrepl-server start-kstreams-game start-kstreams-game
-          start-kstreams-crux-docs )
+          start-kstreams-crux-docs)
 
 (def channels (let [ch-proc-main (chan 1)
                     ch-sys (chan (sliding-buffer 10))
@@ -435,3 +437,4 @@
           (println "; generating keys")
           (sh "bash" "-c" script :dir "/ctx/app"))
         (println "; keys exist")))))
+

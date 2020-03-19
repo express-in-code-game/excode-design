@@ -18,6 +18,7 @@
    [io.pedestal.test :as test :refer [response-for raw-response-for]]
    [io.pedestal.http.content-negotiation :as conneg]
    [io.pedestal.test :as test]
+   [buddy.hashers :as hashers]
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
    [clojure.spec.test.alpha :as stest]
@@ -42,11 +43,29 @@
        (let [headers (get-in ctx [:request :headers])
              user-data (get-in ctx [:request :edn-params])
              channels (:channels ctx)]
-         ctx
-         (let [o (<! (app.core/create-user channels user-data))]
+         (let [hashed (hashers/derive (:u/password user-data) {:alg :bcrypt+sha512 :iterations 4})
+               user-data2 (assoc user-data :u/password hashed)
+               o (<! (app.core/create-user channels user-data2))]
            (if o
              (assoc ctx :response (ok o))
              (throw (ex-info "app.core/create-user failed" {:user-data user-data})))))))})
+
+(def user-login
+  {:name :user-create
+   :leave
+   (fn [ctx]
+     (go
+       (let [headers (get-in ctx [:request :headers])
+             data (get-in ctx [:request :edn-params])
+             channels (:channels ctx)]
+         (let [user-record (<! (app.core/user-by-username channels (:u/username data)))
+               raw (:u/password data)
+               hashed (:u/password user-record)
+               pass-valid? (hashers/check raw hashed)]
+           (if pass-valid?
+             (assoc ctx :response (ok true))
+             (throw (ex-info "password invalid failed" {:user-record user-record})))))))})
+
 
 (def user-delete
   {:name :user-delete
