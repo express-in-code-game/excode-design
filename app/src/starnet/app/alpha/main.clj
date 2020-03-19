@@ -141,7 +141,7 @@
     (go (loop [server nil]
           (when-let [{op :proc/op} (<! c)]
             (condp = op
-              :start (let [sr (app-http/start-dev channels)]
+              :start (let [sr (app-http/start channels)]
                        (recur sr))
               :stop (recur server))))
         (println "closing proc-http-server"))))
