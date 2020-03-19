@@ -9,7 +9,7 @@
    [io.pedestal.http :as http]
    [io.pedestal.test :as test :refer [response-for]]))
 
-(def service (::http/service-fn (http/create-servlet app-http/service)))
+(def service (::http/service-fn (http/create-servlet (app-http/make-service))))
   
 (deftest route-tests
   (is (= (response-for service :get "/todo/abc/123")))
