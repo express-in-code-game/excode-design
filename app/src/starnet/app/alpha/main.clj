@@ -18,15 +18,17 @@
    [starnet.app.alpha.tests]
    [starnet.app.alpha.crux]
    [starnet.app.alpha.http]
-   [starnet.app.crux-samples.core]
+   [starnet.app.pad.all]
 
    [starnet.app.alpha.streams :refer [create-topics-async list-topics
                                       delete-topics produce-event create-kvstore
                                       future-call-consumer read-store
-                                      send-event create-kstreams-game create-kstreams-access create-kstreams-crux-docs]]
+                                      send-event  create-kstreams-game create-kstreams-crux-docs]]
    [starnet.app.alpha.http  :as app-http]
    [starnet.app.alpha.crux :as app-crux]
    [starnet.app.alpha.core :as appcore]
+   [clojure.java.shell :refer [sh]]
+   [clojure.java.io :as io]
    [crux.api :as crux])
   (:import
    org.apache.kafka.clients.producer.KafkaProducer
@@ -37,17 +39,18 @@
   (let [appenv (read-string (System/getenv "appenv"))]
     (:optimized appenv)))
 
-(declare  proc-main proc-http-server proc-nrepl
-          proc-derived-1  proc-kstreams proc-log proc-access-store
-          proc-cruxdb proc-kproducer proc-nrepl-server start-kstreams-access start-kstreams-game
-          start-kstreams-crux-docs)
+(declare  proc-main proc-http-server proc-nrepl proc-keys
+          proc-derived-1  proc-kstreams proc-log proc-kstore-game proc-kstore-user
+          proc-cruxdb proc-kproducer proc-nrepl-server start-kstreams-game start-kstreams-game
+          start-kstreams-crux-docs )
 
 (def channels (let [ch-proc-main (chan 1)
                     ch-sys (chan (sliding-buffer 10))
                     pb-sys (pub ch-sys :ch/topic (fn [_] (sliding-buffer 10)))
                     ch-cruxdb (chan 10)
                     ch-kproducer (chan 10)
-                    ch-access-store (chan 10)
+                    ch-kstore-game (chan 10)
+                    ch-kstore-user (chan 10)
                     ch-kstreams-states (chan (sliding-buffer 10))
                     pb-kstreams-states (pub ch-kstreams-states :ch/topic (fn [_] (sliding-buffer 10)))
                     mx-kstreams-states (a/mix ch-kstreams-states)]
@@ -56,7 +59,8 @@
                  :pb-sys pb-sys
                  :ch-cruxdb ch-cruxdb
                  :ch-kproducer ch-kproducer
-                 :ch-access-store ch-access-store
+                 :ch-kstore-game ch-kstore-game
+                 :ch-kstore-user ch-kstore-user
                  :ch-kstreams-states ch-kstreams-states
                  :pb-kstreams-states pb-kstreams-states
                  :mx-kstreams-states mx-kstreams-states}))
@@ -78,14 +82,16 @@
         (condp = op
           :start
           (do
+            (<! (proc-keys channels))
             (proc-nrepl-server (select-keys channels [:pb-sys]))
             (proc-http-server (select-keys channels [:pb-sys]) channels)
             (proc-cruxdb (select-keys channels [:pb-sys :ch-cruxdb]))
             (proc-kproducer (select-keys channels [:pb-sys :ch-kproducer]))
             (proc-kstreams (select-keys channels [:pb-sys :ch-sys :mx-kstreams-states]))
-            (proc-access-store (select-keys channels [:pb-sys :ch-sys :ch-access-store
-                                                      :ch-kproducer :pb-kstreams-states]))
-
+            (proc-kstore-game (select-keys channels [:pb-sys :ch-sys :ch-kstore-game
+                                                     :ch-kproducer :pb-kstreams-states]))
+            (proc-kstore-user (select-keys channels [:pb-sys :ch-sys :ch-kstore-user
+                                                     :ch-kproducer :pb-kstreams-states]))
             (put! ch-sys {:ch/topic :nrepl-server :proc/op :start})
             (put! ch-sys {:ch/topic :kproducer :proc/op :start})
             (go
@@ -93,7 +99,7 @@
                 (put! ch-sys {:ch/topic :cruxdb :proc/op :start :ch/c-out c-out})
                 (<! c-out)
                 (start-kstreams-crux-docs (select-keys channels [:ch-sys]))
-                (start-kstreams-access (select-keys channels [:ch-sys]))))
+                (start-kstreams-game (select-keys channels [:ch-sys]))))
             #_(start-kstreams-game (select-keys channels [:ch-sys]))
             #_(put! ch-sys [:kproducer :open])
             #_(put! ch-sys [:http-server :start]))
@@ -239,16 +245,16 @@
                              (recur kproducer))))
           ))))
 
-(defn proc-access-store
-  [{:keys [pb-sys ch-sys ch-access-store ch-kproducer pb-kstreams-states]}]
+(defn proc-kstore-user
+  [{:keys [pb-sys ch-sys ch-kstore-user ch-kproducer pb-kstreams-states]}]
   (let [csys (chan 1)
         cstates (chan 1)
-        appid "alpha.access.streams"
-        store-name "alpha.access.globalktable"]
+        appid "alpha.kstreams.game"
+        store-name "alpha.gktable.user-changelog"]
     (sub pb-sys :kstreams csys)
     (sub pb-kstreams-states appid cstates)
     (go (loop [store nil]
-          (if-let [[v port] (alts! (if store [cstates ch-access-store] [cstates]))]
+          (if-let [[v port] (alts! (if store [cstates ch-kstore-user] [cstates]))]
             (condp = port
               cstates (let [{topic :ch/topic
                              :kafka/keys [kstreams running?]} v]
@@ -260,7 +266,41 @@
                                                (println (format "; kv-store %s closed" store-name)))
                                              (recur store))
                           :else (recur store)))
-              ch-access-store (let [{op :kstore/op
+              ch-kstore-user (let [{op :kstore/op
+                                    k :kafka/k
+                                    ev :kafka/ev
+                                    c-out :ch/c-out} v]
+                               (condp = op
+                                 :get (do (>! c-out (.get k store))
+                                          (recur store))
+                                 :read-store (do
+                                               (>! c-out (read-store store))
+                                               (recur store))
+                                 (recur store))))))
+        (println "proc-kstore-user exiting"))))
+
+(defn proc-kstore-game
+  [{:keys [pb-sys ch-sys ch-kstore-game ch-kproducer pb-kstreams-states]}]
+  (let [csys (chan 1)
+        cstates (chan 1)
+        appid "alpha.kstreams.game"
+        store-name "alpha.gktable.game-join-example"]
+    (sub pb-sys :kstreams csys)
+    (sub pb-kstreams-states appid cstates)
+    (go (loop [store nil]
+          (if-let [[v port] (alts! (if store [cstates ch-kstore-game] [cstates]))]
+            (condp = port
+              cstates (let [{topic :ch/topic
+                             :kafka/keys [kstreams running?]} v]
+                        (cond
+                          (true? running?) (let [s (create-kvstore kstreams store-name)]
+                                             (println (format "; kv-store %s created" store-name))
+                                             (recur s))
+                          (not running?) (do (when store
+                                               (println (format "; kv-store %s closed" store-name)))
+                                             (recur store))
+                          :else (recur store)))
+              ch-kstore-game (let [{op :kstore/op
                                      k :kafka/k
                                      ev :kafka/ev
                                      c-out :ch/c-out} v]
@@ -271,7 +311,7 @@
                                                 (>! c-out (read-store store))
                                                 (recur store))
                                   :delete (let [c (chan 1)]
-                                            (>! ch-kproducer {:kafka/topic "alpha.token"
+                                            (>! ch-kproducer {:kafka/topic "alpha.topic.game"
                                                               :kafka/k k
                                                               :kafka/ev {:record/delete? true}
                                                               :ch/c-out c})
@@ -279,7 +319,7 @@
                                             (>! c-out true)
                                             (recur store))
                                   :update (let [c (chan 1)]
-                                            (>! ch-kproducer {:kafka/topic "alpha.token"
+                                            (>! ch-kproducer {:kafka/topic "alpha.topic.game"
                                                               :kafka/k k
                                                               :kafka/ev ev
                                                               :ch/c-out c})
@@ -287,16 +327,17 @@
                                             (>! c-out ev)
                                             (recur store))
                                   (recur store))))))
-        (println "proc-access-store exiting"))))
+        (println "proc-kstore-game exiting"))))
+
+
 
 
 (def kprops {"bootstrap.servers" "broker1:9092"})
 
-(def ktopics ["alpha.token"
-              "alpha.game"
-              "alpha.crux-docs"
-              "alpha.user.changelog"
-              "alpha.access.changelog"])
+(def ktopics ["alpha.topic.crux-docs"
+              "alpha.topic.user-changelog"
+              "alpha.topic.game"
+              "alpha.topic.game-join-example"])
 
 (comment
 
@@ -336,19 +377,12 @@
         (println (str "proc-kstreams exiting")))
     c))
 
-(defn start-kstreams-access
-  [{:keys [ch-sys]}]
-  (put! ch-sys {:ch/topic :kstreams
-                :proc/op :start
-                :create-kstreams-f create-kstreams-access
-                :repl-only-key :kstreams-access}))
-
 (defn start-kstreams-game
   [{:keys [ch-sys]}]
   (put! ch-sys {:ch/topic :kstreams
                 :proc/op :start
                 :create-kstreams-f create-kstreams-game
-                :repl-only-key :kstreams-game}))
+                :repl-only-key :kstreams-access}))
 
 (defn start-kstreams-crux-docs
   [{:keys [ch-sys]}]
@@ -388,3 +422,16 @@
     c))
 
 
+(defn proc-keys
+  [{:keys [pb-sys]}]
+  (let [script "
+                bash f gen_ec
+                bash f gen_rsa
+                "]
+    (go
+      (if-not (and (.exists (io/file "resources/privkey.pem"))
+                   (.exists (io/file "resources/pubkey.pem")))
+        (do
+          (println "; generating keys")
+          (sh "bash" "-c" script :dir "/ctx/app"))
+        (println "; keys exist")))))

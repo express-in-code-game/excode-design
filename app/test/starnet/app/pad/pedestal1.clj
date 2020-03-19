@@ -1,4 +1,4 @@
-(ns starnet.app.alpha.pedestal-sample1
+(ns starnet.app.pad.pedestal1
   (:require
    [clojure.repl :refer [doc]]
    [io.pedestal.log :as log]

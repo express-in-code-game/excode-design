@@ -50,4 +50,6 @@ tmp
 
 # cert
 
-*.jks
+resources/*.jks
+resources/*.pem
+resources/*.tmp

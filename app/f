@@ -41,5 +41,23 @@ keystore(){
   keytool -keystore resources/keystore.jks -alias keystore -keyalg RSA -keysize 2048 -sigalg SHA256withRSA -genkey -validity 36500
 }
 
+gen_ec(){
+  # https://funcool.github.io/buddy-sign/latest/#generate-keypairs
+  openssl ecparam -name prime256v1 -out resources/ecparams.pem
+  openssl ecparam -in resources/ecparams.pem -genkey -noout -out resources/ecprivkey.pem
+  openssl ec -in resources/ecprivkey.pem -pubout -out resources/ecpubkey.pem
+
+}
+
+gen_rsa(){
+  # https://funcool.github.io/buddy-sign/latest/#generate-keypairs
+  RANDOMSTRING=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+  OUTPUT=resources/passphrase.tmp
+  rm $OUTPUT
+  printf $RANDOMSTRING >> $OUTPUT
+  PASSOUT=file:resources/passphrase.tmp
+  openssl genrsa -aes256 -passout $PASSOUT -out resources/privkey.pem 2048
+  openssl rsa -pubout -passin $PASSOUT  -in resources/privkey.pem -out resources/pubkey.pem
+}
 
 "$@"

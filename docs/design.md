@@ -306,48 +306,21 @@
   - db is a lib, error handling in layers (http, socket, kafka)
   - db has all logic, interceptors only call
   - on no db in interceptors throw, appropriate response for errors (via match)
-- authentication and authorization
-  - store in a kafka topic reduced into ktable(kstore) (for efficiency)
-    - proc-acesss
-      - reads from access kstore
-      - writes to tokens topic (by putting to channel kproducer)
-    - proc-kproducer
-      - sends evnts to kafka
-    - access store is a join from tokens topic and crux-docs topic
-    - keys are tokens, values user data user games and roles, events and roles
-    - when a request arrives, reading from the store by token retrieves data needed to authenticate/authorize user in subsequent interceptors
-    - to read from store, interceptor sends a key and a channel to put the value to
-  - request flow
-    - request -> interceptor chain
-    - intcptor adds db-channel and access channels to ctx
-    - intcptor retrives record from access store
-    - intcptor performs authentication
-    - intcptor performs authorization 
-    - intcptor retrives data from db
-    - intcptor makes a decision (assoc :result to ctx)
-    - intcptor makes tx
-    - intcptor forms a response
-  - on login token is created via proc-access and added to response header
 - namespacing
   - consolidate processes in main
   - crux, http, streams as a file
-- interceptors
-  - interceptors form responses and are chainable
-  - but logic like 'is user authorized?' is not solely http layer
-  - solution: perform such logic in fns that return a channel and invoke from interceptors or elswhere
-  - fns are processes (go blocks), rely on arguments only, are in a separate ns
-  - pass channels explicitly in main within http process
 - channels
   - def channels as a map :name (chan)
   - destructure arg in proc itself
   - pass to process with (select-keys) to explicitly see what process depends on
   - it's infinitely worth it to use both (sleect-keys) + destructiring 
-- interceptors and channels
-  - pedestal server is already a process
-  - interceptors allow to make decisions inside that process
-  - interceptors handle http (forming response maps), not actual domain logic
-  - put logic into core ns, where each fn takes 1 arg - channels and returns a channel
-  - this way interceptors are free of non-http decision making
+  - interceptors 
+    - pass channels explicitly in main within http process
+    - pedestal server is already a process
+    - interceptors allow to make decisions inside that process
+    - interceptors handle http (forming response maps), not actual domain logic
+    - put logic into core ns, where each fn takes 1 arg - channels and returns a channel
+    - this way interceptors are free of non-http decision making
 - performance
   - performance-wise it is a question, whether or not connection should be accessed via a process or as a ref
   - and other considerations may arise
@@ -366,3 +339,17 @@
   - only finished/selected games and events are persisted to db
   - user events, processed by subproc, are sent (non-block) to kafka and globalktable gets updated
   - kconsumer may not be required
+- authtication and authorization
+  - primary (and may be only) way to ligin will be using google, github, etc.
+  - but username/pass login system will be there until 1.0
+  - username is unique, users can change username freely
+  - creating account data: username pass email(won't be used) and possibly questions to remeber pass
+  - data is persisted in db, gktable [uuid user-rec] is updated
+  - no need to [username user-rec] lookup: on login db query will do
+  - authenticaiton is stateless using JWS/JWE, encoding user uuid and expiration
+  - on requests, token is decoded into uuid and user record (with authorization info as well) is looked up in gktable
+- proc-arbiter
+  - on game events (:created :started) vals will be put on queue with insts and (timeout x) for when arbiter needs to emit and event to game
+  - so if no events happen , timeouts (but not intervals, created by events) will be (alts!) and proc will close/remove the game
+  - would be nice not to interval for every game, queue is preferred
+  - once-a-few hours (timeout []) may be enqueued to remove stale games

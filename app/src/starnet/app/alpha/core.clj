@@ -12,8 +12,6 @@
    [clojure.test.check.properties :as prop]
    [starnet.common.alpha.spec]))
 
-(defn authorized?
-  [{:keys [ch-cruxdb] :as channels}])
 
 (defn db-tx
   [{:keys [ch-cruxdb] :as channels} tx-data]
@@ -31,26 +29,6 @@
                     ;; #inst "2112-12-03"
                     ;; #inst "2113-12-03"
                     ]]))
-
-(defn create-token
-  [channels user-uuid]
-  (let [c-out (chan 1)]
-    (put! (channels :ch-access-store) {:kstore/op :update
-                                       :kafka/k user-uuid
-                                       :kafka/ev {:access.token/token (.toString (java.util.UUID/randomUUID))
-                                                  :access.token/inst-create (java.util.Date.)
-                                                  :access.token/valid? true}
-                                       :ch/c-out c-out})
-    c-out))
-
-(defn invalidate-token
-  [channels user-uuid]
-  (let [c-out (chan 1)]
-    (put! (channels :ch-access-store) {:kstore/op :update
-                                       :kafka/k user-uuid
-                                       :kafka/ev {:access.token/valid? false}
-                                       :ch/c-out c-out})
-    c-out))
 
 (defn evict-user
   [channels u-uuid]
@@ -71,13 +49,6 @@
     (put! (channels :ch-cruxdb) {:cruxdb/op :tx
                                  :ch/c-out c-out
                                  :cruxdb/tx-data tx-data})
-    (first (alts!! [c-out (timeout 100)]))))
-
-(defn repl-read-access-store
-  [channels]
-  (let [c-out (chan 1)]
-    (put! (channels :ch-access-store) {:kstore/op :read-store
-                                       :ch/c-out c-out})
     (first (alts!! [c-out (timeout 100)]))))
 
 (defn <!!soft
@@ -126,19 +97,11 @@
 
   (def user (-> (repl-users channels) (rand-nth)))
 
-  (->
-   (create-token channels (:u/uuid user))
-   (<!!soft))
+  (let [c-out (chan 1)]
+    (put! (channels :ch-kstore-user) {:kstore/op :read-store
+                                      :ch/c-out c-out})
+    (first (alts!! [c-out (timeout 100)])))
 
-  (->
-   (invalidate-token channels (:u/uuid user))
-   (<!!soft))
-
-  (doseq [user (repl-users channels)]
-    (create-token channels (:u/uuid user)))
-
-
-  (repl-read-access-store channels)
 
   ;;
   )
