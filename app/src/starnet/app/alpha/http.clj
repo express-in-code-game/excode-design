@@ -26,16 +26,6 @@
   (:import
    [org.eclipse.jetty.websocket.api Session]))
 
-(defn about-page
-  [request]
-  (ring-resp/response (format "Clojure %s - served from %s"
-                              (clojure-version)
-                              (route/url-for ::about-page))))
-
-(defn home-page
-  [request]
-  (ring-resp/response "Hello World!"))
-
 (defn response [status body & {:as headers}]
   {:status status :body body :headers headers})
 
@@ -43,134 +33,8 @@
 (def created  (partial response 201))
 (def accepted (partial response 202))
 
-(def echo
-  {:name :echo
-   :enter
-   (fn [context]
-     (let [request (:request context)
-           response (ok request)]
-       (assoc context :response response)))})
 
-(def database (atom {}))
-
-(def db-interceptor
-  {:name :database-interceptor
-   :enter
-   (fn [context]
-     (update context :request assoc :database @database))
-   :leave
-   (fn [context]
-     (if-let [[op & args] (:tx-data context)]
-       (do
-         (apply swap! database op args)
-         (assoc-in context [:request :database] @database))
-       context))})
-
-(defn make-list [nm]
-  {:name  nm
-   :items {}})
-
-(defn make-list-item [nm]
-  {:name  nm
-   :done? false})
-
-(def list-create
-  {:name :list-create
-   :enter
-   (fn [context]
-     (let [nm       (get-in context [:request :query-params :name] "Unnamed List")
-           new-list (make-list nm)
-           db-id    (str (gensym "l"))
-           url      (route/url-for :list-view :params {:list-id db-id})]
-       (assoc context
-              :response (created new-list "Location" url)
-              :tx-data [assoc db-id new-list])))})
-
-(defn find-list-by-id [dbval db-id]
-  (get dbval db-id))
-
-(def list-view
-  {:name :list-view
-   :enter
-   (fn [context]
-     (if-let [db-id (get-in context [:request :path-params :list-id])]
-       (if-let [the-list (find-list-by-id (get-in context [:request :database]) db-id)]
-         (assoc context :result the-list)
-         context)
-       context))})
-
-(def entity-render
-  {:name :entity-render
-   :leave
-   (fn [context]
-     (if-let [item (:result context)]
-       (assoc context :response (ok item))
-       context))})
-
-(defn find-list-item-by-ids [dbval list-id item-id]
-  (get-in dbval [list-id :items item-id] nil))
-
-(def list-item-view
-  {:name :list-item-view
-   :leave
-   (fn [context]
-     (if-let [list-id (get-in context [:request :path-params :list-id])]
-       (if-let [item-id (get-in context [:request :path-params :item-id])]
-         (if-let [item (find-list-item-by-ids (get-in context [:request :database]) list-id item-id)]
-           (assoc context :result item)
-           context)
-         context)
-       context))})
-
-(defn list-item-add
-  [dbval list-id item-id new-item]
-  (if (contains? dbval list-id)
-    (assoc-in dbval [list-id :items item-id] new-item)
-    dbval))
-
-(def list-item-create
-  {:name :list-item-create
-   :enter
-   (fn [context]
-     (if-let [list-id (get-in context [:request :path-params :list-id])]
-       (let [nm       (get-in context [:request :query-params :name] "Unnamed Item")
-             new-item (make-list-item nm)
-             item-id  (str (gensym "i"))]
-         (-> context
-             (assoc :tx-data  [list-item-add list-id item-id new-item])
-             (assoc-in [:request :path-params :item-id] item-id)))
-       context))})
-
-(def supported-types ["text/html" "application/edn"  "text/plain"])
-
-(def content-neg-intc (conneg/negotiate-content supported-types))
-
-(defn accepted-type
-  [context]
-  (get-in context [:request :accept :field] "text/plain"))
-
-(defn transform-content
-  [body content-type]
-  (case content-type
-    "text/html"        body
-    "text/plain"       body
-    "application/edn"  (pr-str body)))
-
-(defn coerce-to
-  [response content-type]
-  (-> response
-      (update :body transform-content content-type)
-      (assoc-in [:headers "Content-Type"] content-type)))
-
-(def coerce-body
-  {:name ::coerce-body
-   :leave
-   (fn [context]
-     (cond-> context
-       (nil? (get-in context [:response :headers "Content-Type"]))                    
-       (update-in [:response] coerce-to (accepted-type context))))})
-
-(def itr-user-create
+(def i-user-create
   {:name :user-create
    :leave
    (fn [ctx]
@@ -183,7 +47,7 @@
              (assoc ctx :response (ok o))
              (throw (ex-info "app.core/create-user failed" {:user-data user-data})))))))})
 
-(def itr-user-delete
+(def i-user-delete
   {:name :user-delete
    :leave
    (fn [ctx]
@@ -196,7 +60,7 @@
              (assoc ctx :response (ok o))
              (throw (ex-info "app.core/evict-user failed" {:user-data user-data})))))))})
 
-(def itr-user-list
+(def i-user-list
   {:name :user-list
    :leave
    (fn [ctx]
@@ -210,20 +74,12 @@
        (assoc ctx :response (ok "list"))))})
 
 
-
 (defn routes
   []
   (route/expand-routes
-   #{["/todo"                    :post   [db-interceptor list-create]]
-     ["/todo"                    :get    echo :route-name :list-query-form]
-     ["/todo/:list-id"           :get    [entity-render db-interceptor list-view]]
-     ["/todo/:list-id"           :post   [entity-render list-item-view db-interceptor list-item-create]]
-     ["/todo/:list-id/:item-id"  :get    [entity-render list-item-view db-interceptor]]
-     ["/todo/:list-id/:item-id"  :put    echo :route-name :list-item-update]
-     ["/todo/:list-id/:item-id"  :delete echo :route-name :list-item-delete]
-     ["/user" :get [itr-user-list]]
-     ["/user" :post [(body-params/body-params) http/html-body itr-user-create]]
-     ["/user" :delete [(body-params/body-params) http/html-body itr-user-delete]]}))
+   #{["/user" :get [i-user-list]]
+     ["/user" :post [i-user-create]]
+     ["/user" :delete [i-user-delete]]}))
 
 
 (comment
@@ -235,7 +91,7 @@
 
   (def channels @(resolve 'starnet.app.alpha.main/channels))
 
-  (def service (::http/service-fn (http/create-servlet (make-service-full channels))))
+  (def service (::http/service-fn (http/create-servlet (service-config channels (routes)))))
 
   (response-for service :get "/todo/abc/123")
 
@@ -256,26 +112,9 @@
   (def user (-> (app.core/repl-users channels) (rand-nth)))
 
 
-
-
   ;;
   )
 
-
-#_(defroutes routes
-  ;; Defines "/" and "/about" routes with their associated :get handlers.
-  ;; The interceptors defined after the verb map (e.g., {:get home-page}
-  ;; apply to / and its children (/about).
-    [[["/" {:get home-page}
-       ^:interceptors [(body-params/body-params) http/html-body]
-       ["/about" {:get about-page}]]]])
-
-(comment
-
-
-
-  ;;
-  )
 
 (def ws-clients (atom {}))
 
@@ -297,7 +136,7 @@
 (defn send-message-to-all!
   [message]
   (doseq [[^Session session channel] @ws-clients]
-    ;; The Pedestal Websocket API performs all defensive checks before sending,
+    ;; The Pedestal Websocket API performs all defenmake-service-fullsive checks before sending,
     ;;  like `.isOpen`, but this example shows you can make calls directly on
     ;;  on the Session object if you need to
     (when (.isOpen session)
@@ -311,67 +150,46 @@
           :on-close (fn [num-code reason-text]
                       (log/info :msg "WS Closed:" :reason reason-text))}})
 
-;; http://pedestal.io/reference/service-map
+(def supported-types ["text/html" "application/edn"  "text/plain" "application/transit+json"])
 
-(def port 8080)
-(def port-ssl 8443)
-(def host "0.0.0.0")
+(def content-neg-intc (conneg/negotiate-content supported-types))
 
-(defn make-service
-  []
-  (->
-   {:env :prod
-    ::http/routes routes
-                    ;; ::http/allowed-origins ["*"]
-    ::http/resource-path "/public"
-    ::http/type :jetty
-                   ;; http://pedestal.io/reference/jetty
-    ::http/container-options {:context-configurator #(ws/add-ws-endpoints % ws-paths)
-                                        ; :h2c? true
-                                        ; :h2? true
-                              :ssl? true
-                              :ssl-port port-ssl
-                              :keystore "resources/keystore.jks"
-                              :key-password "keystore"}
-    ::http/host host
-    ::http/port port}))
-
-(defn create-channels-interceptor
+(defn i-channels
   [channels]
   (interceptor
    {:name :channels-interceptor
     :error nil
     :enter
     (fn [context]
-      #_(println "channels-interceptor enter")
       (assoc context :channels channels))
     :leave
     (fn [context]
-      #_(println "channels-interceptor leave")
-      #_(println (:channels context))
       context)}))
 
-(defn create-deafult-interceptors
+(defn create-app-default-interceptors
   [channels]
   (fn [service-map]
     (update-in service-map [::http/interceptors]
-               (fn [col]
-                 (-> col
-                     (conj (create-channels-interceptor channels)))))))
+               #(vec (-> %
+                         (conj (i-channels channels))
+                         (conj content-neg-intc))))))
 
-(defn make-service-full
-  [channels]
-  (let [default-interceptors (create-deafult-interceptors channels)]
+
+;; http://pedestal.io/reference/service-map
+(defn service-config
+  [channels routes]
+  (let [app-default-interceptors (create-app-default-interceptors channels)
+        port 8080
+        port-ssl 8443
+        host "0.0.0.0"]
     (->
      {:env :prod
-      ::http/routes (routes)
-                    ;; ::http/allowed-origins ["*"]
+      ::http/routes routes
       ::http/resource-path "/public"
       ::http/type :jetty
-                   ;; http://pedestal.io/reference/jetty
       ::http/container-options {:context-configurator #(ws/add-ws-endpoints % ws-paths)
-                                        ; :h2c? true
-                                        ; :h2? true
+                                ; :h2c? true
+                                ; :h2? true
                                 :ssl? true
                                 :ssl-port port-ssl
                                 :keystore "resources/keystore.jks"
@@ -379,36 +197,23 @@
       ::http/host host
       ::http/port port}
      (merge {:env :dev
-             ::server/join? false
-             ::server/routes (routes)
-             ::server/allowed-origins {:creds true :allowed-origins (constantly true)}})
-     server/default-interceptors
-     server/dev-interceptors
-     default-interceptors)))
+             ::http/join? false
+             ::http/allowed-origins {:creds true :allowed-origins (constantly true)}})
+     http/default-interceptors
+     http/dev-interceptors
+     app-default-interceptors)))
 
-
-
-(defn start-dev
+(defn start
   [channels]
-  (println (str "; starting http server on " host ":" port))
-  (when (get-in (make-service) [::http/container-options :ssl-port])
-    (println (str "; starting https server on " host ":" port-ssl)))
-  (let [default-interceptors (create-deafult-interceptors channels)]
-    (-> (make-service)
-        (merge {:env :dev
-              ;; do not block thread that starts web server
-                ::server/join? false
-              ;; Routes can be a function that resolve routes,
-              ;;  we can use this to set the routes to be reloadable
-                ;; ::server/routes #(deref #'routes)
-                ::server/routes (routes)
-              ;; all origins are allowed in dev mode
-                ::server/allowed-origins {:creds true :allowed-origins (constantly true)}})
-      ;; Wire up interceptor chains
-        server/default-interceptors
-        server/dev-interceptors
-        default-interceptors
-        server/create-server
-        server/start)))
+  (let [service (service-config channels (routes))
+        host (::http/host service)
+        port (::http/port service)
+        ssl-port (get-in service [::http/container-options :ssl-port])]
+    (println (str "; starting http server on " host ":" port))
+    (when ssl-port
+      (println (str "; starting https server on " host ":" ssl-port)))
+    (-> service
+        (server/create-server)
+        (server/start))))
 
 
