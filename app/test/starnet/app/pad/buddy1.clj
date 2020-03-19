@@ -11,7 +11,9 @@
    [buddy.sign.jws :as jws]
    [buddy.core.nonce :as nonce]
    [buddy.core.bytes :as bytes]
-   [buddy.sign.compact :as cm]))
+   [buddy.sign.compact :as cm]
+   [buddy.auth.backends :as backends]
+   [buddy.auth.middleware :refer [wrap-authentication]]))
 
 
 (comment
@@ -94,6 +96,44 @@
   (cm/unsign data "secret")
   
   (cm/unsign data "secret" {:max-age (* 15 60)})
+
+
+  ;;
+  )
+
+(comment
+
+  ; https://funcool.github.io/buddy-auth/latest/
+
+  ;; Define a in-memory relation between tokens and users:
+  (def tokens {:2f904e245c1f5 :admin
+               :45c1f5e3f05d0 :foouser})
+
+  ;; Define an authfn, function with the responsibility
+  ;; to authenticate the incoming token and return an
+  ;; identity instance
+
+  (defn my-authfn
+    [request token]
+    (let [token (keyword token)]
+      (get tokens token nil)))
+
+  ;; Create an instance
+  (def backend (backends/token {:authfn my-authfn}))
+  
+  ;; The authfn should return something that will be associated to the :identity key in the request.
+
+  (defn my-handler
+    [request])
+
+  ;; This is a possible aspect of the authorization header
+  ;; Authorization: Token 45c1f5e3f05d0
+  
+  ;; Wrap the ring handler.
+  (def app (-> my-handler
+               (wrap-authentication backend)))
+  
+  
 
 
   ;;
