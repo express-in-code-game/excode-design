@@ -83,7 +83,7 @@
                user-data2 (assoc user-data :u/password hashed)
                o (<! (app.core/create-user channels user-data2))]
            (if o
-             (assoc ctx :response (ok o))
+             ctx
              (throw (ex-info "app.core/create-user failed" {:user-data user-data})))))))})
 
 
@@ -95,10 +95,10 @@
        (let [headers (get-in ctx [:request :headers])
              user-data (get-in ctx [:request :edn-params])
              channels (get-in ctx [:app/ctx :channels])]
-         (let [o (<! (app.core/evict-user channels (:u/uuid user-data)))]
+         (let [o (<! (app.core/evict-user channels user-data))]
            (if o
              (assoc ctx :response (ok o))
-             (throw (ex-info "app.core/evict-user failed" {:user-data user-data})))))))})
+             (throw (ex-info "app.core/evict-user failed" user-data)))))))})
 
 (def user-list
   {:name :user-list
@@ -148,7 +148,7 @@
   []
   (route/expand-routes
    #{["/user" :get (conj common-interceptors user-list)]
-     ["/user" :post [(body-params) user-create]]
+     ["/user" :post (conj common-interceptors user-create (assoc user-login :name :user-creaete-login) )]
      ["/user" :delete (conj common-interceptors user-delete)]
      ["/login" :post (conj common-interceptors user-login)]}))
 

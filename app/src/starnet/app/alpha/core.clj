@@ -34,9 +34,9 @@
   [])
    
 (defn evict-user
-  [channels u-uuid]
+  [channels user-data]
   (db-tx channels [[:crux.tx/evict
-                    u-uuid]]))
+                    (:u/uuid user-data)]]))
 
 (defn repl-query
   [channels query-data]
