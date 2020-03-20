@@ -20,7 +20,7 @@
    [io.pedestal.test :as test]
    [buddy.auth :as auth]
    [clj-time.core :as time]
-   [buddy.hashers :as hashers]
+   
    [buddy.auth.backends.token :refer [jwe-backend]]
    [buddy.auth.middleware :as auth.middleware]
    [io.pedestal.interceptor.chain :as interceptor.chain]
@@ -42,6 +42,7 @@
 (def ok       (partial response 200))
 (def created  (partial response 201))
 (def accepted (partial response 202))
+(def r403 (partial response 403))
 
 (defn home
   [request]
@@ -78,13 +79,11 @@
      (go
        (let [headers (get-in ctx [:request :headers])
              user-data (get-in ctx [:request :edn-params])
-             channels (get-in ctx [:app/ctx :channels])]
-         (let [hashed (hashers/derive (:u/password user-data) {:alg :bcrypt+sha512 :iterations 4})
-               user-data2 (assoc user-data :u/password hashed)
-               o (<! (app.core/create-user channels user-data2))]
-           (if o
-             ctx
-             (throw (ex-info "app.core/create-user failed" {:user-data user-data})))))))})
+             channels (get-in ctx [:app/ctx :channels])
+             o (<! (app.core/create-user channels user-data))]
+         (if o
+           ctx
+           (throw (ex-info "app.core/create-user failed" {:user-data user-data}))))))})
 
 
 (def user-delete
@@ -124,33 +123,30 @@
    (fn [ctx]
      (go
        (let [headers (get-in ctx [:request :headers])
-             data (get-in ctx [:request :edn-params])
              channels (get-in ctx [:app/ctx :channels])
              pubkey (get-in ctx [:app/ctx :pubkey])
-             token (jwt/encrypt {:val (select-keys data [:u/uuid])
-                                 :exp (time/plus (time/now) (time/seconds 3600))}
-                                pubkey
-                                {:alg :rsa-oaep
-                                 :enc :a128cbc-hs256})]
-         (-> ctx
-             (assoc  :response {:status 200
-                                :body (select-keys data [:u/uuid])
-                                :headers {"Authorization" (format "Token %s" token)}}))
-         #_(let [user-record (<! (app.core/user-by-username channels (:u/username data)))
-                 raw (:u/password data)
-                 hashed (:u/password user-record)
-                 pass-valid? (hashers/check raw hashed)]
-             (if pass-valid?
-               (assoc ctx :response (ok true))
-               (throw (ex-info "password invalid failed" {:user-record user-record})))))))})
+             data (get-in ctx [:request :edn-params])
+             user (<! (app.core/user-by-username channels data))
+             raw (or (:u/password-TMP data) (:u/password data))
+             valid? (and user (hashers/check raw (:u/password user)))]
+         (if valid?
+           (let [token (jwt/encrypt {:val (select-keys data [:u/uuid])
+                                     :exp (time/plus (time/now) (time/seconds 3600))}
+                                    pubkey
+                                    {:alg :rsa-oaep
+                                     :enc :a128cbc-hs256})]
+             (assoc ctx :response {:status 200
+                                   :body (select-keys data [:u/uuid])
+                                   :headers {"Authorization" (format "Token %s" token)}}))
+           (assoc ctx :response (r403 "Invalid credentials"))))))})
 
 (defn routes
   []
   (route/expand-routes
-   #{["/user" :get (conj common-interceptors user-list)]
-     ["/user" :post (conj common-interceptors user-create (assoc user-login :name :user-creaete-login) )]
-     ["/user" :delete (conj common-interceptors user-delete)]
-     ["/login" :post (conj common-interceptors user-login)]}))
+   #{["/user" :get (conj common-interceptors user-list) :route-name :get/user]
+     ["/user" :post (conj common-interceptors user-create user-login) :route-name :post/user]
+     ["/user" :delete (conj common-interceptors user-delete) :route-name :delete/user]
+     ["/login" :post (conj common-interceptors user-login) :route-name :post/login]}))
 
 (comment
 
@@ -172,11 +168,10 @@
                                    {:alg :rsa-oaep
                                     :enc :a128cbc-hs256}))
 
-  (response-for service :get "/user" :headers {"Authorization" (format "Token %s" token)})
+  (count (app.core/repl-users channels))
+  (-> (app.core/repl-users channels) (rand-nth))
 
-  (response-for service :post "/login"
-                :body (str (gen/generate (s/gen :u/user)))
-                :headers {"Content-Type" "application/edn"})
+  (response-for service :get "/user" :headers {"Authorization" (format "Token %s" token)})
 
   (response-for service :post "/user"
                 :body (str (gen/generate (s/gen :u/user)))
@@ -186,8 +181,20 @@
                 :body (str (-> (app.core/repl-users channels) (rand-nth)))
                 :headers {"Content-Type" "application/edn"})
 
-  (count (app.core/repl-users channels))
-  (def user (-> (app.core/repl-users channels) (rand-nth)))
+  ; valid
+  (response-for service :post "/login"
+                :body (str (-> (app.core/repl-users channels) (rand-nth)))
+                :headers {"Content-Type" "application/edn"})
+
+  ; invalid
+  (response-for service :post "/login"
+                :body (str {:u/username "mock" :u/password "mock"})
+                :headers {"Content-Type" "application/edn"})
+
+  (->
+   (app.core/user-by-username channels (-> (app.core/repl-users channels) (rand-nth)))
+   (app.core/<!!soft))
+
 
 
   ;;
