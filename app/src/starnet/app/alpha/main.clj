@@ -8,7 +8,7 @@
    [clojure.spec.alpha :as s]
    [clojure.spec.test.alpha :as stest]
 
-   
+   [buddy.core.keys :as keys]
    
    [starnet.app.alpha.aux.serdes]
 
@@ -86,7 +86,10 @@
           (do
             (<! (proc-keys channels))
             (proc-nrepl-server (select-keys channels [:pb-sys]))
-            (proc-http-server (select-keys channels [:pb-sys]) channels)
+            (proc-http-server (select-keys channels [:pb-sys])
+                              {:channels channels
+                               :privkey (keys/private-key "resources/privkey.pem" (slurp "resources/passphrase.tmp"))
+                               :pubkey (keys/public-key "resources/pubkey.pem")})
             (proc-cruxdb (select-keys channels [:pb-sys :ch-cruxdb]))
             (proc-kproducer (select-keys channels [:pb-sys :ch-kproducer]))
             (proc-kstreams (select-keys channels [:pb-sys :ch-sys :mx-kstreams-states]))
@@ -137,13 +140,13 @@
         (println "closing proc-nrepl-server"))))
 
 (defn proc-http-server
-  [{:keys [pb-sys]} channels]
+  [{:keys [pb-sys]} app-ctx]
   (let [c (chan 1)]
     (sub pb-sys :http-server c)
     (go (loop [server nil]
           (when-let [{op :proc/op} (<! c)]
             (condp = op
-              :start (let [sr (app-http/start channels)]
+              :start (let [sr (app-http/start app-ctx)]
                        (recur sr))
               :stop (recur server))))
         (println "closing proc-http-server"))))

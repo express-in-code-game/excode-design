@@ -18,7 +18,15 @@
    [io.pedestal.test :as test :refer [response-for raw-response-for]]
    [io.pedestal.http.content-negotiation :as conneg]
    [io.pedestal.test :as test]
+   [buddy.auth :as auth]
+   [clj-time.core :as time]
    [buddy.hashers :as hashers]
+   [buddy.auth.backends.token :refer [jwe-backend]]
+   [buddy.auth.middleware :as auth.middleware]
+   [io.pedestal.interceptor.chain :as interceptor.chain]
+   [io.pedestal.interceptor.error :refer [error-dispatch]]
+   [buddy.core.keys :as keys]
+   [buddy.sign.jwt :as jwt]
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
    [clojure.spec.test.alpha :as stest]
@@ -27,6 +35,7 @@
   (:import
    [org.eclipse.jetty.websocket.api Session]))
 
+
 (defn response [status body & {:as headers}]
   {:status status :body body :headers headers})
 
@@ -34,6 +43,33 @@
 (def created  (partial response 201))
 (def accepted (partial response 202))
 
+(defn home
+  [request]
+  (if-not (auth/authenticated? request)
+    (auth/throw-unauthorized)
+    (ok {:status "Logged" :message (str "hello logged user "
+                                        (:identity request))})))
+
+(def authentication-interceptor
+  (interceptor
+   {:name ::authenticate
+    :enter (fn [ctx]
+             (let [backend (get-in ctx [:app/ctx :backend])]
+               (update ctx :request auth.middleware/authentication-request backend)))}))
+
+(def authorization-interceptor
+  (error-dispatch [ctx ex]
+                  [{:exception-type :clojure.lang.ExceptionInfo :stage :enter}]
+                  (try
+                    (assoc ctx
+                           :response
+                           (auth.middleware/authorization-error (:request ctx)
+                                                                ex
+                                                                (get-in ctx [:app/ctx :backend])))
+                    (catch Exception e
+                      (assoc ctx ::interceptor.chain/error e)))
+
+                  :else (assoc ctx ::interceptor.chain/error ex)))
 
 (def user-create
   {:name :user-create
@@ -42,29 +78,13 @@
      (go
        (let [headers (get-in ctx [:request :headers])
              user-data (get-in ctx [:request :edn-params])
-             channels (:channels ctx)]
+             channels (get-in ctx [:app/ctx :channels])]
          (let [hashed (hashers/derive (:u/password user-data) {:alg :bcrypt+sha512 :iterations 4})
                user-data2 (assoc user-data :u/password hashed)
                o (<! (app.core/create-user channels user-data2))]
            (if o
              (assoc ctx :response (ok o))
              (throw (ex-info "app.core/create-user failed" {:user-data user-data})))))))})
-
-(def user-login
-  {:name :user-create
-   :leave
-   (fn [ctx]
-     (go
-       (let [headers (get-in ctx [:request :headers])
-             data (get-in ctx [:request :edn-params])
-             channels (:channels ctx)]
-         (let [user-record (<! (app.core/user-by-username channels (:u/username data)))
-               raw (:u/password data)
-               hashed (:u/password user-record)
-               pass-valid? (hashers/check raw hashed)]
-           (if pass-valid?
-             (assoc ctx :response (ok true))
-             (throw (ex-info "password invalid failed" {:user-record user-record})))))))})
 
 
 (def user-delete
@@ -74,7 +94,7 @@
      (go
        (let [headers (get-in ctx [:request :headers])
              user-data (get-in ctx [:request :edn-params])
-             channels (:channels ctx)]
+             channels (get-in ctx [:app/ctx :channels])]
          (let [o (<! (app.core/evict-user channels (:u/uuid user-data)))]
            (if o
              (assoc ctx :response (ok o))
@@ -86,36 +106,80 @@
    (fn [ctx]
      (go
        (let [headers (get-in ctx [:request :headers])
-             body (get-in ctx [:request :body])]
-         (println "123")
-         (println (:channels ctx))
-         (println headers)
-         (println body))
-       (assoc ctx :response (ok "list"))))})
+             d (get-in ctx [:request :edn-params])]
+         (println "; user-list1")
+         (println (get-in ctx [:app/ctx :backend]))
+         (println (get-in ctx [:request :identity]))
+         (println d)
+         (assoc ctx :response (ok "list")))
+       ))})
 
+(def common-interceptors [(body-params)
+                          http/html-body
+                          authentication-interceptor
+                          ])
+(def user-login
+  {:name :user-login
+   :leave
+   (fn [ctx]
+     (go
+       (let [headers (get-in ctx [:request :headers])
+             data (get-in ctx [:request :edn-params])
+             channels (get-in ctx [:app/ctx :channels])
+             pubkey (get-in ctx [:app/ctx :pubkey])
+             token (jwt/encrypt {:val (select-keys data [:u/uuid])
+                                 :exp (time/plus (time/now) (time/seconds 3600))}
+                                pubkey
+                                {:alg :rsa-oaep
+                                 :enc :a128cbc-hs256})]
+         (-> ctx
+             (assoc  :response {:status 200
+                                :body (select-keys data [:u/uuid])
+                                :headers {"Authorization" (format "Token %s" token)}}))
+         #_(let [user-record (<! (app.core/user-by-username channels (:u/username data)))
+                 raw (:u/password data)
+                 hashed (:u/password user-record)
+                 pass-valid? (hashers/check raw hashed)]
+             (if pass-valid?
+               (assoc ctx :response (ok true))
+               (throw (ex-info "password invalid failed" {:user-record user-record})))))))})
 
 (defn routes
   []
   (route/expand-routes
-   #{["/user" :get [user-list]]
+   #{["/user" :get (conj common-interceptors user-list)]
      ["/user" :post [(body-params) user-create]]
-     ["/user" :delete [(body-params) user-delete]]}))
-
+     ["/user" :delete (conj common-interceptors user-delete)]
+     ["/login" :post (conj common-interceptors user-login)]}))
 
 (comment
 
   ;https://github.com/pedestal/pedestal/blob/master/service/src/io/pedestal/test.clj
   ;http://pedestal.io/reference/parameters#_body_parameters
 
-  (cors/allow-origin [])
-
   (def channels @(resolve 'starnet.app.alpha.main/channels))
+  (def app-ctx {:channels channels
+                :privkey (keys/private-key "resources/privkey.pem" (slurp "resources/passphrase.tmp"))
+                :pubkey (keys/public-key "resources/pubkey.pem")})
 
-  (def service (::http/service-fn (http/create-servlet (service-config channels (routes)))))
+  (def service (::http/service-fn (http/create-servlet (service-config app-ctx (routes)))))
 
-  (response-for service :get "/user")
+  (def token (jwt/encrypt {:user :hello
+                           :exp (time/plus (time/now) (time/seconds 3600))} (:pubkey app-ctx)
+                          {:alg :rsa-oaep
+                           :enc :a128cbc-hs256}))
+  (def decrypted-data (jwt/decrypt token (:privkey app-ctx)
+                                   {:alg :rsa-oaep
+                                    :enc :a128cbc-hs256}))
+
+  (response-for service :get "/user" :headers {"Authorization" (format "Token %s" token)})
+
+  (response-for service :post "/login"
+                :body (str (gen/generate (s/gen :u/user)))
+                :headers {"Content-Type" "application/edn"})
+
   (response-for service :post "/user"
-                :body (gen/generate (s/gen :u/user))
+                :body (str (gen/generate (s/gen :u/user)))
                 :headers {"Content-Type" "application/edn"})
 
   (response-for service :delete "/user"
@@ -164,35 +228,45 @@
           :on-close (fn [num-code reason-text]
                       (log/info :msg "WS Closed:" :reason reason-text))}})
 
+
 (def supported-types ["text/html" "application/edn"  "text/plain" "application/transit+json"])
 
 (def content-neg-intc (conneg/negotiate-content supported-types))
 
-(defn i-channels
-  [channels]
+(defn app-ctx-interceptor
+  [app-ctx]
   (interceptor
-   {:name :channels-interceptor
+   {:name :app-ctx-interceptor
     :error nil
     :enter
     (fn [context]
-      (assoc context :channels channels))
+      (let [privkey (get-in app-ctx [:privkey])
+            backend (jwe-backend {:secret privkey
+                                  :options {:alg :rsa-oaep
+                                            :enc :a128cbc-hs256}
+                                  :authfn (fn [req]
+                                            (println "req")
+                                            (println privkey)
+                                            (println req)
+                                            (assoc req :identity true))})
+            app-ctx (assoc app-ctx :backend backend)]
+        (assoc context :app/ctx app-ctx)))
     :leave
     (fn [context]
       context)}))
 
 (defn create-app-default-interceptors
-  [channels]
+  [app-ctx]
   (fn [service-map]
     (update-in service-map [::http/interceptors]
                #(vec (-> %
-                         (conj (i-channels channels))
+                         (conj (app-ctx-interceptor app-ctx))
                          (conj content-neg-intc))))))
-
 
 ;; http://pedestal.io/reference/service-map
 (defn service-config
-  [channels routes]
-  (let [app-default-interceptors (create-app-default-interceptors channels)
+  [app-ctx routes]
+  (let [app-default-interceptors (create-app-default-interceptors app-ctx)
         port 8080
         port-ssl 8443
         host "0.0.0.0"]
@@ -218,8 +292,8 @@
      app-default-interceptors)))
 
 (defn start
-  [channels]
-  (let [service (service-config channels (routes))
+  [app-ctx]
+  (let [service (service-config app-ctx (routes))
         host (::http/host service)
         port (::http/port service)
         ssl-port (get-in service [::http/container-options :ssl-port])]
