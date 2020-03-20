@@ -128,6 +128,8 @@
     - https://funcool.github.io/buddy-auth/latest/
     - stateless
       - https://funcool.github.io/buddy-auth/latest/#signed-jwt
+  - sockets
+    - https://github.com/stalefruits/gniazdo
 
 - crux
   - https://github.com/juxt/crux
