@@ -353,3 +353,11 @@
   - so if no events happen , timeouts (but not intervals, created by events) will be (alts!) and proc will close/remove the game
   - would be nice not to interval for every game, queue is preferred
   - once-a-few hours (timeout []) may be enqueued to remove stale games
+- game events on the client and disconnect
+  - the process will aplly events to the state and send to the server
+  - if disconented, explicit non-blocking 'reconnecting' message will be shown
+  - ui will sta responsive, game will be explorable, but the events will not be applied to state (execpt local ui related)
+  - but the process will discard all events (vals on queue) that require connection
+  - once reconnected, event conveyance will resume
+- client and server exhange
+  - it is a synchronization of state between to core.async processes over two channels(queues)

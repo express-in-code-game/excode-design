@@ -7,113 +7,95 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    [starnet.common.alpha.core :refer [make-inst with-gen-fmap]]
-   #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethods-for-a-set]]
-      :clj  [starnet.common.alpha.macros :refer [defmethods-for-a-set]])
    [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]))
 
-(defn make-game-state
-  []
-  {:g/uuid (gen/generate gen/uuid)
-   :g/status :created
-   :g/start-inst (make-inst)
-   :g/duration-ms 60000
-   :g/roles {}
-   :g/player-states {0 {:g.p/entities {:g.p/cape {:g.e/type :g.e.type/cape
-                                                  :g.e/uuid (gen/generate gen/uuid)
-                                                  :g.e/pos [0 0]}}
-                        :g.p/sum 0}
-                     1 {:g.p/entities {:g.p/cape {:g.e/type :g.e.type/cape
-                                                  :g.e/uuid (gen/generate gen/uuid)
-                                                  :g.e/pos [0 15]}}
-                        :g.p/sum 0}}
-   :g/exit-teleports [{:g.e/type :g.e.type/teleport
-                       :g.e/uuid (gen/generate gen/uuid)
-                       :g.e/pos [15 0]}
-                      {:g.e/type :g.e.type/teleport
-                       :g.e/uuid (gen/generate gen/uuid)
-                       :g.e/pos [15 15]}]
-   :g/value-tiles (-> (mapcat (fn [x]
-                                (mapv (fn [y]
-                                        {:g.e/uuid (gen/generate gen/uuid)
-                                         :g.e/type :g.e.type/value-tile
-                                         :g.e/pos [x y]
-                                         :g.e/numeric-value (inc (rand-int 10))}) (range 0 1)))
-                              (range 0 1))
-                      (vec))
-   :g/map-size [16 16]})
+(declare next-state next-state-events next-state-derived)
 
-(defmulti next-state-game
+(defn make-game-state
+  ([]
+   (make-game-state {}))
+  ([opts]
+   (merge {:g/uuid (gen/generate gen/uuid)
+           :g/events []}
+          (select-keys opts [:g/events :g/uuid]))))
+
+(defmulti next-state
+  {:arglists '([state key event])}
+  (fn [state k ev] [(:ev/type ev)]))
+
+(defmethod next-state [:ev/batch]
+  [state k ev]
+  (let [{:keys [g/events]} ev]
+    (as-> state o
+      (update o :g/events #(-> % (concat events) (vec)))
+      (reduce (fn [agg v] (next-state-derived k v)) o events))))
+
+(defmethod next-state :default
+  [state k ev]
+  (-> state
+      (update :g/events #(-> % (conj ev)))
+      (next-state-derived k ev)))
+
+(defmulti next-state-derived
   "Returns the next state of the game."
   {:arglists '([state key event])}
   (fn [state k ev] [(:ev/type ev)]))
 
-(defmethod next-state-game [:ev.c/delete-record]
+(defmethod next-state-derived [:ev.g/create]
   [state k ev]
-  nil)
+  (let [{:keys [u/uuid]} ev]
+    (-> state
+        (update :g.derived/status assoc :created)
+        (update :g.derived/host assoc uuid)
+        (update-in  [:g.derived/time] (select-keys ev [:g.time/created])))))
 
-(defmethod next-state-game [:ev.g.u/create]
+(defmethod next-state-derived [:ev.g/setup]
+  [state k ev]
+  (update-in state [:g.derived/time] (select-keys ev [:g.time/duration])))
+
+(defmethod next-state-derived [:ev.g/open]
   [state k ev]
   (-> state
-      (update-in [:g/roles]
-                 assoc (:u/uuid ev) {:g.r/observer true
-                                     :g.r/host true
-                                     :g.r/player nil})))
+      (update :g.derived/status assoc :opened)
+      (update-in  [:g.derived/time] (select-keys ev [:g.time/opened]))))
 
-(defmethod next-state-game [:ev.g.u/delete]
+(defmethod next-state-derived [:ev.g/close]
   [state k ev]
-  nil)
+  (-> state
+      (update :g.derived/status assoc :closed)
+      (update-in  [:g.derived/time] (select-keys ev [:g.time/closed]))))
 
-(defmethod next-state-game [:ev.g.u/configure]
+(defmethod next-state-derived [:ev.g/start]
   [state k ev]
-  (when state
-    (merge state ev)))
+  (-> state
+      (update :g.derived/status assoc :started)
+      (update-in  [:g.derived/time] (select-keys ev [:g.time/started]))))
 
-(defmethod next-state-game [:ev.g.u/start]
+(defmethod next-state-derived [:ev.g/finish]
   [state k ev]
-  state)
+  (-> state
+      (update :g.derived/status assoc :finished)
+      (update-in  [:g.derived/time] (select-keys ev [:g.time/finished]))))
 
-(defmethod next-state-game [:ev.g.u/join]
+(defmethod next-state-derived [:ev.g/join]
   [state k ev]
-  (update-in state [:g/roles]
-             assoc (ev :u/uuid) {:g.r/observer true
-                                 :g.r/host false
-                                 :g.r/player nil}))
+  (let [{:keys [u/uuid]} ev]
+    (-> state
+        (update-in [:g.derived/roles uuid] assoc :observer))))
 
-(defmethod next-state-game [:ev.g.u/update-role]
+(defmethod next-state-derived [:ev.g/leave]
   [state k ev]
-  (update-in state [:g/roles]
-             update (ev :u/uuid) merge (:g.r/role ev)))
+  (let [{:keys [u/uuid]} ev]
+    (-> state
+        (update-in [:g.derived/roles] dissoc uuid))))
 
-(defmethod next-state-game [:ev.g.u/leave]
+(defmethod next-state-derived [:ev.g/select-role]
   [state k ev]
-  (update-in state [:g/roles]
-             dissoc (ev :u/uuid)))
+  (let [{:keys [u/uuid g/role]} ev]
+    (-> state
+        (update-in [:g.derived/roles uuid] assoc role))))
 
-(defmethod next-state-game [:ev.g.p/move-cape]
-  [state k ev]
-  state)
 
-(defmethod next-state-game [:ev.g.a/finish-game]
-  [state k ev]
-  state)
-
-(defmethod next-state-game [:ev.g.p/collect-tile-value]
+(defmethod next-state-derived :default
   [state k ev]
   state)
-
-
-(comment
-
-  (ns-unmap *ns* 'next-state-game)
-  (stest/instrument [`next-state-game])
-  (stest/unstrument [`next-state-game])
-
-  (gen/sample (s/gen :ev.g.u/update-role) 10)
-  (gen/sample (s/gen :ev.g.u/create) 10)
-  (gen/sample (s/gen :g.r/role) 10)
-
-
-  (stest/check `next-state-game)
-
-  ;;
-  )

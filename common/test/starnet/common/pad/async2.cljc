@@ -82,3 +82,48 @@
   
   ;;
   )
+
+
+(comment
+
+
+  (defn proc1
+    [c]
+    (go (loop [cnt 0]
+          (if-let [v (<! c)]
+            (println (format "proc1: val %s cnt %s" v cnt)))
+          (recur (inc cnt)))
+        (println "proc1 exiting")))
+
+  (def c1 (chan (a/sliding-buffer 10)))
+
+  (def p1 (proc1 c1))
+  (put! c1 {})
+
+  (a/poll! c1)
+
+  (a/close! p1)
+  (a/close! c1)
+
+  (defn proc2
+    [c1 c2]
+    (go (loop [cnt 0]
+          (if-let [[v c] (alts! [c1 c2])]
+            (println (format "proc2: val %s cnt %s" v cnt)))
+          (recur (inc cnt)))
+        (println "proc2 exiting")))
+
+  (def c1 (chan (a/sliding-buffer 10)))
+  (def c2 (chan (a/sliding-buffer 10)))
+
+  (def p2 (proc2 c1 c2))
+  (put! c1 :a)
+  (put! c2 :b)
+
+  (let [[v c] (alts!! [c1 c2 ])]
+    (println v))
+  
+  (a/close! c1)
+
+  ;;
+  )
