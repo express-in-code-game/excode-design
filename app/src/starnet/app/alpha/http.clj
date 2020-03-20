@@ -34,7 +34,8 @@
    [clojure.test.check.generators :as gen]
    [starnet.app.alpha.core :as app.core])
   (:import
-   [org.eclipse.jetty.websocket.api Session]))
+   [org.eclipse.jetty.websocket.api Session]
+   java.net.URI))
 
 
 (defn response [status body & {:as headers}]
@@ -237,9 +238,16 @@
 
 (comment
 
+  (def uri "ws://0.0.0.0:8080/ws")
+  
+  (def cl (wc/client (URI. uri)))
+  (.start cl)
+  (.stop cl)
+  
   (def socket
     (wc/connect
-     "ws://0.0.0.0:8080/ws"
+     uri
+     :client cl
      :on-receive #(prn 'received %)))
   (wc/send-msg socket "hello")
   (wc/close socket)
