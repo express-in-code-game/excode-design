@@ -11,6 +11,7 @@
    [ring.util.response :as ring-resp]
    [clojure.core.async :as async]
    [io.pedestal.http.jetty.websockets :as ws]
+   [gniazdo.core :as wc]
    [io.pedestal.http :as http]
    [io.pedestal.http.cors :as cors]
    [io.pedestal.interceptor :refer [interceptor]]
@@ -20,7 +21,7 @@
    [io.pedestal.test :as test]
    [buddy.auth :as auth]
    [clj-time.core :as time]
-   
+   [buddy.hashers :as hashers]
    [buddy.auth.backends.token :refer [jwe-backend]]
    [buddy.auth.middleware :as auth.middleware]
    [io.pedestal.interceptor.chain :as interceptor.chain]
@@ -196,7 +197,6 @@
    (app.core/<!!soft))
 
 
-
   ;;
   )
 
@@ -234,6 +234,18 @@
           :on-error (fn [t] (log/error :msg "WS Error happened" :exception t))
           :on-close (fn [num-code reason-text]
                       (log/info :msg "WS Closed:" :reason reason-text))}})
+
+(comment
+
+  (def socket
+    (wc/connect
+     "ws://0.0.0.0:8080/ws"
+     :on-receive #(prn 'received %)))
+  (wc/send-msg socket "hello")
+  (wc/close socket)
+
+  ;;
+  )
 
 
 (def supported-types ["text/html" "application/edn"  "text/plain" "application/transit+json"])
