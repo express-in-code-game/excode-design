@@ -141,6 +141,13 @@
 - cljs
   - antd
     - 4.0 changes https://github.com/ant-design/ant-design/issues/16911
+  - goog closure
+    - https://google.github.io/closure-library/api/goog.net.WebSocket.html
+      - https://github.com/google/closure-library/blob/master/closure/goog/net/websocket_test.js
+  - history
+    - https://developer.mozilla.org/en-US/docs/Web/API/History_API/Working_with_the_History_API
+    - https://github.com/juxt/bidi
+    - https://github.com/clj-commons/pushy
 
 
 - issues

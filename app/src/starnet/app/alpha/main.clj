@@ -1,7 +1,7 @@
 (ns starnet.app.alpha.main
   (:require
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go
-                                     >!! <!! alt!! alts! alts!! take! put!
+                                     >!! <!! alt!! alts! alts!! take! put! mult tap untap
                                      thread pub sub sliding-buffer mix admix unmix]]
    [clojure.set :refer [subset?]]
    [starnet.app.alpha.aux.nrepl :refer [start-nrepl-server]]
@@ -107,9 +107,9 @@
                 (start-kstreams-crux-docs (select-keys channels [:ch-sys]))
                 (start-kstreams-game (select-keys channels [:ch-sys]))))
             #_(start-kstreams-game (select-keys channels [:ch-sys]))
-            #_(put! ch-sys [:kproducer :open]))
-          :exit (System/exit 0)))
-      (recur))
+            #_(put! ch-sys [:kproducer :open])
+            (recur))
+          :exit (System/exit 0))))
     (println "closing proc-main")))
 
 (comment
@@ -135,8 +135,7 @@
           (if-let [{op :proc/op} (<! c)]
             (condp = op
               :start (let [sr (start-nrepl-server "0.0.0.0" 7788)]
-                       (recur sr)))
-            (recur server)))
+                       (recur sr)))))
         (println "closing proc-nrepl-server"))))
 
 (defn proc-http-server
@@ -159,7 +158,7 @@
           (if-let [{s :log/str} (<! c)]
             (println (str "; " s))
             (recur)))
-        (println "closing proc-http-server"))))
+        (println "closing proc-log"))))
 
 (def crux-conf {:crux.node/topology '[crux.kafka/topology
                                       crux.kv.rocksdb/kv-store]
@@ -269,8 +268,7 @@
                                              (recur s))
                           (not running?) (do (when store
                                                (println (format "; kv-store %s closed" store-name)))
-                                             (recur store))
-                          :else (recur store)))
+                                             (recur store))))
               ch-kstore-user (let [{op :kstore/op
                                     k :kafka/k
                                     ev :kafka/ev
@@ -280,8 +278,7 @@
                                           (recur store))
                                  :read-store (do
                                                (>! c-out (read-store store))
-                                               (recur store))
-                                 (recur store))))))
+                                               (recur store)))))))
         (println "proc-kstore-user exiting"))))
 
 (defn proc-kstore-game
@@ -303,8 +300,7 @@
                                              (recur s))
                           (not running?) (do (when store
                                                (println (format "; kv-store %s closed" store-name)))
-                                             (recur store))
-                          :else (recur store)))
+                                             (recur store))))
               ch-kstore-game (let [{op :kstore/op
                                      k :kafka/k
                                      ev :kafka/ev
@@ -330,8 +326,7 @@
                                                               :ch/c-out c})
                                             (<! c)
                                             (>! c-out ev)
-                                            (recur store))
-                                  (recur store))))))
+                                            (recur store)))))))
         (println "proc-kstore-game exiting"))))
 
 
@@ -348,7 +343,7 @@
 
   (list-topics {:props kprops})
   (delete-topics {:props kprops :names ktopics})
-
+  
   ;;
   )
 
@@ -377,8 +372,7 @@
                              #_(a/unmix mx-kstreams-states (:ch-running app)))
                            (recur app))
                 :cleanup (do (.cleanUp (:kstreams app))
-                             (recur app))
-                (recur app)))))
+                             (recur app))))))
         (println (str "proc-kstreams exiting")))
     c))
 
@@ -421,8 +415,8 @@
     (go (loop []
           (when-let [{:keys [k v]} (<! c)]
             (do
-              (swap! derived assoc k v)))
-          (recur))
+              (swap! derived assoc k v))
+            (recur)))
         (println "proc-view exiting"))
     c))
 

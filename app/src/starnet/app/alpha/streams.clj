@@ -11,9 +11,8 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
 
-   [starnet.common.alpha.spec :refer [event-to-topic event-to-recordkey]]
-   [starnet.common.alpha.game :refer [next-state-game]]
-   [starnet.common.alpha.user :refer [next-state-user]])
+   [starnet.common.alpha.game :refer [next-state]]
+   [starnet.common.alpha.spec])
   (:import
    starnet.app.alpha.aux.serdes.TransitJsonSerializer
    starnet.app.alpha.aux.serdes.TransitJsonDeserializer
@@ -229,29 +228,6 @@
   (fn [kproducer ev & args]
     (mapv type (into [ev] args))))
 
-(defmethod send-event [:isa/kproducer Object]
-  [kproducer ev ]
-  (.send kproducer
-         (ProducerRecord.
-          (event-to-topic ev)
-          (event-to-recordkey ev)
-          ev)))
-
-(defmethod send-event [:isa/kproducer Object String ]
-  [kproducer ev topic]
-  (.send kproducer
-         (ProducerRecord.
-          topic
-          (event-to-recordkey ev)
-          ev)))
-
-(defmethod send-event [:isa/kproducer Object :isa/uuid ]
-  [kproducer ev uuidkey ]
-  (.send kproducer
-         (ProducerRecord.
-          (event-to-topic ev)
-          uuidkey
-          ev)))
 
 (defmethod send-event [:isa/kproducer Object String :isa/uuid]
   [kproducer ev topic uuidkey]
@@ -457,7 +433,7 @@
                                    (reify Aggregator
                                      (apply [this k v ag]
                                        (try
-                                         (assert-next-game-body (next-state-game ag k v))
+                                         (assert-next-game-body (next-state ag k v))
                                          (catch Exception e
                                            (println (ex-message e))
                                            (println (ex-data e))
@@ -471,4 +447,3 @@
 
 
 
-(defn next-state-user-games [])

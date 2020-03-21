@@ -79,3 +79,7 @@
   cursor: pointer;
 
 }
+
+.ui-header > * {
+  margin-right: 16px;
+}
