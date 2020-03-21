@@ -102,3 +102,28 @@
   (js/console.log WebSocket.EventType)
   ;;
   )
+
+(defn proc-pages
+  [])
+
+(defn proc-page-events
+  [])
+
+(defn proc-page-profile
+  [])
+
+(defn proc-page-user-games
+  [])
+
+(defn proc-page-games
+  [])
+
+(defn proc-tab-game
+  [])
+
+(defn proc-page-event
+  [])
+
+(defn proc-page-event-bracket
+  [])
+
