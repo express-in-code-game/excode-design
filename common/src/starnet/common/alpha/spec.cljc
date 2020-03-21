@@ -48,38 +48,45 @@
 (s/def :u/info string?)
 (s/def :u/email (spec-email))
 
-(s/def :u/user (s/keys :req [:u/uuid :u/username :u/email
-                             :u/password :u/fullname :u/info]))
-
+(s/def :u/user (s/keys :req [:u/uuid
+                             :u/username
+                             :u/email
+                             :u/password
+                             :u/fullname
+                             :u/info]))
 
 (s/def :g.e/uuid uuid?)
 (s/def :g.e/pos (s/tuple int? int?))
 (s/def :g.e/numeric-value number?)
 (s/def :g.e/type keyword?)
 
-(s/def :g.e.type/teleport (s/keys :req [:g.e/type :g.e/uuid :g.e/pos]))
-(s/def :g.e.type/cape (s/keys :req [:g.e/type :g.e/uuid  :g.e/pos]))
-(s/def :g.e.type/value-tile (s/keys :req [:g.e/type :g.e/uuid :g.e/pos :g.e/numeric-value]))
+(s/def :g.e.type/teleport (s/keys :req [:g.e/type
+                                        :g.e/uuid 
+                                        :g.e/pos]))
+(s/def :g.e.type/cape (s/keys :req [:g.e/type
+                                    :g.e/uuid
+                                    :g.e/pos]))
+(s/def :g.e.type/value-tile (s/keys :req [:g.e/type 
+                                          :g.e/uuid 
+                                          :g.e/pos 
+                                          :g.e/numeric-value]))
 
 (s/def :g.p/cape :g.e.type/cape)
 (s/def :g.p/entities (s/keys :req [:g.p/cape]))
 (s/def :g.p/sum number?)
 
-(s/def :g.p/player (s/keys :req [:g.p/entities :g.p/sum]))
+(s/def :g.p/player (s/keys :req [:g.p/entities
+                                 :g.p/sum]))
 
 (s/def :g.r/host (s/nilable boolean?))
 (s/def :g.r/player (s/nilable int?))
 (s/def :g.r/observer (s/nilable boolean?))
 
-
-
-
-
 (s/def :g/uuid uuid?)
-(def setof-game-status #{:created :opened :started :finished})
 (s/def :g/status setof-game-status)
-(s/def :g/start-inst inst?)
-(s/def :g/duration-ms number?)
+(s/def :g.time/started inst?)
+(s/def :g.time/duration number?)
+(s/def :g.time/finished (s/nilable inst?))
 (s/def :g/map-size (s/tuple int? int?))
 (s/def :g/player-states (s/map-of int? :g.p/player))
 (s/def :g/exit-teleports (s/coll-of :g.e.type/teleport))
@@ -91,35 +98,62 @@
 (s/def :g/role setof-game-roles)
 (s/def :g.derived/roles (s/map-of :u/uuid :g/role))
 (s/def :g.derived/host :u/uuid)
+(def setof-game-status #{:created :opened :closed :started :finished})
+(s/def :g.derived/status setof-game-status)
+(s/def :g.derived/time (s/keys :req [:g.time/created
+                                     :g.time/opened
+                                     :g.time/closed
+                                     :g.time/started
+                                     :g.time/finished
+                                     :g.time/duration]))
 
-(s/def :g/game (s/keys :req [:g/events :g.derived/roles :g.derived/host]))
+(s/def :g/game (s/keys :req [:g/uuid
+                             :g/events]
+                       :opt [:g.derived/time
+                             :g.derived/roles
+                             :g.derived/status
+                             :g.derived/host]))
 
-(comment 
- 
+(comment
+
   (gen/generate (s/gen :g/game))
   
  ;;
- )
+  )
+
+(s/def :ev.g/batch (with-gen-fmap
+                     (s/keys :req [:ev/type :u/uuid :g/uuid :g/events]
+                             :opt [])
+                     #(assoc %  :ev/type :ev.g/batch)))
 
 (s/def :ev.g/create (with-gen-fmap
-                      (s/keys :req [:ev/type :u/uuid]
-                              :opt [])
-                      #(assoc %  :ev/type :ev.g/create)))
+                    (s/keys :req [:ev/type :u/uuid :g/uuid]
+                            :opt [])
+                    #(assoc %  :ev/type :ev.g/create)))
 
-(s/def :ev.g/delete (with-gen-fmap
-                      (s/keys :req [:ev/type]
-                              :opt [])
-                      #(assoc %  :ev/type :ev.g/delete)))
+(s/def :ev.g/setup (with-gen-fmap
+                     (s/keys :req [:ev/type :u/uuid :g/uuid]
+                             :opt [])
+                     #(assoc %  :ev/type :ev.g/setup)))
 
-(s/def :ev.g/configure (with-gen-fmap
-                         (s/keys :req [:ev/type :u/uuid :g/uuid]
-                                 :opt [])
-                         #(assoc %  :ev/type :ev.g/configure)))
+(s/def :ev.g/open (with-gen-fmap
+                      (s/keys :req [:ev/type :u/uuid :g/uuid]
+                              :opt [])
+                      #(assoc %  :ev/type :ev.g/open)))
+
+(s/def :ev.g/close (with-gen-fmap
+                    (s/keys :req [:ev/type :u/uuid :g/uuid]
+                            :opt [])
+                    #(assoc %  :ev/type :ev.g/close)))
 
 (s/def :ev.g/start (with-gen-fmap
                      (s/keys :req [:ev/type :u/uuid :g/uuid]
                              :opt [])
                      #(assoc %  :ev/type :ev.g/start)))
+
+(s/def :ev.g/finish (with-gen-fmap
+                      (s/and (s/keys :req [:ev/type :u/uuid]))
+                      #(assoc %  :ev/type :ev.g/finish-game)))
 
 (s/def :ev.g/join (with-gen-fmap
                     (s/keys :req [:ev/type :u/uuid :g/uuid]
@@ -131,11 +165,6 @@
                              :opt [])
                      #(assoc %  :ev/type :ev.g/leave)))
 
-(s/def :ev.g/update-role (with-gen-fmap
-                           (s/keys :req [:ev/type :u/uuid :g/uuid :g.r/role]
-                                   :opt [])
-                           #(assoc %  :ev/type :ev.g/update-role)))
-
 (s/def :ev.g/move-cape (with-gen-fmap
                          (s/keys :req [:ev/type :u/uuid :g/uuid
                                        :g.p/cape])
@@ -145,13 +174,11 @@
                                   (s/and (s/keys :req [:ev/type :u/uuid]))
                                   #(assoc %  :ev/type :ev.g/collect-tile-value)))
 
-(s/def :ev.g/finish-game (with-gen-fmap
-                           (s/and (s/keys :req [:ev/type :u/uuid]))
-                           #(assoc %  :ev/type :ev.g/finish-game)))
+
 
 (def eventset-event
   #{:ev.g/create :ev.g/update-role
-    :ev.g/delete :ev.g/configure
+    :ev.g/delete
     :ev.g/start :ev.g/join
     :ev.g/leave :ev.g/move-cape
     :ev.g/collect-tile-value
