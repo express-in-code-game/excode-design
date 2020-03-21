@@ -7,9 +7,15 @@
                                      pub sub sliding-buffer mix admix unmix]]
    [goog.string :as gstring]
    [goog.string.format]
-   [goog.events]
-   [clojure.spec.test.alpha :as stest]
+
+   [bide.core :as br]
+
    [clojure.spec.alpha :as s]
+   [clojure.spec.gen.alpha :as sgen]
+   [clojure.spec.test.alpha :as stest]
+   [clojure.test.check :as tc]
+   [clojure.test.check.generators :as gen]
+   [clojure.test.check.properties :as prop]
 
    [starnet.common.alpha.spec]
 
@@ -17,8 +23,7 @@
    [starnet.ui.alpha.repl]
    [starnet.ui.alpha.tests])
   (:import [goog.net XhrIo EventType WebSocket]
-           [goog Uri History]
-           [goog.history]))
+           [goog Uri History]))
 
 (declare proc-main proc-socket proc-render-containers
         proc-history )
@@ -107,12 +112,9 @@
   (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
   (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :close})
 
-  (js/console.log WebSocket.EventType)
+  
   ;;
   )
-
-; repl onyl
-(def ^:private history (atom nil))
 
 (defn proc-history
   [{:keys [pb-sys ch-history]}]
@@ -122,20 +124,46 @@
           (when-let [{:keys [proc/op]} (<! c)]
             (println (gstring/format "proc-history %s" op))
             (condp = op
-              :start (let [h (History.)]
-                       (reset! history h)
-                       (.listen h goog.history.EventType.NAVIGATE
-                                (fn [ev]
-                                  (println (gstring/format "nav to %s" (.-token ev)))))
-                       (recur h))
+              :start (recur h)
               :stop (recur h)))
           (recur h)))
     c))
 
+(def router
+  (br/router [["/" :page/events]
+              ["/settings/account" :page/settings-account]
+              ["/u/:username/profile" :page/profile]
+              ["/api/auth" :myapp/auth]
+              ["/api/users/:id" :myapp/user-by-id]]))
+
+(defn on-navigate
+  "A function which will be called on each route change."
+  [name params query]
+  (println "Route change to: " name params query))
+
+(br/start! router {:default :page/events
+                   :on-navigate on-navigate
+                   :html5? true})
+
 (comment
+
+  (br/navigate! router :myapp/user-by-id {:id 10})
   
-  (.setToken @history "")
+  (br/navigate! router :page/profile {:username (gen/generate gen/string-alphanumeric) })
   
+
+  (br/match router "/api/auth")
+  (br/match router "/api/users/1")
+  (br/match router "/api/users/1?foobar=1")
+  (br/match router "/api/other")
+  
+  (br/resolve router :myapp/auth)
+  (br/resolve router :myapp/user-by-id {:id 2})
+  (br/resolve router :myapp/user-by-id {:id 2} {:foobar 1})
+  
+  
+  
+
   ;;
   )
 
