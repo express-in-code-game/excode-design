@@ -19,27 +19,22 @@
            :g/events []}
           (select-keys opts [:g/events :g/uuid]))))
 
-(defn next-state
-  [state k ev]
-  (-> state
-      (next-state-events k ev)
-      (next-state-derived k ev)))
-
-(defmulti next-state-events
+(defmulti next-state
   {:arglists '([state key event])}
   (fn [state k ev] [(:ev/type ev)]))
 
-; runtime logic, should be separate 
-#_(defn next-state-batch
-    [state k ev]
-    (let [{:keys [g/events]} ev]
-      (-> state
-          (update :g/events #(-> % (concat events) (vec))))))
+(defmethod next-state [:ev/batch]
+  [state k ev]
+  (let [{:keys [g/events]} ev]
+    (as-> state o
+      (update o :g/events #(-> % (concat events) (vec)))
+      (reduce (fn [agg v] (next-state-derived k v)) o events))))
 
-(defmethod next-state-events :default
+(defmethod next-state :default
   [state k ev]
   (-> state
-      (update :g/events #(-> % (conj ev)))))
+      (update :g/events #(-> % (conj ev)))
+      (next-state-derived k ev)))
 
 (defmulti next-state-derived
   "Returns the next state of the game."
