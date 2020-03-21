@@ -8,7 +8,8 @@
    [goog.string :as gstring]
    [goog.string.format]
 
-   [bide.core :as br]
+   [bidi.bidi :as bidi]
+   [pushy.core :as pushy]
 
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
@@ -23,7 +24,8 @@
    [starnet.ui.alpha.repl]
    [starnet.ui.alpha.tests])
   (:import [goog.net XhrIo EventType WebSocket]
-           [goog Uri History]))
+           [goog Uri]
+           goog.history.Html5History))
 
 (declare proc-main proc-socket proc-render-containers
         proc-history )
@@ -78,6 +80,9 @@
               :mount (do (r/render [:<>
                                     [:div {:id "div-1"}]
                                     [:div {:id "div-2"}]
+                                    [:a {:href "/a"} "a"]
+                                    [:br]
+                                    [:a {:href "/b"} "b"]
                                     [:div {:id "div-3"}]] root-el))
               :unmount (r/render nil root-el)))
           (recur))
@@ -112,7 +117,6 @@
   (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
   (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :close})
 
-  
   ;;
   )
 
@@ -129,40 +133,40 @@
           (recur h)))
     c))
 
-(def router
-  (br/router [["/" :page/events]
-              ["/settings/account" :page/settings-account]
-              ["/u/:username/profile" :page/profile]
-              ["/api/auth" :myapp/auth]
-              ["/api/users/:id" :myapp/user-by-id]]))
+(def state (atom {}))
 
-(defn on-navigate
-  "A function which will be called on each route change."
-  [name params query]
-  (println "Route change to: " name params query))
+(def app-routes
+  ["/" {"settings/account" :page/settings-account
+        "u/:username/profile" :page/profile}])
 
-(br/start! router {:default :page/events
-                   :on-navigate on-navigate
-                   :html5? true})
+(defn set-page! [match]
+  (println match)
+  (swap! state assoc :page match))
+
+(defn- parse-url [url]
+  (merge
+   {:url url}
+   (bidi/match-route app-routes url)))
+
+(def history
+  (pushy/pushy set-page! parse-url))
+(pushy/start! history)
+
+(defn ^:export set-path!
+  [path]
+  #_(set-token! history path)
+  (.setToken ^js/Object (.-history history)  path))
 
 (comment
 
-  (br/navigate! router :myapp/user-by-id {:id 10})
+
+  (pushy/set-token! history (gstring/format "/u/%s/profile" (gen/generate gen/string-alphanumeric)))
   
-  (br/navigate! router :page/profile {:username (gen/generate gen/string-alphanumeric) })
+  (set-path! (gstring/format "/u/%s/profile" (gen/generate gen/string-alphanumeric)))
   
 
-  (br/match router "/api/auth")
-  (br/match router "/api/users/1")
-  (br/match router "/api/users/1?foobar=1")
-  (br/match router "/api/other")
-  
-  (br/resolve router :myapp/auth)
-  (br/resolve router :myapp/user-by-id {:id 2})
-  (br/resolve router :myapp/user-by-id {:id 2} {:foobar 1})
-  
-  
-  
+  (pushy/get-token history)
+
 
   ;;
   )

@@ -146,6 +146,7 @@
       - https://github.com/google/closure-library/blob/master/closure/goog/net/websocket_test.js
   - routing
     - https://github.com/funcool/bide
+      - https://github.com/funcool/bide/blob/master/src/bide/core.cljs
 
 
 - issues
