@@ -148,7 +148,7 @@
     (sub pb-sys :proc-history c)
     (go (loop [h nil]
           (js/console.log "loop")
-          (when-let [[v port] (alts! [c ch-history])]
+          (if-let [[v port] (alts! [c ch-history])]
             (condp = port
               c (let [{:keys [proc/op]} v]
                   (println (gstring/format "proc-history %s" op))
@@ -171,15 +171,33 @@
 (comment
 
   (pushy/set-token! @history (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric)))
-  
+
   (put! (channels :ch-history)
-       {:history/op :set-token
-        :history/token (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))})
-  
+        {:history/op :set-token
+         :history/token (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))})
+
   (a/poll! (channels :ch-history))
 
-  (take! (channels :ch-history) (fn [v] (println v) ))
+  (take! (channels :ch-history) (fn [v] (println v)))
+
+  (def x (fn [c1 c2]
+           (go
+             (loop []
+               (if-let [[v port] (alts! [c1 c2])]
+                 (condp = port
+                   c1 (do
+                        (println (gstring/format "c1 %s" v)))
+                   c2 (do
+                        (println (gstring/format "c2 %s" v)))))
+               (recur)))))
   
+  (def c1 (chan 1))
+  (def c2 (chan 1))
+  (x c1 c2)
+  (put! c1 1)
+  (put! c2 2)
+
+
   ;;
   )
 
