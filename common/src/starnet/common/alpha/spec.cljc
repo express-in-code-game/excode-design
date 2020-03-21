@@ -165,6 +165,11 @@
                              :opt [])
                      #(assoc %  :ev/type :ev.g/leave)))
 
+(s/def :ev.g/select-role (with-gen-fmap
+                           (s/keys :req [:ev/type :u/uuid :g/uuid :g/role]
+                                   :opt [])
+                           #(assoc %  :ev/type :ev.g/select-role)))
+
 (s/def :ev.g/move-cape (with-gen-fmap
                          (s/keys :req [:ev/type :u/uuid :g/uuid
                                        :g.p/cape])
@@ -177,8 +182,8 @@
 
 
 (def eventset-event
-  #{:ev.g/create :ev.g/update-role
-    :ev.g/delete
+  #{:ev.g/create
+    :ev.g/delete :ev.g/select-role
     :ev.g/start :ev.g/join
     :ev.g/leave :ev.g/move-cape
     :ev.g/collect-tile-value

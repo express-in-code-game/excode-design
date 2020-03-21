@@ -40,7 +40,6 @@
   (-> state
       (update :g/events #(-> % (conj ev) (vec)))))
 
-
 (defmulti next-state-derived
   "Returns the next state of the game."
   {:arglists '([state key event])}
@@ -48,9 +47,11 @@
 
 (defmethod next-state-derived [:ev.g/create]
   [state k ev]
-  (-> state
-      (update :g.derived/status assoc :created)
-      (update-in  [:g.derived/time] (select-keys ev [:g.time/created]))))
+  (let [{:keys [u/uuid]} ev]
+    (-> state
+        (update :g.derived/status assoc :created)
+        (update :g.derived/host assoc uuid)
+        (update-in  [:g.derived/time] (select-keys ev [:g.time/created])))))
 
 (defmethod next-state-derived [:ev.g/setup]
   [state k ev]
@@ -79,6 +80,25 @@
   (-> state
       (update :g.derived/status assoc :finished)
       (update-in  [:g.derived/time] (select-keys ev [:g.time/finished]))))
+
+(defmethod next-state-derived [:ev.g/join]
+  [state k ev]
+  (let [{:keys [u/uuid]} ev]
+    (-> state
+        (update-in [:g.derived/roles uuid] assoc :observer))))
+
+(defmethod next-state-derived [:ev.g/leave]
+  [state k ev]
+  (let [{:keys [u/uuid]} ev]
+    (-> state
+        (update-in [:g.derived/roles] dissoc uuid))))
+
+(defmethod next-state-derived [:ev.g/select-role]
+  [state k ev]
+  (let [{:keys [u/uuid g/role]} ev]
+    (-> state
+        (update-in [:g.derived/roles uuid] assoc role))))
+
 
 (defmethod next-state-derived :default
   [state k ev]
