@@ -127,10 +127,10 @@
  ;;
   )
 
-(s/def :ev.g/batch (with-gen-fmap
-                     (s/keys :req [:ev/type :u/uuid :g/uuid :g/events]
-                             :opt [])
-                     #(assoc %  :ev/type :ev.g/batch)))
+(s/def :ev/batch (with-gen-fmap
+                   (s/keys :req [:ev/type :u/uuid :g/uuid :g/events]
+                           :opt [])
+                   #(assoc %  :ev/type :ev/batch)))
 
 (s/def :ev.g/create (with-gen-fmap
                     (s/keys :req [:ev/type :u/uuid :g/uuid]

@@ -29,11 +29,12 @@
   {:arglists '([state key event])}
   (fn [state k ev] [(:ev/type ev)]))
 
-(defmethod next-state-events [:ev.g/batch]
-  [state k ev]
-  (let [{:keys [g/events]} ev]
-    (-> state
-        (update :g/events #(-> % (concat events) (vec))))))
+; runtime logic, should be separate 
+#_(defn next-state-batch
+    [state k ev]
+    (let [{:keys [g/events]} ev]
+      (-> state
+          (update :g/events #(-> % (concat events) (vec))))))
 
 (defmethod next-state-events :default
   [state k ev]
