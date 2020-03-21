@@ -8,15 +8,17 @@
    [goog.string :as gstring]
    [goog.string.format]
 
-   [bidi.bidi :as bidi]
-   [pushy.core :as pushy]
-
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
    [clojure.spec.test.alpha :as stest]
    [clojure.test.check :as tc]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
+
+   
+   [bidi.bidi :as bidi]
+   [pushy.core :as pushy]
+   
 
    [starnet.common.alpha.spec]
 
@@ -120,56 +122,64 @@
   ;;
   )
 
+(def routes ["/" {"" :page/events
+                  "games/" :page/games
+                  "events/" :page/events
+                  "u/" {[:id ""] :page/user}}])
+
+(defn- parse-url [url]
+  (println url)
+  (merge
+   {:url url}
+   (bidi/match-route routes url)))
+
+(defn- dispatch-route [matched-route]
+  (prn matched-route)
+  (let [handler (:handler matched-route)
+        url (:url matched-route)]
+    (println [handler url])
+    ))
+
+; repl only
+(def ^:private history (atom nil))
 (defn proc-history
   [{:keys [pb-sys ch-history]}]
   (let [c (chan 1)]
     (sub pb-sys :proc-history c)
     (go (loop [h nil]
-          (when-let [{:keys [proc/op]} (<! c)]
-            (println (gstring/format "proc-history %s" op))
-            (condp = op
-              :start (recur h)
-              :stop (recur h)))
+          (when-let [[v port] (alts! [c ch-history])]
+            (condp = port
+              c (let [{:keys [proc/op]} v]
+                  (println (gstring/format "proc-history %s" op))
+                  (condp = op
+                    :start (let [h (pushy/pushy dispatch-route parse-url)]
+                             (pushy/start! h)
+                             (reset! history h)
+                             (recur h))
+                    :stop (do
+                            (pushy/stop! h))))
+              ch-history (let [{:keys [history/op history/token]} v]
+                           (println (gstring/format "proc-history %s" token))
+                           (condp = op
+                             :set-token   (pushy/set-token! h token)))))
           (recur h)))
     c))
 
-(def state (atom {}))
 
-(def app-routes
-  ["/" {"settings/account" :page/settings-account
-        "u/:username/profile" :page/profile}])
-
-(defn set-page! [match]
-  (println match)
-  (swap! state assoc :page match))
-
-(defn- parse-url [url]
-  (merge
-   {:url url}
-   (bidi/match-route app-routes url)))
-
-(def history
-  (pushy/pushy set-page! parse-url))
-(pushy/start! history)
-
-(defn ^:export set-path!
-  [path]
-  #_(set-token! history path)
-  (.setToken ^js/Object (.-history history)  path))
 
 (comment
 
-
-  (pushy/set-token! history (gstring/format "/u/%s/profile" (gen/generate gen/string-alphanumeric)))
+  (pushy/set-token! @history (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric)))
   
-  (set-path! (gstring/format "/u/%s/profile" (gen/generate gen/string-alphanumeric)))
+  (put! (channels :ch-history)
+       {:history/op :set-token
+        :history/token (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))})
+
   
-
-  (pushy/get-token history)
-
-
+  
   ;;
   )
+
 
 ; pages are templates
 ; on navigation, proc-pages conveys to page channel

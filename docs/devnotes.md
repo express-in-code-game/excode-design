@@ -144,9 +144,10 @@
   - goog closure
     - https://google.github.io/closure-library/api/goog.net.WebSocket.html
       - https://github.com/google/closure-library/blob/master/closure/goog/net/websocket_test.js
-  - routing
-    - https://github.com/funcool/bide
-      - https://github.com/funcool/bide/blob/master/src/bide/core.cljs
+  - history
+    - https://developer.mozilla.org/en-US/docs/Web/API/History_API/Working_with_the_History_API
+    - https://github.com/juxt/bidi
+    - https://github.com/clj-commons/pushy
 
 
 - issues
