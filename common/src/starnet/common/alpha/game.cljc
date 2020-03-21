@@ -38,7 +38,7 @@
 (defmethod next-state-events :default
   [state k ev]
   (-> state
-      (update :g/events #(-> % (conj ev) (vec)))))
+      (update :g/events #(-> % (conj ev)))))
 
 (defmulti next-state-derived
   "Returns the next state of the game."
@@ -60,7 +60,7 @@
 (defmethod next-state-derived [:ev.g/open]
   [state k ev]
   (-> state
-      (update :g.derived/status assoc :open)
+      (update :g.derived/status assoc :opened)
       (update-in  [:g.derived/time] (select-keys ev [:g.time/opened]))))
 
 (defmethod next-state-derived [:ev.g/close]
