@@ -83,7 +83,6 @@
 (s/def :g.r/observer (s/nilable boolean?))
 
 (s/def :g/uuid uuid?)
-(s/def :g/status setof-game-status)
 
 
 (s/def :g/map-size (s/tuple int? int?))

@@ -2,10 +2,11 @@
   (:require
    [clojure.repl :refer [doc]]
    [reagent.core :as r]
-   [clojure.core.async :as a :refer [<! >! timeout chan alt! go
+   [clojure.core.async :as a :refer [<! >!  timeout chan alt! go
                                      alts!  take! put!
-                                     pub sub]]
-
+                                     pub sub sliding-buffer mix admix unmix]]
+   [goog.string :as gstring]
+   [goog.string.format]
    [clojure.spec.test.alpha :as stest]
    [clojure.spec.alpha :as s]
 
@@ -15,51 +16,56 @@
    [starnet.ui.alpha.repl]
    [starnet.ui.alpha.tests]))
 
+(declare proc-main proc-render-containers)
+
+(def channels (let [ch-proc-main (chan 1)
+                    ch-sys (chan (sliding-buffer 10))
+                    pb-sys (pub ch-sys :ch/topic (fn [_] (sliding-buffer 10)))]
+                {:ch-proc-main ch-proc-main
+                 :ch-sys ch-sys
+                 :pb-sys pb-sys}))
 
 (defn ^:export main
   []
-  (println "csp"))
+  (put! (channels :ch-proc-main) {:proc/op :start})
+  (proc-main (select-keys channels [:ch-proc-main :ch-sys])))
 
-(def chan-1 (chan (a/sliding-buffer 10)))
-(def chan-1-pub (pub chan-1 first))
-(def derived-1 (atom {}))
 
 (defn proc-main
-  [p out]
-  (let [c (chan 1)]
-    (sub p :main c)
-    (go (loop []
-          (when-let [[[t v] c] (alts! [c])]
-            (condp = v
-              :init (do (println "initilized"))))
-          (recur))
-        (println "closing go block: proc-main"))
-    c))
+  [{:keys [ch-proc-main ch-sys]}]
+  (go (loop []
+        (when-let [{op :proc/op} (<! ch-proc-main)]
+          (println (gstring/format "proc-main %s" op))
+          (condp = op
+            :start (do
+                     (proc-render-containers (select-keys channels [:pb-sys :ch-sys]))
+                     (put! (channels :ch-sys) {:ch/topic :proc-render-containers :proc/op :mount}))))
+        (recur))
+      (println "closing go block: proc-main")))
 
 (defn proc-render-containers
-  [p out]
-  (let [c (chan 1)]
-    (sub p :main c)
+  [{:keys [pb-sys]}]
+  (let [c (chan 1)
+        root-el (.getElementById js/document "ui")]
+    (sub pb-sys :proc-render-containers c)
     (go (loop []
-          (when-let [[[t v] c] (alts! [c])]
-            (condp = v
-              :init (do (r/render [:<>
-                                   [:div {:id "div-1"}]
-                                   [:div {:id "div-2"}]
-                                   [:div {:id "div-3"}]]
-                                  (.getElementById js/document "ui"))
-                        (println "rendered containers")
-                        )))
+          (when-let [{:keys [proc/op]} (<! c)]
+            (println (gstring/format "proc-render-containers %s" op))
+            (condp = op
+              :mount (do (r/render [:<>
+                                    [:div {:id "div-1"}]
+                                    [:div {:id "div-2"}]
+                                    [:div {:id "div-3"}]] root-el))
+              :unmount (r/render nil root-el)))
           (recur))
-        (println "closing go block: proc-render-containers"))
+        (println "proc-render-containers closing"))
     c))
 
-(proc-main chan-1-pub chan-1)
-(proc-render-containers chan-1-pub chan-1)
+
 
 (comment
 
-  (put! chan-1 [:main :init])
+  (put! (channels :ch-sys) {:ch/topic :proc-render-containers :proc/op :unmount})
 
   ;;
   )
