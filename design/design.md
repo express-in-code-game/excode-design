@@ -359,3 +359,5 @@
   - ui will sta responsive, game will be explorable, but the events will not be applied to state (execpt local ui related)
   - but the process will discard all events (vals on queue) that require connection
   - once reconnected, event conveyance will resume
+- client and server exhange
+  - it is a synchronization of state between to core.async processes over two channels(queues)
