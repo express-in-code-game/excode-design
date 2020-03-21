@@ -144,6 +144,8 @@
   - goog closure
     - https://google.github.io/closure-library/api/goog.net.WebSocket.html
       - https://github.com/google/closure-library/blob/master/closure/goog/net/websocket_test.js
+  - routing
+    - https://github.com/funcool/bide
 
 
 - issues
