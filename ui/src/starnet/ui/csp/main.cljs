@@ -39,11 +39,14 @@
                     pb-sys (pub ch-sys :ch/topic (fn [_] (sliding-buffer 10)))
                     ch-socket (chan (sliding-buffer 10))
                     ch-history (chan (sliding-buffer 10))
-                    pb-history (pub ch-history :ch/topic (fn [_] (sliding-buffer 10)))]
+                    ch-history-states (chan (sliding-buffer 10))
+                    pb-history-states (pub ch-history-states :ch/topic (fn [_] (sliding-buffer 10)))]
                 {:ch-proc-main ch-proc-main
                  :ch-sys ch-sys
                  :pb-sys pb-sys
                  :ch-history ch-history
+                 :ch-history-states ch-history-states
+                 :pb-history-states pb-history-states
                  :ch-socket ch-socket}))
 
 (defn ^:export main
@@ -61,7 +64,7 @@
             :start (do
                      (proc-render-containers (select-keys channels [:pb-sys :ch-sys]))
                      (proc-socket (select-keys channels [:pb-sys :ch-sys :ch-socket]))
-                     (proc-history (select-keys channels [:pb-sys :ch-sys :ch-history]))
+                     (proc-history (select-keys channels [:pb-sys :ch-sys :ch-history :ch-history-states]))
                      
                      (put! (channels :ch-sys) {:ch/topic :proc-render-containers :proc/op :mount})
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
@@ -128,39 +131,31 @@
                   "u/" {[:id ""] :page/user}}])
 
 (defn- parse-url [url]
-  (println url)
   (merge
    {:url url}
    (bidi/match-route routes url)))
 
-(defn- dispatch-route [matched-route]
-  (prn matched-route)
-  (let [handler (:handler matched-route)
-        url (:url matched-route)]
-    (println [handler url])
-    ))
-
 ; repl only
 (def ^:private history (atom nil))
 (defn proc-history
-  [{:keys [pb-sys ch-history]}]
+  [{:keys [pb-sys ch-history ch-history-states]}]
   (let [c (chan 1)]
     (sub pb-sys :proc-history c)
     (go (loop [h nil]
-          (js/console.log "loop")
           (if-let [[v port] (alts! [c ch-history])]
             (condp = port
               c (let [{:keys [proc/op]} v]
-                  (println (gstring/format "proc-history %s" op))
                   (condp = op
-                    :start (let [h (pushy/pushy dispatch-route parse-url)]
+                    :start (let [h (pushy/pushy
+                                    (fn [matched]
+                                      (println matched)
+                                      (put! ch-history-states matched)) parse-url)]
                              (pushy/start! h)
                              (reset! history h)
                              (recur h))
                     :stop (do
                             (pushy/stop! h))))
               ch-history (let [{:keys [history/op history/token]} v]
-                           (println (gstring/format "proc-history %s" token))
                            (condp = op
                              :set-token   (pushy/set-token! h token)))))
           (recur h)))
