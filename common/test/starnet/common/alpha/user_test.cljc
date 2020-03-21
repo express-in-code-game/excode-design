@@ -10,7 +10,7 @@
    [clojure.test.check.properties :as prop]
    [clojure.test.check.clojure-test :refer [defspec]]
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
-   [starnet.common.alpha.spec :refer [setof-ev-event]]))
+   [starnet.common.alpha.spec :refer [eventset-event]]))
 
 
 (comment
@@ -27,7 +27,7 @@
     (is (s/valid? :g/game (gen/generate (s/gen :g/game)))
         "game can be generated"))
   (testing "event specs"
-    (is (subset? (into #{} (gen/sample (s/gen :ev/type))) setof-ev-event)
+    (is (subset? (into #{} (gen/sample (s/gen :ev/type))) eventset-event)
         "generate a subset of :ev/type")))
 
 (deftest all-specchecks
