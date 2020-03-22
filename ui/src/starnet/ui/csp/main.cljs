@@ -29,7 +29,7 @@
            [goog Uri]
            goog.history.Html5History))
 
-(declare proc-main proc-socket proc-render-containers
+(declare proc-main proc-socket proc-render-containers proc-http
         proc-history proc-router proc-derived-state-ui proc-renderer)
 
 (enable-console-print!)
@@ -44,7 +44,10 @@
                         ch-history-states (chan (sliding-buffer 10))
                         ml-history-states (mult ch-history-states)
                         ch-derived-state-ui (chan (sliding-buffer 10))
-                        ml-derived-state-ui (mult ch-derived-state-ui)]
+                        ml-derived-state-ui (mult ch-derived-state-ui)
+                        ch-http (chan (sliding-buffer 10))
+                        ch-http-res (chan (sliding-buffer 10))
+                        ml-http-res (mult ch-http-res)]
                     {:ch-proc-main ch-proc-main
                      :ch-sys ch-sys
                      :pb-sys pb-sys
@@ -55,6 +58,9 @@
                      :ml-history-states ml-history-states
                      :ch-derived-state-ui ch-derived-state-ui
                      :ml-derived-state-ui ml-derived-state-ui
+                     :ch-http ch-http
+                     :ch-http-res ch-http-res
+                     :ml-http-res ml-http-res
                      :ch-socket ch-socket}))
 
 (defn ^:export main
@@ -72,9 +78,10 @@
             :start (do
                      #_(proc-render-containers (select-keys channels [:pb-sys :ch-sys]))
                      (proc-socket (select-keys channels [:pb-sys :ch-sys :ch-socket]))
+                     (proc-http (select-keys channels [:pb-sys :ch-sys :ch-http :ch-http-res]))
                      (proc-history (select-keys channels [:pb-sys :ch-sys :ch-history :ch-history-states]))
                      (proc-router (select-keys channels [:ch-sys :ch-history :ml-history-states :ch-router]))
-                     (proc-derived-state-ui (select-keys channels [:ch-derived-state-ui :ml-router]))
+                     (proc-derived-state-ui (select-keys channels [:ch-derived-state-ui :ml-router :ml-http-res]))
                      (proc-renderer channels)
 
                      #_(put! (channels :ch-sys) {:ch/topic :proc-render-containers :proc/op :mount})
@@ -124,6 +131,16 @@
                        (recur nil)))))
         (println "proc-render-containers closing"))
     c))
+
+(defn proc-http
+  [{:keys [ch-sys ch-http ch-http-res]}]
+  (let []
+    (go (loop []
+          (if-let [{:keys [http/url http/data] :as v} (<! ch-http)]
+            (let [resp (<! '(http-req))]
+              (do (put! ch-http-res resp)
+                  (recur)))))
+        (println "closing proc-http"))))
 
 (comment
 
@@ -235,9 +252,11 @@
   (put! (channels :ch-derived-state-ui) @ui-state))
 
 (defn proc-derived-state-ui
-  [{:keys [ml-router ch-derived-state-ui]}]
-  (let [c-router (chan 1)]
+  [{:keys [ml-router ch-derived-state-ui ml-http-res]}]
+  (let [c-router (chan 1)
+        c-http (chan 1)]
     (tap ml-router c-router)
+    (tap ml-http-res  c-http)
     (go (loop [s nil]
           (if-let [[v port] (alts! [c-router])]
             (condp = port
