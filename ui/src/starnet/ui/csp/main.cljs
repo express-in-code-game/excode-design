@@ -3,7 +3,7 @@
    [clojure.repl :refer [doc]]
    [reagent.core :as r]
    [clojure.core.async :as a :refer [<! >!  timeout chan alt! go
-                                     alts!  take! put!
+                                     alts!  take! put! mult tap untap
                                      pub sub sliding-buffer mix admix unmix]]
    [goog.string :as gstring]
    [goog.string.format]
@@ -30,7 +30,7 @@
            goog.history.Html5History))
 
 (declare proc-main proc-socket proc-render-containers
-        proc-history )
+        proc-history proc-router)
 
 (enable-console-print!)
 
@@ -39,14 +39,19 @@
                     pb-sys (pub ch-sys :ch/topic (fn [_] (sliding-buffer 10)))
                     ch-socket (chan (sliding-buffer 10))
                     ch-history (chan (sliding-buffer 10))
+                    ch-router (chan (sliding-buffer 10))
+                    pb-router (pub ch-router :ch/topic (fn [_] (sliding-buffer 10)))
                     ch-history-states (chan (sliding-buffer 10))
-                    pb-history-states (pub ch-history-states :ch/topic (fn [_] (sliding-buffer 10)))]
+                    ml-history-states (mult ch-history-states)
+                    ]
                 {:ch-proc-main ch-proc-main
                  :ch-sys ch-sys
                  :pb-sys pb-sys
                  :ch-history ch-history
+                 :ch-router ch-router
+                 :pb-router pb-router
                  :ch-history-states ch-history-states
-                 :pb-history-states pb-history-states
+                 :ml-history-states ml-history-states
                  :ch-socket ch-socket}))
 
 (defn ^:export main
@@ -65,12 +70,13 @@
                      (proc-render-containers (select-keys channels [:pb-sys :ch-sys]))
                      (proc-socket (select-keys channels [:pb-sys :ch-sys :ch-socket]))
                      (proc-history (select-keys channels [:pb-sys :ch-sys :ch-history :ch-history-states]))
-                     
+                     (proc-router (select-keys channels [:ch-sys :ch-history :ml-history-states :ch-router]))
+
                      (put! (channels :ch-sys) {:ch/topic :proc-render-containers :proc/op :mount})
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
                      (put! (channels :ch-sys) {:ch/topic :proc-history :proc/op :start})
-                     )))
-        (recur))
+                     (put! (channels :ch-sys) {:ch/topic :proc-router :proc/op :start})
+                     (recur)))))
       (println "closing go block: proc-main")))
 
 (defn proc-render-containers
@@ -88,9 +94,11 @@
                                     [:a {:href "/a"} "a"]
                                     [:br]
                                     [:a {:href "/b"} "b"]
-                                    [:div {:id "div-3"}]] root-el))
-              :unmount (r/render nil root-el)))
-          (recur))
+                                    [:div {:id "div-3"}]] root-el)
+                         (recur))
+              :unmount (do
+                         (r/render nil root-el)
+                         (recur)))))
         (println "proc-render-containers closing"))
     c))
 
@@ -109,11 +117,9 @@
                       (recur ws))
               :close (do
                        (.close ws)
-                       (recur nil))))
-          (recur ws))
+                       (recur nil)))))
         (println "proc-render-containers closing"))
-    c)
-  )
+    c))
 
 (comment
 
@@ -147,23 +153,47 @@
               c (let [{:keys [proc/op]} v]
                   (condp = op
                     :start (let [h (pushy/pushy
-                                    (fn [matched]
-                                      (println matched)
-                                      (put! ch-history-states matched)) parse-url)]
+                                    (fn [pushed]
+                                      (println "pushed" pushed)
+                                      (put! ch-history-states {:history/pushed pushed})) parse-url)]
                              (pushy/start! h)
                              (reset! history h)
                              (recur h))
                     :stop (do
-                            (pushy/stop! h))))
+                            (pushy/stop! h)
+                            (recur h))))
               ch-history (let [{:keys [history/op history/token]} v]
                            (condp = op
-                             :set-token   (pushy/set-token! h token)))))
-          (recur h)))
+                             :set-token (do
+                                          (pushy/set-token! h token)
+                                          (recur h))))))))
     c))
 
-(defn proc-routes
-  [{:keys [pb-sys ch-history ch-history-states]}]
-  )
+(defn proc-router
+  [{:keys [ch-sys ch-history ch-router ml-history-states]}]
+  (let [c (chan 1)]
+    (tap ml-history-states c)
+    (go (loop []
+          (if-let [{:keys [history/pushed]} (<! c)]
+            (let [{:keys [url route-params handler]} pushed]
+              (condp = handler
+                :page/events (do (put! ch-router {:router/handler handler
+                                                  :history/pushed pushed})
+                                 (println handler)
+                                 (recur))
+                :page/games (do
+                              (put! ch-router {:router/handler handler
+                                               :history/pushed pushed})
+                              (println handler)
+                              (recur))
+                :page/user (do
+                             (put! ch-router {:router/handler handler
+                                              :history/pushed pushed})
+                             (println handler)
+                             (recur))
+                (do
+                  (println "no match" pushed)
+                  (recur)))))))))
 
 (comment
 
@@ -172,6 +202,10 @@
   (put! (channels :ch-history)
         {:history/op :set-token
          :history/token (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))})
+  
+  (put! (channels :ch-history)
+        {:history/op :set-token
+         :history/token "/test"})
 
   (a/poll! (channels :ch-history))
 
@@ -215,9 +249,11 @@
               :mount (do (r/render [:<>
                                     [:div {:id "div-1"}]
                                     [:div {:id "div-2"}]
-                                    [:div {:id "div-3"}]] root-el))
-              :unmount (r/render nil root-el)))
-          (recur))
+                                    [:div {:id "div-3"}]] root-el)
+                         (recur))
+              :unmount (do
+                         (r/render nil root-el)
+                         (recur)))))
         (println "proc-render-containers closing"))
     c))
 
