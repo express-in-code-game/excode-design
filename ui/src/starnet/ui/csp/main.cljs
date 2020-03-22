@@ -92,6 +92,7 @@
                      (render/proc-page-events channels)
                      (render/proc-page-settings channels)
                      (render/proc-page-login channels)
+                     (render/proc-page-game channels)
                      
 
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
@@ -144,6 +145,7 @@
                       "events" :page/events
                       "settings" :page/settings
                       "login" :page/login
+                      "game/" {[:id ""] :page/game}
                       "u/" {"games" :page/user-games
                             [:id ""] :page/userid
                             [:id "games"] :page/userid-games}}])

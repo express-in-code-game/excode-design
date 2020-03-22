@@ -105,6 +105,15 @@
                                 :padding "32px 32px 32px 32px"}}
     content]])
 
+(defn layout-game
+  [content]
+  [ant-layout {:style {:min-height "100vh"}}
+   [ant-layout-content {:class "main-content"
+                        :style {:margin-top "32px"
+                                :padding "32px 32px 32px 32px"}}
+    content]]
+  )
+
 
 (defn render-page-events
   [el channels state]
@@ -132,12 +141,7 @@
              [:<>
               [:div  "page user/name/games"]]]  el))
 
-(defn render-page-user-games
-  [el channels state]
-  (r/render [layout
-             [:<>
-              [ant-button {:value "button" :size "small"} "button"]
-              [:div  "page u/games"]]]  el))
+
 
 (defn render-page-userid
   [el channels state]
@@ -156,6 +160,23 @@
   (r/render [layout
              [:<>
               [:div  "page login"]]]  el))
+
+(defn render-page-game
+  [el channels state]
+  (r/render [layout-game
+             [:<>
+              [:div  "page game"]]]  el))
+
+(defn render-page-user-games
+  [el channels state]
+  (r/render [layout
+             [:<>
+              [ant-button {:value "button" :size "small"} "button"]
+              [:div
+               [:a {:target "_blank"
+                    :href (gstring/format "/game/%s" (str (gen/generate gen/uuid)))}
+                [ant-button {:size "small"} "create game"]]]
+              [:div  "page u/games"]]]  el))
 
 (defn proc-page-user-games
   [{:keys [ml-router ml-http-res] :as channels}]
@@ -292,6 +313,24 @@
                              (recur (merge state v)))
                            (do (recur state)))))))
         (println "proc-page-login closing"))))
+
+
+(defn proc-page-game
+  [{:keys [ml-router ml-http-res] :as channels}]
+  (let [c-router (chan 1)
+        root-el (.getElementById js/document "ui")]
+    (tap ml-router  c-router)
+    (go (loop [state nil]
+          (let [[v port] (alts! [c-router])]
+            (condp = port
+              c-router (let [{:keys [router/handler history/pushed]} v]
+                         (if (= handler :page/game)
+                           (do
+                             #_(println (gstring/format "rendering %s" handler))
+                             (render-page-game root-el channels v)
+                             (recur (merge state v)))
+                           (do (recur state)))))))
+        (println "proc-page-game closing"))))
 
 
 #_(defn proc-renderer
