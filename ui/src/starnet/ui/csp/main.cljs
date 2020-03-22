@@ -67,15 +67,14 @@
           (println (gstring/format "proc-main %s" op))
           (condp = op
             :start (do
-                     (proc-render-containers (select-keys channels [:pb-sys :ch-sys]))
+                     #_(proc-render-containers (select-keys channels [:pb-sys :ch-sys]))
                      (proc-socket (select-keys channels [:pb-sys :ch-sys :ch-socket]))
                      (proc-history (select-keys channels [:pb-sys :ch-sys :ch-history :ch-history-states]))
                      (proc-router (select-keys channels [:ch-sys :ch-history :ml-history-states :ch-router]))
 
-                     (put! (channels :ch-sys) {:ch/topic :proc-render-containers :proc/op :mount})
+                     #_(put! (channels :ch-sys) {:ch/topic :proc-render-containers :proc/op :mount})
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
                      (put! (channels :ch-sys) {:ch/topic :proc-history :proc/op :start})
-                     (put! (channels :ch-sys) {:ch/topic :proc-router :proc/op :start})
                      (recur)))))
       (println "closing go block: proc-main")))
 
@@ -169,30 +168,59 @@
                                           (recur h))))))))
     c))
 
+
+(defn render-page-events
+  [el ]
+  (r/render [:<>
+             [:div {:id "div-1"} "events"]] el))
+
+(defn render-page-games
+  [el]
+  (r/render [:<>
+             [:div {:id "div-1"} "games"]] el))
+
+(defn render-page-user
+  [el opts]
+  (let [{:keys [history/pushed]} opts
+        {:keys [route-params]} pushed]
+    (r/render [:<>
+               [:div {:id "div-1"} "user"]
+               [:div {:id "div-1"} route-params]] el)))
+
+(defn render-not-found
+  [el]
+  (r/render [:<>
+             [:div {:id "div-1"} "not found"]] el))
+
 (defn proc-router
   [{:keys [ch-sys ch-history ch-router ml-history-states]}]
-  (let [c (chan 1)]
+  (let [c (chan 1)
+        root-el (.getElementById js/document "ui")]
     (tap ml-history-states c)
     (go (loop []
-          (if-let [{:keys [history/pushed]} (<! c)]
+          (if-let [{:keys [history/pushed] :as v} (<! c)]
             (let [{:keys [url route-params handler]} pushed]
               (condp = handler
                 :page/events (do (put! ch-router {:router/handler handler
                                                   :history/pushed pushed})
                                  (println handler)
+                                 (render-page-events root-el)
                                  (recur))
                 :page/games (do
                               (put! ch-router {:router/handler handler
                                                :history/pushed pushed})
+                              (render-page-games root-el)
                               (println handler)
                               (recur))
                 :page/user (do
                              (put! ch-router {:router/handler handler
                                               :history/pushed pushed})
                              (println handler)
+                             (render-page-user root-el v)
                              (recur))
                 (do
                   (println "no match" pushed)
+                  (render-not-found root-el)
                   (recur)))))))))
 
 (comment
