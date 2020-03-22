@@ -62,7 +62,7 @@
   [el channels state]
   (r/render [:<>
              [ui-header channels state]
-             [ant-button {:value "button"} "button"]
+             [ant-button {:value "button" :size "small"} "button"]
              [:div {:id "div-1"} "page u/games"]] el))
 
 (defn page-userid
