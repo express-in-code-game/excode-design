@@ -15,11 +15,19 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
 
+   ["antd/lib/layout" :default AntLayout]
+   ["antd/lib/menu" :default AntMenu]
+   ["antd/lib/icon" :default AntIcon]
    ["antd/lib/button" :default AntButton]
    ["antd/lib/list" :default AntList]
-   ["@ant-design/icons/SmileOutlined" :default AntSmileOutlined]
-   ))
+   ["@ant-design/icons/SmileOutlined" :default AntSmileOutlined]))
 
+(def ant-layout (r/adapt-react-class AntLayout))
+(def ant-layout-content (r/adapt-react-class (.-Content AntLayout)))
+(def ant-layout-header (r/adapt-react-class (.-Header AntLayout)))
+(def ant-menu (r/adapt-react-class AntMenu))
+(def ant-menu-item (r/adapt-react-class (.-Item AntMenu)))
+(def ant-icon (r/adapt-react-class AntIcon))
 (def ant-button (r/adapt-react-class AntButton))
 (def ant-list (r/adapt-react-class AntList))
 (def ant-smile-outlined (r/adapt-react-class AntSmileOutlined))
@@ -39,48 +47,101 @@
      [:a {:href (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))} "user/random"]
      [:a {:href (gstring/format "/non-existing" (gen/generate gen/string-alphanumeric))} "not-found"]]))
 
+
+
+(defn menu
+  [{:keys [router/handler history/pushed]}]
+  (let []
+    (fn []
+      (println handler)
+      [ant-menu {:theme "light"
+                 :mode "horizontal"
+                 :size "small"
+                 :style {:lineHeight "32px"}
+                 :default-selected-keys ["home-panel"]
+                 :selected-keys [handler]
+                 :on-select (fn [x] (println x))}
+       [ant-menu-item {:key :page/events}
+        [:a {:href "/events"} "events"]]
+       [ant-menu-item {:key :page/games}
+        [:a {:href "/games"} "games"]]
+       [ant-menu-item {:key :page/user-games}
+        [:a {:href "u/games"} "u/games"]]
+       [ant-menu-item {:key :page/settings}
+        [:a {:href "/settings"} "settings"]]
+       [ant-menu-item {:key :page/userid}
+        [:a {:href (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))} "user/random"]]
+       [ant-menu-item {:key :page/non-existing}
+        [:a {:href (gstring/format "/non-existing" (gen/generate gen/string-alphanumeric))} "not-found"]]
+       ])))
+
+
+(defn layout
+  [content]
+  [ant-layout {:style {:min-height "100vh"}}
+   [ant-layout-header
+    {:style {:position "fixed"
+             :z-index 1
+             :lineHeight "32px"
+             :height "32px"
+             :padding 0
+             :background "#000" #_"#001529"
+             :width "100%"}}
+    [:a {:href "/"
+         :class "logo"}
+     #_[:img {:class "logo-img" :src "./img/logo-4.png"}]
+     [:div {:class "logo-name"} "starnet"]]
+    [menu]]
+   [ant-layout-content {:class "main-content"
+                        :style {:margin-top "32px"
+                                :padding "32px 32px 32px 32px"}}
+    content]])
+
+
 (defn render-page-events
   [el channels state]
-  (r/render [:<>
-             [ui-header channels state]
-             [:div {:id "div-1"} "page events"]] el))
+  (r/render [layout
+             [:<>
+              [:div {:id "div-1"} "page events"]]
+             ]  el))
 
 (defn render-page-settings
   [el channels state]
-  (r/render [:<>
-             [ui-header channels state]
-             [:div  "page settings"]] el))
+  (r/render [layout
+             [:<>
+              [:div  "page settings"]]]  el))
 
 (defn render-page-games
   [el channels state]
-  (r/render [:<>
-             [ui-header channels state]
-             [:div  "page games"]] el))
+  (r/render [layout
+             [:<>
+              [:div  "page games"]]]
+            el))
 
 (defn render-page-userid-games
   [el channels state]
-  (r/render [:<>
-             [ui-header channels state]
-             [:div  "page user/name/games"]] el))
+  (r/render [layout
+             [:<>
+              [:div  "page user/name/games"]]]  el))
 
 (defn render-page-user-games
   [el channels state]
-  (r/render [:<>
-             [ui-header channels state]
-             [ant-button {:value "button" :size "small"} "button"]
-             [:div  "page u/games"]] el))
+  (r/render [layout
+             [:<>
+              [ant-button {:value "button" :size "small"} "button"]
+              [:div  "page u/games"]]]  el))
 
 (defn render-page-userid
   [el channels state]
-  (r/render [:<>
-             [ui-header channels state]
-             [:div  "page userid"]] el))
+  (r/render [layout
+             [:<>
+              [:div  "page userid"]]]  el))
 
 (defn render-not-found
   [el channels state]
-  (r/render [:<>
-             [ui-header channels state]
-             [:div  "not found"]] el))
+  (r/render [layout
+             [:<>
+              [:div  "not found"]]]  el))
 
 (defn proc-page-user-games
   [{:keys [ml-router ml-http-res] :as channels}]
