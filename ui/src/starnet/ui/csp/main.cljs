@@ -15,10 +15,11 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
 
-   
+
    [bidi.bidi :as bidi]
    [pushy.core :as pushy]
-   
+
+   [starnet.ui.csp.render :as render]
 
    [starnet.common.alpha.spec]
 
@@ -76,7 +77,6 @@
           (println (gstring/format "proc-main %s" op))
           (condp = op
             :start (do
-                     #_(proc-render-containers (select-keys channels [:pb-sys :ch-sys]))
                      (proc-socket (select-keys channels [:pb-sys :ch-sys :ch-socket]))
                      (proc-http (select-keys channels [:pb-sys :ch-sys :ch-http :ch-http-res]))
                      (proc-history (select-keys channels [:pb-sys :ch-sys :ch-history :ch-history-states]))
@@ -84,34 +84,11 @@
                      (proc-derived-state-ui (select-keys channels [:ch-derived-state-ui :ml-router :ml-http-res]))
                      (proc-renderer channels)
 
-                     #_(put! (channels :ch-sys) {:ch/topic :proc-render-containers :proc/op :mount})
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
                      (put! (channels :ch-sys) {:ch/topic :proc-history :proc/op :start})
                      (recur)))))
       (println "closing go block: proc-main")))
 
-(defn proc-render-containers
-  [{:keys [pb-sys]}]
-  (let [c (chan 1)
-        root-el (.getElementById js/document "ui")]
-    (sub pb-sys :proc-render-containers c)
-    (go (loop []
-          (when-let [{:keys [proc/op]} (<! c)]
-            (println (gstring/format "proc-render-containers %s" op))
-            (condp = op
-              :mount (do (r/render [:<>
-                                    [:div {:id "div-1"}]
-                                    [:div {:id "div-2"}]
-                                    [:a {:href "/a"} "a"]
-                                    [:br]
-                                    [:a {:href "/b"} "b"]
-                                    [:div {:id "div-3"}]] root-el)
-                         (recur))
-              :unmount (do
-                         (r/render nil root-el)
-                         (recur)))))
-        (println "proc-render-containers closing"))
-    c))
 
 (defn proc-socket
   [{:keys [pb-sys ch-socket]}]
@@ -269,64 +246,6 @@
         (println "closing proc-derived-state-ui")
         )))
 
-
-
-; rendering
-
-(defn ui-header
-  [channels state]
-  (let [{:keys [history/pushed]} state
-        {:keys [handler]} pushed]
-    [:header {:class "ui-header" :style {:display "flex"}}
-     [:div "starnet"]
-     [:a {:href "/events"} "events"]
-     [:br]
-     [:a {:href "/games"} "games"]
-     [:a {:href "u/games"} "u/games"]
-     [:a {:href "/settings"} "settings"]
-     [:a {:href (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))} "user/random"]
-     [:a {:href (gstring/format "/non-existing" (gen/generate gen/string-alphanumeric))} "not-found"]]))
-
-(defn render-page-events
-  [el channels state]
-  (r/render [:<>
-             [ui-header channels state]
-             [:div {:id "div-1"} "page events"]] el))
-
-(defn render-page-games
-  [el channels state]
-  (r/render [:<>
-             [ui-header channels state]
-             [:div {:id "div-1"} "page games"]] el))
-
-(defn render-page-userid-games
-  [el channels state]
-  (r/render [:<>
-             [ui-header channels state]
-             [:div {:id "div-1"} "page user/name/games"]] el))
-
-(defn render-page-user-games
-  [el channels state]
-  (r/render [:<>
-             [ui-header channels state]
-             [:div {:id "div-1"} "page u/games"]] el))
-
-(defn render-page-userid
-  [el channels state]
-  (r/render [:<>
-             [ui-header channels state]
-             [:div {:id "div-1"} "page userid"]] el))
-
-
-
-(defn render-not-found
-  [el channels state]
-  (r/render [:<>
-             [ui-header channels state]
-             [:div {:id "div-1"} "not found"]] el))
-
-
-
 (defn proc-renderer
   [{:keys [ml-derived-state-ui] :as channels}]
   (let [c-dsu (chan 1)
@@ -337,22 +256,22 @@
             (println (gstring/format "rendering %s" handler) )
             (condp = handler
               :page/events (do
-                             (render-page-events root-el channels v)
+                             (render/page-events root-el channels v)
                              (recur))
               :page/games (do
-                            (render-page-games root-el channels v)
+                            (render/page-games root-el channels v)
                             (recur))
               :page/user-games (do
-                                 (render-page-user-games root-el channels v)
+                                 (render/page-user-games root-el channels v)
                                  (recur))
               :page/userid-games (do
-                                   (render-page-userid-games root-el channels v)
+                                   (render/page-userid-games root-el channels v)
                                    (recur))
               :page/userid (do
-                             (render-page-userid root-el channels v)
+                             (render/page-userid root-el channels v)
                              (recur))
               (do
-                (render-not-found root-el channels v)
+                (render/not-found root-el channels v)
                 (recur)))))
         (println "closing proc-renderer"))))
 
