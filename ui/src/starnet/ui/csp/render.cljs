@@ -14,7 +14,9 @@
    [clojure.test.check :as tc]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-
+   
+   [starnet.ui.csp.pad :as pad]
+   
    ["antd/lib/layout" :default AntLayout]
    ["antd/lib/menu" :default AntMenu]
    ["antd/lib/icon" :default AntIcon]
@@ -33,19 +35,20 @@
 (def ant-smile-outlined (r/adapt-react-class AntSmileOutlined))
 
 
-(defn ui-header
-  [channels state]
-  (let [{:keys [history/pushed]} state
-        {:keys [handler]} pushed]
-    [:header {:class "ui-header" :style {:display "flex"}}
-     [:div "starnet"]
-     [:a {:href "/events"} "events"]
-     [:br]
-     [:a {:href "/games"} "games"]
-     [:a {:href "u/games"} "u/games"]
-     [:a {:href "/settings"} "settings"]
-     [:a {:href (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))} "user/random"]
-     [:a {:href (gstring/format "/non-existing" (gen/generate gen/string-alphanumeric))} "not-found"]]))
+#_(defn ui-header
+    [channels state]
+    (let [{:keys [history/pushed]} state
+          {:keys [handler]} pushed]
+      [:header {:class "ui-header" :style {:display "flex"}}
+       [:div "starnet"]
+       [:a {:href "/events"} "events"]
+       [:br]
+       [:a {:href "/games"} "games"]
+       [:a {:href "u/games"} "u/games"]
+       [:a {:href "/settings"} "settings"]
+       [:a {:href "/pad"} "pad"]
+       [:a {:href (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))} "user/random"]
+       [:a {:href (gstring/format "/non-existing" (gen/generate gen/string-alphanumeric))} "not-found"]]))
 
 
 
@@ -53,14 +56,13 @@
   [{:keys [router/handler history/pushed]}]
   (let []
     (fn []
-      (println handler)
       [ant-menu {:theme "light"
                  :mode "horizontal"
                  :size "small"
                  :style {:lineHeight "32px"}
                  :default-selected-keys ["home-panel"]
                  :selected-keys [handler]
-                 :on-select (fn [x] (println x))}
+                 :on-select (fn [x] (do))}
        [ant-menu-item {:key :page/events}
         [:a {:href "/events"} "events"]]
        [ant-menu-item {:key :page/games}
@@ -72,8 +74,9 @@
        [ant-menu-item {:key :page/userid}
         [:a {:href (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))} "user/random"]]
        [ant-menu-item {:key :page/non-existing}
-        [:a {:href (gstring/format "/non-existing" (gen/generate gen/string-alphanumeric))} "not-found"]]
-       ])))
+        [:a {:href (gstring/format "/non-existing" (gen/generate gen/string-alphanumeric))} "non-existing"]]
+       [ant-menu-item {:key :page/pad}
+        [:a {:href "/pad"} "pad"]]])))
 
 
 (defn layout
@@ -142,6 +145,13 @@
   (r/render [layout
              [:<>
               [:div  "not found"]]]  el))
+
+(defn render-page-pad
+  [el channels state]
+  (r/render [layout
+             [:<>
+              [pad/page]]]
+            el))
 
 (defn proc-page-user-games
   [{:keys [ml-router ml-http-res] :as channels}]
@@ -261,6 +271,23 @@
                              (recur (merge state v)))
                            (do (recur state)))))))
         (println "proc-page-not-found closing"))))
+
+(defn proc-page-pad
+  [{:keys [ml-router ml-http-res] :as channels}]
+  (let [c-router (chan 1)
+        root-el (.getElementById js/document "ui")]
+    (tap ml-router  c-router)
+    (go (loop [state nil]
+          (let [[v port] (alts! [c-router])]
+            (condp = port
+              c-router (let [{:keys [router/handler history/pushed]} v]
+                         (if (= handler :page/pad)
+                           (do
+                             #_(println (gstring/format "rendering %s" handler))
+                             (render-page-pad root-el channels v)
+                             (recur (merge state v)))
+                           (do (recur state)))))))
+        (println "proc-page-pad closing"))))
 
 
 
