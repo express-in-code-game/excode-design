@@ -204,7 +204,6 @@
                           (recur node)))))
         (println "closing proc-cruxdb"))))
 
-
 (comment
   (put! (channels :ch-sys) {:ch/topic :cruxdb :proc/op :start})
   (put! (channels :ch-sys) {:ch/topic :cruxdb :proc/op :close})
