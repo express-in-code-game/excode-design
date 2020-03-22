@@ -30,7 +30,7 @@
            goog.history.Html5History))
 
 (declare proc-main proc-socket proc-render-containers
-        proc-history proc-router)
+        proc-history proc-router proc-derived-state-ui proc-renderer)
 
 (enable-console-print!)
 
@@ -40,18 +40,21 @@
                     ch-socket (chan (sliding-buffer 10))
                     ch-history (chan (sliding-buffer 10))
                     ch-router (chan (sliding-buffer 10))
-                    pb-router (pub ch-router :ch/topic (fn [_] (sliding-buffer 10)))
+                    ml-router (mult ch-router)
                     ch-history-states (chan (sliding-buffer 10))
                     ml-history-states (mult ch-history-states)
-                    ]
+                    ch-derived-state-ui (chan (sliding-buffer 10))
+                    ml-derived-state-ui (mult ch-derived-state-ui)]
                 {:ch-proc-main ch-proc-main
                  :ch-sys ch-sys
                  :pb-sys pb-sys
                  :ch-history ch-history
                  :ch-router ch-router
-                 :pb-router pb-router
+                 :ml-router ml-router
                  :ch-history-states ch-history-states
                  :ml-history-states ml-history-states
+                 :ch-derived-state-ui ch-derived-state-ui
+                 :ml-derived-state-ui ml-derived-state-ui
                  :ch-socket ch-socket}))
 
 (defn ^:export main
@@ -71,6 +74,8 @@
                      (proc-socket (select-keys channels [:pb-sys :ch-sys :ch-socket]))
                      (proc-history (select-keys channels [:pb-sys :ch-sys :ch-history :ch-history-states]))
                      (proc-router (select-keys channels [:ch-sys :ch-history :ml-history-states :ch-router]))
+                     (proc-derived-state-ui (select-keys channels [:ch-derived-state-ui :ml-router]))
+                     (proc-renderer channels)
 
                      #_(put! (channels :ch-sys) {:ch/topic :proc-render-containers :proc/op :mount})
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
@@ -131,8 +136,8 @@
   )
 
 (def routes ["/" {"" :page/events
-                  "games/" :page/games
-                  "events/" :page/events
+                  "games" :page/games
+                  "events" :page/events
                   "u/" {[:id ""] :page/user}}])
 
 (defn- parse-url [url]
@@ -165,32 +170,10 @@
                            (condp = op
                              :set-token (do
                                           (pushy/set-token! h token)
-                                          (recur h))))))))
+                                          (recur h)))))))
+
+        (println "closing proc-history"))
     c))
-
-
-(defn render-page-events
-  [el ]
-  (r/render [:<>
-             [:div {:id "div-1"} "events"]] el))
-
-(defn render-page-games
-  [el]
-  (r/render [:<>
-             [:div {:id "div-1"} "games"]] el))
-
-(defn render-page-user
-  [el opts]
-  (let [{:keys [history/pushed]} opts
-        {:keys [route-params]} pushed]
-    (r/render [:<>
-               [:div {:id "div-1"} "user"]
-               [:div {:id "div-1"} route-params]] el)))
-
-(defn render-not-found
-  [el]
-  (r/render [:<>
-             [:div {:id "div-1"} "not found"]] el))
 
 (defn proc-router
   [{:keys [ch-sys ch-history ch-router ml-history-states]}]
@@ -200,28 +183,11 @@
     (go (loop []
           (if-let [{:keys [history/pushed] :as v} (<! c)]
             (let [{:keys [url route-params handler]} pushed]
-              (condp = handler
-                :page/events (do (put! ch-router {:router/handler handler
-                                                  :history/pushed pushed})
-                                 (println handler)
-                                 (render-page-events root-el)
-                                 (recur))
-                :page/games (do
-                              (put! ch-router {:router/handler handler
-                                               :history/pushed pushed})
-                              (render-page-games root-el)
-                              (println handler)
-                              (recur))
-                :page/user (do
-                             (put! ch-router {:router/handler handler
-                                              :history/pushed pushed})
-                             (println handler)
-                             (render-page-user root-el v)
-                             (recur))
-                (do
-                  (println "no match" pushed)
-                  (render-not-found root-el)
-                  (recur)))))))))
+              (do (put! ch-router {:router/handler handler
+                                   :history/pushed pushed})
+                  (recur)))))
+        (println "closing proc-router")
+        )))
 
 (comment
 
@@ -233,7 +199,7 @@
   
   (put! (channels :ch-history)
         {:history/op :set-token
-         :history/token "/test"})
+         :history/token "/games"})
 
   (a/poll! (channels :ch-history))
 
@@ -259,6 +225,66 @@
 
   ;;
   )
+
+(defn proc-derived-state-ui
+  [{:keys [ml-router ch-derived-state-ui]}]
+  (let [c-router (chan 1)]
+    (tap ml-router c-router)
+    (go (loop [s nil]
+          (if-let [[v port] (alts! [c-router])]
+            (condp = port
+              c-router (let [u (select-keys v [:router/handler :history/pushed])
+                             s (merge s u)]
+                         (put! ch-derived-state-ui s)
+                         (recur s)))))
+        (println "closing proc-derived-state-ui")
+        )))
+
+(defn render-page-events
+  [el]
+  (r/render [:<>
+             [:div {:id "div-1"} "events"]] el))
+
+(defn render-page-games
+  [el]
+  (r/render [:<>
+             [:div {:id "div-1"} "games"]] el))
+
+(defn render-page-user
+  [el opts]
+  (let [{:keys [history/pushed]} opts
+        {:keys [route-params]} pushed]
+    (r/render [:<>
+               [:div {:id "div-1"} "user"]
+               [:div {:id "div-1"} route-params]] el)))
+
+(defn render-not-found
+  [el]
+  (r/render [:<>
+             [:div {:id "div-1"} "not found"]] el))
+
+(defn proc-renderer
+  [{:keys [ml-derived-state-ui] :as channels}]
+  (let [c-dsu (chan 1)
+        root-el (.getElementById js/document "ui")]
+    (tap ml-derived-state-ui  c-dsu)
+    (go (loop []
+          (let [{:keys [router/handler history/pushed] :as v} (<! c-dsu)]
+            (println (gstring/format "rendering %s" handler) )
+            (condp = handler
+              :page/events (do
+                             (render-page-events root-el)
+                             (recur))
+              :page/games (do
+                            (render-page-games root-el)
+                            (recur))
+              :page/user (do
+                           (render-page-user root-el v)
+                           (recur))
+              (do
+                (render-not-found root-el)
+                (recur)))))
+        (println "closing proc-renderer"))))
 
 
 ; pages are templates
