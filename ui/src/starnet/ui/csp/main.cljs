@@ -139,7 +139,9 @@
                       "games" :page/games
                       "events" :page/events
                       "settings" :page/settings
-                      "u/" {[:id ""] :page/user}}])
+                      "u/" {"games" :page/user-games
+                            [:id ""] :page/userid
+                            [:id "games"] :page/userid-games}}])
 
 (defn- parse-url [url]
   (merge
@@ -261,6 +263,7 @@
      [:a {:href "/events"} "events"]
      [:br]
      [:a {:href "/games"} "games"]
+     [:a {:href "u/games"} "u/games"]
      [:a {:href "/settings"} "settings"]
      [:a {:href (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))} "user/random"]
      [:a {:href (gstring/format "/non-existing" (gen/generate gen/string-alphanumeric))} "not-found"]]))
@@ -277,11 +280,25 @@
              [ui-header channels state]
              [:div {:id "div-1"} "page games"]] el))
 
-(defn render-page-user
+(defn render-page-userid-games
   [el channels state]
   (r/render [:<>
              [ui-header channels state]
-             [:div {:id "div-1"} "page user"]] el))
+             [:div {:id "div-1"} "page user/name/games"]] el))
+
+(defn render-page-user-games
+  [el channels state]
+  (r/render [:<>
+             [ui-header channels state]
+             [:div {:id "div-1"} "page u/games"]] el))
+
+(defn render-page-userid
+  [el channels state]
+  (r/render [:<>
+             [ui-header channels state]
+             [:div {:id "div-1"} "page userid"]] el))
+
+
 
 (defn render-not-found
   [el channels state]
@@ -306,9 +323,15 @@
               :page/games (do
                             (render-page-games root-el channels v)
                             (recur))
-              :page/user (do
-                           (render-page-user root-el channels v)
-                           (recur))
+              :page/user-games (do
+                                 (render-page-user-games root-el channels v)
+                                 (recur))
+              :page/userid-games (do
+                                   (render-page-userid-games root-el channels v)
+                                   (recur))
+              :page/userid (do
+                             (render-page-userid root-el channels v)
+                             (recur))
               (do
                 (render-not-found root-el channels v)
                 (recur)))))
