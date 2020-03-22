@@ -44,8 +44,8 @@
                         ml-router (mult ch-router)
                         ch-history-states (chan (sliding-buffer 10))
                         ml-history-states (mult ch-history-states)
-                        ch-derived-state-ui (chan (sliding-buffer 10))
-                        ml-derived-state-ui (mult ch-derived-state-ui)
+                        ;; ch-derived-state-ui (chan (sliding-buffer 10))
+                        ;; ml-derived-state-ui (mult ch-derived-state-ui)
                         ch-http (chan (sliding-buffer 10))
                         ch-http-res (chan (sliding-buffer 10))
                         ml-http-res (mult ch-http-res)]
@@ -57,8 +57,8 @@
                      :ml-router ml-router
                      :ch-history-states ch-history-states
                      :ml-history-states ml-history-states
-                     :ch-derived-state-ui ch-derived-state-ui
-                     :ml-derived-state-ui ml-derived-state-ui
+                    ;;  :ch-derived-state-ui ch-derived-state-ui
+                    ;;  :ml-derived-state-ui ml-derived-state-ui
                      :ch-http ch-http
                      :ch-http-res ch-http-res
                      :ml-http-res ml-http-res
@@ -81,8 +81,16 @@
                      (proc-http (select-keys channels [:pb-sys :ch-sys :ch-http :ch-http-res]))
                      (proc-history (select-keys channels [:pb-sys :ch-sys :ch-history :ch-history-states]))
                      (proc-router (select-keys channels [:ch-sys :ch-history :ml-history-states :ch-router]))
-                     (proc-derived-state-ui (select-keys channels [:ch-derived-state-ui :ml-router :ml-http-res]))
-                     (proc-renderer channels)
+                     #_(proc-derived-state-ui (select-keys channels [:ch-derived-state-ui :ml-router :ml-http-res]))
+                     #_(proc-renderer channels)
+                     (render/proc-page-user-games channels)
+                     (render/proc-page-userid channels)
+                     (render/proc-page-games channels)
+                     (render/proc-page-not-found channels)
+                     (render/proc-page-userid-games channels)
+                     (render/proc-page-events channels)
+                     (render/proc-page-settings channels)
+                     
 
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
                      (put! (channels :ch-sys) {:ch/topic :proc-history :proc/op :start})
@@ -172,6 +180,11 @@
         (println "closing proc-history"))
     c))
 
+; for dev realod only
+(defonce ^:private route (atom nil))
+(defn ^:dev/after-load after-load []
+  (put! (channels :ch-router) @route))
+
 (defn proc-router
   [{:keys [ch-sys ch-history ch-router ml-history-states]}]
   (let [c (chan 1)
@@ -179,12 +192,13 @@
     (tap ml-history-states c)
     (go (loop []
           (if-let [{:keys [history/pushed] :as v} (<! c)]
-            (let [{:keys [url route-params handler]} pushed]
-              (do (put! ch-router {:router/handler handler
-                                   :history/pushed pushed})
+            (let [{:keys [url route-params handler]} pushed
+                  o {:router/handler handler
+                     :history/pushed pushed}]
+              (do (put! ch-router o)
+                  (reset! route o)
                   (recur)))))
-        (println "closing proc-router")
-        )))
+        (println "closing proc-router"))))
 
 (comment
 
@@ -223,56 +237,5 @@
   ;;
   )
 
-; for dev realod only
-(defonce ^:private ui-state (atom nil))
-(defn ^:dev/after-load after-load []
-  (put! (channels :ch-derived-state-ui) @ui-state))
-
-(defn proc-derived-state-ui
-  [{:keys [ml-router ch-derived-state-ui ml-http-res]}]
-  (let [c-router (chan 1)
-        c-http (chan 1)]
-    (tap ml-router c-router)
-    (tap ml-http-res  c-http)
-    (go (loop [s nil]
-          (if-let [[v port] (alts! [c-router])]
-            (condp = port
-              c-router (let [u (select-keys v [:router/handler :history/pushed])
-                             s (merge s u)]
-                         (println "proc-derived-state-ui" s)
-                         (put! ch-derived-state-ui s)
-                         (reset! ui-state s)
-                         (recur s)))))
-        (println "closing proc-derived-state-ui")
-        )))
-
-(defn proc-renderer
-  [{:keys [ml-derived-state-ui] :as channels}]
-  (let [c-dsu (chan 1)
-        root-el (.getElementById js/document "ui")]
-    (tap ml-derived-state-ui  c-dsu)
-    (go (loop []
-          (let [{:keys [router/handler history/pushed] :as v} (<! c-dsu)]
-            (println (gstring/format "rendering %s" handler) )
-            (condp = handler
-              :page/events (do
-                             (render/page-events root-el channels v)
-                             (recur))
-              :page/games (do
-                            (render/page-games root-el channels v)
-                            (recur))
-              :page/user-games (do
-                                 (render/page-user-games root-el channels v)
-                                 (recur))
-              :page/userid-games (do
-                                   (render/page-userid-games root-el channels v)
-                                   (recur))
-              :page/userid (do
-                             (render/page-userid root-el channels v)
-                             (recur))
-              (do
-                (render/not-found root-el channels v)
-                (recur)))))
-        (println "closing proc-renderer"))))
 
 
