@@ -14,15 +14,21 @@
    [clojure.test.check :as tc]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-   
-   [starnet.ui.csp.pad :as pad]
-   
+
    ["antd/lib/layout" :default AntLayout]
    ["antd/lib/menu" :default AntMenu]
    ["antd/lib/icon" :default AntIcon]
    ["antd/lib/button" :default AntButton]
    ["antd/lib/list" :default AntList]
+   ["antd/lib/row" :default AntRow]
+   ["antd/lib/col" :default AntCol]
+   ["antd/lib/divider" :default AntDivider]
    ["@ant-design/icons/SmileOutlined" :default AntSmileOutlined]))
+
+
+(def ant-row (r/adapt-react-class AntRow))
+(def ant-col (r/adapt-react-class AntCol))
+(def ant-divider (r/adapt-react-class AntDivider))
 
 (def ant-layout (r/adapt-react-class AntLayout))
 (def ant-layout-content (r/adapt-react-class (.-Content AntLayout)))
@@ -46,7 +52,6 @@
        [:a {:href "/games"} "games"]
        [:a {:href "u/games"} "u/games"]
        [:a {:href "/settings"} "settings"]
-       [:a {:href "/pad"} "pad"]
        [:a {:href (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))} "user/random"]
        [:a {:href (gstring/format "/non-existing" (gen/generate gen/string-alphanumeric))} "not-found"]]))
 
@@ -75,8 +80,8 @@
         [:a {:href (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))} "user/random"]]
        [ant-menu-item {:key :page/non-existing}
         [:a {:href (gstring/format "/non-existing" (gen/generate gen/string-alphanumeric))} "non-existing"]]
-       [ant-menu-item {:key :page/pad}
-        [:a {:href "/pad"} "pad"]]])))
+       [ant-menu-item {:key :page/login}
+        [:a {:href "/login"} "login"]]])))
 
 
 (defn layout
@@ -146,12 +151,11 @@
              [:<>
               [:div  "not found"]]]  el))
 
-(defn render-page-pad
+(defn render-page-login
   [el channels state]
   (r/render [layout
              [:<>
-              [pad/page]]]
-            el))
+              [:div  "page login"]]]  el))
 
 (defn proc-page-user-games
   [{:keys [ml-router ml-http-res] :as channels}]
@@ -272,7 +276,7 @@
                            (do (recur state)))))))
         (println "proc-page-not-found closing"))))
 
-(defn proc-page-pad
+(defn proc-page-login
   [{:keys [ml-router ml-http-res] :as channels}]
   (let [c-router (chan 1)
         root-el (.getElementById js/document "ui")]
@@ -281,14 +285,13 @@
           (let [[v port] (alts! [c-router])]
             (condp = port
               c-router (let [{:keys [router/handler history/pushed]} v]
-                         (if (= handler :page/pad)
+                         (if (= handler :page/login)
                            (do
                              #_(println (gstring/format "rendering %s" handler))
-                             (render-page-pad root-el channels v)
+                             (render-page-login root-el channels v)
                              (recur (merge state v)))
                            (do (recur state)))))))
-        (println "proc-page-pad closing"))))
-
+        (println "proc-page-login closing"))))
 
 
 #_(defn proc-renderer
