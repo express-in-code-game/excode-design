@@ -138,6 +138,7 @@
 (defonce routes ["/" {"" :page/events
                       "games" :page/games
                       "events" :page/events
+                      "settings" :page/settings
                       "u/" {[:id ""] :page/user}}])
 
 (defn- parse-url [url]
@@ -253,32 +254,39 @@
 
 (defn ui-header
   [channels state]
-  (let [{:keys [route-params]} state]
-    [:header
-     [:div {:id "div-1"} route-params]]))
+  (let [{:keys [history/pushed]} state
+        {:keys [handler]} pushed]
+    [:header {:class "ui-header" :style {:display "flex"}}
+     [:div "starnet"]
+     [:a {:href "/events"} "events"]
+     [:br]
+     [:a {:href "/games"} "games"]
+     [:a {:href "/settings"} "settings"]
+     [:a {:href (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))} "user/random"]
+     [:a {:href (gstring/format "/non-existing" (gen/generate gen/string-alphanumeric))} "not-found"]]))
 
 (defn render-page-events
   [el channels state]
   (r/render [:<>
              [ui-header channels state]
-             [:div {:id "div-1"} "events2123"]] el))
+             [:div {:id "div-1"} "page events"]] el))
 
 (defn render-page-games
-  [el]
+  [el channels state]
   (r/render [:<>
-             [:div {:id "div-1"} "games"]] el))
+             [ui-header channels state]
+             [:div {:id "div-1"} "page games"]] el))
 
 (defn render-page-user
-  [el opts]
-  (let [{:keys [history/pushed]} opts
-        {:keys [route-params]} pushed]
-    (r/render [:<>
-               [:div {:id "div-1"} "user"]
-               [:div {:id "div-1"} route-params]] el)))
+  [el channels state]
+  (r/render [:<>
+             [ui-header channels state]
+             [:div {:id "div-1"} "page user"]] el))
 
 (defn render-not-found
-  [el]
+  [el channels state]
   (r/render [:<>
+             [ui-header channels state]
              [:div {:id "div-1"} "not found"]] el))
 
 
@@ -296,13 +304,13 @@
                              (render-page-events root-el channels v)
                              (recur))
               :page/games (do
-                            (render-page-games root-el)
+                            (render-page-games root-el channels v)
                             (recur))
               :page/user (do
-                           (render-page-user root-el v)
+                           (render-page-user root-el channels v)
                            (recur))
               (do
-                (render-not-found root-el)
+                (render-not-found root-el channels v)
                 (recur)))))
         (println "closing proc-renderer"))))
 
