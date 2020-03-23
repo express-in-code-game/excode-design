@@ -34,7 +34,7 @@
            [goog Uri]
            goog.history.Html5History))
 
-(declare proc-main proc-socket proc-render-containers proc-http proc-db
+(declare proc-main proc-socket proc-render-containers proc-db
         proc-history proc-router proc-derived-state proc-render-ui)
 
 (enable-console-print!)
@@ -50,10 +50,7 @@
                         ml-history-states (mult ch-history-states)
                         ch-db (chan (sliding-buffer 10))
                         ch-inputs (chan (sliding-buffer 100))
-                        pb-inputs (pub ch-inputs :ch/topic (fn [_] (sliding-buffer 100)))
-                        ch-http (chan (sliding-buffer 10))
-                        ch-http-res (chan (sliding-buffer 10))
-                        ml-http-res (mult ch-http-res)]
+                        pb-inputs (pub ch-inputs :ch/topic (fn [_] (sliding-buffer 100)))]
                     {:ch-proc-main ch-proc-main
                      :ch-sys ch-sys
                      :pb-sys pb-sys
@@ -65,9 +62,6 @@
                      :ml-history-states ml-history-states
                      :ch-inputs ch-inputs
                      :pb-inputs pb-inputs
-                     :ch-http ch-http
-                     :ch-http-res ch-http-res
-                     :ml-http-res ml-http-res
                      :ch-socket ch-socket}))
 
 (defn ^:export main
@@ -84,7 +78,6 @@
           (condp = op
             :start (do
                      (proc-socket (select-keys channels [:pb-sys :ch-sys :ch-socket]))
-                     (proc-http (select-keys channels [:pb-sys :ch-sys :ch-http :ch-http-res]))
                      (proc-history (select-keys channels [:pb-sys :ch-sys :ch-history :ch-history-states]))
                      (proc-router (select-keys channels [:ch-sys :ch-history :ml-history-states :ch-router]))
                      (proc-db (select-keys channels [:pb-sys :ch-db]))
@@ -118,15 +111,7 @@
         (println "proc-render-containers closing"))
     c))
 
-(defn proc-http
-  [{:keys [ch-sys ch-http ch-http-res]}]
-  (let []
-    (go (loop []
-          (if-let [{:keys [http/url http/data] :as v} (<! ch-http)]
-            (let [resp (<! '(http-req))]
-              (do (put! ch-http-res resp)
-                  (recur)))))
-        (println "closing proc-http"))))
+
 
 (comment
 
@@ -321,3 +306,12 @@
           )
         (println "closing proc-ops-inputs"))))
 
+#_(defn proc-http
+    [{:keys [ch-sys ch-http ch-http-res]}]
+    (let []
+      (go (loop []
+            (if-let [{:keys [http/url http/data] :as v} (<! ch-http)]
+              (let [resp (<! '(http-req))]
+                (do (put! ch-http-res resp)
+                    (recur)))))
+          (println "closing proc-http"))))
