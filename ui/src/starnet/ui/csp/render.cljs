@@ -398,6 +398,7 @@
   (defn ordinary-component []
     (fn []
       (println "rendering ordinary-component")
+      (js/console.log (r/current-component))
       [state-ful-with-atom]))
 
 
@@ -407,6 +408,21 @@
               [ordinary-component]]]  (.getElementById js/document "ui"))
 
   (swap! click-count inc)
+  
+  (def x1 (r/atom 1))
+  
+  (defn f1 []
+    (println (inc @x1))
+   @x1
+    )
+  (def t1 (r/track f1 ))
+  
+  (swap! x1 inc)
+  
+  (add-watch x1 :f1 (fn [k ref old nw]
+                      (println nw)
+                      ))
+  
   
 
   ;;
