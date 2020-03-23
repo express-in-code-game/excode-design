@@ -95,7 +95,7 @@
   (repl-query channels '{:find [id]
                          :where [[e :crux.db/id id]]
                          :full-results? true})
-
+  
 
   (dotimes [n 10]
     (->
