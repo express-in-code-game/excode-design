@@ -383,3 +383,30 @@
           (println "closing proc-derived-state-ui"))))
 
 
+(comment
+
+  (defonce click-count (r/atom 0))
+
+
+  (defn state-ful-with-atom []
+    (fn []
+      (println "rendering state-ful-with-atom")
+      [:div {:on-click #(swap! click-count inc)}
+       "I have been clicked " @click-count " times."]))
+
+  (defn ordinary-component []
+    (fn []
+      (println "rendering ordinary-component")
+      [state-ful-with-atom]))
+
+
+
+  (r/render [layout
+             [:<>
+              [ordinary-component]]]  (.getElementById js/document "ui"))
+
+  (swap! click-count inc)
+  
+
+  ;;
+  )
