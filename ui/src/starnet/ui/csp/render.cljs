@@ -41,39 +41,37 @@
 (def ant-smile-outlined (r/adapt-react-class AntSmileOutlined))
 
 
-(declare rc-ui)
-
-
-
-
 (defn menu
-  [{:keys [router/handler history/pushed]}]
-  (let []
+  [channels ratoms]
+  (let [handler* (r/cursor (ratoms :state) [:router/handler])
+        url* (r/cursor (ratoms :state) [:history/pushed :url])] ; for test, remove
     (fn []
-      [ant-menu {:theme "light"
-                 :mode "horizontal"
-                 :size "small"
-                 :style {:lineHeight "32px"}
-                 :default-selected-keys ["home-panel"]
-                 :selected-keys [handler]
-                 :on-select (fn [x] (do))}
-       [ant-menu-item {:key :page/events}
-        [:a {:href "/events"} "events"]]
-       [ant-menu-item {:key :page/games}
-        [:a {:href "/games"} "games"]]
-       [ant-menu-item {:key :page/user-games}
-        [:a {:href "u/games"} "u/games"]]
-       [ant-menu-item {:key :page/settings}
-        [:a {:href "/settings"} "settings"]]
-       [ant-menu-item {:key :page/userid}
-        [:a {:href (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))} "user/random"]]
-       [ant-menu-item {:key :page/non-existing}
-        [:a {:href (gstring/format "/non-existing" (gen/generate gen/string-alphanumeric))} "non-existing"]]
-       [ant-menu-item {:key :page/login}
-        [:a {:href "/login"} "login"]]])))
+      (let [handler @handler*
+            url @url*]
+        [ant-menu {:theme "light"
+                   :mode "horizontal"
+                   :size "small"
+                   :style {:lineHeight "32px"}
+                   :default-selected-keys ["home-panel"]
+                   :selected-keys [handler]
+                   :on-select (fn [x] (do))}
+         [ant-menu-item {:key :page/events}
+          [:a {:href "/events"} "events"]]
+         [ant-menu-item {:key :page/games}
+          [:a {:href "/games"} "games"]]
+         [ant-menu-item {:key :page/user-games}
+          [:a {:href "/u/games"} "u/games"]]
+         [ant-menu-item {:key :page/settings}
+          [:a {:href "/settings"} "settings"]]
+         [ant-menu-item {:key :page/userid}
+          [:a {:href (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))} "user/random"]]
+         [ant-menu-item {:key :page/non-existing}
+          [:a {:href (gstring/format "/non-existing" (gen/generate gen/string-alphanumeric))} "non-existing"]]
+         [ant-menu-item {:key :page/login}
+          [:a {:href "/login"} "login"]]]))))
 
 (defn layout
-  [content]
+  [channels ratoms content]
   [ant-layout {:style {:min-height "100vh"}}
    [ant-layout-header
     {:style {:position "fixed"
@@ -87,14 +85,14 @@
          :class "logo"}
      #_[:img {:class "logo-img" :src "./img/logo-4.png"}]
      [:div {:class "logo-name"} "starnet"]]
-    [menu]]
+    [menu channels ratoms]]
    [ant-layout-content {:class "main-content"
                         :style {:margin-top "32px"
                                 :padding "32px 32px 32px 32px"}}
     content]])
 
 (defn layout-game
-  [content]
+  [channels ratoms content]
   [ant-layout {:style {:min-height "100vh"}}
    [ant-layout-content {:class "main-content"
                         :style {:margin-top "32px"
@@ -107,7 +105,7 @@
   (let []
     (fn [channels ratoms]
       (let []
-        [layout
+        [layout channels ratoms
          [:<>
           [:div "rc-page-events"]]]))))
 
@@ -116,7 +114,7 @@
   (let []
     (fn [channels ratoms]
       (let []
-        [layout
+        [layout channels ratoms
          [:<>
           [:div "rc-page-settings"]]]))))
 
@@ -125,7 +123,7 @@
   (let []
     (fn [channels ratoms]
       (let []
-        [layout
+        [layout channels ratoms
          [:<>
           [:div "rc-page-games"]]]))))
 
@@ -134,7 +132,7 @@
   (let []
     (fn [channels ratoms]
       (let []
-        [layout
+        [layout channels ratoms
          [:<>
           [:div "rc-page-userid-games"]]]))))
 
@@ -143,7 +141,7 @@
   (let []
     (fn [channels ratoms]
       (let []
-        [layout
+        [layout channels ratoms
          [:<>
           [:div "rc-page-userid"]]]))))
 
@@ -152,7 +150,7 @@
   (let []
     (fn [channels ratoms]
       (let []
-        [layout
+        [layout channels ratoms
          [:<>
           [:div "rc-page-not-found"]]]))))
 
@@ -161,7 +159,7 @@
   (let []
     (fn [channels ratoms]
       (let []
-        [layout
+        [layout channels ratoms
          [:<>
           [:div "rc-page-login"]]]))))
 
@@ -170,7 +168,7 @@
   (let []
     (fn [channels ratoms]
       (let []
-        [layout
+        [layout-game channels ratoms
          [:<>
           [:div "rc-page-game"]]]))))
 
@@ -179,7 +177,7 @@
   (let []
     (fn [channels ratoms]
       (let []
-        [layout
+        [layout channels ratoms
          [:<>
           [:div  "rc-page-user-games"]
           [ant-button {:value "button" :size "small"} "button"]
@@ -191,19 +189,21 @@
 
 (defn rc-ui
   [channels ratoms]
-  (let [handler @(-> @(ratoms :state) (r/cursor [:router/handler]))]
+  (let [handler* (r/cursor (ratoms :state) [:router/handler])]
     (fn [channels ratoms]
       #_(println (gstring/format "ratoms :state %s" @(ratoms :state)))
-      (println (gstring/format "rendering %s" handler))
       #_(let [{:keys [router/handler history/pushed]} @(ratoms :state)]
           (println (gstring/format "rendering %s" handler)))
-      (let []
+      (let [handler @handler*]
+        (println (gstring/format "rendering %s" handler))
         (condp = handler
           :page/events [rc-page-events channels ratoms]
           :page/games [rc-page-games channels ratoms]
           :page/user-games [rc-page-user-games channels ratoms]
           :page/userid-games [rc-page-userid-games channels ratoms]
           :page/userid [rc-page-userid channels ratoms]
+          :page/login [rc-page-login channels ratoms]
+          :page/game [rc-page-game channels ratoms]
           [rc-page-not-found channels ratoms])))))
 
 (defn render-ui

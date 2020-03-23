@@ -160,7 +160,7 @@
                   (condp = op
                     :start (let [h (pushy/pushy
                                     (fn [pushed]
-                                      (println "pushed" pushed)
+                                      #_(println "pushed" pushed)
                                       (put! ch-history-states {:history/pushed pushed})) parse-url)]
                              (pushy/start! h)
                              (reset! history h)
@@ -286,7 +286,7 @@
           (if-let [[v port] (alts! [c-router c-http])]
             (condp = port
               c-router (let [o (select-keys v [:router/handler :history/pushed])]
-                         (println o)
+                         #_(println o)
                          (>! ch-db {:db/op :merge-ratom
                                     :ratoms/id :state
                                     :ratoms/v o})
@@ -299,7 +299,7 @@
   [{:keys [ch-db] :as channels}]
   (let []
     (go (loop [ratoms nil]
-          (println "ratoms" ratoms)
+          #_(println "ratoms" ratoms)
           (when-not ratoms
             (let [c (chan 1)]
               (>! ch-db {:db/op :get-ratoms :ch/c-out c})
