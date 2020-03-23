@@ -102,6 +102,7 @@
       - https://tonsky.me/blog/datascript-chat/
     - https://github.com/juxt/crux
     - http://reagent-project.github.io/docs/master/reagent.core.html#var-cursor
+    - https://clojuredocs.org/clojure.core/add-watch
   - http
     - https://github.com/ring-clojure/ring/wiki
     - https://github.com/pedestal
