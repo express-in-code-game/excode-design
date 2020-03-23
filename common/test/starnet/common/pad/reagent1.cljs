@@ -2,6 +2,7 @@
   (:require
    [clojure.repl :refer [doc]]
    [reagent.core :as r]
+   [reagent.dom :as rdom]
    [clojure.core.async :as a :refer [<! >!  timeout chan alt! go
                                      alts!  take! put! mult tap untap
                                      pub sub sliding-buffer mix admix unmix]]
@@ -62,6 +63,15 @@
   (add-watch x1 :f1 (fn [k ref old nw]
                       (println nw)))
 
+  (defn state-ful-with-atom-2 []
+    (fn []
+      (println "rendering state-ful-with-atom-2")
+      [:div {:on-click #(swap! x1 inc)}
+       "I have been clicked " @t3 " times."]))
+
+  (rdom/render [:<>
+                [state-ful-with-atom-2]]  (.getElementById js/document "ui"))
+
 
   '{:a 1
     :b 2
@@ -80,6 +90,7 @@
   (swap! a  (constantly x1))
 
 
+  (take! (timeout 1000) (fn [_] (println "x")))
 
 
   ;;
