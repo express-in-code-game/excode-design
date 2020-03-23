@@ -49,6 +49,7 @@
                         ch-history-states (chan (sliding-buffer 10))
                         ml-history-states (mult ch-history-states)
                         ch-db (chan (sliding-buffer 10))
+                        ch-http (chan (sliding-buffer 10))
                         ch-inputs (chan (sliding-buffer 100))
                         pb-inputs (pub ch-inputs :ch/topic (fn [_] (sliding-buffer 100)))]
                     {:ch-proc-main ch-proc-main
