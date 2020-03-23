@@ -265,7 +265,13 @@
                                           (recur ratoms ds))
                         :merge-ratom (let [{:keys [ratoms/id ratoms/v]} v]
                                        (swap! (ratoms id) merge v)
-                                       (recur ratoms ds)))))))
+                                       (recur ratoms ds))
+                        :local-storage-get (let [{:keys [local-storage/k]}]
+                                             (>! ch/c-out (.getItem js/localStorage k))
+                                             (recur ratoms ds))
+                        :local-storage-set (let [{:keys [local-storage/k local-storage/v]}]
+                                             (>! ch/c-out (.setItem js/localStorage k v))
+                                             (recur ratoms ds)))))))
         (println "closing proc-db"))))
 
 (defn proc-derived-state
@@ -309,11 +315,25 @@
 
 ; for loading state, adding token, swap!ing responses onto derived state
 (defn proc-http
-    [{:keys [ch-sys ch-http ch-http-res]}]
+    [{:keys [ch-sys ch-http ch-db ]}]
     (let []
-      (go (loop []
-            (if-let [{:keys [http/url http/data] :as v} (<! ch-http)]
-              (let [resp (<! '(http-req))]
-                (do (put! ch-http-res resp)
-                    (recur)))))
+      (go (loop [token nil]
+            (when-not token
+              (let [c (chan 1)]
+                (>! ch-db {:db/op :local-storage-get
+                           :local-storage/k "token"
+                           :ch/c-out c})
+                (recur (<! c))))
+            (if-let [{:keys [http/opts ch/c-out] :as v} (<! ch-http)]
+              (let [resp (<! (http/request (merge opts {:with-credentials? false
+                                                        :headers {"Authorization" token}})))]
+                (>! c-out resp)
+                (when (substr? (:url opts) "/login")
+                  (let [token 'get-token]
+                    (>! ch-db {:db/op :local-storage-set
+                               :local-storage/k "token"
+                               :local-storage/v token
+                               :ch/c-out c})
+                    (recur token)))
+                (recur token))))
           (println "closing proc-http"))))
