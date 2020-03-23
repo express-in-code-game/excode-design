@@ -20,8 +20,8 @@
    [pushy.core :as pushy]
 
    [starnet.ui.csp.render :as render]
-   [starnet.common.pad.reagent1]
    
+   [datascript.core :as ds]
 
    [starnet.common.alpha.spec]
 
@@ -32,8 +32,8 @@
            [goog Uri]
            goog.history.Html5History))
 
-(declare proc-main proc-socket proc-render-containers proc-http
-        proc-history proc-router proc-derived-state-ui proc-renderer)
+(declare proc-main proc-socket proc-render-containers proc-http proc-db
+        proc-history proc-router proc-derived-state proc-render-ui)
 
 (enable-console-print!)
 
@@ -46,21 +46,19 @@
                         ml-router (mult ch-router)
                         ch-history-states (chan (sliding-buffer 10))
                         ml-history-states (mult ch-history-states)
-                        ;; ch-derived-state-ui (chan (sliding-buffer 10))
-                        ;; ml-derived-state-ui (mult ch-derived-state-ui)
+                        ch-db (chan (sliding-buffer 10))
                         ch-http (chan (sliding-buffer 10))
                         ch-http-res (chan (sliding-buffer 10))
                         ml-http-res (mult ch-http-res)]
                     {:ch-proc-main ch-proc-main
                      :ch-sys ch-sys
                      :pb-sys pb-sys
+                     :ch-db ch-db
                      :ch-history ch-history
                      :ch-router ch-router
                      :ml-router ml-router
                      :ch-history-states ch-history-states
                      :ml-history-states ml-history-states
-                    ;;  :ch-derived-state-ui ch-derived-state-ui
-                    ;;  :ml-derived-state-ui ml-derived-state-ui
                      :ch-http ch-http
                      :ch-http-res ch-http-res
                      :ml-http-res ml-http-res
@@ -83,21 +81,14 @@
                      (proc-http (select-keys channels [:pb-sys :ch-sys :ch-http :ch-http-res]))
                      (proc-history (select-keys channels [:pb-sys :ch-sys :ch-history :ch-history-states]))
                      (proc-router (select-keys channels [:ch-sys :ch-history :ml-history-states :ch-router]))
-                     #_(proc-derived-state-ui (select-keys channels [:ch-derived-state-ui :ml-router :ml-http-res]))
-                     #_(proc-renderer channels)
-                     (render/proc-page-user-games channels)
-                     (render/proc-page-userid channels)
-                     (render/proc-page-games channels)
-                     (render/proc-page-not-found channels)
-                     (render/proc-page-userid-games channels)
-                     (render/proc-page-events channels)
-                     (render/proc-page-settings channels)
-                     (render/proc-page-login channels)
-                     (render/proc-page-game channels)
-                     
+                     (proc-db (select-keys channels [:pb-sys :ch-db]))
+                     (proc-derived-state (select-keys channels [:ml-router :ml-http-res :ch-db]))
+                     (proc-render-ui (select-keys channels [:ch-db]))
+
 
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
                      (put! (channels :ch-sys) {:ch/topic :proc-history :proc/op :start})
+                     (put! (channels :ch-sys) {:ch/topic :proc-db :proc/op :start})
                      (recur)))))
       (println "closing go block: proc-main")))
 
@@ -244,4 +235,75 @@
   )
 
 
+(defn make-deafult-ratoms
+  []
+  (let []
+    {:state (r/atom {})}))
 
+(def ^:private rtoms nil)
+
+(defn proc-db
+  [{:keys [ch-db pb-sys]}]
+  (let [c-sys (chan 1)]
+    (sub pb-sys :proc-db c-sys)
+    (go (loop [ratoms nil
+               ds nil]
+          (if-let [[v port] (alts! (if ratoms [ch-db c-sys] [c-sys]))]
+            (condp = port
+              c-sys (let [{:keys [proc/op]} v]
+                      (condp = op
+                        :start (let [ratoms (make-deafult-ratoms)
+                                     ds nil]
+                                 (set! rtoms ratoms)
+                                 (recur ratoms ds))))
+              ch-db (let [{:keys [db/op db/query ch/c-out]} v]
+                      (condp = op
+                        :q (let []
+                             (recur ratoms ds))
+                        :tx (let []
+                              (recur ratoms ds))
+                        :get-ratoms (let []
+                                      (>! c-out ratoms)
+                                      (recur ratoms ds))
+                        :get-in-ratom (let [{:keys [ratoms/id ratoms/v ratoms/path]} v]
+                                        (get-in @(ratoms id) path)
+                                        (recur ratoms ds))
+                        :assoc-in-ratom (let [{:keys [ratoms/id ratoms/v ratoms/path]} v]
+                                          (swap! (ratoms id) assoc-in path v)
+                                          (recur ratoms ds))
+                        :merge-ratom (let [{:keys [ratoms/id ratoms/v]} v]
+                                       (swap! (ratoms id) merge v)
+                                       (recur ratoms ds)))))))
+        (println "closing proc-db"))))
+
+(defn proc-derived-state
+  [{:keys [ml-router ml-http-res ch-db]}]
+  (let [c-router (chan 1)
+        c-http (chan 1)]
+    (tap ml-router c-router)
+    (tap ml-http-res  c-http)
+    (go (loop []
+          (if-let [[v port] (alts! [c-router c-http])]
+            (condp = port
+              c-router (let [o (select-keys v [:router/handler :history/pushed])]
+                         (println o)
+                         (>! ch-db {:db/op :merge-ratom
+                                    :ratoms/id :state
+                                    :ratoms/v o})
+                         (recur))
+              c-http (let []
+                       (recur)))))
+        (println "closing proc-derived-state"))))
+
+(defn proc-render-ui
+  [{:keys [ch-db] :as channels}]
+  (let []
+    (go (loop [ratoms nil]
+          (println "ratoms" ratoms)
+          (when-not ratoms
+            (let [c (chan 1)]
+              (>! ch-db {:db/op :get-ratoms :ch/c-out c})
+              (recur (<! c))))
+          (let []
+            (render/render-ui channels ratoms)))
+        (println "closing proc-render"))))

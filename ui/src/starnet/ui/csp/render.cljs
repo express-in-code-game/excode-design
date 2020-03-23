@@ -43,53 +43,7 @@
 
 (declare rc-ui)
 
-(def ^:private ratoms (let []
-                        {:state (r/atom {})}))
 
-(defn proc-derived-state-ui
-  [{:keys [ml-router ch-derived-state-ui ml-http-res]}]
-  (let [c-router (chan 1)
-        c-http (chan 1)]
-    (tap ml-router c-router)
-    (tap ml-http-res  c-http)
-    (go (loop [s nil]
-          (if-let [[v port] (alts! [c-router])]
-            (condp = port
-              c-router (let [u (select-keys v [:router/handler :history/pushed])
-                             s (merge s u)]
-                         (println "proc-derived-state-ui" s)
-                         (put! ch-derived-state-ui s)
-
-                         (recur s)))))
-        (println "closing proc-derived-state-ui"))))
-
-(defn proc-render-ui
-  [{:keys [] :as channels}]
-  (let [c-dsu (chan 1)
-        root-el (.getElementById js/document "ui")]
-    (go (loop []
-          (let [{:keys [router/handler history/pushed] :as v} (<! c-dsu)]
-            (println (gstring/format "rendering %s" handler))
-            (condp = handler
-              :page/events (do
-                             (render/page-events root-el channels v)
-                             (recur))
-              :page/games (do
-                            (render/page-games root-el channels v)
-                            (recur))
-              :page/user-games (do
-                                 (render/page-user-games root-el channels v)
-                                 (recur))
-              :page/userid-games (do
-                                   (render/page-userid-games root-el channels v)
-                                   (recur))
-              :page/userid (do
-                             (render/page-userid root-el channels v)
-                             (recur))
-              (do
-                (render/not-found root-el channels v)
-                (recur)))))
-        (println "closing proc-render"))))
 
 
 (defn menu
@@ -237,9 +191,12 @@
 
 (defn rc-ui
   [channels ratoms]
-  (let [{:keys [router/handler history/pushed]} @(ratoms :state)]
+  (let [handler @(-> @(ratoms :state) (r/cursor [:router/handler]))]
     (fn [channels ratoms]
+      #_(println (gstring/format "ratoms :state %s" @(ratoms :state)))
       (println (gstring/format "rendering %s" handler))
+      #_(let [{:keys [router/handler history/pushed]} @(ratoms :state)]
+          (println (gstring/format "rendering %s" handler)))
       (let []
         (condp = handler
           :page/events [rc-page-events channels ratoms]
@@ -248,6 +205,10 @@
           :page/userid-games [rc-page-userid-games channels ratoms]
           :page/userid [rc-page-userid channels ratoms]
           [rc-page-not-found channels ratoms])))))
+
+(defn render-ui
+  [channels ratoms]
+  (rdom/render [rc-ui channels ratoms]  (.getElementById js/document "ui")))
 
 #_(defn ui-header
     [channels state]
