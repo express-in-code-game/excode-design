@@ -67,8 +67,10 @@
           [:a {:href (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))} "user/random"]]
          [ant-menu-item {:key :page/non-existing}
           [:a {:href (gstring/format "/non-existing" (gen/generate gen/string-alphanumeric))} "non-existing"]]
-         [ant-menu-item {:key :page/login}
-          [:a {:href "/login"} "login"]]]))))
+         [ant-menu-item {:key :page/sign-in}
+          [:a {:href "/sign-in"} "sign-in"]]
+         [ant-menu-item {:key :page/sign-up}
+          [:a {:href "/sign-up"} "sign-up"]]]))))
 
 (defn layout
   [channels ratoms content]
@@ -154,14 +156,23 @@
          [:<>
           [:div "rc-page-not-found"]]]))))
 
-(defn rc-page-login
+(defn rc-page-sign-in
   [channels ratoms]
   (let []
     (fn [channels ratoms]
       (let []
         [layout channels ratoms
          [:<>
-          [:div "rc-page-login"]]]))))
+          [:div "rc-page-sign-in"]]]))))
+
+(defn rc-page-sign-up
+  [channels ratoms]
+  (let []
+    (fn [channels ratoms]
+      (let []
+        [layout channels ratoms
+         [:<>
+          [:div "rc-page-sign-up"]]]))))
 
 (defn rc-page-game
   [channels ratoms]
@@ -202,7 +213,8 @@
           :page/user-games [rc-page-user-games channels ratoms]
           :page/userid-games [rc-page-userid-games channels ratoms]
           :page/userid [rc-page-userid channels ratoms]
-          :page/login [rc-page-login channels ratoms]
+          :page/sign-in [rc-page-sign-in channels ratoms]
+          :page/sign-up [rc-page-sign-up channels ratoms]
           :page/game [rc-page-game channels ratoms]
           [rc-page-not-found channels ratoms])))))
 

@@ -34,10 +34,12 @@
            [goog Uri]
            goog.history.Html5History))
 
-(declare proc-main proc-socket proc-render-containers proc-http proc-db
+(declare proc-main proc-socket proc-render-containers proc-db proc-ops proc-http
         proc-history proc-router proc-derived-state proc-render-ui)
 
 (enable-console-print!)
+
+
 
 (defonce channels (let [ch-proc-main (chan 1)
                         ch-sys (chan (sliding-buffer 10))
@@ -49,11 +51,9 @@
                         ch-history-states (chan (sliding-buffer 10))
                         ml-history-states (mult ch-history-states)
                         ch-db (chan (sliding-buffer 10))
-                        ch-inputs (chan (sliding-buffer 100))
-                        pb-inputs (pub ch-inputs :ch/topic (fn [_] (sliding-buffer 100)))
                         ch-http (chan (sliding-buffer 10))
-                        ch-http-res (chan (sliding-buffer 10))
-                        ml-http-res (mult ch-http-res)]
+                        ch-inputs (chan (sliding-buffer 100))
+                        pb-inputs (pub ch-inputs :ch/topic (fn [_] (sliding-buffer 100)))]
                     {:ch-proc-main ch-proc-main
                      :ch-sys ch-sys
                      :pb-sys pb-sys
@@ -63,11 +63,9 @@
                      :ml-router ml-router
                      :ch-history-states ch-history-states
                      :ml-history-states ml-history-states
+                     :ch-http ch-http
                      :ch-inputs ch-inputs
                      :pb-inputs pb-inputs
-                     :ch-http ch-http
-                     :ch-http-res ch-http-res
-                     :ml-http-res ml-http-res
                      :ch-socket ch-socket}))
 
 (defn ^:export main
@@ -84,20 +82,24 @@
           (condp = op
             :start (do
                      (proc-socket (select-keys channels [:pb-sys :ch-sys :ch-socket]))
-                     (proc-http (select-keys channels [:pb-sys :ch-sys :ch-http :ch-http-res]))
                      (proc-history (select-keys channels [:pb-sys :ch-sys :ch-history :ch-history-states]))
                      (proc-router (select-keys channels [:ch-sys :ch-history :ml-history-states :ch-router]))
                      (proc-db (select-keys channels [:pb-sys :ch-db]))
                      (proc-derived-state (select-keys channels [:ml-router :ml-http-res :ch-db]))
-                     (proc-render-ui (select-keys channels [:ch-db]))
-
+                     (proc-render-ui (select-keys channels [:ch-db :pb-sys]))
+                     (proc-http (select-keys channels [:ch-sys :ch-http :ch-db]))
+                     (proc-ops (select-keys channels [:ch-sys :ch-db :ch-http :pb-inputs]))
 
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
                      (put! (channels :ch-sys) {:ch/topic :proc-history :proc/op :start})
                      (put! (channels :ch-sys) {:ch/topic :proc-db :proc/op :start})
+                     (put! (channels :ch-sys) {:ch/topic :proc-render-ui :proc/op :render})
                      (recur)))))
       (println "closing go block: proc-main")))
 
+
+(defn ^:dev/after-load after-load []
+  (put! (channels :ch-sys) {:ch/topic :proc-render-ui :proc/op :render}))
 
 (defn proc-socket
   [{:keys [pb-sys ch-socket]}]
@@ -118,15 +120,7 @@
         (println "proc-render-containers closing"))
     c))
 
-(defn proc-http
-  [{:keys [ch-sys ch-http ch-http-res]}]
-  (let []
-    (go (loop []
-          (if-let [{:keys [http/url http/data] :as v} (<! ch-http)]
-            (let [resp (<! '(http-req))]
-              (do (put! ch-http-res resp)
-                  (recur)))))
-        (println "closing proc-http"))))
+
 
 (comment
 
@@ -142,7 +136,8 @@
                       "games" :page/games
                       "events" :page/events
                       "settings" :page/settings
-                      "login" :page/login
+                      "sign-in" :page/sign-in
+                      "sign-up" :page/sign-up
                       "game/" {[:id ""] :page/game}
                       "u/" {"games" :page/user-games
                             [:id ""] :page/userid
@@ -183,10 +178,7 @@
         (println "closing proc-history"))
     c))
 
-; for dev realod only
-(defonce ^:private route (atom nil))
-(defn ^:dev/after-load after-load []
-  (put! (channels :ch-router) @route))
+
 
 (defn proc-router
   [{:keys [ch-sys ch-history ch-router ml-history-states]}]
@@ -199,7 +191,6 @@
                   o {:router/handler handler
                      :history/pushed pushed}]
               (do (put! ch-router o)
-                  (reset! route o)
                   (recur)))))
         (println "closing proc-router"))))
 
@@ -279,7 +270,14 @@
                                           (recur ratoms ds))
                         :merge-ratom (let [{:keys [ratoms/id ratoms/v]} v]
                                        (swap! (ratoms id) merge v)
-                                       (recur ratoms ds)))))))
+                                       (recur ratoms ds))
+                        :local-storage-get (let [{:keys [local-storage/k]} v]
+                                             (>! c-out {:local-storage/v (.getItem js/localStorage k)})
+                                             (recur ratoms ds))
+                        :local-storage-set (let [{:keys [local-storage/k local-storage/v]} v]
+                                             (.setItem js/localStorage k v)
+                                             (>! c-out {:local-storage/v v})
+                                             (recur ratoms ds)))))))
         (println "closing proc-db"))))
 
 (defn proc-derived-state
@@ -287,37 +285,148 @@
   (let [c-router (chan 1)
         c-http (chan 1)]
     (tap ml-router c-router)
-    (tap ml-http-res  c-http)
     (go (loop []
-          (if-let [[v port] (alts! [c-router c-http])]
+          (if-let [[v port] (alts! [c-router ])]
             (condp = port
               c-router (let [o (select-keys v [:router/handler :history/pushed])]
                          #_(println o)
                          (>! ch-db {:db/op :merge-ratom
                                     :ratoms/id :state
                                     :ratoms/v o})
-                         (recur))
-              c-http (let []
-                       (recur)))))
+                         (recur)))))
         (println "closing proc-derived-state"))))
 
 (defn proc-render-ui
-  [{:keys [ch-db] :as channels}]
-  (let []
+  [{:keys [ch-db pb-sys] :as channels}]
+  (let [c-sys (chan 1)]
+    (sub pb-sys :proc-render-ui c-sys)
     (go (loop [ratoms nil]
           #_(println "ratoms" ratoms)
           (when-not ratoms
             (let [c (chan 1)]
               (>! ch-db {:db/op :get-ratoms :ch/c-out c})
               (recur (<! c))))
-          (let []
-            (render/render-ui channels ratoms)))
+          (let [{:keys [proc/op]} (<! c-sys)]
+            (println (gstring/format "proc-render %s" op))
+            (condp = op
+              :render (do
+                        (render/render-ui channels ratoms)
+                        (recur ratoms)))))
         (println "closing proc-render"))))
 
-(defn proc-ops-inputs
-  [{:keys [ch-db ch-inputs] :as channels}]
-  (let []
+(defn proc-ops
+  [{:keys [ch-db ch-http pb-inputs] :as channels}]
+  (let [c-inputs (chan 1)]
+    (sub pb-inputs :inputs/ops  c-inputs)
     (go (loop []
-          )
-        (println "closing proc-ops-inputs"))))
+          (if-let [[v port] (alts! [c-inputs])]
+            (condp = port
+              c-inputs
+              (let [{:keys [ops/op]} v]
+                (do
+                  (>! ch-db {:db/op :assoc-in-ratom
+                             :ratoms/id :state
+                             :ratoms/path [:ops/state op :status]
+                             :ratoms/v :started}))
+                (condp = op
+                  :op/login (go
+                              (let [{:keys [u/username u/password]} v
+                                    c-out (chan 1)
+                                    req {:http/opts {:url "http://localhost:8080/login"
+                                                     :method :post
+                                                     :with-credentials? false
+                                                     :edn-params {:u/username username
+                                                                  :u/password password}}
+                                         :ch/c-out c-out}
+                                    _ (>! ch-http req)
+                                    resp (<! c-out)]
+                                (>! ch-db {:db/op :assoc-in-ratom
+                                           :ratoms/id :state
+                                           :ratoms/path [:ops/state op]
+                                           :ratoms/v {:op/status :finished
+                                                      :http/response resp}})))
+                  :op/get-settings (go
+                                     (let [{:keys []} v
+                                           c-out (chan 1)
+                                           req {:http/opts {:url "http://localhost:8080/settings"
+                                                            :method :get
+                                                            :with-credentials? false}
+                                                :ch/c-out c-out}
+                                           _ (>! ch-http req)
+                                           resp (<! c-out)]
+                                       (>! ch-db {:db/op :assoc-in-ratom
+                                                  :ratoms/id :state
+                                                  :ratoms/path [:ops/state op]
+                                                  :ratoms/v {:op/status :finished
+                                                             :http/response resp}})))))))
+          (recur))
+        (println "closing proc-ops"))))
 
+(defn proc-http
+  [{:keys [ch-sys ch-http ch-db]}]
+  (let []
+    (go
+      (let [c (chan 1)
+            _ (>! ch-db {:db/op :local-storage-get
+                         :local-storage/k "token"
+                         :ch/c-out c})
+            {t :local-storage/v} (<! c)]
+        (loop [token t]
+          (if-let [{:keys [http/opts ch/c-out] :as v} (<! ch-http)]
+            (let [resp (<! (http/request (merge opts (when token
+                                                       {:with-credentials? false
+                                                        :headers {"Authorization" (gstring/format "Token %s" token)}}))))]
+              (>! c-out resp)
+              (when (clojure.string/includes? (:url opts) "/login")
+                (let [token (-> resp
+                             (get-in [:headers "authorization"])
+                             (clojure.string/split #" ")
+                             (second))]
+                  (>! ch-db {:db/op :local-storage-set
+                             :local-storage/k "token"
+                             :local-storage/v token
+                             :ch/c-out c})
+                  (recur token)))
+              (recur token)))))
+      (println "closing proc-http"))))
+
+
+(comment
+
+  (let [c (chan 1)]
+    (put! (channels :ch-http) {:http/opts {:url "https://api.github.com/users"
+                                           :method :get
+                                           :with-credentials? false
+                                           :query-params {"since" 135}}
+                               :ch/c-out c})
+    (take! c (fn [o] (println o))))
+
+  (let [c (chan 1)]
+    (put! (channels :ch-http) {:http/opts {:url "http://localhost:8080/login"
+                                           :method :post
+                                           :with-credentials? false
+                                           :edn-params {:u/username "db3zkY9rgyoI"
+                                                        :u/password "ayZ8190ueI1ZJsl6j4Z82"}}
+                               :ch/c-out c})
+    (take! c (fn [o]
+
+               (->
+                (get-in o [:headers "authorization"])
+                (clojure.string/split #" ")
+                (second)
+                (println)))))
+
+  (put! (channels :ch-inputs) {:ch/topic :inputs/ops
+                               :ops/op :op/login
+                               :u/password "ayZ8190ueI1ZJsl6j4Z82"
+                               :u/username "db3zkY9rgyoI"})
+
+  (put! (channels :ch-inputs) {:ch/topic :inputs/ops
+                               :ops/op :op/get-settings
+                               :u/password "ayZ8190ueI1ZJsl6j4Z82"
+                               :u/username "db3zkY9rgyoI"})
+
+
+
+  ;;
+  )
