@@ -361,3 +361,23 @@
   - once reconnected, event conveyance will resume
 - client and server exhange
   - it is a synchronization of state between to core.async processes over two channels(queues)
+- queues, processes, rendering and derived state
+    - react is an out/in: renders ui and collects inputs
+    - reagent solves the update problem: components can selectively deref atoms or cursors and update lazily
+    - inputs will put! vals on channles and processes will make requests
+    - however, ui requires a lot of derived state
+    - when a button click will initiate request, proccess will handle it and put! response on a queue
+    - but for ui that is not enough: there should be loading state and derived state, that will most likely be used in multiple compoenets
+    - with loading solution is a process, that will sub to certain queues and will be updating a derived state atom with data like [:some-logic :in-progress] [:some-logic :complete]
+    - components will opt-in by derefing that atom and render
+    - however, some state will contain a lot of conditional logic and will need to depend on other derived state
+    - possible solution: 
+      - communication is done via channles only, obviuosly
+      - represent derived state as a reagent atom or atoms
+      - a process or processes sub to channels and update derived state
+      - components react to atoms or with cursor
+      - there are also fns created with .e.g. '(derived-state (fn [ctx  old-val c-out] (let [a (deref :x) b (deref :y)] ...))
+      - they compute some derived state and put! it on a channel
+      - that value becomes a :key in derived state atom(s)
+      - but these functions, alike reagent components, must be auto-invoked whenever atoms/cursors they deref change
+      - they may be a go block and make async calls
