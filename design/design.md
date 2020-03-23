@@ -383,9 +383,9 @@
       - they may be a go block and make async calls
 - on reagent's ratom
   - https://github.com/reagent-project/reagent/blob/master/src/reagent/ratom.cljs
-  - track and track! allow to create derived state value that are first class RAtoms
+  - track and track! allow to create derived state values that are first class RAtoms
   - but: they don't allow for fns to return go-block (channel), unlike pedestal, which is built with async
-  - this can be added: if returned value is a channel, take! and apply result on arrival (from take! callback)
+  - this can be added: if returned value is a channel, take! and apply result on arrival (via take! callback)
   - approach
     - go without async derived values
     - if they are neccessary, fork-implement
