@@ -34,7 +34,7 @@
            [goog Uri]
            goog.history.Html5History))
 
-(declare proc-main proc-socket proc-render-containers proc-db
+(declare proc-main proc-socket proc-render-containers proc-db proc-ops
         proc-history proc-router proc-derived-state proc-render-ui)
 
 (enable-console-print!)
@@ -299,7 +299,7 @@
             (render/render-ui channels ratoms)))
         (println "closing proc-render"))))
 
-(defn proc-ops-inputs
+(defn proc-ops
   [{:keys [ch-db ch-inputs] :as channels}]
   (let []
     (go (loop []
