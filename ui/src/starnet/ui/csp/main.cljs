@@ -34,7 +34,7 @@
            [goog Uri]
            goog.history.Html5History))
 
-(declare proc-main proc-socket proc-render-containers proc-db proc-ops
+(declare proc-main proc-socket proc-render-containers proc-db proc-ops proc-http
         proc-history proc-router proc-derived-state proc-render-ui)
 
 (enable-console-print!)
@@ -306,7 +306,8 @@
           )
         (println "closing proc-ops-inputs"))))
 
-#_(defn proc-http
+; for loading state, adding token, swap!ing responses onto derived state
+(defn proc-http
     [{:keys [ch-sys ch-http ch-http-res]}]
     (let []
       (go (loop []
