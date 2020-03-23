@@ -34,6 +34,8 @@ dock() {
 
     docker build -t starnet.ui -f Dockerfile ..
     docker run  --rm \
+                --cpus=2.0 \
+                --memory=4g \
                 --name starnet.ui \
                 -it \
                 -p 8899:8899 \

@@ -152,6 +152,8 @@
     - https://github.com/juxt/bidi
     - https://github.com/clj-commons/pushy
 
+- docker
+  - https://docs.docker.com/config/containers/resource_constraints/
 
 - issues
   - "attempting to call unbound transit-json..." when ineracting with kafka from repl
