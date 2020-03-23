@@ -424,6 +424,26 @@
                       ))
   
   
+  '{:a 1
+    :b 2
+    :c (derived-state (fn [ctx old-val c-out]
+                        (let [a @(ctx :a)
+                              b @(ctx :b)]
+                          (go
+                            '...
+                            (put! c-out (or new-val old-val)))
+                          )
+                        ))}
+  
+  (def a (r/atom []))
+  (add-watch a :f1 (fn [k ref old nw]
+                      (println nw)))
+  (def x1 [1])
+  (def x2 [1])
+  (swap! a  (constantly x1))
+  
+  
+  
 
   ;;
   )
