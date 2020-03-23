@@ -5,6 +5,7 @@
    [clojure.core.async :as a :refer [<! >!  timeout chan alt! go
                                      alts!  take! put! mult tap untap
                                      pub sub sliding-buffer mix admix unmix]]
+   [cljs-http.client :as http]
    [goog.string :as gstring]
    [goog.string.format]
 
@@ -20,7 +21,7 @@
    [pushy.core :as pushy]
 
    [starnet.ui.csp.render :as render]
-   
+
    [datascript.core :as ds]
 
    [starnet.common.alpha.spec]
@@ -47,6 +48,8 @@
                         ch-history-states (chan (sliding-buffer 10))
                         ml-history-states (mult ch-history-states)
                         ch-db (chan (sliding-buffer 10))
+                        ch-inputs (chan (sliding-buffer 100))
+                        pb-inputs (pub ch-inputs :ch/topic (fn [_] (sliding-buffer 100)))
                         ch-http (chan (sliding-buffer 10))
                         ch-http-res (chan (sliding-buffer 10))
                         ml-http-res (mult ch-http-res)]
@@ -59,6 +62,8 @@
                      :ml-router ml-router
                      :ch-history-states ch-history-states
                      :ml-history-states ml-history-states
+                     :ch-inputs ch-inputs
+                     :pb-inputs pb-inputs
                      :ch-http ch-http
                      :ch-http-res ch-http-res
                      :ml-http-res ml-http-res
@@ -307,3 +312,10 @@
           (let []
             (render/render-ui channels ratoms)))
         (println "closing proc-render"))))
+
+(defn proc-ops-inputs
+  [{:keys [ch-db ch-inputs] :as channels}]
+  (let []
+    (go (loop []
+          )
+        (println "closing proc-ops-inputs"))))
