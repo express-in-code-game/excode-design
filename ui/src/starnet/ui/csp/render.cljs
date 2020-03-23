@@ -2,6 +2,7 @@
   (:require
    [clojure.repl :refer [doc]]
    [reagent.core :as r]
+   [reagent.dom :as rdom]
    [clojure.core.async :as a :refer [<! >!  timeout chan alt! go
                                      alts!  take! put! mult tap untap
                                      pub sub sliding-buffer mix admix unmix]]
@@ -117,27 +118,27 @@
 
 (defn render-page-events
   [el channels state]
-  (r/render [layout
+  (rdom/render [layout
              [:<>
               [:div {:id "div-1"} "page events"]]
              ]  el))
 
 (defn render-page-settings
   [el channels state]
-  (r/render [layout
+  (rdom/render [layout
              [:<>
               [:div  "page settings"]]]  el))
 
 (defn render-page-games
   [el channels state]
-  (r/render [layout
+  (rdom/render [layout
              [:<>
               [:div  "page games"]]]
             el))
 
 (defn render-page-userid-games
   [el channels state]
-  (r/render [layout
+  (rdom/render [layout
              [:<>
               [:div  "page user/name/games"]]]  el))
 
@@ -145,31 +146,31 @@
 
 (defn render-page-userid
   [el channels state]
-  (r/render [layout
+  (rdom/render [layout
              [:<>
               [:div  "page userid"]]]  el))
 
 (defn render-not-found
   [el channels state]
-  (r/render [layout
+  (rdom/render [layout
              [:<>
               [:div  "not found"]]]  el))
 
 (defn render-page-login
   [el channels state]
-  (r/render [layout
+  (rdom/render [layout
              [:<>
               [:div  "page login"]]]  el))
 
 (defn render-page-game
   [el channels state]
-  (r/render [layout-game
+  (rdom/render [layout-game
              [:<>
               [:div  "page game"]]]  el))
 
 (defn render-page-user-games
   [el channels state]
-  (r/render [layout
+  (rdom/render [layout
              [:<>
               [ant-button {:value "button" :size "small"} "button"]
               [:div
@@ -401,7 +402,7 @@
 
 
 
-  (r/render [layout
+  (rdom/render [layout
              [:<>
               [ordinary-component]]]  (.getElementById js/document "ui"))
 
