@@ -362,30 +362,41 @@
 - client and server exhange
   - it is a synchronization of state between to core.async processes over two channels(queues)
 - queues, processes, rendering and derived state
-    - react is an out/in: renders ui and collects inputs
-    - reagent solves the update problem: components can selectively deref atoms or cursors and update lazily
-    - inputs will put! vals on channles and processes will make requests
-    - however, ui requires a lot of derived state
-    - when a button click will initiate request, proccess will handle it and put! response on a queue
-    - but for ui that is not enough: there should be loading state and derived state, that will most likely be used in multiple compoenets
-    - with loading solution is a process, that will sub to certain queues and will be updating a derived state atom with data like [:some-logic :in-progress] [:some-logic :complete]
-    - components will opt-in by derefing that atom and render
-    - however, some state will contain a lot of conditional logic and will need to depend on other derived state
-    - possible solution: 
-      - communication is done via channles only, obviuosly
-      - represent derived state as a reagent atom or atoms
-      - a process or processes sub to channels and update derived state
-      - components react to atoms or with cursor
-      - there are also fns created with .e.g. '(derived-state (fn [ctx  old-val c-out] (let [a (deref :x) b (deref :y)] ...))
-      - they compute some derived state and put! it on a channel
-      - that value becomes a :key in derived state atom(s)
-      - but these functions, alike reagent components, must be auto-invoked whenever atoms/cursors they deref change
-      - they may be a go block and make async calls
-- on reagent's ratom
-  - https://github.com/reagent-project/reagent/blob/master/src/reagent/ratom.cljs
-  - track and track! allow to create derived state values that are first class RAtoms
-  - but: they don't allow for fns to return go-block (channel), unlike pedestal, which is built with async
-  - this can be added: if returned value is a channel, take! and apply result on arrival (via take! callback)
-  - approach
-    - go without async derived values
-    - if they are neccessary, fork-implement
+  - react is an out/in: renders ui and collects inputs
+  - reagent solves the update problem: components can selectively deref atoms or cursors and update lazily
+  - inputs will put! vals on channles and processes will make requests
+  - however, ui requires a lot of derived state
+  - when a button click will initiate request, proccess will handle it and put! response on a queue
+  - but for ui that is not enough: there should be loading state and derived state, that will most likely be used in multiple compoenets
+  - with loading solution is a process, that will sub to certain queues and will be updating a derived state atom with data like [:some-logic :in-progress] [:some-logic :complete]
+  - components will opt-in by derefing that atom and render
+  - however, some state will contain a lot of conditional logic and will need to depend on other derived state
+  - possible solution: 
+    - communication is done via channles only, obviuosly
+    - represent derived state as a reagent atom or atoms
+    - a process or processes sub to channels and update derived state
+    - components react to atoms or with cursor
+    - there are also fns created with .e.g. '(derived-state (fn [ctx  old-val c-out] (let [a (deref :x) b (deref :y)] ...))
+    - they compute some derived state and put! it on a channel
+    - that value becomes a :key in derived state atom(s)
+    - but these functions, alike reagent components, must be auto-invoked whenever atoms/cursors they deref change
+    - they may be a go block and make async calls
+  - on reagent's ratom
+    - https://github.com/reagent-project/reagent/blob/master/src/reagent/ratom.cljs
+    - track and track! allow to create derived state values that are first class RAtoms
+    - but: they don't allow for fns to return go-block (channel), unlike pedestal, which is built with async
+    - this can be added: if returned value is a channel, take! and apply result on arrival (via take! callback)
+    - approach
+      - go without async derived values
+      - if they are neccessary, fork-implement
+- queues, processes, rendering and derived state 2
+  - use datascript as store for data
+  - a create-user button click for the system is create-user value on the queue
+  - an proc-http is subbed performs a request
+  - a proc-transactor is subbed and performs datascript txns from vals
+  - a proc-derived-state-ui is subbed and has a mapping from value types (:inputs/create-user :http-response/create-user ...) to db query keys (:query-1 :query-2 ...)
+  - it queries the db (via a channel, sends query keys) and performs swap! on derived state (reagent atom) :query-1 val :query-2 val
+  - only the corresponding ui (that has cursors to  :db :query-1 :db :query-2) will be updated
+  - it may be better than rections as it brings a higher yet generic abstraction datalog
+  - on practice, for ui those queries will be simple like getting loading state, current user etc, no need for relational logic
+  - but: for the game it will be neccessary to query entities, so it may be benefitial overall
