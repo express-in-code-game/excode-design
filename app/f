@@ -24,6 +24,8 @@ dock() {
   
     docker build -t starnet.app -f Dockerfile ..
     docker run  --rm \
+                --cpus=4.0 \
+                --memory=8g \
                 --name starnet.app \
                 -it \
                 --network starnet \

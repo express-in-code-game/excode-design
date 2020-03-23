@@ -21,6 +21,7 @@
    [pushy.core :as pushy]
 
    [starnet.ui.csp.render :as render]
+   [starnet.common.pad.cljs-http1]
 
    [datascript.core :as ds]
 
@@ -319,3 +320,4 @@
     (go (loop []
           )
         (println "closing proc-ops-inputs"))))
+
