@@ -127,15 +127,13 @@
   )
 
 (defonce routes ["/" {"" :page/events
-                      "games" :page/games
                       "events" :page/events
-                      "settings" :page/settings
+                      "games" :page/games
                       "sign-in" :page/sign-in
                       "sign-up" :page/sign-up
+                      "account" :page/settings
                       "game/" {[:id ""] :page/game}
-                      "u/" {"games" :page/user-games
-                            [:id ""] :page/userid
-                            [:id "games"] :page/userid-games}}])
+                      "user/" {[:id ""] :page/userid}}])
 
 (defn- parse-url [url]
   (merge

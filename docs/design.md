@@ -400,3 +400,18 @@
   - it may be better than rections as it brings a higher yet generic abstraction datalog
   - on practice, for ui those queries will be simple like getting loading state, current user etc, no need for relational logic
   - but: for the game it will be neccessary to query entities, so it may be benefitial overall
+- project's idea and focus
+  - the center of the project is the game and events, not user profiles
+  - the scope is targeted at creating the game that shines, not pleasing or feature-bloating
+  - thus, user profile is simple: a name and stats, event results 
+  - home page is events, events are the core, more important than games
+  - if user is in a game, it is shown (header/popup) so user could reopen it
+  - creating a gmae means opening a tab with unique url, configuring it (e.g. host lists who is invited) and pressing open
+  - after game is opened , others can open a link and press join
+  - if game is private or deleted or not opened yet, opening a link will show 'game not found'
+  - project is
+    - /events - lists events, can join them (later may be introduced /events/hsitory or /events/data)
+    - /games - lists games to join and/or ladder
+    - /signup /singin /account  - basics to create a simple account
+    - /stats/:username - a profile page showing username and stats
+    - /game/:id - a unique url at which a game is played/observed
