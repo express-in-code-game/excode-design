@@ -9,11 +9,9 @@
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
 
    [starnet.common.alpha.spec]
-   [starnet.ui.alpha.spec]
    
    [starnet.common.alpha.tests]
    [starnet.common.sample-tests]
-   [starnet.ui.alpha.spec-test]
    [starnet.ui.sample-tests]
    [starnet.common.alpha.core :refer [rand-uuid]]))
 

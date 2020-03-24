@@ -16,19 +16,13 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
 
-
    [bidi.bidi :as bidi]
    [pushy.core :as pushy]
-
-   [starnet.ui.alpha.render :as render]
-   [starnet.common.pad.cljs-http1]
-
    [datascript.core :as ds]
 
    [starnet.common.alpha.spec]
-
-   [starnet.ui.alpha.repl]
-   [starnet.ui.alpha.tests])
+   [starnet.ui.alpha.tests]
+   [starnet.ui.alpha.render :as render])
   (:import [goog.net XhrIo EventType WebSocket]
            [goog Uri]
            goog.history.Html5History))
