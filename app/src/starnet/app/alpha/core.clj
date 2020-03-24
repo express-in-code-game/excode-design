@@ -48,6 +48,20 @@
                                    :cruxdb/query-data q})
         (let [o (<! c-out)]
           (ffirst o))))))
+
+(defn user-by-uuid
+  [channels data]
+  (let [{:keys [u/uuid]} data
+        q {:find '[e]
+           :where [['e :u/uuid uuid]]
+           :full-results? true}]
+    (go
+      (let [c-out (chan 1)]
+        (>! (channels :ch-cruxdb) {:cruxdb/op :query
+                                   :ch/c-out c-out
+                                   :cruxdb/query-data q})
+        (let [o (<! c-out)]
+          (ffirst o))))))
    
 (defn evict-user
   [channels user-data]

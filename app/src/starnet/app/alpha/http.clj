@@ -57,8 +57,14 @@
   (interceptor
    {:name ::authenticate
     :enter (fn [ctx]
-             (let [backend (get-in ctx [:app/ctx :backend])]
-               (update ctx :request auth.middleware/authentication-request backend)))}))
+             (let [backend (get-in ctx [:app/ctx :backend])
+                   request (-> (:request ctx) (auth.middleware/authentication-request backend))]
+               (println request)
+               (println (auth/authenticated? request))
+               (update ctx :request  request)
+               (if-not (auth/authenticated? request)
+                 (auth/throw-unauthorized)
+                 (assoc ctx :request request))))}))
 
 (def authorization-interceptor
   (error-dispatch [ctx ex]
@@ -142,13 +148,27 @@
                                    :headers {"Authorization" (format "Token %s" token)}}))
            (assoc ctx :response (r403 "Invalid credentials"))))))})
 
+(def user-settings
+  {:name :get/settings
+   :leave
+   (fn [ctx]
+     (go
+       (let [headers (get-in ctx [:request :headers])
+             channels (get-in ctx [:app/ctx :channels])
+             claims (get-in ctx [:request :identity])
+             user (<! (app.core/user-by-uuid channels (:val claims)))]
+         (assoc ctx :response {:status 200
+                               :body user}))))})
+
 (defn routes
   []
   (route/expand-routes
    #{["/user" :get (conj common-interceptors user-list) :route-name :get/user]
-     ["/user" :post (conj common-interceptors user-create user-login) :route-name :post/user]
+     ["/user" :post (conj (body-params) user-create user-login) :route-name :post/user]
      ["/user" :delete (conj common-interceptors user-delete) :route-name :delete/user]
-     ["/login" :post (conj common-interceptors user-login) :route-name :post/login]}))
+     ["/login" :post (conj (body-params) user-login) :route-name :post/login]
+     ["/settings" :get (conj common-interceptors user-settings) :route-name :get/settings]
+     }))
 
 (comment
 
@@ -191,6 +211,23 @@
   ; invalid
   (response-for service :post "/login"
                 :body (str {:u/username "mock" :u/password "mock"})
+                :headers {"Content-Type" "application/edn"})
+
+
+  (def token
+    (->
+     (response-for service :post "/login"
+                   :body (str (-> (app.core/repl-users channels) (rand-nth)))
+                   :headers {"Content-Type" "application/edn"})
+     (get-in [:headers "Authorization"])
+     (clojure.string/split #" ")
+     (second)))
+
+  (response-for service :get "/settings"
+                :headers {"Content-Type" "application/edn"
+                          "Authorization" (format "Token %s" token)})
+
+  (response-for service :get "/settings"
                 :headers {"Content-Type" "application/edn"})
 
   (->
@@ -272,10 +309,16 @@
                                   :options {:alg :rsa-oaep
                                             :enc :a128cbc-hs256}
                                   :authfn (fn [req]
-                                            (println "req")
-                                            (println privkey)
-                                            (println req)
-                                            (assoc req :identity true))})
+                                            (-> req
+                                                (update :val
+                                                        (fn [o]
+                                                          (->> o
+                                                               (map (fn [[k v]]
+                                                                      (if (= (name k) "uuid")
+                                                                        [k (java.util.UUID/fromString v)]
+                                                                        [k v])))
+                                                               (into {}))))
+                                                (assoc :identity true)))})
             app-ctx (assoc app-ctx :backend backend)]
         (assoc context :app/ctx app-ctx)))
     :leave
