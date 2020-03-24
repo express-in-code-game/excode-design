@@ -2,7 +2,8 @@
 
  :nrepl        {:port 8899
                 :host "0.0.0.0"
-                :init-ns starnet.ui.alpha.main}
+              ;   :init-ns starnet.ui.alpha.main
+                }
 
  :http {:port 9630
         :host "0.0.0.0"}

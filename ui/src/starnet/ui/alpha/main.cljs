@@ -77,7 +77,7 @@
                      (proc-router (select-keys channels [:ch-sys :ch-history :ml-history-states :ch-router]))
                      (proc-db (select-keys channels [:pb-sys :ch-db]))
                      (proc-derived-state (select-keys channels [:ml-router :ml-http-res :ch-db]))
-                     (proc-render-ui (select-keys channels [:ch-db :pb-sys]))
+                     (proc-render-ui (select-keys channels [:ch-db :pb-sys :ch-inputs]))
                      (proc-http (select-keys channels [:ch-sys :ch-http :ch-db]))
                      (proc-ops (select-keys channels [:ch-sys :ch-db :ch-http :pb-inputs]))
 

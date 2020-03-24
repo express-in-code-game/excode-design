@@ -25,11 +25,14 @@
    ["antd/lib/col" :default AntCol]
    ["antd/lib/form" :default AntForm]
    ["antd/lib/input" :default AntInput]
+   ["react" :as React]
    ["antd/lib/checkbox" :default AntCheckbox]
 
 
    ["antd/lib/divider" :default AntDivider]
    ["@ant-design/icons/SmileOutlined" :default AntSmileOutlined]))
+
+(js/console.log )
 
 (def ant-row (r/adapt-react-class AntRow))
 (def ant-col (r/adapt-react-class AntCol))
@@ -45,6 +48,7 @@
 (def ant-button (r/adapt-react-class AntButton))
 (def ant-list (r/adapt-react-class AntList))
 (def ant-input (r/adapt-react-class AntInput))
+(def ant-input-password (r/adapt-react-class (.-Password AntInput)))
 (def ant-checkbox (r/adapt-react-class AntCheckbox))
 (def ant-form (r/adapt-react-class AntForm))
 (def ant-form-item (r/adapt-react-class (.-Item AntForm)))
@@ -113,15 +117,29 @@
 
 (defn rc-signin-form
   [channels ratoms]
-  (let []
-    (fn []
+  (let [{:keys [ch-inputs]} channels
+        form-ref (.createRef React)
+        on-submit (fn []
+                    (let [vs (.. form-ref -current getFieldsValue)]
+                      (put! ch-inputs {:ch/topic :inputs/ops
+                                       :ops/op :op/login
+                                       :u/password (aget vs "password")
+                                       :u/username (aget vs "username")})))]
+    (fn [_ _]
       (let []
-        [ant-form]
-        )
-      )
-    )
-  
-  )
+        [ant-form {:labelCol {:span 8} :wrapperCol {:span 16} :ref form-ref}
+         [ant-form-item {:label nil
+                         :name "username"
+                         :wrapperCol {:offset 1 :span 16}
+                         :rules [{:required true :message "username"}]}
+          [ant-input {:placeholder "username"}]]
+         [ant-form-item {:label nil
+                         :name "password"
+                         :wrapperCol {:offset 1 :span 16}
+                         :rules [{:required true :message "password"}]}
+          [ant-input-password {:placeholder "password"}]]
+         [ant-form-item {:wrapperCol {:offset 1 :span 16}}
+          [ant-button {:type "primary" :on-click on-submit} "sign in"]]]))))
 
 (defn rc-page-events
   [channels ratoms]
@@ -153,7 +171,7 @@
 (defn rc-page-userid-games
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -184,7 +202,16 @@
       (let []
         [layout channels ratoms
          [:<>
-          [:div "rc-page-sign-in"]]]))))
+          #_[ant-row {:gutter [16 24]}
+             [ant-col "rc-page-sign-in"]]
+          #_[ant-divider {:orientation "left"} "rc-page-sign-in"]
+          [ant-row {:justify "center"
+                    :align "middle"
+                    :style {:height "85%"}
+                    ;; :gutter [16 24]
+                    }
+           [ant-col {:span 12}
+            [rc-signin-form channels ratoms]]]]]))))
 
 (defn rc-page-sign-up
   [channels ratoms]
