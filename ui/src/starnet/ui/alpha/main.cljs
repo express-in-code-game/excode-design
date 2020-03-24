@@ -131,9 +131,9 @@
                       "games" :page/games
                       "sign-in" :page/sign-in
                       "sign-up" :page/sign-up
-                      "account" :page/settings
+                      "account" :page/account
                       "game/" {[:id ""] :page/game}
-                      "user/" {[:id ""] :page/userid}}])
+                      "stats/" {[:id ""] :page/stats-id}}])
 
 (defn- parse-url [url]
   (merge
