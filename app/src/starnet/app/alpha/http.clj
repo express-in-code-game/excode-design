@@ -80,6 +80,10 @@
 
                   :else (assoc ctx ::interceptor.chain/error ex)))
 
+(def common-interceptors [(body-params)
+                          http/html-body
+                          authentication-interceptor])
+
 (def user-create
   {:name :user-create
    :leave
@@ -92,7 +96,6 @@
          (if o
            ctx
            (throw (ex-info "app.core/create-user failed" {:user-data user-data}))))))})
-
 
 (def user-delete
   {:name :user-delete
@@ -107,24 +110,6 @@
              (assoc ctx :response (ok o))
              (throw (ex-info "app.core/evict-user failed" user-data)))))))})
 
-(def user-list
-  {:name :user-list
-   :leave
-   (fn [ctx]
-     (go
-       (let [headers (get-in ctx [:request :headers])
-             d (get-in ctx [:request :edn-params])]
-         (println "; user-list1")
-         (println (get-in ctx [:app/ctx :backend]))
-         (println (get-in ctx [:request :identity]))
-         (println d)
-         (assoc ctx :response (ok "list")))
-       ))})
-
-(def common-interceptors [(body-params)
-                          http/html-body
-                          authentication-interceptor
-                          ])
 (def user-login
   {:name :user-login
    :leave
@@ -152,8 +137,8 @@
                                    :headers {"Authorization" (format "Token %s" token)}}))
            (assoc ctx :response (r403 "Invalid credentials"))))))})
 
-(def user-settings
-  {:name :get/settings
+(def user-get
+  {:name :get/account
    :leave
    (fn [ctx]
      (go
@@ -169,13 +154,10 @@
 (defn routes
   []
   (route/expand-routes
-   #{["/user" :get (conj common-interceptors user-list) :route-name :get/user]
-     ["/user" :post (conj (body-params) user-create user-login) :route-name :post/user]
-     ["/user" :delete (conj common-interceptors user-delete) :route-name :delete/user]
-     ["/login" :post (conj (body-params) user-login) :route-name :post/login]
-     ["/settings" :get (conj common-interceptors user-settings) :route-name :get/settings]
-     ["/profile" :get (conj common-interceptors user-settings) :route-name :get/profile]
-     }))
+   #{["/user" :post (conj (body-params) user-create user-login) :route-name :user/post]
+     ["/user" :delete (conj common-interceptors user-delete) :route-name :user/delete]
+     ["/user" :get (conj common-interceptors user-get) :route-name :user/get]
+     ["/login" :post (conj (body-params) user-login) :route-name :login/post]}))
 
 (comment
 
@@ -235,11 +217,11 @@
   
   (count token)
 
-  (response-for service :get "/settings"
+  (response-for service :get "/user"
                 :headers {"Content-Type" "application/edn"
                           "Authorization" (format "Token %s" token)})
 
-  (response-for service :get "/settings"
+  (response-for service :get "/user"
                 :headers {"Content-Type" "application/edn"})
 
   (->

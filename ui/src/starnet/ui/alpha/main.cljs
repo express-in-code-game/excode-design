@@ -131,7 +131,7 @@
                       "games" :page/games
                       "sign-in" :page/sign-in
                       "sign-up" :page/sign-up
-                      "account" :page/account
+                      "user" :page/user
                       "game/" {[:id ""] :page/game}
                       "stats/" {[:id ""] :page/stats-id}}])
 
@@ -323,7 +323,7 @@
                 (condp = op
                   :op/init (go
                              (let [c-out (chan 1)
-                                   _ (>! ch-ops {:ops/op :op/get-profile :ch/c-out c-out})
+                                   _ (>! ch-ops {:ops/op :op/user-get :ch/c-out c-out})
                                    profile (<! c-out)]
                                (println profile)
                                (>! ch-db {:db/op :assoc-in-ratom
@@ -346,34 +346,20 @@
                                            :ratoms/path [:ops/state op]
                                            :ratoms/v {:op/status :finished
                                                       :http/response resp}})))
-                  :op/get-settings (go
-                                     (let [{:keys []} v
-                                           c-out (chan 1)
-                                           req {:http/opts {:url "http://localhost:8080/settings"
-                                                            :method :get
-                                                            :with-credentials? false}
-                                                :ch/c-out c-out}
-                                           _ (>! ch-http req)
-                                           resp (<! c-out)]
-                                       (>! ch-db {:db/op :assoc-in-ratom
-                                                  :ratoms/id :state
-                                                  :ratoms/path [:ops/state op]
-                                                  :ratoms/v {:op/status :finished
-                                                             :http/response resp}})))
-                  :op/get-profile (go
-                                    (let [{:keys []} v
-                                          c-out (chan 1)
-                                          req {:http/opts {:url "http://localhost:8080/profile"
-                                                           :method :get
-                                                           :with-credentials? false}
-                                               :ch/c-out c-out}
-                                          _ (>! ch-http req)
-                                          resp (<! c-out)]
-                                      (>! ch-db {:db/op :assoc-in-ratom
-                                                 :ratoms/id :state
-                                                 :ratoms/path [:ops/state op]
-                                                 :ratoms/v {:op/status :finished
-                                                            :http/response resp}}))))))
+                  :op/user-get (go
+                                 (let [{:keys []} v
+                                       c-out (chan 1)
+                                       req {:http/opts {:url "http://localhost:8080/user"
+                                                        :method :get
+                                                        :with-credentials? false}
+                                            :ch/c-out c-out}
+                                       _ (>! ch-http req)
+                                       resp (<! c-out)]
+                                   (>! ch-db {:db/op :assoc-in-ratom
+                                              :ratoms/id :state
+                                              :ratoms/path [:ops/state op]
+                                              :ratoms/v {:op/status :finished
+                                                         :http/response resp}}))))))
             )
           (recur))
         (println "closing proc-ops"))))
@@ -438,15 +424,10 @@
                                :u/username "db3zkY9rgyoI"})
 
   (put! (channels :ch-inputs) {:ch/topic :inputs/ops
-                               :ops/op :op/get-settings
+                               :ops/op :op/user-get
                                :u/password "ayZ8190ueI1ZJsl6j4Z82"
                                :u/username "db3zkY9rgyoI"})
   
-  (put! (channels :ch-inputs) {:ch/topic :inputs/ops
-                               :ops/op :op/get-profile
-                               :u/password "ayZ8190ueI1ZJsl6j4Z82"
-                               :u/username "db3zkY9rgyoI"})
-
 
 
   ;;

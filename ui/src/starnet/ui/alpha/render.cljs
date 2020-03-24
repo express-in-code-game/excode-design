@@ -54,7 +54,7 @@
 (def ant-form-item (r/adapt-react-class (.-Item AntForm)))
 
 (declare rc-page-events rc-page-games rc-page-game
-         rc-page-stats-id rc-page-signup rc-page-signin rc-page-account
+         rc-page-stats-id rc-page-signup rc-page-signin rc-page-user
          rc-page-not-found)
 
 (defn rc-ui
@@ -73,7 +73,7 @@
           :page/stats-id [rc-page-stats-id channels ratoms]
           :page/sign-up [rc-page-signup channels ratoms]
           :page/sign-in [rc-page-signin channels ratoms]
-          :page/account [rc-page-account channels ratoms]
+          :page/user [rc-page-user channels ratoms]
           [rc-page-not-found channels ratoms])))))
 
 (defn render-ui
@@ -105,13 +105,13 @@
          [ant-menu-item {:key :page/sign-up}
           [:a {:href "/sign-up"} "sign-up"]]
          [ant-menu-item {:key :page/account}
-          [:a {:href "/account"} "account"]]
+          [:a {:href "/user"} "user"]]
          
          ]))))
 
 (defn rc-user-identity
   [channels ratoms]
-  (let [user-data* (r/cursor (ratoms :state) [:ops/state :op/get-profile :http/response :body])]
+  (let [user-data* (r/cursor (ratoms :state) [:ops/state :op/user-get :http/response :body])]
     (fn [_ _]
       (let [{:keys [u/username u/fullname]} @user-data*]
         [:div {:style {:position "absolute" :top 2 :right 10}} username]))))
@@ -241,14 +241,14 @@
           [:div "rc-page-sign-up"]]]))))
 
 
-(defn rc-page-account
+(defn rc-page-user
   [channels ratoms]
   (let []
     (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
-          [:div "rc-page-account"]]]))))
+          [:div "rc-page-user"]]]))))
 
 (defn rc-page-not-found
   [channels ratoms]
