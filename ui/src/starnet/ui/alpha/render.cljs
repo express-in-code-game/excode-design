@@ -23,6 +23,11 @@
    ["antd/lib/list" :default AntList]
    ["antd/lib/row" :default AntRow]
    ["antd/lib/col" :default AntCol]
+   ["antd/lib/form" :default AntForm]
+   ["antd/lib/input" :default AntInput]
+   ["antd/lib/checkbox" :default AntCheckbox]
+
+
    ["antd/lib/divider" :default AntDivider]
    ["@ant-design/icons/SmileOutlined" :default AntSmileOutlined]))
 
@@ -33,12 +38,16 @@
 (def ant-layout (r/adapt-react-class AntLayout))
 (def ant-layout-content (r/adapt-react-class (.-Content AntLayout)))
 (def ant-layout-header (r/adapt-react-class (.-Header AntLayout)))
+(def ant-smile-outlined (r/adapt-react-class AntSmileOutlined))
 (def ant-menu (r/adapt-react-class AntMenu))
 (def ant-menu-item (r/adapt-react-class (.-Item AntMenu)))
 (def ant-icon (r/adapt-react-class AntIcon))
 (def ant-button (r/adapt-react-class AntButton))
 (def ant-list (r/adapt-react-class AntList))
-(def ant-smile-outlined (r/adapt-react-class AntSmileOutlined))
+(def ant-input (r/adapt-react-class AntInput))
+(def ant-checkbox (r/adapt-react-class AntCheckbox))
+(def ant-form (r/adapt-react-class AntForm))
+(def ant-form-item (r/adapt-react-class (.-Item AntForm)))
 
 
 (defn menu
@@ -100,6 +109,18 @@
                         :style {:margin-top "32px"
                                 :padding "32px 32px 32px 32px"}}
     content]]
+  )
+
+(defn rc-signin-form
+  [channels ratoms]
+  (let []
+    (fn []
+      (let []
+        [ant-form]
+        )
+      )
+    )
+  
   )
 
 (defn rc-page-events
@@ -210,6 +231,7 @@
         (condp = handler
           :page/events [rc-page-events channels ratoms]
           :page/games [rc-page-games channels ratoms]
+          :page/settings [rc-page-settings channels ratoms]
           :page/user-games [rc-page-user-games channels ratoms]
           :page/userid-games [rc-page-userid-games channels ratoms]
           :page/userid [rc-page-userid channels ratoms]
