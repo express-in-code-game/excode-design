@@ -332,8 +332,6 @@
                                          :ch/c-out c-out}
                                     _ (>! ch-http req)
                                     resp (<! c-out)]
-                                (println "op/login")
-                                (println resp)
                                 (>! ch-db {:db/op :assoc-in-ratom
                                            :ratoms/id :state
                                            :ratoms/path [:ops/state op]
@@ -348,8 +346,6 @@
                                                 :ch/c-out c-out}
                                            _ (>! ch-http req)
                                            resp (<! c-out)]
-                                       (println "op/get-settings")
-                                       (println resp)
                                        (>! ch-db {:db/op :assoc-in-ratom
                                                   :ratoms/id :state
                                                   :ratoms/path [:ops/state op]

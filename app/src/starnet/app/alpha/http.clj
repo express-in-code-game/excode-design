@@ -138,7 +138,7 @@
              raw (or (:u/password-TMP data) (:u/password data))
              valid? (and user (hashers/check raw (:u/password user)))]
          (if valid?
-           (let [claims {:val (select-keys data [:u/uuid])
+           (let [claims {:val (select-keys user [:u/uuid])
                          :exp (time/plus (time/now) (time/seconds 3600))}
                  token (jwt/encrypt claims
                                     pubkey
@@ -160,10 +160,9 @@
        (let [headers (get-in ctx [:request :headers])
              channels (get-in ctx [:app/ctx :channels])
              claims (get-in ctx [:request :identity])
-             user {} #_(<! (app.core/user-by-uuid channels (:val claims)))]
-         (println claims)
+             user (<! (app.core/user-by-uuid channels (:val claims)))]
          (assoc ctx :response {:status 200
-                               :body (-> claims
+                               :body (-> user
                                          (dissoc :u/password :u/password-TMP))}))))})
 
 (defn routes
