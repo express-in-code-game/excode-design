@@ -27,7 +27,6 @@
 
    [starnet.common.alpha.spec]
 
-   [starnet.ui.alpha.spec]
    [starnet.ui.alpha.repl]
    [starnet.ui.alpha.tests])
   (:import [goog.net XhrIo EventType WebSocket]
