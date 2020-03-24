@@ -301,7 +301,7 @@
             (println (gstring/format "proc-render %s" op))
             (condp = op
               :render (do
-                        (render/render-ui channels ratoms)
+                        (render/render-ui (select-keys channels [:ch-inputs]) ratoms)
                         (recur ratoms)))))
         (println "closing proc-render"))))
 

@@ -115,7 +115,7 @@
     content]]
   )
 
-(defn rc-signin-form
+(defn rc-form-signin
   [channels ratoms]
   (let [{:keys [ch-inputs]} channels
         form-ref (.createRef React)
@@ -211,7 +211,7 @@
                     ;; :gutter [16 24]
                     }
            [ant-col {:span 12}
-            [rc-signin-form channels ratoms]]]]]))))
+            [rc-form-signin channels ratoms]]]]]))))
 
 (defn rc-page-sign-up
   [channels ratoms]
