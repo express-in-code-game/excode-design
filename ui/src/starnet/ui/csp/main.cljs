@@ -86,7 +86,7 @@
                      (proc-derived-state (select-keys channels [:ml-router :ml-http-res :ch-db]))
                      (proc-render-ui (select-keys channels [:ch-db]))
                      (proc-http (select-keys channels [:ch-sys :ch-http :ch-db]))
-                     (proc-ops (select-keys channels [:ch-sys :ch-db :pb-inputs]))
+                     (proc-ops (select-keys channels [:ch-sys :ch-db :ch-http :pb-inputs]))
 
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
                      (put! (channels :ch-sys) {:ch/topic :proc-history :proc/op :start})
@@ -307,7 +307,7 @@
         (println "closing proc-render"))))
 
 (defn proc-ops
-  [{:keys [ch-db pb-inputs] :as channels}]
+  [{:keys [ch-db ch-http pb-inputs] :as channels}]
   (let [c-inputs (chan 1)]
     (sub pb-inputs :inputs/ops  c-inputs)
     (go (loop []
@@ -315,11 +315,31 @@
             (condp = port
               c-inputs
               (let [{:keys [ops/op]} v]
+                (do
+                  (>! ch-db {:db/op :assoc-in-ratom
+                             :ratoms/id :state
+                             :ratoms/path [:ops/state op :status]
+                             :ratoms/v :started}))
                 (condp = op
                   :op/login (go
-                              (let [{:keys [u/username u/password]} v]
-                                (println "op/login" v))))))
-            (recur)))
+                              (let [{:keys [u/username u/password]} v
+                                    c-out (chan 1)
+                                    req {:http/opts {:url "http://localhost:8080/login"
+                                                     :method :post
+                                                     :with-credentials? false
+                                                     :edn-params {:u/username username
+                                                                  :u/password password}}
+                                         :ch/c-out c-out}
+                                    _ (>! ch-http req)
+                                    resp (<! c-out)]
+                                (println "op/login")
+                                (println resp)
+                                (>! ch-db {:db/op :assoc-in-ratom
+                                           :ratoms/id :state
+                                           :ratoms/path [:ops/state op]
+                                           :ratoms/v {:op/status :finished
+                                                      :http/response resp}})))))))
+          (recur))
         (println "closing proc-ops"))))
 
 (defn proc-http
@@ -338,7 +358,10 @@
                                                         :headers {"Authorization" token}}))))]
               (>! c-out resp)
               (when (clojure.string/includes? (:url opts) "/login")
-                (let [token (get-in resp [:headers "Authorization"])]
+                (let [token (-> resp
+                             (get-in [:headers "authorization"])
+                             (clojure.string/split #" ")
+                             (second))]
                   (>! ch-db {:db/op :local-storage-set
                              :local-storage/k "token"
                              :local-storage/v token
@@ -357,6 +380,28 @@
                                            :query-params {"since" 135}}
                                :ch/c-out c})
     (take! c (fn [o] (println o))))
+  
+  (let [c (chan 1)]
+    (put! (channels :ch-http) {:http/opts {:url "http://localhost:8080/login"
+                                           :method :post
+                                           :with-credentials? false
+                                           :edn-params {:u/username "db3zkY9rgyoI"
+                                                        :u/password "ayZ8190ueI1ZJsl6j4Z82"}}
+                               :ch/c-out c})
+    (take! c (fn [o]
+
+               (->
+                (get-in o [:headers "authorization"])
+                (clojure.string/split #" ")
+                (second)
+                (println))
+               )))
+  
+  (put! (channels :ch-inputs) {:ch/topic :inputs/ops
+                               :ops/op :op/login
+                               :u/password "ayZ8190ueI1ZJsl6j4Z82"
+                               :u/username "db3zkY9rgyoI"} )
+  
   
 
   ;;
