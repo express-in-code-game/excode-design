@@ -338,7 +338,23 @@
                                            :ratoms/id :state
                                            :ratoms/path [:ops/state op]
                                            :ratoms/v {:op/status :finished
-                                                      :http/response resp}})))))))
+                                                      :http/response resp}})))
+                  :op/get-settings (go
+                                     (let [{:keys []} v
+                                           c-out (chan 1)
+                                           req {:http/opts {:url "http://localhost:8080/settings"
+                                                            :method :get
+                                                            :with-credentials? false}
+                                                :ch/c-out c-out}
+                                           _ (>! ch-http req)
+                                           resp (<! c-out)]
+                                       (println "op/get-settings")
+                                       (println resp)
+                                       (>! ch-db {:db/op :assoc-in-ratom
+                                                  :ratoms/id :state
+                                                  :ratoms/path [:ops/state op]
+                                                  :ratoms/v {:op/status :finished
+                                                             :http/response resp}})))))))
           (recur))
         (println "closing proc-ops"))))
 
@@ -355,7 +371,7 @@
           (if-let [{:keys [http/opts ch/c-out] :as v} (<! ch-http)]
             (let [resp (<! (http/request (merge opts (when token
                                                        {:with-credentials? false
-                                                        :headers {"Authorization" token}}))))]
+                                                        :headers {"Authorization" (gstring/format "Token %s" token)}}))))]
               (>! c-out resp)
               (when (clojure.string/includes? (:url opts) "/login")
                 (let [token (-> resp
@@ -380,7 +396,7 @@
                                            :query-params {"since" 135}}
                                :ch/c-out c})
     (take! c (fn [o] (println o))))
-  
+
   (let [c (chan 1)]
     (put! (channels :ch-http) {:http/opts {:url "http://localhost:8080/login"
                                            :method :post
@@ -394,15 +410,19 @@
                 (get-in o [:headers "authorization"])
                 (clojure.string/split #" ")
                 (second)
-                (println))
-               )))
-  
+                (println)))))
+
   (put! (channels :ch-inputs) {:ch/topic :inputs/ops
                                :ops/op :op/login
                                :u/password "ayZ8190ueI1ZJsl6j4Z82"
-                               :u/username "db3zkY9rgyoI"} )
-  
-  
+                               :u/username "db3zkY9rgyoI"})
+
+  (put! (channels :ch-inputs) {:ch/topic :inputs/ops
+                               :ops/op :op/get-settings
+                               :u/password "ayZ8190ueI1ZJsl6j4Z82"
+                               :u/username "db3zkY9rgyoI"})
+
+
 
   ;;
   )

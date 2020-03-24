@@ -156,9 +156,11 @@
        (let [headers (get-in ctx [:request :headers])
              channels (get-in ctx [:app/ctx :channels])
              claims (get-in ctx [:request :identity])
-             user (<! (app.core/user-by-uuid channels (:val claims)))]
+             user {} #_(<! (app.core/user-by-uuid channels (:val claims)))]
+         (println claims)
          (assoc ctx :response {:status 200
-                               :body user}))))})
+                               :body (-> claims
+                                         (dissoc :u/password :u/password-TMP))}))))})
 
 (defn routes
   []
