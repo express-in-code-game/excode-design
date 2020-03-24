@@ -327,7 +327,11 @@
                              (let [c-out (chan 1)
                                    _ (>! ch-ops {:ops/op :op/get-profile :ch/c-out c-out})
                                    profile (<! c-out)]
-                               (println profile)))
+                               (println profile)
+                               (>! ch-db {:db/op :assoc-in-ratom
+                                          :ratoms/id :state
+                                          :ratoms/path [:ops/state op]
+                                          :ratoms/v {:op/status :finished}})))
                   :op/login (go
                               (let [{:keys [u/username u/password]} v
                                     c-out (chan 1)

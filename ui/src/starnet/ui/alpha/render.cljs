@@ -53,12 +53,11 @@
 (def ant-form (r/adapt-react-class AntForm))
 (def ant-form-item (r/adapt-react-class (.-Item AntForm)))
 
-
 (defn menu
   [channels ratoms]
   (let [handler* (r/cursor (ratoms :state) [:router/handler])
         url* (r/cursor (ratoms :state) [:history/pushed :url])] ; for test, remove
-    (fn []
+    (fn [_ _]
       (let [handler @handler*
             url @url*]
         [ant-menu {:theme "light"
@@ -83,7 +82,16 @@
          [ant-menu-item {:key :page/sign-in}
           [:a {:href "/sign-in"} "sign-in"]]
          [ant-menu-item {:key :page/sign-up}
-          [:a {:href "/sign-up"} "sign-up"]]]))))
+          [:a {:href "/sign-up"} "sign-up"]]
+         
+         ]))))
+
+(defn rc-user-identity
+  [channels ratoms]
+  (let [user-data* (r/cursor (ratoms :state) [:ops/state :op/get-profile :http/response :body])]
+    (fn [_ _]
+      (let [{:keys [u/username u/fullname]} @user-data*]
+        [:div {:style {:position "absolute" :top 2 :right 10}} username]))))
 
 (defn layout
   [channels ratoms content]
@@ -100,7 +108,9 @@
          :class "logo"}
      #_[:img {:class "logo-img" :src "./img/logo-4.png"}]
      [:div {:class "logo-name"} "starnet"]]
-    [menu channels ratoms]]
+    [menu channels ratoms]
+    [rc-user-identity channels ratoms]
+    ]
    [ant-layout-content {:class "main-content"
                         :style {:margin-top "32px"
                                 :padding "32px 32px 32px 32px"}}
@@ -112,8 +122,7 @@
    [ant-layout-content {:class "main-content"
                         :style {:margin-top "32px"
                                 :padding "32px 32px 32px 32px"}}
-    content]]
-  )
+    content]])
 
 (defn rc-form-signin
   [channels ratoms]
@@ -141,10 +150,12 @@
          [ant-form-item {:wrapperCol {:offset 1 :span 16}}
           [ant-button {:type "primary" :on-click on-submit} "sign in"]]]))))
 
+
+
 (defn rc-page-events
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -153,7 +164,7 @@
 (defn rc-page-settings
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -162,7 +173,7 @@
 (defn rc-page-games
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -180,7 +191,7 @@
 (defn rc-page-userid
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -189,7 +200,7 @@
 (defn rc-page-not-found
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -198,7 +209,7 @@
 (defn rc-page-sign-in
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -216,7 +227,7 @@
 (defn rc-page-sign-up
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -225,7 +236,7 @@
 (defn rc-page-game
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout-game channels ratoms
          [:<>
@@ -234,7 +245,7 @@
 (defn rc-page-user-games
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -249,7 +260,7 @@
 (defn rc-ui
   [channels ratoms]
   (let [handler* (r/cursor (ratoms :state) [:router/handler])]
-    (fn [channels ratoms]
+    (fn [_ _]
       #_(println (gstring/format "ratoms :state %s" @(ratoms :state)))
       #_(let [{:keys [router/handler history/pushed]} @(ratoms :state)]
           (println (gstring/format "rendering %s" handler)))
