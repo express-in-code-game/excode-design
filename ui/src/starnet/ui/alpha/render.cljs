@@ -1,4 +1,4 @@
-(ns starnet.ui.csp.render
+(ns starnet.ui.alpha.render
   (:require
    [clojure.repl :refer [doc]]
    [reagent.core :as r]
@@ -221,17 +221,3 @@
 (defn render-ui
   [channels ratoms]
   (rdom/render [rc-ui channels ratoms]  (.getElementById js/document "ui")))
-
-#_(defn ui-header
-    [channels state]
-    (let [{:keys [history/pushed]} state
-          {:keys [handler]} pushed]
-      [:header {:class "ui-header" :style {:display "flex"}}
-       [:div "starnet"]
-       [:a {:href "/events"} "events"]
-       [:br]
-       [:a {:href "/games"} "games"]
-       [:a {:href "u/games"} "u/games"]
-       [:a {:href "/settings"} "settings"]
-       [:a {:href (gstring/format "/u/%s" (gen/generate gen/string-alphanumeric))} "user/random"]
-       [:a {:href (gstring/format "/non-existing" (gen/generate gen/string-alphanumeric))} "not-found"]]))
