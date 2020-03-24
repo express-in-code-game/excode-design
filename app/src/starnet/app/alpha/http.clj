@@ -144,9 +144,9 @@
                                     pubkey
                                     {:alg :rsa-oaep
                                      :enc :a128cbc-hs256})]
-             (println (format "/login token count %s" (count token)))
-             (println claims)
-             (println data)
+            ;;  (println (format "/login token count %s" (count token)))
+            ;;  (println claims)
+            ;;  (println data)
              (assoc ctx :response {:status 200
                                    :body (select-keys data [:u/uuid])
                                    :headers {"Authorization" (format "Token %s" token)}}))
@@ -162,8 +162,9 @@
              claims (get-in ctx [:request :identity])
              user (<! (app.core/user-by-uuid channels (:val claims)))]
          (assoc ctx :response {:status 200
-                               :body (-> user
-                                         (dissoc :u/password :u/password-TMP))}))))})
+                               :body (select-keys user [:u/uuid :u/username :u/email
+                                                        :u/fullname  :u/info])
+                               }))))})
 
 (defn routes
   []

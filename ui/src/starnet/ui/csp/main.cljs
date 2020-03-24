@@ -137,7 +137,7 @@
                       "events" :page/events
                       "settings" :page/settings
                       "sign-in" :page/sign-in
-                      "sign-up" :page/sing-up
+                      "sign-up" :page/sign-up
                       "game/" {[:id ""] :page/game}
                       "u/" {"games" :page/user-games
                             [:id ""] :page/userid
