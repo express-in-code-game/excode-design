@@ -61,6 +61,7 @@
                      :ml-router ml-router
                      :ch-history-states ch-history-states
                      :ml-history-states ml-history-states
+                     :ch-http ch-http
                      :ch-inputs ch-inputs
                      :pb-inputs pb-inputs
                      :ch-socket ch-socket}))
@@ -84,7 +85,8 @@
                      (proc-db (select-keys channels [:pb-sys :ch-db]))
                      (proc-derived-state (select-keys channels [:ml-router :ml-http-res :ch-db]))
                      (proc-render-ui (select-keys channels [:ch-db]))
-
+                     (proc-http (select-keys channels [:ch-sys :ch-http :ch-db]))
+                     (proc-ops (select-keys channels [:ch-sys :ch-db :pb-inputs]))
 
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
                      (put! (channels :ch-sys) {:ch/topic :proc-history :proc/op :start})
@@ -266,11 +268,12 @@
                         :merge-ratom (let [{:keys [ratoms/id ratoms/v]} v]
                                        (swap! (ratoms id) merge v)
                                        (recur ratoms ds))
-                        :local-storage-get (let [{:keys [local-storage/k]}]
-                                             (>! ch/c-out (.getItem js/localStorage k))
+                        :local-storage-get (let [{:keys [local-storage/k]} v]
+                                             (>! c-out {:local-storage/v (.getItem js/localStorage k)})
                                              (recur ratoms ds))
-                        :local-storage-set (let [{:keys [local-storage/k local-storage/v]}]
-                                             (>! ch/c-out (.setItem js/localStorage k v))
+                        :local-storage-set (let [{:keys [local-storage/k local-storage/v]} v]
+                                             (.setItem js/localStorage k v)
+                                             (>! c-out {:local-storage/v v})
                                              (recur ratoms ds)))))))
         (println "closing proc-db"))))
 
@@ -279,18 +282,15 @@
   (let [c-router (chan 1)
         c-http (chan 1)]
     (tap ml-router c-router)
-    (tap ml-http-res  c-http)
     (go (loop []
-          (if-let [[v port] (alts! [c-router c-http])]
+          (if-let [[v port] (alts! [c-router ])]
             (condp = port
               c-router (let [o (select-keys v [:router/handler :history/pushed])]
                          #_(println o)
                          (>! ch-db {:db/op :merge-ratom
                                     :ratoms/id :state
                                     :ratoms/v o})
-                         (recur))
-              c-http (let []
-                       (recur)))))
+                         (recur)))))
         (println "closing proc-derived-state"))))
 
 (defn proc-render-ui
@@ -307,33 +307,57 @@
         (println "closing proc-render"))))
 
 (defn proc-ops
-  [{:keys [ch-db ch-inputs] :as channels}]
-  (let []
+  [{:keys [ch-db pb-inputs] :as channels}]
+  (let [c-inputs (chan 1)]
+    (sub pb-inputs :inputs/ops  c-inputs)
     (go (loop []
-          )
-        (println "closing proc-ops-inputs"))))
+          (if-let [[v port] (alts! [c-inputs])]
+            (condp = port
+              c-inputs
+              (let [{:keys [ops/op]} v]
+                (condp = op
+                  :op/login (go
+                              (let [{:keys [u/username u/password]} v]
+                                (println "op/login" v))))))
+            (recur)))
+        (println "closing proc-ops"))))
 
-; for loading state, adding token, swap!ing responses onto derived state
 (defn proc-http
-    [{:keys [ch-sys ch-http ch-db ]}]
-    (let []
-      (go (loop [token nil]
-            (when-not token
-              (let [c (chan 1)]
-                (>! ch-db {:db/op :local-storage-get
-                           :local-storage/k "token"
-                           :ch/c-out c})
-                (recur (<! c))))
-            (if-let [{:keys [http/opts ch/c-out] :as v} (<! ch-http)]
-              (let [resp (<! (http/request (merge opts {:with-credentials? false
-                                                        :headers {"Authorization" token}})))]
-                (>! c-out resp)
-                (when (substr? (:url opts) "/login")
-                  (let [token 'get-token]
-                    (>! ch-db {:db/op :local-storage-set
-                               :local-storage/k "token"
-                               :local-storage/v token
+  [{:keys [ch-sys ch-http ch-db]}]
+  (let []
+    (go
+      (let [c (chan 1)
+            _ (>! ch-db {:db/op :local-storage-get
+                         :local-storage/k "token"
+                         :ch/c-out c})
+            {t :local-storage/v} (<! c)]
+        (loop [token t]
+          (if-let [{:keys [http/opts ch/c-out] :as v} (<! ch-http)]
+            (let [resp (<! (http/request (merge opts (when token
+                                                       {:with-credentials? false
+                                                        :headers {"Authorization" token}}))))]
+              (>! c-out resp)
+              (when (clojure.string/includes? (:url opts) "/login")
+                (let [token (get-in resp [:headers "Authorization"])]
+                  (>! ch-db {:db/op :local-storage-set
+                             :local-storage/k "token"
+                             :local-storage/v token
+                             :ch/c-out c})
+                  (recur token)))
+              (recur token)))))
+      (println "closing proc-http"))))
+
+
+(comment
+
+  (let [c (chan 1)]
+    (put! (channels :ch-http) {:http/opts {:url "https://api.github.com/users"
+                                           :method :get
+                                           :with-credentials? false
+                                           :query-params {"since" 135}}
                                :ch/c-out c})
-                    (recur token)))
-                (recur token))))
-          (println "closing proc-http"))))
+    (take! c (fn [o] (println o))))
+  
+
+  ;;
+  )

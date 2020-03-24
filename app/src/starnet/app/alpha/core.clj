@@ -103,6 +103,8 @@
      (<!!soft)))
 
   (count (repl-users channels))
+  (->> (repl-users channels) (take 5))
+  
 
   (repl-query channels {:find '[e]
                         :where '[[e :crux.db/id id]]
