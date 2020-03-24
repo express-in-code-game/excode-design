@@ -39,6 +39,8 @@
 
 (enable-console-print!)
 
+
+
 (defonce channels (let [ch-proc-main (chan 1)
                         ch-sys (chan (sliding-buffer 10))
                         pb-sys (pub ch-sys :ch/topic (fn [_] (sliding-buffer 10)))
@@ -84,16 +86,20 @@
                      (proc-router (select-keys channels [:ch-sys :ch-history :ml-history-states :ch-router]))
                      (proc-db (select-keys channels [:pb-sys :ch-db]))
                      (proc-derived-state (select-keys channels [:ml-router :ml-http-res :ch-db]))
-                     (proc-render-ui (select-keys channels [:ch-db]))
+                     (proc-render-ui (select-keys channels [:ch-db :pb-sys]))
                      (proc-http (select-keys channels [:ch-sys :ch-http :ch-db]))
                      (proc-ops (select-keys channels [:ch-sys :ch-db :ch-http :pb-inputs]))
 
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
                      (put! (channels :ch-sys) {:ch/topic :proc-history :proc/op :start})
                      (put! (channels :ch-sys) {:ch/topic :proc-db :proc/op :start})
+                     (put! (channels :ch-sys) {:ch/topic :proc-render-ui :proc/op :render})
                      (recur)))))
       (println "closing go block: proc-main")))
 
+
+(defn ^:dev/after-load after-load []
+  (put! (channels :ch-sys) {:ch/topic :proc-render-ui :proc/op :render}))
 
 (defn proc-socket
   [{:keys [pb-sys ch-socket]}]
@@ -130,7 +136,8 @@
                       "games" :page/games
                       "events" :page/events
                       "settings" :page/settings
-                      "login" :page/login
+                      "sign-in" :page/sign-in
+                      "sign-up" :page/sing-up
                       "game/" {[:id ""] :page/game}
                       "u/" {"games" :page/user-games
                             [:id ""] :page/userid
@@ -171,10 +178,7 @@
         (println "closing proc-history"))
     c))
 
-; for dev realod only
-(defonce ^:private route (atom nil))
-(defn ^:dev/after-load after-load []
-  (put! (channels :ch-router) @route))
+
 
 (defn proc-router
   [{:keys [ch-sys ch-history ch-router ml-history-states]}]
@@ -187,7 +191,6 @@
                   o {:router/handler handler
                      :history/pushed pushed}]
               (do (put! ch-router o)
-                  (reset! route o)
                   (recur)))))
         (println "closing proc-router"))))
 
@@ -294,16 +297,21 @@
         (println "closing proc-derived-state"))))
 
 (defn proc-render-ui
-  [{:keys [ch-db] :as channels}]
-  (let []
+  [{:keys [ch-db pb-sys] :as channels}]
+  (let [c-sys (chan 1)]
+    (sub pb-sys :proc-render-ui c-sys)
     (go (loop [ratoms nil]
           #_(println "ratoms" ratoms)
           (when-not ratoms
             (let [c (chan 1)]
               (>! ch-db {:db/op :get-ratoms :ch/c-out c})
               (recur (<! c))))
-          (let []
-            (render/render-ui channels ratoms)))
+          (let [{:keys [proc/op]} (<! c-sys)]
+            (println (gstring/format "proc-render %s" op))
+            (condp = op
+              :render (do
+                        (render/render-ui channels ratoms)
+                        (recur ratoms)))))
         (println "closing proc-render"))))
 
 (defn proc-ops
