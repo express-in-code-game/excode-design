@@ -43,6 +43,7 @@
                         ml-history-states (mult ch-history-states)
                         ch-db (chan (sliding-buffer 10))
                         ch-http (chan (sliding-buffer 10))
+                        ch-ops (chan (sliding-buffer 100))
                         ch-inputs (chan (sliding-buffer 100))
                         pb-inputs (pub ch-inputs :ch/topic (fn [_] (sliding-buffer 100)))]
                     {:ch-proc-main ch-proc-main
@@ -55,6 +56,7 @@
                      :ch-history-states ch-history-states
                      :ml-history-states ml-history-states
                      :ch-http ch-http
+                     :ch-ops ch-ops
                      :ch-inputs ch-inputs
                      :pb-inputs pb-inputs
                      :ch-socket ch-socket}))
@@ -77,14 +79,15 @@
                      (proc-router (select-keys channels [:ch-sys :ch-history :ml-history-states :ch-router]))
                      (proc-db (select-keys channels [:pb-sys :ch-db]))
                      (proc-derived-state (select-keys channels [:ml-router :ml-http-res :ch-db]))
-                     (proc-render-ui (select-keys channels [:ch-db :pb-sys]))
+                     (proc-render-ui (select-keys channels [:ch-db :pb-sys :ch-inputs]))
                      (proc-http (select-keys channels [:ch-sys :ch-http :ch-db]))
-                     (proc-ops (select-keys channels [:ch-sys :ch-db :ch-http :pb-inputs]))
+                     (proc-ops (select-keys channels [:ch-sys :ch-db :ch-http :pb-inputs :ch-ops]))
 
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
                      (put! (channels :ch-sys) {:ch/topic :proc-history :proc/op :start})
                      (put! (channels :ch-sys) {:ch/topic :proc-db :proc/op :start})
                      (put! (channels :ch-sys) {:ch/topic :proc-render-ui :proc/op :render})
+                     (put! (channels :ch-ops) {:ops/op :op/init})
                      (recur)))))
       (println "closing go block: proc-main")))
 
@@ -301,18 +304,18 @@
             (println (gstring/format "proc-render %s" op))
             (condp = op
               :render (do
-                        (render/render-ui channels ratoms)
+                        (render/render-ui (select-keys channels [:ch-inputs]) ratoms)
                         (recur ratoms)))))
         (println "closing proc-render"))))
 
 (defn proc-ops
-  [{:keys [ch-db ch-http pb-inputs] :as channels}]
+  [{:keys [ch-db ch-http pb-inputs ch-ops] :as channels}]
   (let [c-inputs (chan 1)]
     (sub pb-inputs :inputs/ops  c-inputs)
     (go (loop []
-          (if-let [[v port] (alts! [c-inputs])]
-            (condp = port
-              c-inputs
+          (if-let [[v port] (alts! [c-inputs ch-ops])]
+            (cond
+              (or (= port c-inputs) (= port ch-ops))
               (let [{:keys [ops/op]} v]
                 (do
                   (>! ch-db {:db/op :assoc-in-ratom
@@ -320,6 +323,15 @@
                              :ratoms/path [:ops/state op :status]
                              :ratoms/v :started}))
                 (condp = op
+                  :op/init (go
+                             (let [c-out (chan 1)
+                                   _ (>! ch-ops {:ops/op :op/get-profile :ch/c-out c-out})
+                                   profile (<! c-out)]
+                               (println profile)
+                               (>! ch-db {:db/op :assoc-in-ratom
+                                          :ratoms/id :state
+                                          :ratoms/path [:ops/state op]
+                                          :ratoms/v {:op/status :finished}})))
                   :op/login (go
                               (let [{:keys [u/username u/password]} v
                                     c-out (chan 1)
@@ -349,7 +361,22 @@
                                                   :ratoms/id :state
                                                   :ratoms/path [:ops/state op]
                                                   :ratoms/v {:op/status :finished
-                                                             :http/response resp}})))))))
+                                                             :http/response resp}})))
+                  :op/get-profile (go
+                                    (let [{:keys []} v
+                                          c-out (chan 1)
+                                          req {:http/opts {:url "http://localhost:8080/profile"
+                                                           :method :get
+                                                           :with-credentials? false}
+                                               :ch/c-out c-out}
+                                          _ (>! ch-http req)
+                                          resp (<! c-out)]
+                                      (>! ch-db {:db/op :assoc-in-ratom
+                                                 :ratoms/id :state
+                                                 :ratoms/path [:ops/state op]
+                                                 :ratoms/v {:op/status :finished
+                                                            :http/response resp}}))))))
+            )
           (recur))
         (println "closing proc-ops"))))
 
@@ -414,6 +441,11 @@
 
   (put! (channels :ch-inputs) {:ch/topic :inputs/ops
                                :ops/op :op/get-settings
+                               :u/password "ayZ8190ueI1ZJsl6j4Z82"
+                               :u/username "db3zkY9rgyoI"})
+  
+  (put! (channels :ch-inputs) {:ch/topic :inputs/ops
+                               :ops/op :op/get-profile
                                :u/password "ayZ8190ueI1ZJsl6j4Z82"
                                :u/username "db3zkY9rgyoI"})
 

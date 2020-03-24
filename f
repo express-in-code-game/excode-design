@@ -28,4 +28,14 @@ remove_volumes(){
   docker volume rm starnet.crux
 }
 
+origins(){
+  git remote add bb https://bitbucket.org/accompanyinggames/starnet
+  git remote -v
+}
+
+push(){
+  git push origin master
+  git push bb master
+}
+
 "$@"

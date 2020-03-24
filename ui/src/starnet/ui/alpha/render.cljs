@@ -23,8 +23,16 @@
    ["antd/lib/list" :default AntList]
    ["antd/lib/row" :default AntRow]
    ["antd/lib/col" :default AntCol]
+   ["antd/lib/form" :default AntForm]
+   ["antd/lib/input" :default AntInput]
+   ["react" :as React]
+   ["antd/lib/checkbox" :default AntCheckbox]
+
+
    ["antd/lib/divider" :default AntDivider]
    ["@ant-design/icons/SmileOutlined" :default AntSmileOutlined]))
+
+(js/console.log )
 
 (def ant-row (r/adapt-react-class AntRow))
 (def ant-col (r/adapt-react-class AntCol))
@@ -33,19 +41,23 @@
 (def ant-layout (r/adapt-react-class AntLayout))
 (def ant-layout-content (r/adapt-react-class (.-Content AntLayout)))
 (def ant-layout-header (r/adapt-react-class (.-Header AntLayout)))
+(def ant-smile-outlined (r/adapt-react-class AntSmileOutlined))
 (def ant-menu (r/adapt-react-class AntMenu))
 (def ant-menu-item (r/adapt-react-class (.-Item AntMenu)))
 (def ant-icon (r/adapt-react-class AntIcon))
 (def ant-button (r/adapt-react-class AntButton))
 (def ant-list (r/adapt-react-class AntList))
-(def ant-smile-outlined (r/adapt-react-class AntSmileOutlined))
-
+(def ant-input (r/adapt-react-class AntInput))
+(def ant-input-password (r/adapt-react-class (.-Password AntInput)))
+(def ant-checkbox (r/adapt-react-class AntCheckbox))
+(def ant-form (r/adapt-react-class AntForm))
+(def ant-form-item (r/adapt-react-class (.-Item AntForm)))
 
 (defn menu
   [channels ratoms]
   (let [handler* (r/cursor (ratoms :state) [:router/handler])
         url* (r/cursor (ratoms :state) [:history/pushed :url])] ; for test, remove
-    (fn []
+    (fn [_ _]
       (let [handler @handler*
             url @url*]
         [ant-menu {:theme "light"
@@ -70,7 +82,16 @@
          [ant-menu-item {:key :page/sign-in}
           [:a {:href "/sign-in"} "sign-in"]]
          [ant-menu-item {:key :page/sign-up}
-          [:a {:href "/sign-up"} "sign-up"]]]))))
+          [:a {:href "/sign-up"} "sign-up"]]
+         
+         ]))))
+
+(defn rc-user-identity
+  [channels ratoms]
+  (let [user-data* (r/cursor (ratoms :state) [:ops/state :op/get-profile :http/response :body])]
+    (fn [_ _]
+      (let [{:keys [u/username u/fullname]} @user-data*]
+        [:div {:style {:position "absolute" :top 2 :right 10}} username]))))
 
 (defn layout
   [channels ratoms content]
@@ -87,7 +108,9 @@
          :class "logo"}
      #_[:img {:class "logo-img" :src "./img/logo-4.png"}]
      [:div {:class "logo-name"} "starnet"]]
-    [menu channels ratoms]]
+    [menu channels ratoms]
+    [rc-user-identity channels ratoms]
+    ]
    [ant-layout-content {:class "main-content"
                         :style {:margin-top "32px"
                                 :padding "32px 32px 32px 32px"}}
@@ -99,13 +122,40 @@
    [ant-layout-content {:class "main-content"
                         :style {:margin-top "32px"
                                 :padding "32px 32px 32px 32px"}}
-    content]]
-  )
+    content]])
+
+(defn rc-form-signin
+  [channels ratoms]
+  (let [{:keys [ch-inputs]} channels
+        form-ref (.createRef React)
+        on-submit (fn []
+                    (let [vs (.. form-ref -current getFieldsValue)]
+                      (put! ch-inputs {:ch/topic :inputs/ops
+                                       :ops/op :op/login
+                                       :u/password (aget vs "password")
+                                       :u/username (aget vs "username")})))]
+    (fn [_ _]
+      (let []
+        [ant-form {:labelCol {:span 8} :wrapperCol {:span 16} :ref form-ref}
+         [ant-form-item {:label nil
+                         :name "username"
+                         :wrapperCol {:offset 1 :span 16}
+                         :rules [{:required true :message "username"}]}
+          [ant-input {:placeholder "username"}]]
+         [ant-form-item {:label nil
+                         :name "password"
+                         :wrapperCol {:offset 1 :span 16}
+                         :rules [{:required true :message "password"}]}
+          [ant-input-password {:placeholder "password"}]]
+         [ant-form-item {:wrapperCol {:offset 1 :span 16}}
+          [ant-button {:type "primary" :on-click on-submit} "sign in"]]]))))
+
+
 
 (defn rc-page-events
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -114,7 +164,7 @@
 (defn rc-page-settings
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -123,7 +173,7 @@
 (defn rc-page-games
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -132,7 +182,7 @@
 (defn rc-page-userid-games
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -141,7 +191,7 @@
 (defn rc-page-userid
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -150,7 +200,7 @@
 (defn rc-page-not-found
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -159,16 +209,25 @@
 (defn rc-page-sign-in
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
-          [:div "rc-page-sign-in"]]]))))
+          #_[ant-row {:gutter [16 24]}
+             [ant-col "rc-page-sign-in"]]
+          #_[ant-divider {:orientation "left"} "rc-page-sign-in"]
+          [ant-row {:justify "center"
+                    :align "middle"
+                    :style {:height "85%"}
+                    ;; :gutter [16 24]
+                    }
+           [ant-col {:span 12}
+            [rc-form-signin channels ratoms]]]]]))))
 
 (defn rc-page-sign-up
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -177,7 +236,7 @@
 (defn rc-page-game
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout-game channels ratoms
          [:<>
@@ -186,7 +245,7 @@
 (defn rc-page-user-games
   [channels ratoms]
   (let []
-    (fn [channels ratoms]
+    (fn [_ _]
       (let []
         [layout channels ratoms
          [:<>
@@ -201,7 +260,7 @@
 (defn rc-ui
   [channels ratoms]
   (let [handler* (r/cursor (ratoms :state) [:router/handler])]
-    (fn [channels ratoms]
+    (fn [_ _]
       #_(println (gstring/format "ratoms :state %s" @(ratoms :state)))
       #_(let [{:keys [router/handler history/pushed]} @(ratoms :state)]
           (println (gstring/format "rendering %s" handler)))
@@ -210,6 +269,7 @@
         (condp = handler
           :page/events [rc-page-events channels ratoms]
           :page/games [rc-page-games channels ratoms]
+          :page/settings [rc-page-settings channels ratoms]
           :page/user-games [rc-page-user-games channels ratoms]
           :page/userid-games [rc-page-userid-games channels ratoms]
           :page/userid [rc-page-userid channels ratoms]
