@@ -101,9 +101,9 @@
          [ant-menu-item {:key :page/stats-id}
           [:a {:href (gstring/format "/stats/%s" (gen/generate gen/string-alphanumeric))} "stats/:username"]]
          [ant-menu-item {:key :page/sign-in}
-          [:a {:href "/sign-in"} "sign-in"]]
+          [:a {:href "/sign-in"} "sign in"]]
          [ant-menu-item {:key :page/sign-up}
-          [:a {:href "/sign-up"} "sign-up"]]
+          [:a {:href "/sign-up"} "sign up"]]
          [ant-menu-item {:key :page/account}
           [:a {:href "/user"} "user"]]
          
@@ -172,6 +172,44 @@
          [ant-form-item {:wrapperCol {:offset 1 :span 16}}
           [ant-button {:type "primary" :on-click on-submit} "sign in"]]]))))
 
+(defn rc-form-signup
+  [channels ratoms]
+  (let [{:keys [ch-inputs]} channels
+        form-ref (.createRef React)
+        on-submit (fn []
+                    (let [vs (.. form-ref -current getFieldsValue)]
+                      (js/console.log vs)))]
+    (fn [_ _]
+      (let []
+        [ant-form {:labelCol {:span 8} :wrapperCol {:span 16} :ref form-ref}
+         [ant-form-item {:label nil
+                         :name "username"
+                         :wrapperCol {:offset 1 :span 16}
+                         :rules [{:required true :message "username"}]}
+          [ant-input {:placeholder "username" :autoComplete "new-password"}]]
+         [ant-form-item {:label nil
+                         :name "fullname"
+                         :wrapperCol {:offset 1 :span 16}
+                         :rules [{:required true :message "fullname"}]}
+          [ant-input {:placeholder "fullname"}]]
+         [ant-form-item {:label nil
+                         :name "email"
+                         :wrapperCol {:offset 1 :span 16}
+                         :rules [{:required true :message "email"}]}
+          [ant-input {:placeholder "email"}]]
+         [ant-form-item {:label nil
+                         :name "info"
+                         :wrapperCol {:offset 1 :span 16}
+                         :rules [{:required true :message "info"}]}
+          [ant-input {:placeholder "info"}]]
+         [ant-form-item {:label nil
+                         :name "password"
+                         :wrapperCol {:offset 1 :span 16}
+                         :rules [{:required true :message "password"}]}
+          [ant-input-password {:placeholder "password" :name "password" :auto-complete "new-password"}]]
+         [ant-form-item {:wrapperCol {:offset 1 :span 16}}
+          [ant-button {:type "primary" :on-click on-submit} "create"]]]))))
+
 (defn rc-page-events
   [channels ratoms]
   (let []
@@ -238,7 +276,13 @@
       (let []
         [layout channels ratoms
          [:<>
-          [:div "rc-page-sign-up"]]]))))
+          [ant-row {:justify "center"
+                    :align "middle"
+                    :style {:height "85%"}
+                    ;; :gutter [16 24]
+                    }
+           [ant-col {:span 12}
+            [rc-form-signup channels ratoms]]]]]))))
 
 
 (defn rc-page-user

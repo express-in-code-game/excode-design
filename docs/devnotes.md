@@ -155,6 +155,9 @@
 - docker
   - https://docs.docker.com/config/containers/resource_constraints/
 
+- browser
+  - https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion
+
 - issues
   - "attempting to call unbound transit-json..." when ineracting with kafka from repl
     - starnet.app.alpha.aux.serdes namespace must be imported 
