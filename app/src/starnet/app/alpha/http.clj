@@ -138,12 +138,15 @@
              raw (or (:u/password-TMP data) (:u/password data))
              valid? (and user (hashers/check raw (:u/password user)))]
          (if valid?
-           (let [token (jwt/encrypt {:val (select-keys data [:u/uuid])
-                                     :exp (time/plus (time/now) (time/seconds 3600))}
+           (let [claims {:val (select-keys data [:u/uuid])
+                         :exp (time/plus (time/now) (time/seconds 3600))}
+                 token (jwt/encrypt claims
                                     pubkey
                                     {:alg :rsa-oaep
                                      :enc :a128cbc-hs256})]
              (println (format "/login token count %s" (count token)))
+             (println claims)
+             (println data)
              (assoc ctx :response {:status 200
                                    :body (select-keys data [:u/uuid])
                                    :headers {"Authorization" (format "Token %s" token)}}))
@@ -382,4 +385,6 @@
         (server/create-server)
         (server/start))))
 
-
+(defn stop
+  [service-map]
+  (server/stop service-map))

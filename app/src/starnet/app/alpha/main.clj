@@ -86,7 +86,7 @@
           (do
             (<! (proc-keys channels))
             (proc-nrepl-server (select-keys channels [:pb-sys]))
-            (proc-http-server (select-keys channels [:pb-sys])
+            (proc-http-server (select-keys channels [:pb-sys :ch-sys])
                               {:channels channels
                                :privkey (keys/private-key "resources/privkey.pem" (slurp "resources/passphrase.tmp"))
                                :pubkey (keys/public-key "resources/pubkey.pem")})
@@ -139,16 +139,36 @@
         (println "closing proc-nrepl-server"))))
 
 (defn proc-http-server
-  [{:keys [pb-sys]} app-ctx]
+  [{:keys [pb-sys ch-sys]} app-ctx]
   (let [c (chan 1)]
     (sub pb-sys :http-server c)
     (go (loop [server nil]
-          (when-let [{op :proc/op} (<! c)]
+          (when-let [{op :proc/op
+                      actx :app/ctx} (<! c)]
+            (println (format "; proc-http-server %s" op))
             (condp = op
-              :start (let [sr (app-http/start app-ctx)]
+              :start (let [sr (app-http/start (or actx app-ctx))]
                        (recur sr))
-              :stop (recur server))))
+              :stop (do
+                      (when server
+                        (app-http/stop server))
+                      (recur nil))
+              :restart (do
+                         (put! ch-sys {:ch/topic :http-server :proc/op :stop})
+                         (put! ch-sys {:ch/topic :http-server :proc/op :start :app/ctx actx})
+                         (recur server)))))
         (println "closing proc-http-server"))))
+
+(comment
+
+  (put! (channels :ch-sys) {:ch/topic :http-server :proc/op :stop})
+  (put! (channels :ch-sys) {:ch/topic :http-server :proc/op :start})
+
+  (put! (channels :ch-sys) {:ch/topic :http-server :proc/op :restart})
+
+
+  ;;
+  )
 
 (defn proc-log
   [{:keys [pb-sys]}]
