@@ -174,6 +174,7 @@
      ["/user" :delete (conj common-interceptors user-delete) :route-name :delete/user]
      ["/login" :post (conj (body-params) user-login) :route-name :post/login]
      ["/settings" :get (conj common-interceptors user-settings) :route-name :get/settings]
+     ["/profile" :get (conj common-interceptors user-settings) :route-name :get/profile]
      }))
 
 (comment

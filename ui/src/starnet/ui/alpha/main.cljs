@@ -349,7 +349,21 @@
                                                   :ratoms/id :state
                                                   :ratoms/path [:ops/state op]
                                                   :ratoms/v {:op/status :finished
-                                                             :http/response resp}})))))))
+                                                             :http/response resp}})))
+                  :op/get-profile (go
+                                    (let [{:keys []} v
+                                          c-out (chan 1)
+                                          req {:http/opts {:url "http://localhost:8080/profile"
+                                                           :method :get
+                                                           :with-credentials? false}
+                                               :ch/c-out c-out}
+                                          _ (>! ch-http req)
+                                          resp (<! c-out)]
+                                      (>! ch-db {:db/op :assoc-in-ratom
+                                                 :ratoms/id :state
+                                                 :ratoms/path [:ops/state op]
+                                                 :ratoms/v {:op/status :finished
+                                                            :http/response resp}})))))))
           (recur))
         (println "closing proc-ops"))))
 
@@ -414,6 +428,11 @@
 
   (put! (channels :ch-inputs) {:ch/topic :inputs/ops
                                :ops/op :op/get-settings
+                               :u/password "ayZ8190ueI1ZJsl6j4Z82"
+                               :u/username "db3zkY9rgyoI"})
+  
+  (put! (channels :ch-inputs) {:ch/topic :inputs/ops
+                               :ops/op :op/get-profile
                                :u/password "ayZ8190ueI1ZJsl6j4Z82"
                                :u/username "db3zkY9rgyoI"})
 
