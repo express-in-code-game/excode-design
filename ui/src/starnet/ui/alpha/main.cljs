@@ -346,6 +346,21 @@
                                            :ratoms/path [:ops/state op]
                                            :ratoms/v {:op/status :finished
                                                       :http/response resp}})))
+                  :op/signup (go
+                               (let [{:keys [u/user]} v
+                                     c-out (chan 1)
+                                     req {:http/opts {:url "http://localhost:8080/user"
+                                                      :method :post
+                                                      :with-credentials? false
+                                                      :edn-params user}
+                                          :ch/c-out c-out}
+                                     _ (>! ch-http req)
+                                     resp (<! c-out)]
+                                 (>! ch-db {:db/op :assoc-in-ratom
+                                            :ratoms/id :state
+                                            :ratoms/path [:ops/state op]
+                                            :ratoms/v {:op/status :finished
+                                                       :http/response resp}})))
                   :op/user-get (go
                                  (let [{:keys []} v
                                        c-out (chan 1)

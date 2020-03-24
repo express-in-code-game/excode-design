@@ -86,15 +86,16 @@
 
 (def user-create
   {:name :user-create
-   :leave
+   :enter
    (fn [ctx]
      (go
        (let [headers (get-in ctx [:request :headers])
              user-data (get-in ctx [:request :edn-params])
              channels (get-in ctx [:app/ctx :channels])
-             o (<! (app.core/create-user channels user-data))]
+             o  (<! (app.core/create-user channels user-data))]
          (if o
-           ctx
+           (assoc ctx :response {:status 200
+                                 :body o})
            (throw (ex-info "app.core/create-user failed" {:user-data user-data}))))))})
 
 (def user-delete
@@ -129,9 +130,6 @@
                                     pubkey
                                     {:alg :rsa-oaep
                                      :enc :a128cbc-hs256})]
-            ;;  (println (format "/login token count %s" (count token)))
-            ;;  (println claims)
-            ;;  (println data)
              (assoc ctx :response {:status 200
                                    :body (select-keys data [:u/uuid])
                                    :headers {"Authorization" (format "Token %s" token)}}))
@@ -154,10 +152,10 @@
 (defn routes
   []
   (route/expand-routes
-   #{["/user" :post (conj (body-params) user-create user-login) :route-name :user/post]
+   #{["/user" :post [(body-params) user-create] :route-name :user/post]
      ["/user" :delete (conj common-interceptors user-delete) :route-name :user/delete]
      ["/user" :get (conj common-interceptors user-get) :route-name :user/get]
-     ["/login" :post (conj (body-params) user-login) :route-name :login/post]}))
+     ["/login" :post [(body-params) user-login] :route-name :login/post]}))
 
 (comment
 

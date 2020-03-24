@@ -178,34 +178,42 @@
         form-ref (.createRef React)
         on-submit (fn []
                     (let [vs (.. form-ref -current getFieldsValue)]
-                      (js/console.log vs)))]
+                      (put! ch-inputs {:ch/topic :inputs/ops
+                                       :ops/op :op/signup
+                                       :u/user {:u/uuid (gen/generate gen/uuid)
+                                                :u/password (aget vs "password")
+                                                :u/fullname (aget vs "fullname")
+                                                :u/info (aget vs "info")
+                                                :u/email (aget vs "email")
+                                                :u/username (aget vs "username")}})))]
     (fn [_ _]
       (let []
-        [ant-form {:labelCol {:span 8} :wrapperCol {:span 16} :ref form-ref}
+        [ant-form {:labelCol {:span 8} :wrapperCol {:span 16} :ref form-ref
+                   :initial-values (gen/generate (s/gen :u/user))}
          [ant-form-item {:label nil
                          :name "username"
                          :wrapperCol {:offset 1 :span 16}
-                         :rules [{:required true :message "username"}]}
+                         :rules [{:required true :message "username required"}]}
           [ant-input {:placeholder "username" :autoComplete "new-password"}]]
          [ant-form-item {:label nil
                          :name "fullname"
                          :wrapperCol {:offset 1 :span 16}
-                         :rules [{:required true :message "fullname"}]}
+                         :rules [{:required true :message "fullname required"}]}
           [ant-input {:placeholder "fullname"}]]
          [ant-form-item {:label nil
                          :name "email"
                          :wrapperCol {:offset 1 :span 16}
-                         :rules [{:required true :message "email"}]}
+                         :rules [{:required true :message "email required"}]}
           [ant-input {:placeholder "email"}]]
          [ant-form-item {:label nil
                          :name "info"
                          :wrapperCol {:offset 1 :span 16}
-                         :rules [{:required true :message "info"}]}
+                         :rules [{:required true :message "info required"}]}
           [ant-input {:placeholder "info"}]]
          [ant-form-item {:label nil
                          :name "password"
                          :wrapperCol {:offset 1 :span 16}
-                         :rules [{:required true :message "password"}]}
+                         :rules [{:required true :message "password required"}]}
           [ant-input-password {:placeholder "password" :name "password" :auto-complete "new-password"}]]
          [ant-form-item {:wrapperCol {:offset 1 :span 16}}
           [ant-button {:type "primary" :on-click on-submit} "create"]]]))))
