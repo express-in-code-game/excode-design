@@ -59,8 +59,8 @@
     :enter (fn [ctx]
              (let [backend (get-in ctx [:app/ctx :backend])
                    request (-> (:request ctx) (auth.middleware/authentication-request backend))]
-               (println request)
-               (println (auth/authenticated? request))
+               #_(println request)
+               (println (format "auth/authenticated? %s" (auth/authenticated? request)))
                (update ctx :request  request)
                (if-not (auth/authenticated? request)
                  (auth/throw-unauthorized)
@@ -143,6 +143,7 @@
                                     pubkey
                                     {:alg :rsa-oaep
                                      :enc :a128cbc-hs256})]
+             (println (format "/login token count %s" (count token)))
              (assoc ctx :response {:status 200
                                    :body (select-keys data [:u/uuid])
                                    :headers {"Authorization" (format "Token %s" token)}}))
@@ -184,10 +185,11 @@
 
   (def service (::http/service-fn (http/create-servlet (service-config app-ctx (routes)))))
 
-  (def token (jwt/encrypt {:user :hello
+  (def token (jwt/encrypt {:user {:val {:u/uuid (gen/generate gen/uuid)}}
                            :exp (time/plus (time/now) (time/seconds 3600))} (:pubkey app-ctx)
                           {:alg :rsa-oaep
                            :enc :a128cbc-hs256}))
+  (count token)
   (def decrypted-data (jwt/decrypt token (:privkey app-ctx)
                                    {:alg :rsa-oaep
                                     :enc :a128cbc-hs256}))
@@ -216,14 +218,18 @@
                 :headers {"Content-Type" "application/edn"})
 
 
+  (def user (-> (app.core/repl-users channels) (rand-nth)))
+  
   (def token
     (->
      (response-for service :post "/login"
-                   :body (str (-> (app.core/repl-users channels) (rand-nth)))
+                   :body (str user)
                    :headers {"Content-Type" "application/edn"})
      (get-in [:headers "Authorization"])
      (clojure.string/split #" ")
      (second)))
+  
+  (count token)
 
   (response-for service :get "/settings"
                 :headers {"Content-Type" "application/edn"
@@ -310,8 +316,8 @@
             backend (jwe-backend {:secret privkey
                                   :options {:alg :rsa-oaep
                                             :enc :a128cbc-hs256}
-                                  :authfn (fn [req]
-                                            (-> req
+                                  :authfn (fn [claims]
+                                            (-> claims
                                                 (update :val
                                                         (fn [o]
                                                           (->> o
