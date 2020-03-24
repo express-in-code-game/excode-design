@@ -24,16 +24,19 @@
 
 (defn create-user
   [channels data]
-  (let [password (:u/password data)
-        hashed (hashers/derive password {:alg :bcrypt+sha512 :iterations 4})
-        data (merge data  {:u/password hashed
-                           :u/password-TMP password})]
-    (db-tx channels [[:crux.tx/put
-                      (-> data
-                          (merge {:crux.db/id (:u/uuid data)}))
+  (go
+    (let [password (:u/password data)
+          hashed (hashers/derive password {:alg :bcrypt+sha512 :iterations 4})
+          data (merge data  {:u/password hashed
+                             :u/password-TMP password})
+          tx-data (-> data
+                      (merge {:crux.db/id (:u/uuid data)}))
+          tx (<! (db-tx channels [[:crux.tx/put
+                                   tx-data
                     ;; #inst "2112-12-03"
                     ;; #inst "2113-12-03"
-                      ]])))
+                                   ]]))]
+      [tx tx-data])))
 
 (defn user-by-username
   [channels data]

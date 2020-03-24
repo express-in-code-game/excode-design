@@ -413,5 +413,17 @@
     - /events - lists events, can join them (later may be introduced /events/hsitory or /events/data)
     - /games - lists games to join and/or ladder
     - /signup /singin /account  - basics to create a simple account
-    - /stats/:username - a profile page showing username and stats
+    - /stats/user/:username - a stats page showing user's stats
     - /game/:id - a unique url at which a game is played/observed
+    - /event/:id - a unique url for an event
+  - user's idetity (signup, account) consists of
+    - credentials and a list of links
+  - when user name is hovered/clicked, popup shows username, links and a link to /stats/user/username
+  - game and event can also have a list of links (can be changed by host)
+  - system has no chat by design
+- events history, stats and data
+  - games are played on a topic
+  - once game is complete, a kstreams app should start
+    - it will filter, map(xform) games and output transactable data
+    - data is transacted into a separate history(stats) crux db (that has its own topics
+    - and the data can be queried with datalog
