@@ -124,13 +124,14 @@
              valid? (and user (hashers/check raw (:u/password user)))]
          (if valid?
            (let [claims {:val (select-keys user [:u/uuid])
-                         :exp (time/plus (time/now) (time/seconds 3600))}
+                         :exp (time/plus (time/now) (time/seconds (* 24 60 60) ))}
                  token (jwt/encrypt claims
                                     pubkey
                                     {:alg :rsa-oaep
                                      :enc :a128cbc-hs256})]
              (assoc ctx :response {:status 200
-                                   :body (select-keys data [:u/uuid])
+                                   :body (select-keys user [:u/uuid :u/username :u/email
+                                                            :u/fullname  :u/info])
                                    :headers {"Authorization" (format "Token %s" token)}}))
            (assoc ctx :response (r403 "Invalid credentials"))))))})
 

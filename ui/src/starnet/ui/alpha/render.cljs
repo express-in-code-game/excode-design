@@ -71,8 +71,8 @@
           :page/games [rc-page-games channels ratoms]
           :page/game [rc-page-game channels ratoms]
           :page/stats-id [rc-page-stats-id channels ratoms]
-          :page/sign-up [rc-page-signup channels ratoms]
-          :page/sign-in [rc-page-signin channels ratoms]
+          :page/signup [rc-page-signup channels ratoms]
+          :page/signin [rc-page-signin channels ratoms]
           :page/user [rc-page-user channels ratoms]
           [rc-page-not-found channels ratoms])))))
 
@@ -101,9 +101,9 @@
          [ant-menu-item {:key :page/stats-id}
           [:a {:href (gstring/format "/stats/%s" (gen/generate gen/string-alphanumeric))} "stats/:username"]]
          [ant-menu-item {:key :page/sign-in}
-          [:a {:href "/sign-in"} "sign in"]]
+          [:a {:href "/signin"} "sign in"]]
          [ant-menu-item {:key :page/sign-up}
-          [:a {:href "/sign-up"} "sign up"]]
+          [:a {:href "/signup"} "sign up"]]
          [ant-menu-item {:key :page/account}
           [:a {:href "/user"} "user"]]
          
@@ -111,10 +111,18 @@
 
 (defn rc-user-identity
   [channels ratoms]
-  (let [user-data* (r/cursor (ratoms :state) [:ops/state :op/user-get :http/response :body])]
+  (let [{:keys [ch-inputs]} channels
+        user-data* (ratoms :user)
+         ]
     (fn [_ _]
-      (let [{:keys [u/username u/fullname]} @user-data*]
-        [:div {:style {:position "absolute" :top 2 :right 10}} username]))))
+      (let [{:keys [u/username u/fullname] :as user} @user-data*]
+        [:div {:on-click (fn []
+                           (put! ch-inputs {:ch/topic :inputs/ops
+                                            :ops/op :op/logout}))
+               :style {:position "absolute"
+                       :cursor "pointer"
+                       :top 2
+                       :right 10}} [:div username]]))))
 
 (defn layout
   [channels ratoms content]

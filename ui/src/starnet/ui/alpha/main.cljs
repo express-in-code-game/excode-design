@@ -129,8 +129,8 @@
 (defonce routes ["/" {"" :page/events
                       "events" :page/events
                       "games" :page/games
-                      "sign-in" :page/sign-in
-                      "sign-up" :page/sign-up
+                      "signin" :page/signin
+                      "signup" :page/signup
                       "user" :page/user
                       "game/" {[:id ""] :page/game}
                       "stats/" {[:id ""] :page/stats-id}}])
@@ -226,10 +226,33 @@
 
 (defn make-deafult-ratoms
   []
-  (let []
-    {:state (r/atom {})}))
+  (let [state (r/atom {})
+        local-storage (r/atom {})
+        userget-user (r/cursor state [:ops/state :op/user-get :http/response :body])
+        login-user (r/cursor state [:ops/state :op/login :http/response :body])
+        signup-user (r/cursor state [:ops/state :op/signup :http/response :body])
+        token (r/cursor local-storage ["token"])
+        user (r/track! (fn []
+                           (let [u1 @userget-user
+                                 u2 @login-user
+                                 u3 @signup-user
+                                 t @token]
+                             (when t
+                               (or u2 u3 u1)))))]
+    {:state state
+     :user user
+     :local-storage local-storage
+     :token token
+     }))
 
 (def ^:private rtoms nil)
+
+(comment 
+  
+  @(rtoms :state)
+  
+  ;;
+  )
 
 (defn proc-db
   [{:keys [ch-db pb-sys]}]
@@ -241,10 +264,11 @@
             (condp = port
               c-sys (let [{:keys [proc/op]} v]
                       (condp = op
-                        :start (let [ratoms (make-deafult-ratoms)
+                        :start (let [o (make-deafult-ratoms)
                                      ds nil]
-                                 (set! rtoms ratoms)
-                                 (recur ratoms ds))))
+                                 (set! rtoms o)
+                                 (put! ch-db {:db/op :sync-local-storage})
+                                 (recur o ds))))
               ch-db (let [{:keys [db/op db/query ch/c-out]} v]
                       (condp = op
                         :q (let []
@@ -268,8 +292,14 @@
                                              (recur ratoms ds))
                         :local-storage-set (let [{:keys [local-storage/k local-storage/v]} v]
                                              (.setItem js/localStorage k v)
-                                             (>! c-out {:local-storage/v v})
-                                             (recur ratoms ds)))))))
+                                             (swap! (ratoms :local-storage) assoc k v)
+                                             (when c-out
+                                               (>! c-out {:local-storage/v v}))
+                                             (recur ratoms ds))
+                        :sync-local-storage (let [k "token"
+                                                  t (.getItem js/localStorage k)]
+                                              (swap! (ratoms :local-storage) assoc k t)
+                                              (recur ratoms ds)))))))
         (println "closing proc-db"))))
 
 (defn proc-derived-state
@@ -346,6 +376,12 @@
                                            :ratoms/path [:ops/state op]
                                            :ratoms/v {:op/status :finished
                                                       :http/response resp}})))
+                  :op/logout (go
+                               (let []
+                                 (>! ch-db {:db/op :local-storage-set
+                                            :local-storage/k "token"
+                                            :local-storage/v nil
+                                            :ch/c-out (chan 1)})))
                   :op/signup (go
                                (let [{:keys [u/user]} v
                                      c-out (chan 1)
@@ -394,15 +430,16 @@
                                                        {:with-credentials? false
                                                         :headers {"Authorization" (gstring/format "Token %s" token)}}))))]
               (>! c-out resp)
-              (when (clojure.string/includes? (:url opts) "/login")
+              (when (or
+                     (clojure.string/includes? (:url opts) "/login")
+                     (and (clojure.string/includes? (:url opts) "/user") (= (:method opts) :post)))
                 (let [token (-> resp
                              (get-in [:headers "authorization"])
                              (clojure.string/split #" ")
                              (second))]
                   (>! ch-db {:db/op :local-storage-set
                              :local-storage/k "token"
-                             :local-storage/v token
-                             :ch/c-out c})
+                             :local-storage/v token})
                   (recur token)))
               (recur token)))))
       (println "closing proc-http"))))
