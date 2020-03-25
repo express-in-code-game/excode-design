@@ -486,15 +486,12 @@
                                                  (.text)
                                                  (.then (fn [s]
                                                           (let [o (transit/read r s)]
-                                                            (js/console.log o)
-                                                            (println o)
                                                             (put! ch-socket-in o))))))))
                                 (recur ws))
                         :close (do
                                  (.close ws)
                                  (recur nil))))
               ch-socket-out (let [{:keys [ws/data]} v]
-                              (println (gstring/format "sending %s" data))
                               (let [s (transit/write w data)
                                     blob (js/Blob. [s] #js {:type "application/transit+json"})]
                                 (-> blob

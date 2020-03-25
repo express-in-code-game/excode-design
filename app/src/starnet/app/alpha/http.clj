@@ -269,13 +269,13 @@
 
 (def ws-paths
   {"/ws" {:on-connect (ws/start-ws-connection (new-ws-client))
-          :on-text (fn [msg] 
+          :on-text (fn [msg]
                      (println "text: " msg)
-                     (log/info :msg (str "A client sent - " msg)))
+                     #_(log/info :msg (str "A client sent - " msg)))
           :on-binary (fn [payload offset length]
                        (let [in (ByteArrayInputStream. payload)
                              r (transit/reader in :json)]
-                         (println "binary: " (transit/read r)))
+                         #_(println "binary: " (transit/read r)))
                        #_(log/info :msg "Binary Message!" :bytes payload))
           :on-error (fn [t] (log/error :msg "WS Error happened" :exception t))
           :on-close (fn [num-code reason-text]
