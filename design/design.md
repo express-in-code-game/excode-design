@@ -421,3 +421,9 @@
   - when user name is hovered/clicked, popup shows username, links and a link to /stats/user/username
   - game and event can also have a list of links (can be changed by host)
   - system has no chat by design
+- events history, stats and data
+  - games are played on a topic
+  - once game is complete, a kstreams app should start
+    - it will filter, map(xform) games and output transactable data
+    - data is transacted into a separate history(stats) crux db (that has its own topics
+    - and the data can be queried with datalog
