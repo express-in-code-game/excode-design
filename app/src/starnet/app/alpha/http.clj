@@ -21,6 +21,7 @@
    [io.pedestal.test :as test]
    [buddy.auth :as auth]
    [clj-time.core :as time]
+   [cognitect.transit :as transit]
    [buddy.hashers :as hashers]
    [buddy.auth.backends.token :refer [jwe-backend]]
    [buddy.auth.middleware :as auth.middleware]
@@ -34,8 +35,11 @@
    [clojure.test.check.generators :as gen]
    [starnet.app.alpha.core :as app.core])
   (:import
-   [org.eclipse.jetty.websocket.api Session]
-   java.net.URI))
+   org.eclipse.jetty.websocket.api.Session
+   java.io.ByteArrayInputStream
+   java.io.ByteArrayOutputStream
+   java.net.URI
+   java.nio.ByteBuffer))
 
 
 (defn response [status body & {:as headers}]
@@ -234,9 +238,15 @@
 (def ws-clients (atom {}))
 
 (defn new-ws-client
-  [ws-session send-ch]
-  (async/put! send-ch "This will be a text message")
-  (swap! ws-clients assoc ws-session send-ch))
+  []
+  (let [out (ByteArrayOutputStream. 4096)
+        w (transit/writer out :json)]
+    (fn [ws-session send-ch]
+      (transit/write w {:ws/data "a message from server"})
+      (async/put! send-ch (ByteBuffer/wrap (.toByteArray out)))
+      (.reset out)
+      #_(async/put! send-ch "a message from server")
+      (swap! ws-clients assoc ws-session send-ch))))
 
 ;; This is just for demo purposes
 (defn send-and-close! []
@@ -258,9 +268,15 @@
       (async/put! channel message))))
 
 (def ws-paths
-  {"/ws" {:on-connect (ws/start-ws-connection new-ws-client)
-          :on-text (fn [msg] (log/info :msg (str "A client sent - " msg)))
-          :on-binary (fn [payload offset length] (log/info :msg "Binary Message!" :bytes payload))
+  {"/ws" {:on-connect (ws/start-ws-connection (new-ws-client))
+          :on-text (fn [msg]
+                     (println "text: " msg)
+                     #_(log/info :msg (str "A client sent - " msg)))
+          :on-binary (fn [payload offset length]
+                       (let [in (ByteArrayInputStream. payload)
+                             r (transit/reader in :json)]
+                         #_(println "binary: " (transit/read r)))
+                       #_(log/info :msg "Binary Message!" :bytes payload))
           :on-error (fn [t] (log/error :msg "WS Error happened" :exception t))
           :on-close (fn [num-code reason-text]
                       (log/info :msg "WS Closed:" :reason reason-text))}})

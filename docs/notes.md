@@ -131,6 +131,7 @@
     - stateless
       - https://funcool.github.io/buddy-auth/latest/#signed-jwt
   - sockets
+    - https://github.com/ptaoussanis/sente
     - https://github.com/stalefruits/gniazdo
 
 - crux

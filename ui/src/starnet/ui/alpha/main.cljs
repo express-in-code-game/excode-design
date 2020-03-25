@@ -8,6 +8,7 @@
    [cljs-http.client :as http]
    [goog.string :as gstring]
    [goog.string.format]
+   [cognitect.transit :as transit]
 
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
@@ -20,6 +21,7 @@
    [pushy.core :as pushy]
    [datascript.core :as ds]
 
+   [starnet.common.pad.transit1]
    [starnet.common.alpha.spec]
    [starnet.ui.alpha.tests]
    [starnet.ui.alpha.render :as render])
@@ -28,14 +30,15 @@
            goog.history.Html5History))
 
 (declare proc-main proc-socket proc-render-containers proc-db proc-ops proc-http
-        proc-history proc-router proc-derived-state proc-render-ui)
+         proc-history proc-router proc-derived-state proc-render-ui)
 
 (enable-console-print!)
 
 (defonce channels (let [ch-proc-main (chan 1)
                         ch-sys (chan (sliding-buffer 10))
                         pb-sys (pub ch-sys :ch/topic (fn [_] (sliding-buffer 10)))
-                        ch-socket (chan (sliding-buffer 10))
+                        ch-socket-in (chan (sliding-buffer 100))
+                        ch-socket-out (chan (sliding-buffer 100))
                         ch-history (chan (sliding-buffer 10))
                         ch-router (chan (sliding-buffer 10))
                         ml-router (mult ch-router)
@@ -59,7 +62,8 @@
                      :ch-ops ch-ops
                      :ch-inputs ch-inputs
                      :pb-inputs pb-inputs
-                     :ch-socket ch-socket}))
+                     :ch-socket-in ch-socket-in
+                     :ch-socket-out ch-socket-out}))
 
 (defn ^:export main
   []
@@ -74,7 +78,7 @@
           (println (gstring/format "proc-main %s" op))
           (condp = op
             :start (do
-                     (proc-socket (select-keys channels [:pb-sys :ch-sys :ch-socket]))
+                     (proc-socket (select-keys channels [:pb-sys :ch-sys :ch-socket-in :ch-socket-out]))
                      (proc-history (select-keys channels [:pb-sys :ch-sys :ch-history :ch-history-states]))
                      (proc-router (select-keys channels [:ch-sys :ch-history :ml-history-states :ch-router]))
                      (proc-db (select-keys channels [:pb-sys :ch-db]))
@@ -91,30 +95,8 @@
                      (recur)))))
       (println "closing go block: proc-main")))
 
-
 (defn ^:dev/after-load after-load []
   (put! (channels :ch-sys) {:ch/topic :proc-render-ui :proc/op :render}))
-
-(defn proc-socket
-  [{:keys [pb-sys ch-socket]}]
-  (let [c (chan 1)]
-    (sub pb-sys :proc-socket c)
-    (go (loop [ws nil]
-          (when-let [{:keys [proc/op]} (<! c)]
-            (println (gstring/format "proc-socket %s" op))
-            (condp = op
-              :open (let [ws (WebSocket. #js {:autoReconnect false})]
-                      (.open ws "ws://localhost:8080/ws")
-                      (.listen ws WebSocket.EventType.MESSAGE (fn [^:goog.net.WebSocket.MessageEvent ev]
-                                                                (println (.-message ev))))
-                      (recur ws))
-              :close (do
-                       (.close ws)
-                       (recur nil)))))
-        (println "proc-render-containers closing"))
-    c))
-
-
 
 (comment
 
@@ -479,8 +461,50 @@
                                :ops/op :op/user-get
                                :u/password "ayZ8190ueI1ZJsl6j4Z82"
                                :u/username "db3zkY9rgyoI"})
-  
 
+  ;;
+  )
+
+(defn proc-socket
+  [{:keys [pb-sys ch-socket-in ch-socket-out]}]
+  (let [c-sys (chan 1)
+        w (transit/writer :json)
+        r (transit/reader :json)]
+    (sub pb-sys :proc-socket c-sys)
+    (go (loop [ws nil]
+          (when-let [[v port] (alts! [c-sys ch-socket-out])]
+            (condp = port
+              c-sys (let [{:keys [proc/op]} v]
+                      (println (gstring/format "proc-socket %s" op))
+                      (condp = op
+                        :open (let [ws (WebSocket. #js {:autoReconnect false})]
+                                (.open ws "ws://localhost:8080/ws")
+                                (.listen ws WebSocket.EventType.MESSAGE
+                                         (fn [^:goog.net.WebSocket.MessageEvent ev]
+                                           (let [blob (.-message ev)]
+                                             (-> blob
+                                                 (.text)
+                                                 (.then (fn [s]
+                                                          (let [o (transit/read r s)]
+                                                            (put! ch-socket-in o))))))))
+                                (recur ws))
+                        :close (do
+                                 (.close ws)
+                                 (recur nil))))
+              ch-socket-out (let [{:keys [ws/data]} v]
+                              (let [s (transit/write w data)
+                                    blob (js/Blob. [s] #js {:type "application/transit+json"})]
+                                (-> blob
+                                    (.arrayBuffer)
+                                    (.then (fn [ab]
+                                             (.send ws ab)))))
+                              (recur ws)))))
+        (println "proc-socket closing"))
+    c-sys))
+
+(comment
+
+  (put! (channels :ch-socket-out) {:ws/data {:some "data"}})
 
   ;;
   )
