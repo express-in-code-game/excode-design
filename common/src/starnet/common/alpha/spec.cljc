@@ -41,20 +41,28 @@
   ;;
   )
 
-
+(s/def ::url (s/with-gen
+                     string?
+                     #(gen/fmap (fn [[a b]] (str a "/" b))
+                                (gen/tuple (s/gen #{"github.com" "google.com" "twitch.com"})
+                                           (s/gen (spec-string-in-range 4 16 :gen-char gen/char-alphanumeric))))))
 (s/def :u/uuid uuid?) 
 (s/def :u/username (spec-string-in-range 4 16 :gen-char gen/char-alphanumeric))
 (s/def :u/fullname (spec-string-in-range 4 32 :gen-char gen/char-ascii))
 (s/def :u/password (spec-string-in-range 8 64 :gen-char gen/char-alphanumeric))
-(s/def :u/info string?)
 (s/def :u/email (spec-email))
+(s/def :u/links  (s/with-gen
+                   (s/coll-of ::url)
+                   #(gen/vector (s/gen ::url) 0 5)))
 
 (s/def :u/user (s/keys :req [:u/uuid
                              :u/username
                              :u/email
                              :u/password
-                             :u/fullname
-                             :u/info]))
+                             :u/fullname]
+                       :opt [:u/links]))
+
+#_(gen/generate (s/gen :u/user))
 
 (s/def :g.e/uuid uuid?)
 (s/def :g.e/pos (s/tuple int? int?))

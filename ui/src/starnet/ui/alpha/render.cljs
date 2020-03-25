@@ -188,12 +188,11 @@
                     (let [vs (.. form-ref -current getFieldsValue)]
                       (put! ch-inputs {:ch/topic :inputs/ops
                                        :ops/op :op/signup
-                                       :u/user {:u/uuid (gen/generate gen/uuid)
-                                                :u/password (aget vs "password")
-                                                :u/fullname (aget vs "fullname")
-                                                :u/info (aget vs "info")
-                                                :u/email (aget vs "email")
-                                                :u/username (aget vs "username")}})))]
+                                       :u/user (merge (gen/generate (s/gen :u/user))
+                                                      {:u/password (aget vs "password")
+                                                       :u/fullname (aget vs "fullname")
+                                                       :u/email (aget vs "email")
+                                                       :u/username (aget vs "username")})})))]
     (fn [_ _]
       (let []
         [ant-form {:labelCol {:span 8} :wrapperCol {:span 16} :ref form-ref
@@ -213,11 +212,6 @@
                          :wrapperCol {:offset 1 :span 16}
                          :rules [{:required true :message "email required"}]}
           [ant-input {:placeholder "email"}]]
-         [ant-form-item {:label nil
-                         :name "info"
-                         :wrapperCol {:offset 1 :span 16}
-                         :rules [{:required true :message "info required"}]}
-          [ant-input {:placeholder "info"}]]
          [ant-form-item {:label nil
                          :name "password"
                          :wrapperCol {:offset 1 :span 16}

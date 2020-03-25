@@ -45,11 +45,10 @@
 (s/def :u/username (spec-string-in-range 4 16 :gen-char gen/char-alphanumeric))
 (s/def :u/fullname (spec-string-in-range 4 32 :gen-char gen/char-ascii))
 (s/def :u/password (spec-string-in-range 8 64 :gen-char gen/char-alphanumeric))
-(s/def :u/info string?)
 (s/def :u/email (spec-email))
 
 (s/def :u/user (s/keys :req [:u/uuid :u/username :u/email
-                             :u/password :u/fullname :u/info]))
+                             :u/password :u/fullname ]))
 
 
 (def eventset-event

@@ -131,7 +131,7 @@
                                      :enc :a128cbc-hs256})]
              (assoc ctx :response {:status 200
                                    :body (select-keys user [:u/uuid :u/username :u/email
-                                                            :u/fullname  :u/info])
+                                                            :u/fullname :u/links])
                                    :headers {"Authorization" (format "Token %s" token)}}))
            (assoc ctx :response (r403 "Invalid credentials"))))))})
 
@@ -146,7 +146,7 @@
              user (<! (app.core/user-by-uuid channels (:val claims)))]
          (assoc ctx :response {:status 200
                                :body (select-keys user [:u/uuid :u/username :u/email
-                                                        :u/fullname  :u/info])
+                                                        :u/fullname :u/links])
                                }))))})
 
 (defn routes
