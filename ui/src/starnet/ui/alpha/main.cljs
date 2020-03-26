@@ -232,7 +232,7 @@
      :user user
      :local-storage local-storage
      :token token
-     :game-ratoms (game/make-default-ratoms)}))
+     :game-ratoms (game/make-default-store)}))
 
 (defonce ^:private -ratoms nil)
 

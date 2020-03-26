@@ -256,6 +256,21 @@
       (update :g/events #(-> % (conj ev)))
       (update :g.state/derived-core next-state-derived-core k ev)))
 
+
+
+(defmulti next-state-derived-complete
+  {:arglists '([store key event])}
+  (fn [store k ev] [(:ev/type ev)]))
+
+
+(defmethod next-state-derived-complete :default
+  [store k ev]
+  (let [state @(store :g.state/core)
+        state-core (next-state-core state k ev)]
+    
+    )
+  nil)
+
 (defn make-game-channels
   []
   (let [ch-game (chan (sliding-buffer 10))
@@ -265,24 +280,25 @@
      :ch-game-events ch-game-events
      :ch-inputs ch-inputs}))
 
-#?(:cljs (defn make-default-ratoms
+#?(:cljs (defn make-default-store
            []
-           (let [state (r/atom (make-state-core {:g/uuid (gen/generate gen/uuid)}))]
-             {:state state})))
+           (let [state-core (r/atom (make-state-core {:g/uuid (gen/generate gen/uuid)}))]
+             {:g.state/core state-core
+              :db nil})))
 
 ;for repl only
-(defonce ^:private -ratoms nil)
+(defonce ^:private -store nil)
 (defonce ^:private -channels nil)
 #?(:cljs (defn proc-game
-           [{:keys [ch-game ch-game-events ch-inputs] :as channels} ratoms]
+           [{:keys [ch-game ch-game-events ch-inputs] :as channels} store]
            (let []
-             (set! -ratoms ratoms)
+             (set! -store store)
              (set! -channels channels)
              (go (loop []
                    (if-let [[v port] (alts! [ch-game-events ch-inputs])]
                      (condp = port
                        ch-game-events (let []
-                                        (println v)
+                                        (next-state-derived-complete store nil ev)
                                         (recur)))))
                  (println "proc-game closing")))))
 
