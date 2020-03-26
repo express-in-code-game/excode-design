@@ -36,6 +36,34 @@
   (.foo t1 4)
   (.one t1 5)
   
+  (def t2 (->T1 3 4))
+  (.two t2 4 4)
+  
+  (def t3 (read-string "#starnet.common.pad.datatypes1.T1[5 5]"))
+  (.two t3 4 4)
+  
+  (defrecord R1 [a b]
+    P1
+    (one [this x] (:a this))
+    (two [_ x y] [x y])
+    P2
+    (foo [this x] (:b this))
+    (bar [_ x y] (list x y)))
+  
+  (def r1 (R1. 3 4))
+  (.foo r1 "")
+  (type (assoc r1 :c 5))
+  
+  (def r2 (read-string "#starnet.common.pad.datatypes1.R1[7 8]"))
+  (.bar r2 1 1)
+  
+  ;;
+  )
 
+
+(comment 
+  
+  
+  
   ;;
   )
