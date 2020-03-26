@@ -56,10 +56,10 @@
 (s/def :g/events (s/coll-of :ev/event))
 (def setof-game-roles #{:observer :player})
 (s/def :g/role setof-game-roles)
-(s/def :g.derived/participants (s/map-of :u/uuid :g/role))
-(s/def :g.derived/host :u/uuid)
+(s/def :g/participants (s/map-of :u/uuid :g/role))
+(s/def :g/host :u/uuid)
 (def setof-game-status #{:created :opened :closed :started :finished})
-(s/def :g.derived/status setof-game-status)
+(s/def :g/status setof-game-status)
 
 (s/def :g.time/created inst?)
 (s/def :g.time/opened inst?)
@@ -67,23 +67,24 @@
 (s/def :g.time/started inst?)
 (s/def :g.time/finished inst?)
 (s/def :g.time/duration number?)
-(s/def :g.derived/time (s/keys :opt [:g.time/created
+
+(s/def :g/derived-core (s/keys :req [:g.time/created
                                      :g.time/opened
                                      :g.time/closed
                                      :g.time/started
                                      :g.time/finished
-                                     :g.time/duration]))
+                                     :g.time/duration
+                                     :g/participants
+                                     :g/status
+                                     :g/host]))
 
 (s/def :g/game (s/keys :req [:g/uuid
-                             :g/events]
-                       :opt [:g.derived/time
-                             :g.derived/participants
-                             :g.derived/status
-                             :g.derived/host]))
+                             :g/events
+                             :g/derived-core]))
 
 (comment
 
-  (gen/generate (s/gen :g.derived/time))
+  (gen/generate (s/gen :g/game))
 
  ;;
   )
@@ -120,7 +121,7 @@
 
 (s/def :ev.g/finish (with-gen-fmap
                       (s/and (s/keys :req [:ev/type :u/uuid]))
-                      #(assoc %  :ev/type :ev.g/finish-game)))
+                      #(assoc %  :ev/type :ev.g/finish)))
 
 (s/def :ev.g/join (with-gen-fmap
                     (s/keys :req [:ev/type :u/uuid :g/uuid]
@@ -150,11 +151,11 @@
 
 (def eventset-event
   #{:ev.g/create
-    :ev.g/delete :ev.g/select-role
+    :ev.g/select-role
     :ev.g/start :ev.g/join
     :ev.g/leave :ev.g/move-cape
     :ev.g/collect-tile-value
-    :ev.g/finish-game})
+    :ev.g/finish})
 
 (s/def :ev/type eventset-event)
 
