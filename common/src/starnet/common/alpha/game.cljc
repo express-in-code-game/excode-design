@@ -68,23 +68,23 @@
 (s/def :g.time/finished inst?)
 (s/def :g.time/duration number?)
 
-(s/def :g/derived-core (s/keys :req [:g.time/created
-                                     :g.time/opened
-                                     :g.time/closed
-                                     :g.time/started
-                                     :g.time/finished
-                                     :g.time/duration
-                                     :g/participants
-                                     :g/status
-                                     :g/host]))
+(s/def :g.state/derived-core (s/keys :req [:g.time/created
+                                           :g.time/opened
+                                           :g.time/closed
+                                           :g.time/started
+                                           :g.time/finished
+                                           :g.time/duration
+                                           :g/participants
+                                           :g/status
+                                           :g/host]))
 
-(s/def :g/game (s/keys :req [:g/uuid
-                             :g/events
-                             :g/derived-core]))
+(s/def :g.state/core (s/keys :req [:g/uuid
+                                   :g/events
+                                   :g/derived-core]))
 
 (comment
 
-  (gen/generate (s/gen :g/game))
+  (gen/generate (s/gen :g.state/core))
 
  ;;
   )
