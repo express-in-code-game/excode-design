@@ -57,11 +57,14 @@
   (def r2 (read-string "#starnet.common.pad.datatypes1.R1[7 8]"))
   (.bar r2 1 1)
   
+  (map->R1 {:a 8 :b nil})
+  
   ;;
   )
 
 
 (comment 
+  
   
   
   
