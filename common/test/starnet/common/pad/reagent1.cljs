@@ -117,7 +117,45 @@
   (swap! r1 merge {:a {:x 11}})
   (swap! r1 merge {:b {:y 22}})
   
+  
+  
 
+
+  ;;
+  )
+
+
+(comment
+
+  (def state {:a {:x 1}
+              :b {:y [2]
+                  :z {"s" #{}}}
+              :c [3]})
+
+  (def state* (r/atom state))
+
+  (def r1 (r/cursor state* [:a :x]))
+  (def r2 (r/cursor state* [:b :y]))
+  (def r3 (r/cursor state* [:b :z]))
+
+  (def t1 (r/track! (fn []
+                      (let [x @r1]
+                        (println "r1 is " x)
+                        x))))
+  (def t2 (r/track! (fn []
+                      (let [x @r2]
+                        (println "r2 is " x)
+                        x))))
+
+  (def t3 (r/track! (fn []
+                      (let [x @r3]
+                        (println "r3 is " x)
+                        x))))
+
+  (swap! state* merge (assoc-in @state* [:a :x] 11))
+  (swap! state* merge (update-in @state* [:b :z] assoc "s" #{1 2 3}))
+  
+  ; so even merge only triggers relevant reactions, nice
 
   ;;
   )
