@@ -20,7 +20,8 @@
    [starnet.app.alpha.tests]
    [starnet.app.alpha.crux]
    [starnet.app.alpha.http]
-   [starnet.app.pad.all]
+   #_[starnet.app.pad.all]
+   [starnet.common.pad.datatypes1]
 
    [starnet.app.alpha.streams :refer [create-topics-async list-topics
                                       delete-topics produce-event create-kvstore
