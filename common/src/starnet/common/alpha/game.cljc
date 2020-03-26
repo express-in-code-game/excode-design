@@ -15,7 +15,7 @@
    #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethods-for-a-set]]
       :clj  [starnet.common.alpha.macros :refer [defmethods-for-a-set]])))
 
-(declare next-state next-state-events next-state-derived)
+
 
 (s/def :g.e/uuid uuid?)
 (s/def :g.e/pos (s/tuple int? int?))
@@ -80,7 +80,7 @@
 
 (s/def :g.state/core (s/keys :req [:g/uuid
                                    :g/events
-                                   :g/derived-core]))
+                                   :g.state/derived-core]))
 
 (comment
 
@@ -163,94 +163,98 @@
 (defmethods-for-a-set ev eventset-event)
 (s/def :ev/event (s/multi-spec ev :ev/type))
 
-(defn make-game-state
+(defn make-state-core
   ([]
-   (make-game-state {}))
+   (make-state-core {}))
   ([opts]
    (merge {:g/uuid (gen/generate gen/uuid)
            :g/events []}
           (select-keys opts [:g/events :g/uuid]))))
 
-(defmulti next-state
+
+(defmulti next-state-derived-core
+  "Returns the next :g.state/derived-core"
   {:arglists '([state key event])}
   (fn [state k ev] [(:ev/type ev)]))
 
-(defmethod next-state [:ev/batch]
+(defmethod next-state-derived-core [:ev.g/create]
+  [state k ev]
+  (let [{:keys [u/uuid]} ev]
+    (-> state
+        (assoc :g/status :created)
+        (assoc :g/host assoc uuid)
+        (merge (select-keys ev [:g.time/created])))))
+
+(defmethod next-state-derived-core [:ev.g/setup]
+  [state k ev]
+  (-> state
+      (merge (select-keys ev [:g.time/duration]))))
+
+(defmethod next-state-derived-core [:ev.g/open]
+  [state k ev]
+  (-> state
+      (assoc :g/status :opened)
+      (merge (select-keys ev [:g.time/opened]))))
+
+(defmethod next-state-derived-core [:ev.g/close]
+  [state k ev]
+  (-> state
+      (assoc :g/status :closed)
+      (merge (select-keys ev [:g.time/closed]))))
+
+(defmethod next-state-derived-core [:ev.g/start]
+  [state k ev]
+  (-> state
+      (assoc :g/status :started)
+      (merge (select-keys ev [:g.time/started]))))
+
+(defmethod next-state-derived-core [:ev.g/finish]
+  [state k ev]
+  (-> state
+      (assoc :g/status :finished)
+      (merge (select-keys ev [:g.time/finished]))))
+
+(defmethod next-state-derived-core [:ev.g/join]
+  [state k ev]
+  (let [{:keys [u/uuid]} ev]
+    (-> state
+        (update-in [:g/participants] assoc uuid :observer))))
+
+(defmethod next-state-derived-core [:ev.g/leave]
+  [state k ev]
+  (let [{:keys [u/uuid]} ev]
+    (-> state
+        (update-in [:g/participants] dissoc uuid))))
+
+(defmethod next-state-derived-core [:ev.g/select-role]
+  [state k ev]
+  (let [{:keys [u/uuid g/role]} ev]
+    (-> state
+        (update-in [:g/participants] assoc uuid role))))
+
+
+(defmethod next-state-derived-core :default
+  [state k ev]
+  state)
+
+
+(defmulti next-state-core
+  {:arglists '([state key event])}
+  (fn [state k ev] [(:ev/type ev)]))
+
+(defmethod next-state-core [:ev/batch]
   [state k ev]
   (let [{:keys [g/events]} ev]
     (as-> state o
       (update o :g/events #(-> % (concat events) (vec)))
-      (reduce (fn [agg v] (next-state-derived k v)) o events))))
+      (reduce (fn [agg v]
+                (update agg :g.state/derived-core next-state-derived-core k v)) o events))))
 
-(defmethod next-state :default
+(defmethod next-state-core :default
   [state k ev]
   (-> state
       (update :g/events #(-> % (conj ev)))
-      (next-state-derived k ev)))
-
-(defmulti next-state-derived
-  "Returns the next state of the game."
-  {:arglists '([state key event])}
-  (fn [state k ev] [(:ev/type ev)]))
-
-(defmethod next-state-derived [:ev.g/create]
-  [state k ev]
-  (let [{:keys [u/uuid]} ev]
-    (-> state
-        (update :g.derived/status assoc :created)
-        (update :g.derived/host assoc uuid)
-        (update-in  [:g.derived/time] (select-keys ev [:g.time/created])))))
-
-(defmethod next-state-derived [:ev.g/setup]
-  [state k ev]
-  (update-in state [:g.derived/time] (select-keys ev [:g.time/duration])))
-
-(defmethod next-state-derived [:ev.g/open]
-  [state k ev]
-  (-> state
-      (update :g.derived/status assoc :opened)
-      (update-in  [:g.derived/time] (select-keys ev [:g.time/opened]))))
-
-(defmethod next-state-derived [:ev.g/close]
-  [state k ev]
-  (-> state
-      (update :g.derived/status assoc :closed)
-      (update-in  [:g.derived/time] (select-keys ev [:g.time/closed]))))
-
-(defmethod next-state-derived [:ev.g/start]
-  [state k ev]
-  (-> state
-      (update :g.derived/status assoc :started)
-      (update-in  [:g.derived/time] (select-keys ev [:g.time/started]))))
-
-(defmethod next-state-derived [:ev.g/finish]
-  [state k ev]
-  (-> state
-      (update :g.derived/status assoc :finished)
-      (update-in  [:g.derived/time] (select-keys ev [:g.time/finished]))))
-
-(defmethod next-state-derived [:ev.g/join]
-  [state k ev]
-  (let [{:keys [u/uuid]} ev]
-    (-> state
-        (update-in [:g.derived/roles uuid] assoc :observer))))
-
-(defmethod next-state-derived [:ev.g/leave]
-  [state k ev]
-  (let [{:keys [u/uuid]} ev]
-    (-> state
-        (update-in [:g.derived/roles] dissoc uuid))))
-
-(defmethod next-state-derived [:ev.g/select-role]
-  [state k ev]
-  (let [{:keys [u/uuid g/role]} ev]
-    (-> state
-        (update-in [:g.derived/roles uuid] assoc role))))
-
-
-(defmethod next-state-derived :default
-  [state k ev]
-  state)
+      (update :g.state/derived-core next-state-derived-core k ev)))
 
 (defn make-game-channels
   []
@@ -263,7 +267,7 @@
 
 #?(:cljs (defn make-default-ratoms
            []
-           (let [state (r/atom (make-game-state {:g/uuid (gen/generate gen/uuid)}))]
+           (let [state (r/atom (make-state-core {:g/uuid (gen/generate gen/uuid)}))]
              {:state state})))
 
 ;for repl only

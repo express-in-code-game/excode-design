@@ -8,12 +8,12 @@
    [clojure.test.check.properties :as prop]
    [clojure.test.check.clojure-test :refer [defspec]]
    [clojure.test :as test :refer [is testing run-tests deftest]]
-   [starnet.common.alpha.game :refer [make-game-state next-state]]))
+   [starnet.common.alpha.game :refer [make-state-core next-state-core]]))
 
-(deftest make-game-state-tests
+(deftest make-state-core-tests
   (testing "generates valid :g.state/core"
     (is (s/valid? :g.state/core
-                  (make-game-state)))))
+                  (make-state-core)))))
 
 (deftest all-specchecks
   (testing "running spec.test/check via stest/enumerate-namespace"
@@ -23,33 +23,33 @@
                       (stest/summarize-results))]
       (is (not (contains? summary :check-failed))))))
 
-(deftest make-game-state-speccheck
+(deftest make-state-core-speccheck
   (testing "running spec.test/check"
-    (let [summary (-> (stest/check `make-game-state
+    (let [summary (-> (stest/check `make-state-core
                                    {:clojure.spec.test.check/opts {:num-tests 10}})
                       (stest/summarize-results))]
       (is (not (contains? summary :check-failed))))))
 
 (deftest next-state-tests
   (testing "event :ev.g.u/create"
-    (is (s/valid? :g.state/core (next-state (s/conform :g.state/core (make-game-state))
-                                           (gen/generate gen/uuid)
-                                           {:ev/type :ev.g.u/create
-                                            :u/uuid  (gen/generate gen/uuid)}))))
+    (is (s/valid? :g.state/core (next-state-core (s/conform :g.state/core (make-state-core))
+                                                 (gen/generate gen/uuid)
+                                                 {:ev/type :ev.g.u/create
+                                                  :u/uuid  (gen/generate gen/uuid)}))))
   (testing "random :g.state/core and :ev.g.u/create event "
-    (is (s/valid? :g.state/core (next-state (gen/generate (s/gen :g.state/core))
-                                           (gen/generate gen/uuid)
-                                           (gen/generate (s/gen :ev.g.u/create)))))))
+    (is (s/valid? :g.state/core (next-state-core (gen/generate (s/gen :g.state/core))
+                                                 (gen/generate gen/uuid)
+                                                 (gen/generate (s/gen :ev.g.u/create)))))))
 
 (comment
 
   (run-tests)
   (all-specchecks)
-  (make-game-state-speccheck)
+  (make-state-core-speccheck)
 
   (list (reduce #(assoc %1 (keyword (str %2)) %2) {} (range 0 100)))
   
   (next-state-tests)
-  (make-game-state-tests)
+  (make-state-core-tests)
   ;;
   )
