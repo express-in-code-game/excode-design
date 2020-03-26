@@ -20,7 +20,9 @@
    [starnet.app.alpha.tests]
    [starnet.app.alpha.crux]
    [starnet.app.alpha.http]
-   [starnet.app.pad.all]
+   #_[starnet.app.pad.all]
+   [starnet.common.pad.async2]
+   [starnet.common.pad.datascript1]
 
    [starnet.app.alpha.streams :refer [create-topics-async list-topics
                                       delete-topics produce-event create-kvstore
@@ -367,7 +369,7 @@
   )
 
 ; not used in the system, for repl purposes only
-(def ^:private a-kstreams (atom {}))
+(def ^:private -kstreams (atom {}))
 
 (defn proc-kstreams
   [{:keys [pb-sys ch-sys mx-kstreams-states]}]
@@ -380,7 +382,7 @@
                 (<! (create-topics-async kprops ktopics)))
               (condp = op
                 :start (let [a (create-kstreams-f)]
-                         (swap! a-kstreams assoc repl-only-key a) ; for repl purposes
+                         (swap! -kstreams assoc repl-only-key a) ; for repl purposes
                          (.start (:kstreams a))
                          (a/admix mx-kstreams-states (:ch-state a))
                          #_(a/admix mx-kstreams-states (:ch-running a))

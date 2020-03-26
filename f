@@ -30,12 +30,14 @@ remove_volumes(){
 
 origins(){
   git remote add bb https://bitbucket.org/accompanyinggames/starnet
+  git remote add gl https://gitlab.com/accompanyinggames/starnet
   git remote -v
 }
 
 push(){
   git push origin master
   git push bb master
+  git push gl master
 }
 
 "$@"

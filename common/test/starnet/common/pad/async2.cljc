@@ -127,3 +127,22 @@
 
   ;;
   )
+
+(comment
+  
+  (def c1 (chan 1))
+  (def c2 (chan 1))
+  
+  (go (loop []
+        (alt!
+          c1 ([v] (println v) (recur))
+          c2 ([{:keys [a b]}] (println [a b]) (recur)))))
+  
+  (put! c1 {:a 1 :b 2})
+  
+  (put! c2 {:a 1 :b 2})
+  
+  
+  
+  ;;
+  )

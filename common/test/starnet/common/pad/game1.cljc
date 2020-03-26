@@ -7,8 +7,8 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    [starnet.common.alpha.core :refer [make-inst with-gen-fmap]]
-   #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethods-for-a-set]]
-      :clj  [starnet.common.alpha.macros :refer [defmethods-for-a-set]])
+   #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethod-set]]
+      :clj  [starnet.common.alpha.macros :refer [defmethod-set]])
 
    [clojure.core.logic.nominal :exclude [fresh hash] :as nom]
    [clojure.core.logic :exclude [is] :as l :rename {== ?==} :refer :all]
@@ -107,7 +107,7 @@
   #{:ev.g.p/move-cape :ev.g.p/collect-tile-value})
 
 (defmulti ev-game-player (fn [x] (:ev/type x)))
-(defmethods-for-a-set ev-game-player setof-ev-g-p-event)
+(defmethod-set ev-game-player setof-ev-g-p-event)
 (s/def :ev.g.p/event (s/multi-spec ev-game-player :ev/type))
 
 (defmulti ev-game-arbiter (fn [x] (:ev/type x)))
@@ -118,7 +118,7 @@
   #{:ev.g.p/move-cape :ev.g.p/collect-tile-value :ev.g.a/finish-game})
 
 (defmulti ev-game-member (fn [x] (:ev/type x)))
-(defmethods-for-a-set ev-game-member setof-ev-g-m-event)
+(defmethod-set ev-game-member setof-ev-g-m-event)
 (s/def :ev.g.m/event (s/multi-spec ev-game-member :ev/type))
 
 (def setof-ev-g-u-event
@@ -127,7 +127,7 @@
     :ev.g.u/leave})
 
 (defmulti ev-game-user (fn [x] (:ev/type x)))
-(defmethods-for-a-set ev-game-user setof-ev-g-u-event)
+(defmethod-set ev-game-user setof-ev-g-u-event)
 (s/def :ev.g.u/event (s/multi-spec ev-game-user :ev/type))
 
 (def setof-ev-g-event
@@ -137,7 +137,7 @@
     :ev.g.p/collect-tile-value :ev.g.a/finish-game})
 
 (defmulti ev-game (fn [x] (:ev/type x)))
-(defmethods-for-a-set ev-game setof-ev-g-event)
+(defmethod-set ev-game setof-ev-g-event)
 (s/def :ev.g/event (s/multi-spec ev-game :ev/type))
 
 (defn make-game-state
