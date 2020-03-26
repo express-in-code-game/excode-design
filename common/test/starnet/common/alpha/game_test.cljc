@@ -47,8 +47,9 @@
   (make-state-core-speccheck)
 
   (list (reduce #(assoc %1 (keyword (str %2)) %2) {} (range 0 100)))
-  
+
   (next-state-tests)
   (make-state-core-tests)
+
   ;;
   )

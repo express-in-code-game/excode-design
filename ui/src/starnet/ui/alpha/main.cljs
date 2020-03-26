@@ -159,8 +159,6 @@
         (println "closing proc-history"))
     c))
 
-
-
 (defn proc-router
   [{:keys [ch-sys ch-history ch-router ml-history-states]}]
   (let [c (chan 1)

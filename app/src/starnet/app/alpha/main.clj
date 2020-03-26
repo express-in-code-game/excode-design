@@ -21,7 +21,7 @@
    [starnet.app.alpha.crux]
    [starnet.app.alpha.http]
    #_[starnet.app.pad.all]
-   [starnet.common.pad.datatypes1]
+   [starnet.common.pad.async2]
 
    [starnet.app.alpha.streams :refer [create-topics-async list-topics
                                       delete-topics produce-event create-kvstore

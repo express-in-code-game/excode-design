@@ -11,6 +11,7 @@
    [clojure.test.check.properties :as prop]
    [starnet.common.alpha.core :refer [make-inst with-gen-fmap]]
    [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]
+   [clojure.walk :as walk]
    #?(:cljs [reagent.core :as r])
    #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethods-for-a-set]]
       :clj  [starnet.common.alpha.macros :refer [defmethods-for-a-set]])))
@@ -301,15 +302,17 @@
              (set! -store store)
              (set! -channels channels)
              (go (loop []
-                   (if-let [[v port] (alts! [ch-game-events ch-inputs])]
-                     (condp = port
-                       ch-game-events (let []
-                                        (next-state-derived store nil v)
-                                        (recur)))))
+                   (alt!
+                     ch-game-events ([v] (let []
+                                           (next-state-derived store nil v)
+                                           (recur)))
+                     ch-inputs ([v] (let []
+                                      (println v)
+                                      (recur)))))
                  (println "proc-game closing")))))
 
 (comment
-  
+
   (def guuid (-> @(-store :g.state/core) :g/uuid))
   (def u1 (gen/generate (s/gen :u/user)))
 
@@ -320,7 +323,8 @@
                                      :g/uuid guuid
                                      :u/uuid (:u/uuid u1)})
 
-
+  
+  
   ;;
   )
 
