@@ -256,27 +256,25 @@
       (update :g/events #(-> % (conj ev)))
       (update :g.state/derived-core next-state-derived-core k ev)))
 
-(declare next-state-derived-2)
+
+(defmulti next-state-derived-event
+  {:arglists '([store key event])}
+  (fn [store k ev] [(:ev/type ev)]))
+
+
+(defmethod next-state-derived-event :default
+  [store k ev]
+  (let []
+    
+    ))
 
 (defn next-state-derived
   [store k ev]
   (let [state @(store :g.state/core)
         state-core (next-state-core state k ev)]
     (swap! state merge state-core)
-    (next-state-derived-2 store k ev))
+    (next-state-derived-event store k ev))
   nil)
-
-
-(defmulti next-state-derived-2
-  {:arglists '([store key event])}
-  (fn [store k ev] [(:ev/type ev)]))
-
-
-(defmethod next-state-derived-2 :default
-  [store k ev]
-  (let []
-    
-    ))
 
 (defn make-game-channels
   []
