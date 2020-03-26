@@ -1,13 +1,18 @@
 (ns starnet.common.alpha.game
   (:require
    [clojure.repl :refer [doc]]
+   [clojure.core.async :as a :refer [<! >!  timeout chan alt! go
+                                     alts!  take! put! mult tap untap
+                                     pub sub sliding-buffer mix admix unmix]]
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
    [clojure.spec.test.alpha :as stest]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    [starnet.common.alpha.core :refer [make-inst with-gen-fmap]]
-   [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]))
+   [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]
+   #?(:cljs [reagent.core :as r])
+   ))
 
 (declare next-state next-state-events next-state-derived)
 
@@ -99,3 +104,49 @@
 (defmethod next-state-derived :default
   [state k ev]
   state)
+
+(defn make-game-channels
+  []
+  (let [ch-game (chan (sliding-buffer 10))
+        ch-game-events (chan (sliding-buffer 10))
+        ch-inputs (chan (sliding-buffer 10))]
+    {:ch-game ch-game
+     :ch-game-events ch-game-events
+     :ch-inputs ch-inputs}))
+
+#?(:cljs (defn make-default-ratoms
+           []
+           (let [state (r/atom (make-game-state {:g/uuid (gen/generate gen/uuid)}))]
+             {:state state})))
+
+(defonce ^:private -ratoms nil)
+
+#?(:cljs (defn proc-game
+           [{:keys [ch-game ch-game-events ch-inputs]} ratoms]
+           (let []
+             (go (loop []
+                   (if-let [[v port] (alts! [ch-game-events ch-inputs])]
+                     (condp = port
+                       ch-game-events (let []
+                                        (println v)
+                                        (recur)))))
+                 (println "proc-game closing")))))
+
+(comment
+
+
+  ;;
+  )
+
+#?(:cljs
+   (defn rc-game
+     [channels ratoms]
+     (let [{:keys [ch-inputs]} channels
+           uuid* (r/cursor (ratoms :state) [:g/uuid])]
+       (fn [_ _]
+         (let [uuid @uuid*]
+           [:div "rc-game" uuid])))))
+
+
+
+

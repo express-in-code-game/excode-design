@@ -24,7 +24,8 @@
    [starnet.common.pad.transit1]
    [starnet.common.alpha.spec]
    [starnet.ui.alpha.tests]
-   [starnet.ui.alpha.render :as render])
+   [starnet.ui.alpha.render :as render]
+   [starnet.common.alpha.game :as game])
   (:import [goog.net XhrIo EventType WebSocket]
            [goog Uri]
            goog.history.Html5History))
@@ -63,7 +64,8 @@
                      :ch-inputs ch-inputs
                      :pb-inputs pb-inputs
                      :ch-socket-in ch-socket-in
-                     :ch-socket-out ch-socket-out}))
+                     :ch-socket-out ch-socket-out
+                     :game-channels (game/make-game-channels)}))
 
 (defn ^:export main
   []
@@ -83,14 +85,19 @@
                      (proc-router (select-keys channels [:ch-sys :ch-history :ml-history-states :ch-router]))
                      (proc-db (select-keys channels [:pb-sys :ch-db]))
                      (proc-derived-state (select-keys channels [:ml-router :ml-http-res :ch-db]))
-                     (proc-render-ui (select-keys channels [:ch-db :pb-sys :ch-inputs]))
                      (proc-http (select-keys channels [:ch-sys :ch-http :ch-db]))
                      (proc-ops (select-keys channels [:ch-sys :ch-db :ch-http :pb-inputs :ch-ops]))
-
+                     (go
+                       (let [c (chan 1)
+                             _ (>! (channels :ch-db) {:db/op :get-ratoms :ch/c-out c})
+                             ratoms (<! c)]
+                         (proc-render-ui (select-keys channels [:ch-db :pb-sys :ch-inputs]) ratoms)
+                         (game/proc-game (channels :game-channels) (ratoms :game-ratoms))
+                         (put! (channels :ch-sys) {:ch/topic :proc-render-ui :proc/op :render})))
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
                      (put! (channels :ch-sys) {:ch/topic :proc-history :proc/op :start})
                      (put! (channels :ch-sys) {:ch/topic :proc-db :proc/op :start})
-                     (put! (channels :ch-sys) {:ch/topic :proc-render-ui :proc/op :render})
+                     
                      (put! (channels :ch-ops) {:ops/op :op/init})
                      (recur)))))
       (println "closing go block: proc-main")))
@@ -123,12 +130,13 @@
    (bidi/match-route routes url)))
 
 ; repl only
-(defonce ^:private history (atom nil))
+(defonce ^:private -history nil)
+
 (defn proc-history
   [{:keys [pb-sys ch-history ch-history-states]}]
   (let [c (chan 1)]
     (sub pb-sys :proc-history c)
-    (go (loop [h nil]
+    (go (loop [history nil]
           (if-let [[v port] (alts! [c ch-history])]
             (condp = port
               c (let [{:keys [proc/op]} v]
@@ -138,16 +146,16 @@
                                       #_(println "pushed" pushed)
                                       (put! ch-history-states {:history/pushed pushed})) parse-url)]
                              (pushy/start! h)
-                             (reset! history h)
-                             (recur h))
+                             (set! -history h)
+                             (recur history))
                     :stop (do
-                            (pushy/stop! h)
-                            (recur h))))
+                            (pushy/stop! history)
+                            (recur history))))
               ch-history (let [{:keys [history/op history/token]} v]
                            (condp = op
                              :set-token (do
-                                          (pushy/set-token! h token)
-                                          (recur h)))))))
+                                          (pushy/set-token! history token)
+                                          (recur history)))))))
 
         (println "closing proc-history"))
     c))
@@ -215,24 +223,24 @@
         signup-user (r/cursor state [:ops/state :op/signup :http/response :body])
         token (r/cursor local-storage ["token"])
         user (r/track! (fn []
-                           (let [u1 @userget-user
-                                 u2 @login-user
-                                 u3 @signup-user
-                                 t @token]
-                             (when t
-                               (or u2 u3 u1)))))]
+                         (let [u1 @userget-user
+                               u2 @login-user
+                               u3 @signup-user
+                               t @token]
+                           (when t
+                             (or u2 u3 u1)))))]
     {:state state
      :user user
      :local-storage local-storage
      :token token
-     }))
+     :game-ratoms (game/make-default-ratoms)}))
 
-(def ^:private rtoms nil)
+(defonce ^:private -ratoms nil)
 
-(comment 
+(comment
   
-  @(rtoms :state)
-  
+  (-ratoms :state)
+
   ;;
   )
 
@@ -248,7 +256,7 @@
                       (condp = op
                         :start (let [o (make-deafult-ratoms)
                                      ds nil]
-                                 (set! rtoms o)
+                                 (set! -ratoms o)
                                  (put! ch-db {:db/op :sync-local-storage})
                                  (recur o ds))))
               ch-db (let [{:keys [db/op db/query ch/c-out]} v]
@@ -301,21 +309,16 @@
         (println "closing proc-derived-state"))))
 
 (defn proc-render-ui
-  [{:keys [ch-db pb-sys] :as channels}]
+  [{:keys [ch-db pb-sys] :as channels} ratoms]
   (let [c-sys (chan 1)]
     (sub pb-sys :proc-render-ui c-sys)
-    (go (loop [ratoms nil]
-          #_(println "ratoms" ratoms)
-          (when-not ratoms
-            (let [c (chan 1)]
-              (>! ch-db {:db/op :get-ratoms :ch/c-out c})
-              (recur (<! c))))
+    (go (loop []
           (let [{:keys [proc/op]} (<! c-sys)]
             (println (gstring/format "proc-render %s" op))
             (condp = op
               :render (do
                         (render/render-ui (select-keys channels [:ch-inputs]) ratoms)
-                        (recur ratoms)))))
+                        (recur)))))
         (println "closing proc-render"))))
 
 (defn proc-ops
