@@ -21,8 +21,6 @@
    [pushy.core :as pushy]
    [datascript.core :as ds]
 
-   [starnet.common.pad.transit1]
-   [starnet.common.pad.reagent1]
    [starnet.common.alpha.spec]
    [starnet.ui.alpha.tests]
    [starnet.ui.alpha.render :as render]
