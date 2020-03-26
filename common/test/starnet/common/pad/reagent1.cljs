@@ -95,3 +95,29 @@
 
   ;;
   )
+
+
+
+(comment
+
+  (def r1 (r/atom {:a {:x 1}
+                   :b {:y 2}}))
+
+  (def r2 (r/cursor r1 [:a :x]))
+  (def r3 (r/cursor r1 [:b :y]))
+
+  (def t1 (r/track! (fn []
+                      (let [x @r2]
+                        (println "r2 is " x)
+                        x))))
+  (def t2 (r/track! (fn []
+                      (let [x @r3]
+                        (println "r3 is " x)
+                        x))))
+  (swap! r1 merge {:a {:x 11}})
+  (swap! r1 merge {:b {:y 22}})
+  
+
+
+  ;;
+  )
