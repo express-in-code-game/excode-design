@@ -133,31 +133,29 @@
 
 (defn proc-history
   [{:keys [pb-sys ch-history ch-history-states]}]
-  (let [c (chan 1)]
-    (sub pb-sys :proc-history c)
+  (let [c-sys (chan 1)]
+    (sub pb-sys :proc-history c-sys)
     (go (loop [history nil]
-          (if-let [[v port] (alts! [c ch-history])]
-            (condp = port
-              c (let [{:keys [proc/op]} v]
-                  (condp = op
-                    :start (let [h (pushy/pushy
-                                    (fn [pushed]
-                                      #_(println "pushed" pushed)
-                                      (put! ch-history-states {:history/pushed pushed})) parse-url)]
-                             (pushy/start! h)
-                             (set! -history h)
-                             (recur history))
-                    :stop (do
-                            (pushy/stop! history)
-                            (recur history))))
-              ch-history (let [{:keys [history/op history/token]} v]
-                           (condp = op
-                             :set-token (do
-                                          (pushy/set-token! history token)
-                                          (recur history)))))))
-
+          (alt!
+            c-sys ([{:keys [proc/op]}]
+                   (condp = op
+                     :start (let [h (pushy/pushy
+                                     (fn [pushed]
+                                       #_(println "pushed" pushed)
+                                       (put! ch-history-states {:history/pushed pushed})) parse-url)]
+                              (pushy/start! h)
+                              (set! -history h)
+                              (recur history))
+                     :stop (do
+                             (pushy/stop! history)
+                             (recur history))))
+            ch-history ([{:keys [history/op history/token]}]
+                        (condp = op
+                          :set-token (do
+                                       (pushy/set-token! history token)
+                                       (recur history))))))
         (println "closing proc-history"))
-    c))
+    c-sys))
 
 (defn proc-router
   [{:keys [ch-sys ch-history ch-router ml-history-states]}]
@@ -165,12 +163,13 @@
         root-el (.getElementById js/document "ui")]
     (tap ml-history-states c)
     (go (loop []
-          (if-let [{:keys [history/pushed] :as v} (<! c)]
-            (let [{:keys [url route-params handler]} pushed
-                  o {:router/handler handler
-                     :history/pushed pushed}]
-              (do (put! ch-router o)
-                  (recur)))))
+          (alt!
+            c ([{:keys [history/pushed] :as v}]
+               (let [{:keys [url route-params handler]} pushed
+                     o {:router/handler handler
+                        :history/pushed pushed}]
+                 (do (put! ch-router o)
+                     (recur))))))
         (println "closing proc-router"))))
 
 (comment
