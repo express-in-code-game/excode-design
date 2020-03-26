@@ -427,3 +427,16 @@
     - it will filter, map(xform) games and output transactable data
     - data is transacted into a separate history(stats) crux db (that has its own topics
     - and the data can be queried with datalog
+- db ops
+  - db ops should be named keywords, remove 'how' assoc-in-* etc) -> :db.op/this :db.op/that (including datalog queries, keywords for which are also needed to update queries)
+- game.cljc
+  - spec
+  - derived state fns
+  - reagent components
+  - ? proc-game
+  - derived-core is both palin data (for kstreams inference) and a ratom (for ui)
+  - :g.state/core  is events and :g.state/derived-core - this is what server knows
+  - other state is derived, is in ratoms with tracks 
+  - track fns may use core logic
+  - may transact to datascript, use :named/queries which are requries on events and results are keys on the map and can be (r/cursor)
+  - ui import game as a lib, runs the proc with args, and conveys data via a channel
