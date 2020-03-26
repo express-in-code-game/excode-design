@@ -40,7 +40,6 @@
     (is (s/valid? :g.state/core (next-state-core (gen/generate (s/gen :g.state/core))
                                                  (gen/generate gen/uuid)
                                                  (gen/generate (s/gen :ev.g.u/create)))))))
-
 (comment
 
   (run-tests)

@@ -182,7 +182,7 @@
   (let [{:keys [u/uuid]} ev]
     (-> state
         (assoc :g/status :created)
-        (assoc :g/host assoc uuid)
+        (assoc :g/host uuid)
         (merge (select-keys ev [:g.time/created])))))
 
 (defmethod next-state-derived-core [:ev.g/setup]
@@ -256,7 +256,6 @@
       (update :g/events #(-> % (conj ev)))
       (update :g.state/derived-core next-state-derived-core k ev)))
 
-
 (defmulti next-state-derived-event
   {:arglists '([store key event])}
   (fn [store k ev] [(:ev/type ev)]))
@@ -270,9 +269,9 @@
 
 (defn next-state-derived
   [store k ev]
-  (let [state @(store :g.state/core)
-        state-core (next-state-core state k ev)]
-    (swap! state merge state-core)
+  (let [state* (store :g.state/core)
+        state-core (next-state-core @state* k ev)]
+    (swap! state* merge state-core)
     (next-state-derived-event store k ev))
   nil)
 
@@ -286,7 +285,7 @@
      :ch-inputs ch-inputs}))
 
 #?(:cljs (defn make-default-store
-           [{default-state-core :g.state/core}]
+           [default-state-core]
            (let [state-core (r/atom default-state-core)
                  derived-core (r/cursor state-core [:g.state/derived-core])]
              {:g.state/core state-core
@@ -305,13 +304,22 @@
                    (if-let [[v port] (alts! [ch-game-events ch-inputs])]
                      (condp = port
                        ch-game-events (let []
-                                        (next-state-derived store nil ev)
+                                        (next-state-derived store nil v)
                                         (recur)))))
                  (println "proc-game closing")))))
 
 (comment
   
-  
+  (def guuid (-> @(-store :g.state/core) :g/uuid))
+  (def u1 (gen/generate (s/gen :u/user)))
+
+  (put! (-channels :ch-game-events) {:ev/type :ev.g/create
+                                     :g/uuid guuid
+                                     :u/uuid (:u/uuid u1)})
+  (put! (-channels :ch-game-events) {:ev/type :ev.g/close
+                                     :g/uuid guuid
+                                     :u/uuid (:u/uuid u1)})
+
 
   ;;
   )
@@ -320,10 +328,16 @@
    (defn rc-game
      [channels ratoms]
      (let [{:keys [ch-inputs]} channels
-           uuid* (r/cursor (ratoms :state) [:g/uuid])]
+           uuid* (r/cursor (ratoms :g.state/core) [:g/uuid])
+           status* (r/cursor (ratoms :g.state/derived-core) [:g/status])]
        (fn [_ _]
-         (let [uuid @uuid*]
-           [:div "rc-game" uuid])))))
+         (let [uuid @uuid*
+               status @status*]
+           [:<>
+            [:div "rc-game"]
+            [:div  uuid]
+            [:div  status]]
+           )))))
 
 
 
