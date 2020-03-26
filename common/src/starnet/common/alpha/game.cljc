@@ -119,11 +119,14 @@
            (let [state (r/atom (make-game-state {:g/uuid (gen/generate gen/uuid)}))]
              {:state state})))
 
+;for repl only
 (defonce ^:private -ratoms nil)
-
+(defonce ^:private -channels nil)
 #?(:cljs (defn proc-game
-           [{:keys [ch-game ch-game-events ch-inputs]} ratoms]
+           [{:keys [ch-game ch-game-events ch-inputs] :as channels} ratoms]
            (let []
+             (set! -ratoms ratoms)
+             (set! -channels channels)
              (go (loop []
                    (if-let [[v port] (alts! [ch-game-events ch-inputs])]
                      (condp = port
@@ -133,7 +136,8 @@
                  (println "proc-game closing")))))
 
 (comment
-
+  
+  
 
   ;;
   )
