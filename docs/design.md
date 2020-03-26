@@ -275,3 +275,186 @@
 - localStorage tokens: user1 token user2 token ... for multiple tabs
 - no ffing sessions
 - css via classes
+- system
+  - share connections via channels ? yes
+    - db process handles db connection and db calls
+    - first interceptor does not add db conn to ctx: it adds db process channel
+    - query/tx interceptors open a go block, create a channel and put it on db channel with db fn symbol argv for db fn, and block until channel receives the result
+    - db ns contains fns that take conn and args, so can be arbitrarily complex
+    - the db channel takes all db calls - tx or queries - and launches non-blocking sub processes with that interceptor created channel and db args as args
+    - a sub process is a go block that awains the result of the db call and puts it directly on the interceptor channel
+    - interceptor go block returns with the db call result
+    - error handling and reporting ?
+    - testing
+      - generate data using spec and fdef for db fn when inside the subprocess's go block
+      - so in one case db request is made, in another generated data
+      - so spec query fns
+      - also test the chain fromthe request side with generated data
+  - some of the processes
+    - connections: db kafka
+    - socket: into-channel/connect/disconnect/broadcast
+    - kafka: producer arbiter
+  - db is a lib, error handling in layers (http, socket, kafka)
+  - db has all logic, interceptors only call
+  - on no db in interceptors throw, appropriate response for errors (via match)
+- namespacing
+  - consolidate processes in main
+  - crux, http, streams as a file
+- channels
+  - def channels as a map :name (chan)
+  - destructure arg in proc itself
+  - pass to process with (select-keys) to explicitly see what process depends on
+  - it's infinitely worth it to use both (sleect-keys) + destructiring 
+  - interceptors 
+    - pass channels explicitly in main within http process
+    - pedestal server is already a process
+    - interceptors allow to make decisions inside that process
+    - interceptors handle http (forming response maps), not actual domain logic
+    - put logic into core ns, where each fn takes 1 arg - channels and returns a channel
+    - this way interceptors are free of non-http decision making
+- performance
+  - performance-wise it is a question, whether or not connection should be accessed via a process or as a ref
+  - and other considerations may arise
+  - approach
+    - test/perf will contain independent ns (apps) with their own entry points
+    - once user abstraction is implemented and tested, copy a snapthot of the app into test/perf/alpha-channels1
+    - and into test/perf/alpha-refs1
+    - change refs1, test both
+    - this way is better to reason about what option is better, than comlecting src files to handle all cases
+- sockets
+  - proc-socket accepts connections
+  - proc-socket spawn sub-porcess per created game, which broadcasts events from users and sends them to kafka
+  - once game is closed, sub-proc closes connections
+  - when user reconnects, subproc conveys msg that game state is needed, gets it and sends to the reconnected user
+  - games are looked up in a globalktable
+  - only finished/selected games and events are persisted to db
+  - user events, processed by subproc, are sent (non-block) to kafka and globalktable gets updated
+  - kconsumer may not be required
+- authtication and authorization
+  - primary (and may be only) way to ligin will be using google, github, etc.
+  - but username/pass login system will be there until 1.0
+  - username is unique, users can change username freely
+  - creating account data: username pass email(won't be used) and possibly questions to remeber pass
+  - data is persisted in db, gktable [uuid user-rec] is updated
+  - no need to [username user-rec] lookup: on login db query will do
+  - authenticaiton is stateless using JWS/JWE, encoding user uuid and expiration
+  - on requests, token is decoded into uuid and user record (with authorization info as well) is looked up in gktable
+- proc-arbiter
+  - on game events (:created :started) vals will be put on queue with insts and (timeout x) for when arbiter needs to emit and event to game
+  - so if no events happen , timeouts (but not intervals, created by events) will be (alts!) and proc will close/remove the game
+  - would be nice not to interval for every game, queue is preferred
+  - once-a-few hours (timeout []) may be enqueued to remove stale games
+- game events on the client and disconnect
+  - the process will aplly events to the state and send to the server
+  - if disconented, explicit non-blocking 'reconnecting' message will be shown
+  - ui will sta responsive, game will be explorable, but the events will not be applied to state (execpt local ui related)
+  - but the process will discard all events (vals on queue) that require connection
+  - once reconnected, event conveyance will resume
+- client and server exhange
+  - it is a synchronization of state between to core.async processes over two channels(queues)
+- queues, processes, rendering and derived state
+  - react is an out/in: renders ui and collects inputs
+  - reagent solves the update problem: components can selectively deref atoms or cursors and update lazily
+  - inputs will put! vals on channles and processes will make requests
+  - however, ui requires a lot of derived state
+  - when a button click will initiate request, proccess will handle it and put! response on a queue
+  - but for ui that is not enough: there should be loading state and derived state, that will most likely be used in multiple compoenets
+  - with loading solution is a process, that will sub to certain queues and will be updating a derived state atom with data like [:some-logic :in-progress] [:some-logic :complete]
+  - components will opt-in by derefing that atom and render
+  - however, some state will contain a lot of conditional logic and will need to depend on other derived state
+  - possible solution: 
+    - communication is done via channles only, obviuosly
+    - represent derived state as a reagent atom or atoms
+    - a process or processes sub to channels and update derived state
+    - components react to atoms or with cursor
+    - there are also fns created with .e.g. '(derived-state (fn [ctx  old-val c-out] (let [a (deref :x) b (deref :y)] ...))
+    - they compute some derived state and put! it on a channel
+    - that value becomes a :key in derived state atom(s)
+    - but these functions, alike reagent components, must be auto-invoked whenever atoms/cursors they deref change
+    - they may be a go block and make async calls
+  - on reagent's ratom
+    - https://github.com/reagent-project/reagent/blob/master/src/reagent/ratom.cljs
+    - track and track! allow to create derived state values that are first class RAtoms
+    - but: they don't allow for fns to return go-block (channel), unlike pedestal, which is built with async
+    - this can be added: if returned value is a channel, take! and apply result on arrival (via take! callback)
+    - approach
+      - go without async derived values
+      - if they are neccessary, fork-implement
+- queues, processes, rendering and derived state 2
+  - use datascript as store for data
+  - a create-user button click for the system is create-user value on the queue
+  - an proc-http is subbed performs a request
+  - a proc-transactor is subbed and performs datascript txns from vals
+  - a proc-derived-state-ui is subbed and has a mapping from value types (:inputs/create-user :http-response/create-user ...) to db query keys (:query-1 :query-2 ...)
+  - it queries the db (via a channel, sends query keys) and performs swap! on derived state (reagent atom) :query-1 val :query-2 val
+  - only the corresponding ui (that has cursors to  :db :query-1 :db :query-2) will be updated
+  - it may be better than rections as it brings a higher yet generic abstraction datalog
+  - on practice, for ui those queries will be simple like getting loading state, current user etc, no need for relational logic
+  - but: for the game it will be neccessary to query entities, so it may be benefitial overall
+- project's idea and focus
+  - the center of the project is the game and events, not user profiles
+  - the scope is targeted at creating the game that shines, not pleasing or feature-bloating
+  - thus, user profile is simple: a name and stats, event results 
+  - home page is events, events are the core, more important than games
+  - if user is in a game, it is shown (header/popup) so user could reopen it
+  - creating a gmae means opening a tab with unique url, configuring it (e.g. host lists who is invited) and pressing open
+  - after game is opened , others can open a link and press join
+  - if game is private or deleted or not opened yet, opening a link will show 'game not found'
+  - project is
+    - /events - lists events, can join them (later may be introduced /events/hsitory or /events/data)
+    - /games - lists games to join and/or ladder
+    - /signup /singin /account  - basics to create a simple account
+    - /stats/user/:username - a stats page showing user's stats
+    - /game/:id - a unique url at which a game is played/observed
+    - /event/:id - a unique url for an event
+  - user's idetity (signup, account) consists of
+    - credentials and a list of links
+  - when user name is hovered/clicked, popup shows username, links and a link to /stats/user/username
+  - game and event can also have a list of links (can be changed by host)
+  - system has no chat by design
+- events history, stats and data
+  - games are played on a topic
+  - once game is complete, a kstreams app should start
+    - it will filter, map(xform) games and output transactable data
+    - data is transacted into a separate history(stats) crux db (that has its own topics
+    - and the data can be queried with datalog
+- db ops
+  - db ops should be named keywords, remove 'how' assoc-in-* etc) -> :db.op/this :db.op/that (including datalog queries, keywords for which are also needed to update queries)
+- game.cljc
+  - spec
+  - derived state fns
+  - reagent components
+  - ? proc-game
+  - derived-core is both palin data (for kstreams inference) and a ratom (for ui)
+  - :g.state/core  is events and :g.state/derived-core - this is what server knows
+  - other state is derived, is in ratoms with tracks 
+  - track fns may use core logic
+  - may transact to datascript, use :named/queries which are requries on events and results are keys on the map and can be (r/cursor)
+  - ui import game as a lib, runs the proc with args, and conveys data via a channel
+- gameplay
+  - first, generate entities
+    - strive for templates: parametarized generation, possibly in layers, with regions
+    - start simple: using tesk.check, generate within given proportions
+  - game map has min max x and y
+  - there are no tiles: only positions (coordinates) of entities
+  - when entity is enters, it has a position
+  - once generated, entties go into datalog db
+  - movement on the map is free as in no pathing
+  - it is about spending/restoring energy, focus by taking different actions
+  - distance only matters in that you spend energy etc.
+  - also areas (fields etc.) matter, but going from point A to B is a straint line, but some resources will be spent/gained
+  - interacting with map enetities leads to everything else
+  - e.g.
+    - :e.g/move-cape
+    - event is applied to state
+    - db query 'what else is in cape's position' is recomputed
+    - track! reacts to :db.query/what-else-in-capes-pos change and computes data for a display/popup
+    - inputs(buttons) are rendered with cape's options
+    - user  inputs/clicks (it's optional of course, can just move to another pos) -> futher events
+  - pool of positions, from whcih entities draw
+    - pool can be divied into subsets that represent regions
+    - entites can draw with contraints(template) applied
+  - color of the tile and other tile-specific values
+    - derived state, that is computed with track!
+    - for example, a db query 'what are combined field values for tiles' updates, track updates {[x y] {:color new-val-representing-combined-field}}
+    - same for drawing circles (that are field range): db query find all entites that have fields, their fields, track computes circles, renderer draws
