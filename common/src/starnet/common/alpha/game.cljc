@@ -226,7 +226,7 @@
 (defmethod next-state* [:ev/event #{:derived}]
   [state k ev _]
   (let []
-    (swap! (:ra.g/state state) merge (dissoc state :ra.g/state :g/events))
+    (swap! (:ra.g/state state) merge (dissoc state :ra.g/state :g/events :db/ds))
     state))
 
 (defmethod next-state* [:ev/batch #{:plain}]
@@ -308,7 +308,7 @@
             (make-store {}))
            ([opts]
             (let [state (make-state opts)
-                  state* (r/atom (dissoc state :g/events))]
+                  state* (r/atom (dissoc state :ra.g/state :g/events :db/ds))]
               (merge
                state
                {:ra.g/state state*
@@ -326,7 +326,8 @@
                    (if-let [[v port] (alts! [ch-game-events ch-inputs])]
                      (condp = port
                        ch-game-events (let []
-                                        (next-state store nil v)
+                                        (next-state store nil v
+                                                    '([:ev/event #{:plain}] #{:plain} [:ev/event #{:derived}]))
                                         (recur))
                        ch-inputs (let []
                                    (println v)
@@ -336,12 +337,11 @@
 (comment
 
   (def store (make-store {}))
-  
   (next-state store nil {:ev/type :ev.g/create}
               '([:ev/event #{:plain}] #{:plain} [:ev/event #{:derived}]))
 
   
-  (def guuid (-> @(-store :g/state) :g/uuid))
+  (def guuid (-> -store :g/uuid))
   (def u1 (gen/generate (s/gen :u/user)))
 
   (put! (-channels :ch-game-events) {:ev/type :ev.g/create
@@ -373,10 +373,6 @@
             [:div  status]]
            )))))
 
-(comment 
-  
-  ;;
-  )
 
 (defn gen-tiles
   []
