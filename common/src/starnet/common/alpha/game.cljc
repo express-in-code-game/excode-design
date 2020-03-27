@@ -351,12 +351,14 @@
 (s/def :e/type keyword?)
 (def sets
   {:health #{:enable :vitalize :energize :enliven :empower :invigorate :strengthen :heal :perform :efficiency}
-   :spirit #{:inspire :encourage :vision :resolve :clarity :free :raise :faith :belief :sanity :determination }
+   :spirit #{:inspire :encourage :vision :resolve :clarity :free :raise :faith :belief :sanity :determination}
    :mind #{:reason :understand :comprehend :wisdom :insight :decision-making :perspective
            :realization :intelligence :open-minded}
-   :ability #{:capacity :competence :potential :efficiency :skill :aptitude :talent  }
+   :ability #{:capacity :competence :potential :efficiency :skill :aptitude :talent}
    :learn #{:knowledge :learn :seek :search :discover :practice :apply :experiment :listen}
    :design #{:abstraction :simplicity :contraint :elegance}
+   :unhealth #{:deterioration :disease :decay :deficiency :unwellness :weakness}
+   :fear #{:despair :doubt :dread :unease :blame :anxiety :concern :denial }
    
    }
   )
