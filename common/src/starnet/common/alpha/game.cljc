@@ -349,7 +349,7 @@
 (s/def :e/uuid uuid?)
 (s/def :e/pos (s/tuple int? int?))
 (s/def :e/type keyword?)
-(def sets
+(def words
   {:health #{:enable :vitalize :energize :enliven :empower :invigorate :strengthen :heal :perform :efficiency}
    :spirit #{:inspire :encourage :vision :resolve :clarity :free :raise :faith :belief :sanity :determination}
    :mind #{:reason :understand :comprehend :wisdom :insight :decision-making :perspective
@@ -358,24 +358,35 @@
    :learn #{:knowledge :learn :seek :search :discover :practice :apply :experiment :listen}
    :design #{:abstraction :simplicity :contraint :elegance}
    :unhealth #{:deterioration :disease :decay :deficiency :unwellness :weakness}
-   :fear #{:despair :doubt :dread :unease :blame :anxiety :concern :denial }
-   :interface #{:primitive :advanced :simple :complex :limiting :extendable :intuitive }
-   :field #{:drain :interfere :distract :limit :uplift :improve}
-   }
-  )
+   :fear #{:despair :doubt :dread :unease :blame :anxiety :concern :denial}
+   :interface #{:primitive :advanced :simple :complex :limiting :extendable :intuitive}
+   :field #{:drain :interfere :distract :limit :uplift :improve}})
 
+(defn spec-entity-qualities
+  [sets]
+  (s/with-gen (s/coll-of keyword?)
+    #(apply gen/tuple (map (fn [k] (s/gen (words k))) sets))))
+
+(s/def :e/qualities (s/with-gen (s/coll-of keyword?)
+                      (fn []
+                        (let [sets (for [_ (range 3)]
+                                     (rand-nth (keys words)))]
+                          (apply gen/tuple (map (fn [k] (s/gen (words k))) sets))))))
 
 (s/def :e.t/cape (s/keys :req [:e/type
                                :e/uuid
-                               :e/pos]))
+                               :e/pos
+                               :e/qualities]))
 (s/def :e.t/finding (s/keys :req [:e/type
                                   :e/uuid
-                                  :e/pos]))
+                                  :e/pos
+                                  :e/qualities]))
 (s/def :e.t/fruit-tree (s/keys :req [:e/type
                                      :e/uuid
                                      :e/pos
-                                     
-                                     ]))
+                                     :e/qualities]))
+
+(gen/generate (s/gen :e.t/fruit-tree))
 
 
 (defn gen-entities
