@@ -375,3 +375,14 @@
   [opts]
   []
   )
+
+(defn make-gen-cape
+  [opts]
+  (s/gen :g.e.type/cape {:g.e.type/cape #(s/gen :g.e.type/cape)}))
+
+(comment
+  
+  (gen/generate (s/gen :g.e.type/cape {:g.e.type/cape #(s/gen :g.e.type/cape)}))
+  
+  ;;
+  )
