@@ -440,3 +440,23 @@
   - track fns may use core logic
   - may transact to datascript, use :named/queries which are requries on events and results are keys on the map and can be (r/cursor)
   - ui import game as a lib, runs the proc with args, and conveys data via a channel
+- gameplay
+  - first, generate entities
+    - strive for templates: parametarized generation, possibly in layers, with regions
+    - start simple: using tesk.check, generate within given proportions
+  - game map has min max x and y
+  - there are no tiles: only positions (coordinates) of entities
+  - when entity is enters, it has a position
+  - once generated, entties go into datalog db
+  - movement on the map is free as in no pathing
+  - it is about spending/restoring energy, focus by taking different actions
+  - distance only matters in that you spend energy etc.
+  - also areas (fields etc.) matter, but going from point A to B is a straint line, but some resources will be spent/gained
+  - interacting with map enetities leads to everything else
+  - e.g.
+    - :e.g/move-cape
+    - event is applied to state
+    - db query 'what else is in cape's position' is recomputed
+    - track! reacts to :db.query/what-else-in-capes-pos change and computes data for a display/popup
+    - inputs(buttons) are rendered with cape's options
+    - user  inputs/clicks (it's optional of course, can just move to another pos) -> futher events
