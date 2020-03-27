@@ -20,16 +20,16 @@
 
 
 (s/def :g.e/uuid uuid?)
-(s/def :g.e/pos (s/tuple int? int?))
+(s/def :g.e/coord (s/tuple int? int?))
 (s/def :g.e/numeric-value number?)
 (s/def :g.e/type keyword?)
 
 (s/def :g.e.type/teleport (s/keys :req [:g.e/type
                                         :g.e/uuid
-                                        :g.e/pos]))
+                                        :g.e/coord]))
 (s/def :g.e.type/cape (s/keys :req [:g.e/type
                                     :g.e/uuid
-                                    :g.e/pos]))
+                                    :g.e/coord]))
 
 
 (s/def :g.p/cape :g.e.type/cape)
@@ -52,7 +52,7 @@
 
 (s/def :g.e.type/finding (s/keys :req [:g.e/type
                                        :g.e/uuid
-                                       :g.e/pos
+                                       :g.e/coord
                                        :g.e/numeric-value]))
 
 
