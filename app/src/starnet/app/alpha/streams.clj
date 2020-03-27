@@ -11,7 +11,7 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
 
-   [starnet.common.alpha.game :refer [next-state-core]]
+   [starnet.common.alpha.game :refer [next-state]]
    [starnet.common.alpha.spec])
   (:import
    starnet.app.alpha.aux.serdes.TransitJsonSerializer
@@ -392,7 +392,7 @@
            :u/uuid (java.util.UUID/randomUUID)
            :g/uuid (java.util.UUID/randomUUID)
            :g/status :opened})
-  (def nv (next-state-core a-game (java.util.UUID/randomUUID) ev))
+  (def nv (next-state a-game (java.util.UUID/randomUUID) ev))
   (def anv (assert-next-game-post nv))
   (def anv (assert-next-game-post a-game))
   (def anv (assert-next-game-body nv))
@@ -433,7 +433,7 @@
                                    (reify Aggregator
                                      (apply [this k v ag]
                                        (try
-                                         (assert-next-game-body (next-state-core ag k v))
+                                         (assert-next-game-body (next-state ag k v))
                                          (catch Exception e
                                            (println (ex-message e))
                                            (println (ex-data e))
