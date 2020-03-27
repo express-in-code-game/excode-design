@@ -359,7 +359,8 @@
    :design #{:abstraction :simplicity :contraint :elegance}
    :unhealth #{:deterioration :disease :decay :deficiency :unwellness :weakness}
    :fear #{:despair :doubt :dread :unease :blame :anxiety :concern :denial }
-   
+   :interface #{:primitive :advanced :simple :complex :limiting :extendable :intuitive }
+   :field #{:drain :interfere :distract :limit :uplift :improve}
    }
   )
 
