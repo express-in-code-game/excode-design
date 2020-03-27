@@ -183,12 +183,12 @@
    (next-state state k ev nil))
   ([state k ev tags]
    (cond
-     (and (keyword? tags)
-          (descendants tags)) (cond
-                                (-> tags
-                                    (descendants)
-                                    (:ev/type ev)) (next-state* state k ev [tags])
-                                :else state)
+     (and (vector tags)
+          (descendants (first tags))) (cond
+                                        (-> (first tags)
+                                            (descendants)
+                                            (:ev/type ev)) (next-state* state k ev tags)
+                                        :else state)
      (and (coll? tags) (empty? tags)) state
      (set? tags) (next-state* state k ev [(:ev/type ev) tags])
      (vector? tags) (next-state* state k ev [(:ev/type ev) tags])
@@ -204,7 +204,7 @@
 
   (ns-unmap *ns* 'next-state*)
   
-  (next-state nil nil {:ev/type :ev.g/create} '(:ev/event #{:plain} #{:derived} ))
+  (next-state nil nil {:ev/type :ev.g/create} '([:ev/event #{:plain}] #{:plain} #{:derived} ))
   
   ;;
   )
@@ -223,7 +223,7 @@
             :dispatch-v dispatch-v})
   state)
 
-(defmethod next-state* [:ev/event]
+(defmethod next-state* [:ev/event #{:plain}]
   [state k ev _]
   (-> state
       (update :g/events #(-> % (conj ev)))))
