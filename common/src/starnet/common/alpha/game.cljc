@@ -50,10 +50,10 @@
 (s/def :g/player-states (s/map-of int? :g.p/player))
 (s/def :g/exit-teleports (s/coll-of :g.e.type/teleport))
 
-(s/def :g.e.type/tile (s/keys :req [:g.e/type
-                                    :g.e/uuid
-                                    :g.e/pos
-                                    :g.e/numeric-value]))
+(s/def :g.e.type/finding (s/keys :req [:g.e/type
+                                       :g.e/uuid
+                                       :g.e/pos
+                                       :g.e/numeric-value]))
 
 
 
@@ -147,9 +147,6 @@
                                        :g.p/cape])
                          #(assoc %  :ev/type :ev.g/move-cape)))
 
-(s/def :ev.g/collect-tile-value (with-gen-fmap
-                                  (s/and (s/keys :req [:ev/type :u/uuid]))
-                                  #(assoc %  :ev/type :ev.g/collect-tile-value)))
 
 
 
@@ -158,7 +155,6 @@
     :ev.g/select-role
     :ev.g/start :ev.g/join
     :ev.g/leave :ev.g/move-cape
-    :ev.g/collect-tile-value
     :ev.g/finish})
 
 (s/def :ev/type eventset-event)
@@ -374,8 +370,5 @@
            )))))
 
 
-(defn gen-tiles
-  []
-  
-  
-  )
+(defn gen-entites
+  [])
