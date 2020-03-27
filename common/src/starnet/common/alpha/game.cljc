@@ -334,16 +334,61 @@
             [:div  status]]
            )))))
 
-(s/def :g.e/uuid uuid?)
-(s/def :g.e/pos (s/tuple int? int?))
-(s/def :g.e/type keyword?)
-(s/def :g.e.type/cape (s/keys :req [:g.e/type
-                                    :g.e/uuid
-                                    :g.e/pos]))
-(s/def :g.e.type/finding (s/keys :req [:g.e/type
-                                       :g.e/uuid
-                                       :g.e/pos]))
+(defn spec-string-in-range
+  [min max & {:keys [gen-char] :or {gen-char gen/char-alphanumeric}}]
+  (s/with-gen
+    string?
+    #(gen/fmap (fn [v] (apply str v)) (gen/vector gen-char min max))))
 
+(defn spec-number-in-range
+  [min- max-]
+  (s/with-gen
+    number?
+    #(gen/large-integer* {:min min- :max max-})))
+
+(s/def :e/uuid uuid?)
+(s/def :e/pos (s/tuple int? int?))
+(s/def :e/type keyword?)
+(def wordsets
+  {:health #{:enable :vitalize :energize :enliven :empower :invigorate :strengthen :heal :perform :efficiency}
+   :spirit #{:inspire :encourage :vision :resolve :clarity :free :raise :faith :belief :sanity :determination}
+   :mind #{:reason :understand :comprehend :wisdom :insight :decision-making :perspective
+           :realization :intelligence :open-minded}
+   :ability #{:capacity :competence :potential :efficiency :skill :aptitude :talent}
+   :learn #{:knowledge :learn :seek :search :discover :practice :apply :experiment :listen}
+   :design #{:abstraction :simplicity :contraint :elegance}
+   :unhealth #{:deterioration :disease :decay :deficiency :unwellness :weakness}
+   :fear #{:despair :doubt :dread :unease :blame :anxiety :concern :denial}
+   :interface #{:primitive :advanced :simple :complex :limiting :extendable :intuitive}
+   :field #{:drain :interfere :distract :limit :uplift :improve}})
+
+(s/def :e/quality-key (s/with-gen keyword?
+                        (fn []
+                          (let [k (rand-nth (keys wordsets))]
+                            (s/gen (wordsets k))))))
+
+(s/def :e/quality-val (s/with-gen number?
+                        #(gen/large-integer* {:min 0 :max 1000})))
+
+
+(s/def :e/qualities (s/with-gen (s/map-of keyword? number?)
+                      #(gen/fmap
+                        (fn [v]
+                          (into {} v))
+                        (gen/vector (gen/tuple (s/gen :e/quality-key) (s/gen :e/quality-val)) 3))))
+
+(s/def :e.t/cape (s/keys :req [:e/type
+                               :e/uuid
+                               :e/pos
+                               :e/qualities]))
+(s/def :e.t/finding (s/keys :req [:e/type
+                                  :e/uuid
+                                  :e/pos
+                                  :e/qualities]))
+(s/def :e.t/fruit-tree (s/keys :req [:e/type
+                                     :e/uuid
+                                     :e/pos
+                                     :e/qualities]))
 
 (defn gen-entities
   "A template: given opts, generates a set of entities for the map"

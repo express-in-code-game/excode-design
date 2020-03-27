@@ -467,3 +467,10 @@
     - derived state, that is computed with track!
     - for example, a db query 'what are combined field values for tiles' updates, track updates {[x y] {:color new-val-representing-combined-field}}
     - same for drawing circles (that are field range): db query find all entites that have fields, their fields, track computes circles, renderer draws
+  - entities qualities
+    - are actually generated and differer every time (within a limit of a set)
+    - and every quality gets random value as well
+    - qualities are tupled(can be 2 3 4 for example) and player can choose a tuple
+  - fields also vary on generation
+  - when map is created, positions of entities align with a template, but are random and entities(fields) have new qualities
+  - players are in equal positions always: after map is generated, there is no randomness, and both players can interact with any entity , no race/first-come condition
