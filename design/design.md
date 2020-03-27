@@ -460,3 +460,10 @@
     - track! reacts to :db.query/what-else-in-capes-pos change and computes data for a display/popup
     - inputs(buttons) are rendered with cape's options
     - user  inputs/clicks (it's optional of course, can just move to another pos) -> futher events
+  - pool of positions, from whcih entities draw
+    - pool can be divied into subsets that represent regions
+    - entites can draw with contraints(template) applied
+  - color of the tile and other tile-specific values
+    - derived state, that is computed with track!
+    - for example, a db query 'what are combined field values for tiles' updates, track updates {[x y] {:color new-val-representing-combined-field}}
+    - same for drawing circles (that are field range): db query find all entites that have fields, their fields, track computes circles, renderer draws
