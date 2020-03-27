@@ -226,7 +226,7 @@
 (defmethod next-state* [:ev/event #{:derived}]
   [state k ev _]
   (let []
-    (swap! (:ra.g/state state) merge (dissoc state :ra.g/state))
+    (swap! (:ra.g/state state) merge (dissoc state :ra.g/state :g/events))
     state))
 
 (defmethod next-state* [:ev/batch #{:plain}]
@@ -303,13 +303,16 @@
      :ch-game-events ch-game-events
      :ch-inputs ch-inputs}))
 
-#?(:cljs (defn make-default-store
-           [default-state-core]
-           (let [state-core (r/atom default-state-core)
-                 derived-core (r/cursor state-core [:g.state/derived-core])]
-             {:g/state state-core
-              :g.state/derived-core derived-core
-              :db/ds nil})))
+#?(:cljs (defn make-store
+           ([]
+            (make-store {}))
+           ([opts]
+            (let [state (make-state opts)
+                  state* (r/atom (dissoc state :g/events))]
+              (merge
+               state
+               {:ra.g/state state*
+                :db/ds nil})))))
 
 ;for repl only
 (defonce ^:private -store nil)
@@ -332,8 +335,9 @@
 
 (comment
 
+  (def store (make-store {}))
   
-  (next-state {:ra.g/state (r/atom {})} nil {:ev/type :ev.g/create}
+  (next-state store nil {:ev/type :ev.g/create}
               '([:ev/event #{:plain}] #{:plain} [:ev/event #{:derived}]))
 
   
@@ -351,8 +355,6 @@
                                      :g/uuid guuid
                                      :u/uuid (:u/uuid u1)})
 
-
-
   ;;
   )
 
@@ -360,8 +362,8 @@
    (defn rc-game
      [channels ratoms]
      (let [{:keys [ch-inputs]} channels
-           uuid* (r/cursor (ratoms :g/state) [:g/uuid])
-           status* (r/cursor (ratoms :g.state/derived-core) [:g/status])]
+           uuid* (r/cursor (ratoms :ra.g/state) [:g/uuid])
+           status* (r/cursor (ratoms :ra.g/state) [:g/status])]
        (fn [_ _]
          (let [uuid @uuid*
                status @status*]

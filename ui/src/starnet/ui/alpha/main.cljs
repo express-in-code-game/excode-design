@@ -230,7 +230,7 @@
      :user user
      :local-storage local-storage
      :token token
-     :game-ratoms (game/make-default-store (game/make-state {:g/uuid (gen/generate gen/uuid)}))}))
+     :game-ratoms (game/make-store {:g/uuid (gen/generate gen/uuid)})}))
 
 (defonce ^:private -ratoms nil)
 
