@@ -252,7 +252,7 @@
       (let []
         [layout-game channels ratoms
          [:<>
-          [rc-game (channels :game-channels) (ratoms :game-ratoms)]]]))))
+          [rc-game (channels :game-channels) (ratoms :game-store)]]]))))
 
 (defn rc-page-stats-id
   [channels ratoms]

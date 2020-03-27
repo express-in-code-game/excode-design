@@ -92,7 +92,7 @@
                              _ (>! (channels :ch-db) {:db/op :get-ratoms :ch/c-out c})
                              ratoms (<! c)]
                          (proc-render-ui (select-keys channels [:ch-db :pb-sys :ch-inputs]) ratoms)
-                         (game/proc-game (channels :game-channels) (ratoms :game-ratoms))
+                         (game/proc-game (channels :game-channels) (ratoms :game-store))
                          (put! (channels :ch-sys) {:ch/topic :proc-render-ui :proc/op :render})))
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
                      (put! (channels :ch-sys) {:ch/topic :proc-history :proc/op :start})
@@ -230,7 +230,7 @@
      :user user
      :local-storage local-storage
      :token token
-     :game-ratoms (game/make-store {:g/uuid (gen/generate gen/uuid)})}))
+     :game-store (game/make-store {:g/uuid (gen/generate gen/uuid)})}))
 
 (defonce ^:private -ratoms nil)
 

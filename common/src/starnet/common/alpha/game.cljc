@@ -318,20 +318,20 @@
 (defonce ^:private -store nil)
 (defonce ^:private -channels nil)
 #?(:cljs (defn proc-game
-           [{:keys [ch-game ch-game-events ch-inputs] :as channels} store]
+           [{:keys [ch-game ch-game-events ch-inputs] :as channels} store-arg]
+           (set! -store store-arg)
+           (set! -channels channels)
            (let []
-             (set! -store store)
-             (set! -channels channels)
-             (go (loop []
+             (go (loop [store store-arg]
                    (if-let [[v port] (alts! [ch-game-events ch-inputs])]
                      (condp = port
-                       ch-game-events (let []
-                                        (next-state store nil v
-                                                    '([:ev/event #{:plain}] #{:plain} [:ev/event #{:derived}]))
-                                        (recur))
+                       ch-game-events (let [store- (next-state store nil v
+                                                               '([:ev/event #{:plain}] #{:plain} [:ev/event #{:derived}]))]
+                                        (set! -store store-)
+                                        (recur store-))
                        ch-inputs (let []
                                    (println v)
-                                   (recur)))))
+                                   (recur store)))))
                  (println "proc-game closing")))))
 
 (comment
