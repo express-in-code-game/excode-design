@@ -1,6 +1,7 @@
 (ns starnet.common.pad.datascript1
   (:require
-   [datascript.core :as ds]))
+   [datascript.core :as d]
+   [datascript.db :as db]))
 
 (comment
 
@@ -18,5 +19,26 @@
 
 
 
+  ;;
+  )
+
+
+(comment
+  
+  (def schema {:aka {:db/cardinality :db.cardinality/many}})
+  
+  (def datoms #{(d/datom 1 :age  17)
+                (d/datom 1 :name "Lea")})
+  
+  
+  ;;
+  )
+
+
+(comment
+  
+  
+  
+  
   ;;
   )

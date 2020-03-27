@@ -22,6 +22,7 @@
    [starnet.app.alpha.http]
    #_[starnet.app.pad.all]
    [starnet.common.pad.async2]
+   [starnet.common.pad.datascript1]
 
    [starnet.app.alpha.streams :refer [create-topics-async list-topics
                                       delete-topics produce-event create-kvstore

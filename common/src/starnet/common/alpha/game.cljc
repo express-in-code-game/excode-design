@@ -12,6 +12,7 @@
    [starnet.common.alpha.core :refer [make-inst with-gen-fmap]]
    [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]
    [clojure.walk :as walk]
+   [datascript.core :as d]
    #?(:cljs [reagent.core :as r])
    #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethods-for-a-set]]
       :clj  [starnet.common.alpha.macros :refer [defmethods-for-a-set]])))
@@ -302,13 +303,14 @@
              (set! -store store)
              (set! -channels channels)
              (go (loop []
-                   (alt!
-                     ch-game-events ([v] (let []
-                                           (next-state-derived store nil v)
-                                           (recur)))
-                     ch-inputs ([v] (let []
-                                      (println v)
-                                      (recur)))))
+                   (if-let [[v port] (alts! [ch-game-events ch-inputs])]
+                     (condp = port
+                       ch-game-events (let []
+                                        (next-state-derived store nil v)
+                                        (recur))
+                       ch-inputs (let []
+                                   (println v)
+                                   (recur)))))
                  (println "proc-game closing")))))
 
 (comment

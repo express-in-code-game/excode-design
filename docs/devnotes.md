@@ -96,13 +96,8 @@
     - http://clojurelx.blogspot.com/2012/01/finite-state-machines-in-corelogic.html
     - http://clojurelx.blogspot.com/2012/01/lx-in-corelogic-2-jumps-flexible.html
     - http://gigasquidsoftware.com/chemical-computing/index.html
-  - state abstractions
-    - https://github.com/day8/re-frame
-    - https://github.com/tonsky/datascript
-      - https://tonsky.me/blog/datascript-chat/
-    - https://github.com/juxt/crux
-    - http://reagent-project.github.io/docs/master/reagent.core.html#var-cursor
-    - https://clojuredocs.org/clojure.core/add-watch
+
+
   - http
     - https://github.com/ring-clojure/ring/wiki
     - https://github.com/pedestal
@@ -120,8 +115,6 @@
     - https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events
       - https://github.com/pedestal/pedestal/tree/master/samples/server-sent-events
     - https://github.com/funcool/buddy-auth/tree/master/examples
-  - datomic
-    - https://docs.datomic.com/cloud/client/client-api.html#connection
   - destructring fully qualified
     - https://clojure.org/guides/destructuring#_namespaced_keywords
   - sign, encrypt, auth
@@ -134,12 +127,27 @@
     - https://github.com/ptaoussanis/sente
     - https://github.com/stalefruits/gniazdo
 
-- crux
-  - https://github.com/juxt/crux
-  - https://opencrux.com/docs#faqs
-  - https://github.com/juxt/crux/tree/master/crux-test/test/crux
-  - crux.codec.Id
-    - https://github.com/juxt/crux/blob/master/crux-core/src/crux/codec.clj#L346
+- datalog
+  - datomic
+    - https://docs.datomic.com/cloud/client/client-api.html#connection
+  - crux
+    - https://github.com/juxt/crux
+    - https://opencrux.com/docs#faqs
+    - https://github.com/juxt/crux/tree/master/crux-test/test/crux
+    - crux.codec.Id
+      - https://github.com/juxt/crux/blob/master/crux-core/src/crux/codec.clj#L346
+  - datascript
+    - https://github.com/tonsky/datascript
+    - https://github.com/tonsky/datascript/wiki/API-overview
+    - https://github.com/tonsky/datascript/blob/master/test/datascript/test/upsert.cljc
+    - https://github.com/tonsky/datascript/wiki/Tips-&-tricks
+    - https://tonsky.me/blog/datascript-chat/
+    - https://github.com/jonase/learndatalogtoday
+    - https://github.com/kristianmandrup/datascript-tutorial/blob/master/SUMMARY.md
+
+- reagent
+    - http://reagent-project.github.io/docs/master/reagent.core.html#var-cursor
+    - https://clojuredocs.org/clojure.core/add-watch
 
 - cljs
   - antd
