@@ -334,15 +334,45 @@
             [:div  status]]
            )))))
 
-(s/def :g.e/uuid uuid?)
-(s/def :g.e/pos (s/tuple int? int?))
-(s/def :g.e/type keyword?)
-(s/def :g.e.type/cape (s/keys :req [:g.e/type
-                                    :g.e/uuid
-                                    :g.e/pos]))
-(s/def :g.e.type/finding (s/keys :req [:g.e/type
-                                       :g.e/uuid
-                                       :g.e/pos]))
+(defn spec-string-in-range
+  [min max & {:keys [gen-char] :or {gen-char gen/char-alphanumeric}}]
+  (s/with-gen
+    string?
+    #(gen/fmap (fn [v] (apply str v)) (gen/vector gen-char min max))))
+
+(defn spec-number-in-range
+  [min- max-]
+  (s/with-gen
+    number?
+    #(gen/large-integer* {:min min- :max max-})))
+
+(s/def :e/uuid uuid?)
+(s/def :e/pos (s/tuple int? int?))
+(s/def :e/type keyword?)
+(def sets
+  {:health #{:enable :vitalize :energize :enliven :empower :invigorate :strengthen :heal :perform :efficiency}
+   :spirit #{:inspire :encourage :vision :resolve :clarity :free :raise :faith :belief :sanity :determination }
+   :mind #{:reason :understand :comprehend :wisdom :insight :decision-making :perspective
+           :realization :intelligence :open-minded}
+   :ability #{:capacity :competence :potential :efficiency :skill :aptitude :talent  }
+   :learn #{:knowledge :learn :seek :search :discover :practice :apply :experiment :listen}
+   :design #{:abstraction :simplicity :contraint :elegance}
+   
+   }
+  )
+
+
+(s/def :e.t/cape (s/keys :req [:e/type
+                               :e/uuid
+                               :e/pos]))
+(s/def :e.t/finding (s/keys :req [:e/type
+                                  :e/uuid
+                                  :e/pos]))
+(s/def :e.t/fruit-tree (s/keys :req [:e/type
+                                     :e/uuid
+                                     :e/pos
+                                     
+                                     ]))
 
 
 (defn gen-entities
