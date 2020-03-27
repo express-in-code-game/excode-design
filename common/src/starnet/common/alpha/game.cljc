@@ -183,7 +183,7 @@
    (next-state state k ev nil))
   ([state k ev tags]
    (cond
-     (and (vector tags)
+     (and (vector? tags)
           (descendants (first tags))) (cond
                                         (-> (first tags)
                                             (descendants)
@@ -204,29 +204,30 @@
 
   (ns-unmap *ns* 'next-state*)
   
-  (next-state nil nil {:ev/type :ev.g/create} '([:ev/event #{:plain}] #{:plain} #{:derived} ))
+  (next-state nil nil {:ev/type :ev.g/create} '([:ev/event #{:plain}] #{:plain} ))
   
   ;;
   )
 
 (defmulti next-state*
-  "Returns the next :g.state/derived-core"
   {:arglists '([state key event dispatch-v])}
   (fn [state k ev dispatch-v] dispatch-v))
 
 (defmethod next-state* :default
   [state k ev dispatch-v]
-  (println "; warning: next-state* :default invoked, args are: ")
-  (println {:state state
-            :k k
-            :ev ev
-            :dispatch-v dispatch-v})
+  #_(println (format "; warning: next-state* :default invoked %s %s" (:ev/type ev) dispatch-v))
   state)
 
 (defmethod next-state* [:ev/event #{:plain}]
   [state k ev _]
   (-> state
       (update :g/events #(-> % (conj ev)))))
+
+(defmethod next-state* [:ev/event #{:derived}]
+  [state k ev _]
+  (let []
+    (swap! (:ra.g/state state) merge (dissoc state :ra.g/state))
+    state))
 
 (defmethod next-state* [:ev/batch #{:plain}]
   [state k ev _]
@@ -244,69 +245,54 @@
         (assoc :g/host uuid)
         (merge (select-keys ev [:g.time/created])))))
 
-
-(defmethod next-state-derived-core [:ev.g/setup]
-  [state k ev]
+(defmethod next-state* [:ev.g/setup #{:plain}]
+  [state k ev _]
   (-> state
       (merge (select-keys ev [:g.time/duration]))))
 
-(defmethod next-state-derived-core [:ev.g/open]
-  [state k ev]
+(defmethod next-state* [:ev.g/open #{:plain}]
+  [state k ev _]
   (-> state
       (assoc :g/status :opened)
       (merge (select-keys ev [:g.time/opened]))))
 
-(defmethod next-state-derived-core [:ev.g/close]
-  [state k ev]
+(defmethod next-state* [:ev.g/close #{:plain}]
+  [state k ev _]
   (-> state
       (assoc :g/status :closed)
       (merge (select-keys ev [:g.time/closed]))))
 
-(defmethod next-state-derived-core [:ev.g/start]
-  [state k ev]
+(defmethod next-state* [:ev.g/start #{:plain}]
+  [state k ev _]
   (-> state
       (assoc :g/status :started)
       (merge (select-keys ev [:g.time/started]))))
 
-(defmethod next-state-derived-core [:ev.g/finish]
-  [state k ev]
+(defmethod next-state* [:ev.g/finish #{:plain}]
+  [state k ev _]
   (-> state
       (assoc :g/status :finished)
       (merge (select-keys ev [:g.time/finished]))))
 
-(defmethod next-state-derived-core [:ev.g/join]
-  [state k ev]
+(defmethod next-state* [:ev.g/join #{:plain}]
+  [state k ev _]
   (let [{:keys [u/uuid]} ev]
     (-> state
         (update-in [:g/participants] assoc uuid :observer))))
 
-(defmethod next-state-derived-core [:ev.g/leave]
-  [state k ev]
+(defmethod next-state* [:ev.g/leave #{:plain}]
+  [state k ev _]
   (let [{:keys [u/uuid]} ev]
     (-> state
         (update-in [:g/participants] dissoc uuid))))
 
-(defmethod next-state-derived-core [:ev.g/select-role]
-  [state k ev]
+(defmethod next-state* [:ev.g/select-role #{:plain}]
+  [state k ev _]
   (let [{:keys [u/uuid g/role]} ev]
     (-> state
         (update-in [:g/participants] assoc uuid role))))
 
 
-(defmethod next-state-derived-core :default
-  [state k ev]
-  state)
-
-
-
-
-(defn next-state-derived
-  [store k ev]
-  (let [state* (store :g/state)
-        state-core (next-state @state* k ev)]
-    (swap! state* merge state-core)
-    (next-state-derived-event store k ev))
-  nil)
 
 (defn make-channels
   []
@@ -346,6 +332,11 @@
 
 (comment
 
+  
+  (next-state {:ra.g/state (r/atom {})} nil {:ev/type :ev.g/create}
+              '([:ev/event #{:plain}] #{:plain} [:ev/event #{:derived}]))
+
+  
   (def guuid (-> @(-store :g/state) :g/uuid))
   (def u1 (gen/generate (s/gen :u/user)))
 
@@ -355,13 +346,13 @@
   (put! (-channels :ch-game-events) {:ev/type :ev.g/close
                                      :g/uuid guuid
                                      :u/uuid (:u/uuid u1)})
-  
+
   (put! (-channels :ch-game-events) {:ev/type :ev.g/start
                                      :g/uuid guuid
                                      :u/uuid (:u/uuid u1)})
 
-  
-  
+
+
   ;;
   )
 
