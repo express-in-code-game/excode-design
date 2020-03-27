@@ -19,44 +19,9 @@
 
 
 
-(s/def :g.e/uuid uuid?)
-(s/def :g.e/pos (s/tuple int? int?))
-(s/def :g.e/numeric-value number?)
-(s/def :g.e/type keyword?)
 
-(s/def :g.e.type/teleport (s/keys :req [:g.e/type
-                                        :g.e/uuid
-                                        :g.e/pos]))
-(s/def :g.e.type/cape (s/keys :req [:g.e/type
-                                    :g.e/uuid
-                                    :g.e/pos]))
-
-
-(s/def :g.p/cape :g.e.type/cape)
-(s/def :g.p/entities (s/keys :req [:g.p/cape]))
-(s/def :g.p/sum number?)
-
-(s/def :g.p/player (s/keys :req [:g.p/entities
-                                 :g.p/sum]))
-
-(s/def :g.r/host (s/nilable boolean?))
-(s/def :g.r/player (s/nilable int?))
-(s/def :g.r/observer (s/nilable boolean?))
 
 (s/def :g/uuid uuid?)
-
-
-(s/def :g/map-size (s/tuple int? int?))
-(s/def :g/player-states (s/map-of int? :g.p/player))
-(s/def :g/exit-teleports (s/coll-of :g.e.type/teleport))
-
-(s/def :g.e.type/finding (s/keys :req [:g.e/type
-                                       :g.e/uuid
-                                       :g.e/pos
-                                       :g.e/numeric-value]))
-
-
-
 (s/def :g/events (s/coll-of :ev/event))
 (def setof-game-roles #{:observer :player})
 (s/def :g/role setof-game-roles)
@@ -369,20 +334,32 @@
             [:div  status]]
            )))))
 
+(s/def :g.e/uuid uuid?)
+(s/def :g.e/pos (s/tuple int? int?))
+(s/def :g.e/type keyword?)
+(s/def :g.e.type/cape (s/keys :req [:g.e/type
+                                    :g.e/uuid
+                                    :g.e/pos]))
+(s/def :g.e.type/finding (s/keys :req [:g.e/type
+                                       :g.e/uuid
+                                       :g.e/pos]))
 
-(defn gen-entites
+
+(defn gen-entities
   "A template: given opts, generates a set of entities for the map"
   [opts]
-  []
+  
   )
 
-(defn make-gen-cape
-  [opts]
-  (s/gen :g.e.type/cape {:g.e.type/cape #(s/gen :g.e.type/cape)}))
+(defn gen-positions
+  [x y]
+  (->> (for [x (range 0 x)
+            y (range 0 y)]
+        [[x y] [x y]])
+      (into {})))
 
 (comment
-  
-  (gen/generate (s/gen :g.e.type/cape {:g.e.type/cape #(s/gen :g.e.type/cape)}))
-  
+
+
   ;;
   )

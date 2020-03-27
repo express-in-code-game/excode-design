@@ -108,5 +108,13 @@
       (bar 'a 1 2) ['a 1 2]
       (baz 'a 1) ['a 1])))
 
-
+(comment
+  
+  (clojure.set/intersection (ancestors (type {})) (ancestors (type #{})))
+  
+  (clojure.set/intersection (ancestors (type {}))
+                            (ancestors (type #{}))
+                            (ancestors (type [])))
+  ;;
+  )
 
