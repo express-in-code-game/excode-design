@@ -7,8 +7,8 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    [starnet.common.alpha.core :refer [with-gen-fmap ]]
-   #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethods-for-a-set]]
-      :clj  [starnet.common.alpha.macros :refer [defmethods-for-a-set]])))
+   #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethod-set]]
+      :clj  [starnet.common.alpha.macros :refer [defmethod-set]])))
 
 (def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
 

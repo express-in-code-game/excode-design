@@ -7,8 +7,8 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    [starnet.common.alpha.core :refer [with-gen-fmap ]]
-   #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethods-for-a-set]]
-      :clj  [starnet.common.alpha.macros :refer [defmethods-for-a-set]])))
+   #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethod-set]]
+      :clj  [starnet.common.alpha.macros :refer [defmethod-set]])))
 
 (def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
 
@@ -83,14 +83,14 @@
                       #(assoc %  :ev/type :ev.u/delete)))
 
 (defmulti ev (fn [x] (:ev/type x)))
-(defmethods-for-a-set ev eventset-event)
+(defmethod-set ev eventset-event)
 (s/def :ev/event (s/multi-spec ev :ev/type))
 
 (def setof-ev-u-event
   #{:ev.u/create :ev.u/update :ev.u/delete})
 
 (defmulti ev-user (fn [x] (:ev/type x)))
-(defmethods-for-a-set ev-user setof-ev-u-event)
+(defmethod-set ev-user setof-ev-u-event)
 (s/def :ev.u/event (s/multi-spec ev-user :ev/type))
 
 
@@ -200,7 +200,7 @@
   #{:ev.g.p/move-cape :ev.g.p/collect-tile-value})
 
 (defmulti ev-game-player (fn [x] (:ev/type x)))
-(defmethods-for-a-set ev-game-player setof-ev-g-p-event)
+(defmethod-set ev-game-player setof-ev-g-p-event)
 (s/def :ev.g.p/event (s/multi-spec ev-game-player :ev/type))
 
 (defmulti ev-game-arbiter (fn [x] (:ev/type x)))
@@ -211,7 +211,7 @@
   #{:ev.g.p/move-cape :ev.g.p/collect-tile-value :ev.g.a/finish-game})
 
 (defmulti ev-game-member (fn [x] (:ev/type x)))
-(defmethods-for-a-set ev-game-member setof-ev-g-m-event)
+(defmethod-set ev-game-member setof-ev-g-m-event)
 (s/def :ev.g.m/event (s/multi-spec ev-game-member :ev/type))
 
 (def setof-ev-g-u-event
@@ -220,7 +220,7 @@
     :ev.g.u/leave})
 
 (defmulti ev-game-user (fn [x] (:ev/type x)))
-(defmethods-for-a-set ev-game-user setof-ev-g-u-event)
+(defmethod-set ev-game-user setof-ev-g-u-event)
 (s/def :ev.g.u/event (s/multi-spec ev-game-user :ev/type))
 
 (def setof-ev-g-event
@@ -230,7 +230,7 @@
     :ev.g.p/collect-tile-value :ev.g.a/finish-game})
 
 (defmulti ev-game (fn [x] (:ev/type x)))
-(defmethods-for-a-set ev-game setof-ev-g-event)
+(defmethod-set ev-game setof-ev-g-event)
 (s/def :ev.g/event (s/multi-spec ev-game :ev/type))
 
 

@@ -14,8 +14,8 @@
    [clojure.walk :as walk]
    [datascript.core :as d]
    #?(:cljs [reagent.core :as r])
-   #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethods-for-a-set]]
-      :clj  [starnet.common.alpha.macros :refer [defmethods-for-a-set]])))
+   #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethod-set derive-set]]
+      :clj  [starnet.common.alpha.macros :refer [defmethod-set derive-set]])))
 
 
 
@@ -85,12 +85,6 @@
                               :g/participants
                               :g/status
                               :g/host]))
-
-
-
-
-
-
 
 (comment
 
@@ -170,12 +164,13 @@
 (s/def :ev/type eventset-event)
 
 (defmulti ev (fn [x] (:ev/type x)))
-(defmethods-for-a-set ev eventset-event)
+(defmethod-set ev eventset-event)
+(derive-set eventset-event :ev/event)
 (s/def :ev/event (s/multi-spec ev :ev/type))
 
-(defn make-state-core
+(defn make-state
   ([]
-   (make-state-core {}))
+   (make-state {}))
   ([opts]
    (merge {:g/uuid (gen/generate gen/uuid)
            :g/events []}
@@ -188,48 +183,67 @@
    (next-state state k ev nil))
   ([state k ev tags]
    (cond
+     (and (keyword? tags)
+          (descendants tags)) (cond
+                                (-> tags
+                                    (descendants)
+                                    (:ev/type ev)) (next-state* state k ev [tags])
+                                :else state)
      (and (coll? tags) (empty? tags)) state
+     (set? tags) (next-state* state k ev [(:ev/type ev) tags])
+     (vector? tags) (next-state* state k ev [(:ev/type ev) tags])
      (list? tags) (next-state (next-state state k ev (first tags)) k ev (rest tags))
-     (set? tags) (next-state* state k ev tags)
-     (vector? tags) (next-state* state k ev tags)
      :else (next-state* state k ev tags))))
+
+(comment
+
+  (ancestors :ev.g/create)
+  (ancestors :ev/event)
+  (descendants :ev.g/create)
+  (descendants :ev/event)
+
+  (ns-unmap *ns* 'next-state*)
+  
+  (next-state nil nil {:ev/type :ev.g/create} '(:ev/event #{:plain} #{:derived} ))
+  
+  ;;
+  )
 
 (defmulti next-state*
   "Returns the next :g.state/derived-core"
-  {:arglists '([state key event tags])}
-  (fn [state k ev tags]
-    (if tags [(:ev/type ev) tags] [(:ev/type ev)])))
+  {:arglists '([state key event dispatch-v])}
+  (fn [state k ev dispatch-v] dispatch-v))
 
-(defmethod next-state* [:ev.g/create :plain]
+(defmethod next-state* :default
+  [state k ev dispatch-v]
+  (println "; warning: next-state* :default invoked, args are: ")
+  (println {:state state
+            :k k
+            :ev ev
+            :dispatch-v dispatch-v})
+  state)
+
+(defmethod next-state* [:ev/event]
   [state k ev _]
   (-> state
-      (update  :plain (fnil inc 0))
-      (assoc :k :plain)))
+      (update :g/events #(-> % (conj ev)))))
 
-(defmethod next-state* [:ev.g/create :derived]
+(defmethod next-state* [:ev/batch #{:plain}]
   [state k ev _]
-  (-> state
-      (update  :derived (fnil inc 0))
-      (assoc :k :derived)))
+  (let [{:keys [g/events]} ev]
+    (as-> state o
+      (update o :g/events #(-> % (concat events) (vec)))
+      (reduce (fn [state- ev-]
+                (next-state state- nil ev-)) o events))))
 
-(next-state {} nil {:ev/type :ev.g/create} '(:plain :derived))
-
-
-(isa? #{:b :a} #{:a :b})
-(isa? #{:b :c :a #{:b :a}} #{:a :b :c #{:a :b}})
-
-(defmulti next-state-derived-core
-  "Returns the next :g.state/derived-core"
-  {:arglists '([state key event])}
-  (fn [state k ev] [(:ev/type ev)]))
-
-(defmethod next-state-derived-core [:ev.g/create]
-  [state k ev]
+(defmethod next-state* [:ev.g/create #{:plain}]
+  [state k ev _]
   (let [{:keys [u/uuid]} ev]
     (-> state
         (assoc :g/status :created)
         (assoc :g/host uuid)
         (merge (select-keys ev [:g.time/created])))))
+
 
 (defmethod next-state-derived-core [:ev.g/setup]
   [state k ev]
@@ -284,48 +298,17 @@
   state)
 
 
-(defmulti next-state-core
-  {:arglists '([state key event])}
-  (fn [state k ev] [(:ev/type ev)]))
 
-(defmethod next-state-core [:ev/batch]
-  [state k ev]
-  (let [{:keys [g/events]} ev]
-    (as-> state o
-      (update o :g/events #(-> % (concat events) (vec)))
-      (reduce (fn [agg v]
-                (update agg :g.state/derived-core next-state-derived-core k v)) o events))))
-
-(defmethod next-state-core :default
-  [state k ev]
-  (-> state
-      (update :g/events #(-> % (conj ev)))
-      (update :g.state/derived-core next-state-derived-core k ev)))
-
-(defmulti next-state-derived-event
-  {:arglists '([store key event])}
-  (fn [store k ev] [(:ev/type ev)]))
-
-(defmethod next-state-derived-event [:ev.g/start]
-  [store k ev]
-  (let []
-    
-    
-    ))
-
-(defmethod next-state-derived-event :default
-  [store k ev]
-  (let []))
 
 (defn next-state-derived
   [store k ev]
   (let [state* (store :g/state)
-        state-core (next-state-core @state* k ev)]
+        state-core (next-state @state* k ev)]
     (swap! state* merge state-core)
     (next-state-derived-event store k ev))
   nil)
 
-(defn make-game-channels
+(defn make-channels
   []
   (let [ch-game (chan (sliding-buffer 10))
         ch-game-events (chan (sliding-buffer 10))
@@ -354,7 +337,7 @@
                    (if-let [[v port] (alts! [ch-game-events ch-inputs])]
                      (condp = port
                        ch-game-events (let []
-                                        (next-state-derived store nil v)
+                                        (next-state store nil v)
                                         (recur))
                        ch-inputs (let []
                                    (println v)

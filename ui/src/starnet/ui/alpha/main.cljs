@@ -65,7 +65,7 @@
                      :pb-inputs pb-inputs
                      :ch-socket-in ch-socket-in
                      :ch-socket-out ch-socket-out
-                     :game-channels (game/make-game-channels)}))
+                     :game-channels (game/make-channels)}))
 
 (defn ^:export main
   []
@@ -230,7 +230,7 @@
      :user user
      :local-storage local-storage
      :token token
-     :game-ratoms (game/make-default-store (game/make-state-core {:g/uuid (gen/generate gen/uuid)}))}))
+     :game-ratoms (game/make-default-store (game/make-state {:g/uuid (gen/generate gen/uuid)}))}))
 
 (defonce ^:private -ratoms nil)
 
