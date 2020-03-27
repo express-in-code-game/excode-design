@@ -11,8 +11,8 @@
    [starnet.common.alpha.game :refer [make-state-core next-state-core]]))
 
 (deftest make-state-core-tests
-  (testing "generates valid :g.state/core"
-    (is (s/valid? :g.state/core
+  (testing "generates valid :g/state"
+    (is (s/valid? :g/state
                   (make-state-core)))))
 
 (deftest all-specchecks
@@ -32,12 +32,12 @@
 
 (deftest next-state-tests
   (testing "event :ev.g.u/create"
-    (is (s/valid? :g.state/core (next-state-core (s/conform :g.state/core (make-state-core))
+    (is (s/valid? :g/state (next-state-core (s/conform :g/state (make-state-core))
                                                  (gen/generate gen/uuid)
                                                  {:ev/type :ev.g.u/create
                                                   :u/uuid  (gen/generate gen/uuid)}))))
-  (testing "random :g.state/core and :ev.g.u/create event "
-    (is (s/valid? :g.state/core (next-state-core (gen/generate (s/gen :g.state/core))
+  (testing "random :g/state and :ev.g.u/create event "
+    (is (s/valid? :g/state (next-state-core (gen/generate (s/gen :g/state))
                                                  (gen/generate gen/uuid)
                                                  (gen/generate (s/gen :ev.g.u/create)))))))
 (comment

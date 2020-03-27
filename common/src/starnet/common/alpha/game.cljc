@@ -30,10 +30,7 @@
 (s/def :g.e.type/cape (s/keys :req [:g.e/type
                                     :g.e/uuid
                                     :g.e/pos]))
-(s/def :g.e.type/value-tile (s/keys :req [:g.e/type
-                                          :g.e/uuid
-                                          :g.e/pos
-                                          :g.e/numeric-value]))
+
 
 (s/def :g.p/cape :g.e.type/cape)
 (s/def :g.p/entities (s/keys :req [:g.p/cape]))
@@ -52,7 +49,12 @@
 (s/def :g/map-size (s/tuple int? int?))
 (s/def :g/player-states (s/map-of int? :g.p/player))
 (s/def :g/exit-teleports (s/coll-of :g.e.type/teleport))
-(s/def :g/value-tiles (s/coll-of :g.e.type/value-tile))
+
+(s/def :g.e.type/tile (s/keys :req [:g.e/type
+                                    :g.e/uuid
+                                    :g.e/pos
+                                    :g.e/numeric-value]))
+
 
 
 (s/def :g/events (s/coll-of :ev/event))
@@ -70,23 +72,29 @@
 (s/def :g.time/finished inst?)
 (s/def :g.time/duration number?)
 
-(s/def :g.state/derived-core (s/keys :req [:g.time/created
-                                           :g.time/opened
-                                           :g.time/closed
-                                           :g.time/started
-                                           :g.time/finished
-                                           :g.time/duration
-                                           :g/participants
-                                           :g/status
-                                           :g/host]))
+; events are the only true source
+; else is derived
+(s/def :g/state (s/keys :req [:g/events
+                              :g/uuid
+                              :g.time/created
+                              :g.time/opened
+                              :g.time/closed
+                              :g.time/started
+                              :g.time/finished
+                              :g.time/duration
+                              :g/participants
+                              :g/status
+                              :g/host]))
 
-(s/def :g.state/core (s/keys :req [:g/uuid
-                                   :g/events
-                                   :g.state/derived-core]))
+
+
+
+
+
 
 (comment
 
-  (gen/generate (s/gen :g.state/core))
+  (gen/generate (s/gen :g/state))
 
  ;;
   )
@@ -173,6 +181,42 @@
            :g/events []}
           (select-keys opts [:g/events :g/uuid]))))
 
+(declare next-state*)
+
+(defn next-state
+  ([state k ev]
+   (next-state state k ev nil))
+  ([state k ev tags]
+   (cond
+     (and (coll? tags) (empty? tags)) state
+     (list? tags) (next-state (next-state state k ev (first tags)) k ev (rest tags))
+     (set? tags) (next-state* state k ev tags)
+     (vector? tags) (next-state* state k ev tags)
+     :else (next-state* state k ev tags))))
+
+(defmulti next-state*
+  "Returns the next :g.state/derived-core"
+  {:arglists '([state key event tags])}
+  (fn [state k ev tags]
+    (if tags [(:ev/type ev) tags] [(:ev/type ev)])))
+
+(defmethod next-state* [:ev.g/create :plain]
+  [state k ev _]
+  (-> state
+      (update  :plain (fnil inc 0))
+      (assoc :k :plain)))
+
+(defmethod next-state* [:ev.g/create :derived]
+  [state k ev _]
+  (-> state
+      (update  :derived (fnil inc 0))
+      (assoc :k :derived)))
+
+(next-state {} nil {:ev/type :ev.g/create} '(:plain :derived))
+
+
+(isa? #{:b :a} #{:a :b})
+(isa? #{:b :c :a #{:b :a}} #{:a :b :c #{:a :b}})
 
 (defmulti next-state-derived-core
   "Returns the next :g.state/derived-core"
@@ -262,16 +306,20 @@
   {:arglists '([store key event])}
   (fn [store k ev] [(:ev/type ev)]))
 
-
-(defmethod next-state-derived-event :default
+(defmethod next-state-derived-event [:ev.g/start]
   [store k ev]
   (let []
     
+    
     ))
+
+(defmethod next-state-derived-event :default
+  [store k ev]
+  (let []))
 
 (defn next-state-derived
   [store k ev]
-  (let [state* (store :g.state/core)
+  (let [state* (store :g/state)
         state-core (next-state-core @state* k ev)]
     (swap! state* merge state-core)
     (next-state-derived-event store k ev))
@@ -290,7 +338,7 @@
            [default-state-core]
            (let [state-core (r/atom default-state-core)
                  derived-core (r/cursor state-core [:g.state/derived-core])]
-             {:g.state/core state-core
+             {:g/state state-core
               :g.state/derived-core derived-core
               :db/ds nil})))
 
@@ -315,13 +363,17 @@
 
 (comment
 
-  (def guuid (-> @(-store :g.state/core) :g/uuid))
+  (def guuid (-> @(-store :g/state) :g/uuid))
   (def u1 (gen/generate (s/gen :u/user)))
 
   (put! (-channels :ch-game-events) {:ev/type :ev.g/create
                                      :g/uuid guuid
                                      :u/uuid (:u/uuid u1)})
   (put! (-channels :ch-game-events) {:ev/type :ev.g/close
+                                     :g/uuid guuid
+                                     :u/uuid (:u/uuid u1)})
+  
+  (put! (-channels :ch-game-events) {:ev/type :ev.g/start
                                      :g/uuid guuid
                                      :u/uuid (:u/uuid u1)})
 
@@ -334,7 +386,7 @@
    (defn rc-game
      [channels ratoms]
      (let [{:keys [ch-inputs]} channels
-           uuid* (r/cursor (ratoms :g.state/core) [:g/uuid])
+           uuid* (r/cursor (ratoms :g/state) [:g/uuid])
            status* (r/cursor (ratoms :g.state/derived-core) [:g/status])]
        (fn [_ _]
          (let [uuid @uuid*
@@ -345,6 +397,13 @@
             [:div  status]]
            )))))
 
+(comment 
+  
+  ;;
+  )
 
-
-
+(defn gen-tiles
+  []
+  
+  
+  )

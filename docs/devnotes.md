@@ -142,7 +142,6 @@
     - https://github.com/tonsky/datascript/blob/master/test/datascript/test/upsert.cljc
     - https://github.com/tonsky/datascript/wiki/Tips-&-tricks
     - https://tonsky.me/blog/datascript-chat/
-    - https://github.com/jonase/learndatalogtoday
     - https://github.com/kristianmandrup/datascript-tutorial/blob/master/SUMMARY.md
 
 - reagent
