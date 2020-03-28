@@ -349,7 +349,7 @@
 (s/def :e/uuid uuid?)
 (s/def :e/pos (s/tuple int? int?))
 (s/def :e/type keyword?)
-(def words
+(def wordsets
   {:health #{:enable :vitalize :energize :enliven :empower :invigorate :strengthen :heal :perform :efficiency}
    :spirit #{:inspire :encourage :vision :resolve :clarity :free :raise :faith :belief :sanity :determination}
    :mind #{:reason :understand :comprehend :wisdom :insight :decision-making :perspective
@@ -362,16 +362,20 @@
    :interface #{:primitive :advanced :simple :complex :limiting :extendable :intuitive}
    :field #{:drain :interfere :distract :limit :uplift :improve}})
 
-(defn spec-entity-qualities
-  [sets]
-  (s/with-gen (s/coll-of keyword?)
-    #(apply gen/tuple (map (fn [k] (s/gen (words k))) sets))))
+(s/def :e/quality-key (s/with-gen keyword?
+                        (fn []
+                          (let [k (rand-nth (keys wordsets))]
+                            (s/gen (wordsets k))))))
 
-(s/def :e/qualities (s/with-gen (s/coll-of keyword?)
-                      (fn []
-                        (let [sets (for [_ (range 3)]
-                                     (rand-nth (keys words)))]
-                          (apply gen/tuple (map (fn [k] (s/gen (words k))) sets))))))
+(s/def :e/quality-val (s/with-gen number?
+                        #(gen/large-integer* {:min 0 :max 1000})))
+
+
+(s/def :e/qualities (s/with-gen (s/map-of keyword? number?)
+                      #(gen/fmap
+                        (fn [v]
+                          (into {} v))
+                        (gen/vector (gen/tuple (s/gen :e/quality-key) (s/gen :e/quality-val)) 3))))
 
 (s/def :e.t/cape (s/keys :req [:e/type
                                :e/uuid
@@ -385,9 +389,6 @@
                                      :e/uuid
                                      :e/pos
                                      :e/qualities]))
-
-(gen/generate (s/gen :e.t/fruit-tree))
-
 
 (defn gen-entities
   "A template: given opts, generates a set of entities for the map"
