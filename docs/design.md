@@ -55,6 +55,13 @@
   - join a game
   - create an open/invite-only game (no title, match description has a format)
   - browse open games (with a filter)
+  - create lists of
+    - other users
+    - events
+    - users and events
+    - as there will be no limitations like 'add to friends' 'follow' etc. - user creates their own lookup lists
+  - export (to load, exahnge) game as data
+    - load can be a url to a file (edn or transit, possibly edn for readabiity)
 - no chat
 - user profile has rating and event results (can be reset)
 - official and community map templates and configurable events
@@ -465,3 +472,12 @@
   - fields also vary on generation
   - when map is created, positions of entities align with a template, but are random and entities(fields) have new qualities
   - players are in equal positions always: after map is generated, there is no randomness, and both players can interact with any entity , no race/first-come condition
+- assets, generation & serialization
+  - generate assets into Blob and use with createObjectURL, or pre-render to use with (r/as-element)
+  - an asset is code (a function)
+  - if needed, generating can be done on worker thread
+  - to avoid hitting ui thread with heavy deserialization (worker sends bytes or string)
+    - send event :start-generation to worker
+    - worker generates in batches and sends events :generated-batch 1 of 10 2 of 10 etc
+    - finally, :generation-complete event, which trigger ui change
+    - while it's in process, ui thread is completely free and responsive, with no serialization spikes
