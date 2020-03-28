@@ -25,7 +25,7 @@
    [starnet.common.alpha.spec]
    [starnet.ui.alpha.tests]
    [starnet.ui.alpha.render :as render]
-   [starnet.common.alpha.game :as game])
+   [starnet.common.alpha.game.store :as game])
   (:import [goog.net XhrIo EventType WebSocket]
            [goog Uri]
            goog.history.Html5History))

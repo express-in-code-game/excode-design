@@ -16,7 +16,7 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    
-   [starnet.common.alpha.game :refer [rc-game]]
+   [starnet.common.alpha.game.render :refer [rc-game]]
 
    ["antd/lib/layout" :default AntLayout]
    ["antd/lib/menu" :default AntMenu]
