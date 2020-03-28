@@ -211,9 +211,14 @@
   (let [{:keys [u/uuid]} ev
         map* (:ra.g/map state)]
     (swap! map* assoc :m/status :generating/entities)
-    (let [xs (make-entities {})]
-      (swap! map* assoc :m/entities xs)
-      #_(swap! map* dissoc :m/status))
+    (println (:m/status @map*))
+    (go
+      (let [xs (make-entities {})]
+        (swap! map* assoc :m/entities xs)
+        (swap! map* dissoc :m/status)
+        (println (:m/status @map*))
+        (println "done")))
+    (println "end")
     state))
 
 (defmethod next-state* [:ev.g/setup #{:plain}]
@@ -427,14 +432,14 @@
 
 (comment
 
-  
+
   (def guuid (-> -store :g/uuid))
   (def u1 (gen/generate (s/gen :u/user)))
 
   (put! (-channels :ch-game-events) {:ev/type :ev.g/create
                                      :g/uuid guuid
                                      :u/uuid (:u/uuid u1)})
-  
+
   (put! (-channels :ch-game-events) {:ev/type :ev.g/close
                                      :g/uuid guuid
                                      :u/uuid (:u/uuid u1)})
@@ -442,6 +447,14 @@
   (put! (-channels :ch-game-events) {:ev/type :ev.g/start
                                      :g/uuid guuid
                                      :u/uuid (:u/uuid u1)})
+
+  (next-state -store nil {:ev/type :ev.g/start
+                          :g/uuid guuid
+                          :u/uuid (:u/uuid u1)}
+              '([:ev/event #{:plain}]
+                #{:plain}
+                [:ev/event #{:derived}]
+                #{:derived}))
 
   ;;
   )
@@ -457,8 +470,9 @@
        (fn [_ _]
          (let [uuid @uuid*
                status @status*
-               m-status @m-status*
+               m-status (:m/status @(ratoms :ra.g/map))
                count-entities @count-entities*]
+           (println "rendering: " m-status)
            [:<>
             [:div "rc-game"]
             [:div  uuid]
