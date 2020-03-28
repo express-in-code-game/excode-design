@@ -122,3 +122,10 @@
 .ant-layout {
   background: none !important;
 }
+
+.tile {
+  flex: 1 0 auto;
+  width: 48px;
+  height: 48px;
+  border: 1px solid #efefef;
+} 

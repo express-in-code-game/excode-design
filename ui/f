@@ -25,7 +25,7 @@ dev(){
     # yarn dev
 }
 
-prod(){
+release(){
     npm i
     shadow -A:core:optimized:local release app
 }

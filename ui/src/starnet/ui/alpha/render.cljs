@@ -16,7 +16,7 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    
-   [starnet.common.alpha.game :refer [rc-game]]
+   [starnet.common.alpha.game.render :refer [rc-game]]
 
    ["antd/lib/layout" :default AntLayout]
    ["antd/lib/menu" :default AntMenu]
@@ -34,7 +34,6 @@
    ["antd/lib/divider" :default AntDivider]
    ["@ant-design/icons/SmileOutlined" :default AntSmileOutlined]))
 
-(js/console.log )
 
 (def ant-row (r/adapt-react-class AntRow))
 (def ant-col (r/adapt-react-class AntCol))
@@ -250,9 +249,7 @@
   (let []
     (fn [_ _]
       (let []
-        [layout-game channels ratoms
-         [:<>
-          [rc-game (channels :game-channels) (ratoms :game-store)]]]))))
+        [rc-game (channels :game-channels) (ratoms :game-store)]))))
 
 (defn rc-page-stats-id
   [channels ratoms]

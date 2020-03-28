@@ -25,13 +25,13 @@
    [starnet.common.alpha.spec]
    [starnet.ui.alpha.tests]
    [starnet.ui.alpha.render :as render]
-   [starnet.common.alpha.game :as game])
+   [starnet.common.alpha.game.store :as game])
   (:import [goog.net XhrIo EventType WebSocket]
            [goog Uri]
            goog.history.Html5History))
 
 (declare proc-main proc-socket proc-render-containers proc-db proc-ops proc-http
-         proc-history proc-router proc-derived-state proc-render-ui)
+         proc-history proc-router proc-derived-state proc-render-ui proc-worker)
 
 (enable-console-print!)
 
@@ -91,13 +91,15 @@
                        (let [c (chan 1)
                              _ (>! (channels :ch-db) {:db/op :get-ratoms :ch/c-out c})
                              ratoms (<! c)]
-                         (proc-render-ui (select-keys channels [:ch-db :pb-sys :ch-inputs]) ratoms)
-                         (game/proc-game (channels :game-channels) (ratoms :game-store))
+                         (proc-render-ui (select-keys channels [:ch-db :pb-sys :ch-inputs :game-channels]) ratoms)
+                         (game/proc-store (channels :game-channels)
+                                          (ratoms :game-store))
+                         (game/proc-worker (channels :game-channels))
                          (put! (channels :ch-sys) {:ch/topic :proc-render-ui :proc/op :render})))
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
                      (put! (channels :ch-sys) {:ch/topic :proc-history :proc/op :start})
                      (put! (channels :ch-sys) {:ch/topic :proc-db :proc/op :start})
-                     
+
                      (put! (channels :ch-ops) {:ops/op :op/init})
                      (recur)))))
       (println "closing go block: proc-main")))
@@ -230,7 +232,8 @@
      :user user
      :local-storage local-storage
      :token token
-     :game-store (game/make-store {:g/uuid (gen/generate gen/uuid)})}))
+     :game-store (game/make-store {:g/uuid (gen/generate gen/uuid)
+                                   :channels (channels :game-channels)})}))
 
 (defonce ^:private -ratoms nil)
 
@@ -314,7 +317,7 @@
             (println (gstring/format "proc-render %s" op))
             (condp = op
               :render (do
-                        (render/render-ui (select-keys channels [:ch-inputs]) ratoms)
+                        (render/render-ui (select-keys channels [:ch-inputs :game-channels]) ratoms)
                         (recur)))))
         (println "closing proc-render"))))
 
@@ -508,3 +511,4 @@
 
   ;;
   )
+

@@ -144,9 +144,7 @@
     - https://tonsky.me/blog/datascript-chat/
     - https://github.com/kristianmandrup/datascript-tutorial/blob/master/SUMMARY.md
 
-- reagent
-    - http://reagent-project.github.io/docs/master/reagent.core.html#var-cursor
-    - https://clojuredocs.org/clojure.core/add-watch
+
 
 - cljs
   - antd
@@ -159,7 +157,33 @@
     - https://developer.mozilla.org/en-US/docs/Web/API/History_API/Working_with_the_History_API
     - https://github.com/juxt/bidi
     - https://github.com/clj-commons/pushy
-
+  - reagent
+    - http://reagent-project.github.io/docs/master/reagent.core.html#var-cursor
+    - https://clojuredocs.org/clojure.core/add-watch
+    - https://github.com/reagent-project/reagent/blob/2027a2d8881bae0567ecf9d4c90550b064a2ad0c/doc/CreatingReagentComponents.md#appendix-b---with-let-macro
+  - render
+    - https://github.com/d3/d3
+      - https://github.com/d3/d3/wiki/Gallery
+        - https://observablehq.com/@peatroot/stars-and-constellations?collection=@observablehq/visualization
+        - https://csaladenes.wordpress.com/2015/03/10/the-global-center-of-mass-of-higher-education-university-rankings-mapped/
+          - https://blog.csaladen.es/universities%20geo/
+    - https://github.com/quil/quil
+    - https://github.com/vega/vega
+      - https://vega.github.io/vega/examples/
+      - https://vega.github.io/vega-lite/examples/
+      - https://vega.github.io/vega/tutorials/airports/
+      - https://github.com/metasoarous/oz
+    - https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg
+      - https://developer.mozilla.org/en-US/docs/Web/SVG/Element/rect
+    - https://github.com/plouc/nivo
+      - https://nivo.rocks/geomap/canvas/
+    - https://github.com/konvajs/konva
+      - https://konvajs.org/docs/react/index.html
+        - https://github.com/konvajs/react-konva
+    - https://leafletjs.com/#features
+    - https://github.com/prc5/react-zoom-pan-pinch
+    - https://github.com/chrvadala/react-svg-pan-zoom
+    
 - docker
   - https://docs.docker.com/config/containers/resource_constraints/
 

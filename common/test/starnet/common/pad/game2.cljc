@@ -137,7 +137,7 @@
            :g/events []}
           (select-keys opts [:g/events :g/uuid]))))
 
-(declare next-state*)
+(declare next-state* make-entities)
 
 (defn next-state
   ([state k ev]
@@ -187,7 +187,7 @@
 (defmethod next-state* [:ev/event #{:derived}]
   [state k ev _]
   (let []
-    (swap! (:ra.g/state state) merge (dissoc state :ra.g/state :g/events :db/ds))
+    (swap! (:ra.g/state state) merge (dissoc state :ra.g/state :g/events :db/ds :ra.g/map))
     state))
 
 (defmethod next-state* [:ev/batch #{:plain}]
@@ -205,6 +205,23 @@
         (assoc :g/status :created)
         (assoc :g/host uuid)
         (merge (select-keys ev [:g.time/created])))))
+
+(defmethod next-state* [:ev.g/start #{:derived}]
+  [state k ev _]
+  (let [{:keys [u/uuid]} ev
+        map* (:ra.g/map state)]
+    #_(swap! map* assoc :m/status :generating/entities)
+    (r/rswap! map* assoc :m/status :generating/entities)
+    #_(do @map*)
+    (println "hello")
+    #_(println (-> @map* :m/status))
+    (go
+      (let [xs (make-entities {})]
+        (swap! map* assoc :m/entities xs)
+        (swap! map* assoc :m/status :done)
+        (println "done")))
+    (println "end")
+    state))
 
 (defmethod next-state* [:ev.g/setup #{:plain}]
   [state k ev _]
@@ -253,87 +270,6 @@
     (-> state
         (update-in [:g/participants] assoc uuid role))))
 
-
-
-(defn make-channels
-  []
-  (let [ch-game (chan (sliding-buffer 10))
-        ch-game-events (chan (sliding-buffer 10))
-        ch-inputs (chan (sliding-buffer 10))]
-    {:ch-game ch-game
-     :ch-game-events ch-game-events
-     :ch-inputs ch-inputs}))
-
-#?(:cljs (defn make-store
-           ([]
-            (make-store {}))
-           ([opts]
-            (let [state (make-state opts)
-                  state* (r/atom (dissoc state :ra.g/state :g/events :db/ds))]
-              (merge
-               state
-               {:ra.g/state state*
-                :db/ds nil})))))
-
-;for repl only
-(defonce ^:private -store nil)
-(defonce ^:private -channels nil)
-#?(:cljs (defn proc-game
-           [{:keys [ch-game ch-game-events ch-inputs] :as channels} store-arg]
-           (set! -store store-arg)
-           (set! -channels channels)
-           (let []
-             (go (loop [store store-arg]
-                   (if-let [[v port] (alts! [ch-game-events ch-inputs])]
-                     (condp = port
-                       ch-game-events (let [store- (next-state store nil v
-                                                               '([:ev/event #{:plain}] #{:plain} [:ev/event #{:derived}]))]
-                                        (set! -store store-)
-                                        (recur store-))
-                       ch-inputs (let []
-                                   (println v)
-                                   (recur store)))))
-                 (println "proc-game closing")))))
-
-(comment
-
-  (def store (make-store {}))
-  (next-state store nil {:ev/type :ev.g/create}
-              '([:ev/event #{:plain}] #{:plain} [:ev/event #{:derived}]))
-
-  
-  (def guuid (-> -store :g/uuid))
-  (def u1 (gen/generate (s/gen :u/user)))
-
-  (put! (-channels :ch-game-events) {:ev/type :ev.g/create
-                                     :g/uuid guuid
-                                     :u/uuid (:u/uuid u1)})
-  (put! (-channels :ch-game-events) {:ev/type :ev.g/close
-                                     :g/uuid guuid
-                                     :u/uuid (:u/uuid u1)})
-
-  (put! (-channels :ch-game-events) {:ev/type :ev.g/start
-                                     :g/uuid guuid
-                                     :u/uuid (:u/uuid u1)})
-
-  ;;
-  )
-
-#?(:cljs
-   (defn rc-game
-     [channels ratoms]
-     (let [{:keys [ch-inputs]} channels
-           uuid* (r/cursor (ratoms :ra.g/state) [:g/uuid])
-           status* (r/cursor (ratoms :ra.g/state) [:g/status])]
-       (fn [_ _]
-         (let [uuid @uuid*
-               status @status*]
-           [:<>
-            [:div "rc-game"]
-            [:div  uuid]
-            [:div  status]]
-           )))))
-
 (defn spec-string-in-range
   [min max & {:keys [gen-char] :or {gen-char gen/char-alphanumeric}}]
   (s/with-gen
@@ -349,7 +285,7 @@
 (s/def :e/uuid uuid?)
 (s/def :e/pos (s/tuple int? int?))
 (s/def :e/type keyword?)
-(def wordsets
+(def termsets
   {:health #{:enable :vitalize :energize :enliven :empower :invigorate :strengthen :heal :perform :efficiency}
    :spirit #{:inspire :encourage :vision :resolve :clarity :free :raise :faith :belief :sanity :determination}
    :mind #{:reason :understand :comprehend :wisdom :insight :decision-making :perspective
@@ -362,20 +298,14 @@
    :interface #{:primitive :advanced :simple :complex :limiting :extendable :intuitive}
    :field #{:drain :interfere :distract :limit :uplift :improve}})
 
-(s/def :e/quality-key (s/with-gen keyword?
-                        (fn []
-                          (let [k (rand-nth (keys wordsets))]
-                            (s/gen (wordsets k))))))
-
-(s/def :e/quality-val (s/with-gen number?
-                        #(gen/large-integer* {:min 0 :max 1000})))
-
+(def gen-random-termset (gen/elements termsets))
+(def gen-random-term (gen/bind gen-random-termset
+                               #(gen/elements (second %))))
 
 (s/def :e/qualities (s/with-gen (s/map-of keyword? number?)
                       #(gen/fmap
-                        (fn [v]
-                          (into {} v))
-                        (gen/vector (gen/tuple (s/gen :e/quality-key) (s/gen :e/quality-val)) 3))))
+                        (fn [v] (into {} v))
+                        (gen/vector (gen/tuple gen-random-term (gen/large-integer* {:min 0 :max 1000})) 3))))
 
 (s/def :e.t/cape (s/keys :req [:e/type
                                :e/uuid
@@ -389,23 +319,194 @@
                                      :e/uuid
                                      :e/pos
                                      :e/qualities]))
+(s/def :e.t/datacenter (s/keys :req [:e/type
+                                     :e/uuid
+                                     :e/pos
+                                     :e/qualities]))
+(s/def :e.t/nanitelab (s/keys :req [:e/type
+                                     :e/uuid
+                                     :e/pos
+                                     :e/qualities]))
+(s/def :e.t/droidshop (s/keys :req [:e/type
+                                    :e/uuid
+                                    :e/pos
+                                    :e/qualities]))
+(s/def :e.t/an-event (s/keys :req [:e/type
+                                   :e/uuid
+                                   :e/pos
+                                   :e/qualities]))
+(s/def :e.t/garden (s/keys :req [:e/type
+                                 :e/uuid
+                                 :e/pos
+                                 :e/qualities]))
+(s/def :e.t/teleport (s/keys :req [:e/type
+                                   :e/uuid
+                                   :e/pos
+                                   :e/qualities]))
+(s/def :e.t/repository (s/keys :req [:e/type
+                                     :e/uuid
+                                     :e/pos
+                                     :e/qualities]))
 
-(defn gen-entities
-  "A template: given opts, generates a set of entities for the map"
-  [opts]
-  
-  )
-
-(defn gen-positions
+(defn make-positions
   [x y]
   (->> (for [x (range 0 x)
-            y (range 0 y)]
-        [[x y] [x y]])
-      (into {})))
+             y (range 0 y)]
+         [x y])))
+
+(defn make-entities
+  "A template: given opts, generates a set of entities for the map"
+  [opts]
+  (let [ps (make-positions 64 64)
+        xs (gen/sample
+            (gen/frequency [[50 (s/gen :e.t/finding)]
+                            [10 (s/gen :e.t/fruit-tree)]
+                            [10 (s/gen :e.t/datacenter)]
+                            [10 (s/gen :e.t/nanitelab)]
+                            [20 (s/gen :e.t/droidshop)]
+                            [20 (s/gen :e.t/garden)]
+                            [30 (s/gen :e.t/teleport)]
+                            [30 (s/gen :e.t/repository)]])
+            (count ps))]
+    (map (fn [x p]
+           (assoc x :e/pos p)) (shuffle xs) (shuffle ps))))
 
 (comment
 
-  
+  (->> (make-entities {}) (vec) (take 5))
+
+  (gen/generate (s/gen :e.t/garden))
+
+  ;;
+  )
+
+(defn make-channels
+  []
+  (let [ch-game (chan (sliding-buffer 10))
+        ch-game-events (chan (sliding-buffer 10))
+        ch-inputs (chan (sliding-buffer 10))]
+    {:ch-game ch-game
+     :ch-game-events ch-game-events
+     :ch-inputs ch-inputs}))
+
+#?(:cljs (defn make-store
+           ([]
+            (make-store {}))
+           ([opts]
+            (let [state (make-state opts)
+                  state* (r/atom state)
+                  map* (r/atom {:m/status :initial})
+                  entities* (r/cursor map* [:m/entities])
+                  count-entities* (r/track! (fn []
+                                              (let [xs @entities*]
+                                                (when xs
+                                                  (count xs)))))]
+              (merge
+               state
+               {:ra.g/state state*
+                :ra.g/map map*
+                :ra.g/entities entities*
+                :ra.g/count-entities count-entities*
+                :db/ds nil})))))
+
+;for repl only
+(defonce ^:private -store nil)
+(defonce ^:private -channels nil)
+#?(:cljs (defn proc-game
+           [{:keys [ch-game ch-game-events ch-inputs] :as channels} store-arg]
+           (set! -store store-arg)
+           (set! -channels channels)
+           (let []
+             (go (loop [store store-arg]
+                   (if-let [[v port] (alts! [ch-game-events ch-inputs])]
+                     (condp = port
+                       ch-game-events (let [store- (next-state store nil v
+                                                               '([:ev/event #{:plain}]
+                                                                 #{:plain}
+                                                                 [:ev/event #{:derived}]
+                                                                 #{:derived}))]
+                                        (set! -store store-)
+                                        (recur store-))
+                       ch-inputs (let []
+                                   (println v)
+                                   (recur store)))))
+                 (println "proc-game closing")))))
+
+(comment
+
+
+  (def guuid (-> -store :g/uuid))
+  (def u1 (gen/generate (s/gen :u/user)))
+
+  (put! (-channels :ch-game-events) {:ev/type :ev.g/create
+                                     :g/uuid guuid
+                                     :u/uuid (:u/uuid u1)})
+
+  (put! (-channels :ch-game-events) {:ev/type :ev.g/close
+                                     :g/uuid guuid
+                                     :u/uuid (:u/uuid u1)})
+
+  (put! (-channels :ch-game-events) {:ev/type :ev.g/start
+                                     :g/uuid guuid
+                                     :u/uuid (:u/uuid u1)})
+
+  (do
+    (next-state -store nil {:ev/type :ev.g/start
+                            :g/uuid guuid
+                            :u/uuid (:u/uuid u1)}
+                '([:ev/event #{:plain}]
+                  #{:plain}
+                  [:ev/event #{:derived}]
+                  #{:derived}))
+    nil)
+
+  ;;
+  )
+
+(def ra-test (r/atom {:status :initial}))
+
+#?(:cljs
+   (defn rc-game
+     [channels ratoms]
+     (let [{:keys [ch-inputs]} channels
+           uuid* (r/cursor (ratoms :ra.g/state) [:g/uuid])
+           status* (r/cursor (ratoms :ra.g/state) [:g/status])
+           m-status* (r/cursor (ratoms :ra.g/map) [:m/status])
+           ra-test-status* (r/cursor ra-test [:status])
+           count-entities* (ratoms :ra.g/count-entities)
+           timer* (r/atom 0)
+           _ (go (loop []
+                   (<! (timeout 1000))
+                   (swap! timer* inc)
+                   (recur)))]
+       (fn [_ _]
+         (let [uuid @uuid*
+               status @status*
+               m-status  @m-status* #_(-> @(ratoms :ra.g/map) :m/status)
+               count-entities @count-entities*
+               ra-test-status @ra-test-status*
+               timer @timer*]
+           [:<>
+            [:div "rc-game"]
+            [:div  uuid]
+            [:div  [:span "game status: "] [:span status]]
+            [:div  [:span "map status: "] [:span (str m-status)]]
+            [:div  [:span "total entities: "] [:span count-entities]]
+            [:div  [:span "ra-test status: "] [:span ra-test-status]]
+            [:div  [:span "timer: "] [:span timer]]])))))
+
+(comment
+
+  (go
+    (swap! ra-test assoc :status :starting)
+    ;;  (<! (timeout 3000))
+    ;; (println "hello" (-> @ra-test :status))
+    (make-entities {})
+    (swap! ra-test assoc :status :started)
+    (make-entities {})
+    ;; (<! (timeout 3000))
+    (swap! ra-test assoc :status :complete))
+
 
   ;;
   )

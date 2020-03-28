@@ -7,15 +7,14 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    [clojure.test.check.clojure-test :refer [defspec]]
-   [clojure.test :as test :refer [is testing run-tests deftest]]
-   [starnet.common.alpha.game :refer [make-state next-state]]))
+   [clojure.test :as test :refer [is testing run-tests deftest]]))
 
-(deftest make-state-tests
-  (testing "generates valid :g/state"
-    (is (s/valid? :g/state
-                  (make-state)))))
+#_(deftest make-state-tests
+    (testing "generates valid :g/state"
+      (is (s/valid? :g/state
+                    (make-state)))))
 
-(deftest all-specchecks
+#_(deftest all-specchecks
   (testing "running spec.test/check via stest/enumerate-namespace"
     (let [summary (-> #?(:clj (stest/enumerate-namespace 'starnet.common.alpha.game)
                          :cljs 'starnet.common.alpha.game)
@@ -23,14 +22,14 @@
                       (stest/summarize-results))]
       (is (not (contains? summary :check-failed))))))
 
-(deftest make-state-speccheck
+#_(deftest make-state-speccheck
   (testing "running spec.test/check"
     (let [summary (-> (stest/check `make-state
                                    {:clojure.spec.test.check/opts {:num-tests 10}})
                       (stest/summarize-results))]
       (is (not (contains? summary :check-failed))))))
 
-(deftest next-state-tests
+#_(deftest next-state-tests
   (testing "event :ev.g.u/create"
     (is (s/valid? :g/state (next-state (s/conform :g/state (make-state))
                                                  (gen/generate gen/uuid)

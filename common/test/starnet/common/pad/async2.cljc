@@ -146,3 +146,19 @@
   
   ;;
   )
+
+
+(comment
+
+  (def chan-close (chan 1))
+  (go (loop []
+        (alt!
+          (timeout (+ 500 (rand-int 800))) (do
+                                             (println "tout")
+                                             (recur))
+          chan-close (println "chan-close ")))
+      (println "exiting loop"))
+
+  (a/close! chan-close)
+  ;;
+  )
