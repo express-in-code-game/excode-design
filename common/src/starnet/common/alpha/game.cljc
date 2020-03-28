@@ -212,7 +212,8 @@
         map* (:ra.g/map state)]
     #_(swap! map* assoc :m/status :generating/entities)
     (r/rswap! map* assoc :m/status :generating/entities)
-    #_(println "hello")
+    #_(do @map*)
+    (println "hello")
     #_(println (-> @map* :m/status))
     (go
       (let [xs (make-entities {})]
@@ -462,6 +463,8 @@
   ;;
   )
 
+(def ra-test (r/atom {:status :initial}))
+
 #?(:cljs
    (defn rc-game
      [channels ratoms]
@@ -469,17 +472,41 @@
            uuid* (r/cursor (ratoms :ra.g/state) [:g/uuid])
            status* (r/cursor (ratoms :ra.g/state) [:g/status])
            m-status* (r/cursor (ratoms :ra.g/map) [:m/status])
-           count-entities* (ratoms :ra.g/count-entities)]
+           ra-test-status* (r/cursor ra-test [:status])
+           count-entities* (ratoms :ra.g/count-entities)
+           timer* (r/atom 0)
+           _ (go (loop []
+                   (<! (timeout 1000))
+                   (swap! timer* inc)
+                   (recur)))]
        (fn [_ _]
          (let [uuid @uuid*
                status @status*
                m-status  @m-status* #_(-> @(ratoms :ra.g/map) :m/status)
-               count-entities @count-entities*]
-           (println "rendering " m-status)
+               count-entities @count-entities*
+               ra-test-status @ra-test-status*
+               timer @timer*]
            [:<>
             [:div "rc-game"]
             [:div  uuid]
             [:div  [:span "game status: "] [:span status]]
             [:div  [:span "map status: "] [:span (str m-status)]]
-            [:div  [:span "total entities: "] [:span count-entities]]])))))
+            [:div  [:span "total entities: "] [:span count-entities]]
+            [:div  [:span "ra-test status: "] [:span ra-test-status]]
+            [:div  [:span "timer: "] [:span timer]]])))))
 
+(comment
+
+  (go
+    (swap! ra-test assoc :status :starting)
+    ;;  (<! (timeout 3000))
+    ;; (println "hello" (-> @ra-test :status))
+    (make-entities {})
+    (swap! ra-test assoc :status :started)
+    (make-entities {})
+    ;; (<! (timeout 3000))
+    (swap! ra-test assoc :status :complete))
+
+
+  ;;
+  )
