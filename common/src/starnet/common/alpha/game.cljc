@@ -416,8 +416,7 @@
   [x y]
   (->> (for [x (range 0 x)
              y (range 0 y)]
-         [[x y] [x y]])
-       (into {})))
+         [x y])))
 
 (defn make-entities
   "A template: given opts, generates a set of entities for the map"
@@ -433,14 +432,14 @@
                             [30 (s/gen :e.t/teleport)]
                             [30 (s/gen :e.t/repository)]])
             (count ps))]
-    (map (fn [x]
-           (assoc x :e/pos [1 1])) xs)))
+    (map (fn [x p]
+           (assoc x :e/pos p)) (shuffle xs) (shuffle ps))))
 
 
 
 (comment
-  
-  (take 5 (make-entities {}))
+
+  (->> (make-entities {}) (vec) (take 5))
 
   (gen/generate (s/gen :e.t/garden))
 
