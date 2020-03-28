@@ -349,7 +349,7 @@
 (s/def :e/uuid uuid?)
 (s/def :e/pos (s/tuple int? int?))
 (s/def :e/type keyword?)
-(def wordsets
+(def termsets
   {:health #{:enable :vitalize :energize :enliven :empower :invigorate :strengthen :heal :perform :efficiency}
    :spirit #{:inspire :encourage :vision :resolve :clarity :free :raise :faith :belief :sanity :determination}
    :mind #{:reason :understand :comprehend :wisdom :insight :decision-making :perspective
@@ -362,20 +362,14 @@
    :interface #{:primitive :advanced :simple :complex :limiting :extendable :intuitive}
    :field #{:drain :interfere :distract :limit :uplift :improve}})
 
-(s/def :e/quality-key (s/with-gen keyword?
-                        (fn []
-                          (let [k (rand-nth (keys wordsets))]
-                            (s/gen (wordsets k))))))
-
-(s/def :e/quality-val (s/with-gen number?
-                        #(gen/large-integer* {:min 0 :max 1000})))
-
+(def gen-random-termset (gen/elements termsets))
+(def gen-random-term (gen/bind gen-random-termset
+                               #(gen/elements (second %))))
 
 (s/def :e/qualities (s/with-gen (s/map-of keyword? number?)
                       #(gen/fmap
-                        (fn [v]
-                          (into {} v))
-                        (gen/vector (gen/tuple (s/gen :e/quality-key) (s/gen :e/quality-val)) 3))))
+                        (fn [v] (into {} v))
+                        (gen/vector (gen/tuple gen-random-term (gen/large-integer* {:min 0 :max 1000})) 3))))
 
 (s/def :e.t/cape (s/keys :req [:e/type
                                :e/uuid
