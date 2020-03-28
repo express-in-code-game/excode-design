@@ -42,7 +42,7 @@
          [:div  [:span "game status: "] [:span status]]
          [:div  [:span "map status: "] [:span (str m-status)]]
          [:div  [:span "total entities: "] [:span count-entities]]
-         [:div  [:span "ra-test status: "] [:span ra-test-status]]
+         [:div  [:span "ra-test status: "] [:span (str ra-test-status)]]
          [:div  [:span "timer: "] [:span timer]]]))))
 
 (comment
@@ -52,11 +52,21 @@
     ;;  (<! (timeout 3000))
     ;; (println "hello" (-> @ra-test :status))
     (make-entities {})
-    (swap! ra-test assoc :status :started)
+    (swap! ra-test assoc :status :generating)
     (make-entities {})
     ;; (<! (timeout 3000))
     (swap! ra-test assoc :status :complete))
 
+  (def -channels @(resolve 'starnet.common.alpha.game.store/-channels))
+
+  (go
+    (swap! ra-test assoc :status :starting)
+    (let [c (chan 1)]
+      (>! (-channels :ch-worker) {:worker/op :data/make-entities
+                                  :ch/c-out c})
+      (swap! ra-test assoc :status :generating)
+      (let [o (<! c)]
+        (swap! ra-test assoc :status [:complete (count o)]))))
 
   ;;
   )

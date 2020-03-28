@@ -20,13 +20,11 @@
   (let [ch-game (chan (sliding-buffer 10))
         ch-game-events (chan (sliding-buffer 10))
         ch-inputs (chan (sliding-buffer 10))
-        ch-worker-in (chan (sliding-buffer 10))
-        ch-worker-out (chan (sliding-buffer 10))]
+        ch-worker (chan (sliding-buffer 10))]
     {:ch-game ch-game
      :ch-game-events ch-game-events
      :ch-inputs ch-inputs
-     :ch-worker-in ch-worker-in
-     :ch-worker-out ch-worker-out}))
+     :ch-worker ch-worker}))
 
 (defn make-store
   ([]
@@ -73,7 +71,7 @@
 
 (comment
 
-
+  
   (def guuid (-> -store :g/uuid))
   (def u1 (gen/generate (s/gen :u/user)))
 
@@ -106,11 +104,7 @@
   [state k ev _]
   (let [{:keys [u/uuid]} ev
         map* (:ra.g/map state)]
-    #_(swap! map* assoc :m/status :generating/entities)
-    (r/rswap! map* assoc :m/status :generating/entities)
-    #_(do @map*)
-    (println "hello")
-    #_(println (-> @map* :m/status))
+    (swap! map* assoc :m/status :generating/entities)
     (go
       (let [xs (make-entities {})]
         (swap! map* assoc :m/entities xs)
@@ -121,48 +115,38 @@
 
 (def ^:private -worker nil)
 
-(defn proc-shared-worker
-  [{:keys [ch-worker-in ch-worker-out] :as channels} store-arg]
-  (let [worker (js/SharedWorker. "/js-out/worker.js")]
-    (aset (.-port worker) "onmessage" (fn [e]
-                                        (js/console.log "; msg from sharedworker")
-                                        (js/console.log e)))
-    (set! -worker worker)
-    (go (loop []
-          (if-let [[v port] (alts! [ch-worker-out])]
-            (condp = port
-              ch-worker-out (let []
-                              (println "; ch-worker-out " v)
-                              (.. worker -port (postMessage "to shared worker"))
-                              (recur)))))
-        (println "proc-worker closing"))))
-
 (defn proc-worker
-  [{:keys [ch-worker-in ch-worker-out] :as channels} store-arg]
-  (let [worker (js/Worker. "/js-out/worker.js")]
+  [{:keys [ch-worker] :as channels} store-arg]
+  (let [worker (js/Worker. "/js-out/worker.js")
+        queue (chan 10)]
     (aset worker "onmessage" (fn [e]
-                               (js/console.log "; msg from worker")
-                               (js/console.log e)))
+                               (take! queue (fn [c]
+                                              (put! c (cljs.reader/read-string (.-data e)))))))
     (set! -worker worker)
     (go (loop []
-          (if-let [[v port] (alts! [ch-worker-out])]
-            (condp = port
-              ch-worker-out (let []
-                              (println "; ch-worker-out " v)
-                              (.postMessage worker "to worker")
-                              (recur)))))
+          (if-let [v (<! ch-worker)]
+            (let [{:keys [ch/c-out]} v]
+              (.postMessage worker (pr-str (dissoc v :ch/c-out)))
+              (put! queue c-out)
+              (recur))))
         (println "proc-worker closing"))))
-
-
 
 
 (comment
 
-  (put! (-channels :ch-worker-out) {})
-  (js/console.log -worker)
-  (.. -worker  -postMessage)
-  (.. -worker -port -onmessage)
-
+  (go
+    (let [c (chan 1)]
+      (>! (-channels :ch-worker) {:worker/op :b
+                                  :ch/c-out c})
+      (let [o (<! c)]
+        (println "asd" o))))
+  
+  (go
+    (let [c (chan 1)]
+      (>! (-channels :ch-worker) {:worker/op :data/make-entities
+                                  :ch/c-out c})
+      (let [o (<! c)]
+        (println "asd" (count o)))))
   
   
   ;;

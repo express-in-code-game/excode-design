@@ -17,6 +17,7 @@
          :main {:entries [starnet.ui.alpha.main]
                 :depends-on #{:shared}}
          :worker {:entries [starnet.ui.alpha.worker]
+                  :init-fn starnet.ui.alpha.worker/main
                   :depends-on #{:shared}
                   :web-worker true}}
         :compiler-options
