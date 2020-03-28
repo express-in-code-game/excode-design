@@ -212,9 +212,14 @@
         map* (:ra.g/map state)]
     #_(swap! map* assoc :m/status :generating/entities)
     (r/rswap! map* assoc :m/status :generating/entities)
-    (let [xs (make-entities {})]
-      (swap! map* assoc :m/entities xs)
-      (swap! map* assoc :m/status :done))
+    #_(println "hello")
+    #_(println (-> @map* :m/status))
+    (go
+      (let [xs (make-entities {})]
+        (swap! map* assoc :m/entities xs)
+        (swap! map* assoc :m/status :done)
+        (println "done")))
+    (println "end")
     state))
 
 (defmethod next-state* [:ev.g/setup #{:plain}]
@@ -453,7 +458,7 @@
                   [:ev/event #{:derived}]
                   #{:derived}))
     nil)
-  
+
   ;;
   )
 
@@ -468,8 +473,9 @@
        (fn [_ _]
          (let [uuid @uuid*
                status @status*
-               m-status @m-status*
+               m-status  @m-status* #_(-> @(ratoms :ra.g/map) :m/status)
                count-entities @count-entities*]
+           (println "rendering " m-status)
            [:<>
             [:div "rc-game"]
             [:div  uuid]
