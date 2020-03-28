@@ -210,15 +210,11 @@
   [state k ev _]
   (let [{:keys [u/uuid]} ev
         map* (:ra.g/map state)]
-    (swap! map* assoc :m/status :generating/entities)
-    (println (:m/status @map*))
-    (go
-      (let [xs (make-entities {})]
-        (swap! map* assoc :m/entities xs)
-        (swap! map* dissoc :m/status)
-        (println (:m/status @map*))
-        (println "done")))
-    (println "end")
+    #_(swap! map* assoc :m/status :generating/entities)
+    (r/rswap! map* assoc :m/status :generating/entities)
+    (let [xs (make-entities {})]
+      (swap! map* assoc :m/entities xs)
+      (swap! map* assoc :m/status :done))
     state))
 
 (defmethod next-state* [:ev.g/setup #{:plain}]
@@ -393,7 +389,7 @@
            ([opts]
             (let [state (make-state opts)
                   state* (r/atom state)
-                  map* (r/atom {})
+                  map* (r/atom {:m/status :initial})
                   entities* (r/cursor map* [:m/entities])
                   count-entities* (r/track! (fn []
                                               (let [xs @entities*]
@@ -448,14 +444,16 @@
                                      :g/uuid guuid
                                      :u/uuid (:u/uuid u1)})
 
-  (next-state -store nil {:ev/type :ev.g/start
-                          :g/uuid guuid
-                          :u/uuid (:u/uuid u1)}
-              '([:ev/event #{:plain}]
-                #{:plain}
-                [:ev/event #{:derived}]
-                #{:derived}))
-
+  (do
+    (next-state -store nil {:ev/type :ev.g/start
+                            :g/uuid guuid
+                            :u/uuid (:u/uuid u1)}
+                '([:ev/event #{:plain}]
+                  #{:plain}
+                  [:ev/event #{:derived}]
+                  #{:derived}))
+    nil)
+  
   ;;
   )
 
@@ -470,9 +468,8 @@
        (fn [_ _]
          (let [uuid @uuid*
                status @status*
-               m-status (:m/status @(ratoms :ra.g/map))
+               m-status @m-status*
                count-entities @count-entities*]
-           (println "rendering: " m-status)
            [:<>
             [:div "rc-game"]
             [:div  uuid]
