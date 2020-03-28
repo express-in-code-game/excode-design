@@ -12,7 +12,7 @@
    [starnet.common.alpha.core :refer [make-inst with-gen-fmap]]
    [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]
    [starnet.common.alpha.game.state :refer [next-state* next-state make-state]]
-   [starnet.common.alpha.game.core :refer [make-entities]]
+   [starnet.common.alpha.game.data :refer [make-entities]]
    [reagent.core :as r]))
 
 (defn make-channels
