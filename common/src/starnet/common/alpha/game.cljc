@@ -383,23 +383,66 @@
                                      :e/uuid
                                      :e/pos
                                      :e/qualities]))
+(s/def :e.t/datacenter (s/keys :req [:e/type
+                                     :e/uuid
+                                     :e/pos
+                                     :e/qualities]))
+(s/def :e.t/nanitelab (s/keys :req [:e/type
+                                     :e/uuid
+                                     :e/pos
+                                     :e/qualities]))
+(s/def :e.t/droidshop (s/keys :req [:e/type
+                                    :e/uuid
+                                    :e/pos
+                                    :e/qualities]))
+(s/def :e.t/an-event (s/keys :req [:e/type
+                                   :e/uuid
+                                   :e/pos
+                                   :e/qualities]))
+(s/def :e.t/garden (s/keys :req [:e/type
+                                 :e/uuid
+                                 :e/pos
+                                 :e/qualities]))
+(s/def :e.t/teleport (s/keys :req [:e/type
+                                   :e/uuid
+                                   :e/pos
+                                   :e/qualities]))
+(s/def :e.t/repository (s/keys :req [:e/type
+                                     :e/uuid
+                                     :e/pos
+                                     :e/qualities]))
 
-(defn gen-entities
-  "A template: given opts, generates a set of entities for the map"
-  [opts]
-  
-  )
-
-(defn gen-positions
+(defn make-positions
   [x y]
   (->> (for [x (range 0 x)
-            y (range 0 y)]
-        [[x y] [x y]])
-      (into {})))
+             y (range 0 y)]
+         [[x y] [x y]])
+       (into {})))
+
+(defn make-entities
+  "A template: given opts, generates a set of entities for the map"
+  [opts]
+  (let [ps (make-positions 64 64)
+        xs (gen/sample
+            (gen/frequency [[50 (s/gen :e.t/finding)]
+                            [10 (s/gen :e.t/fruit-tree)]
+                            [10 (s/gen :e.t/datacenter)]
+                            [10 (s/gen :e.t/nanitelab)]
+                            [20 (s/gen :e.t/droidshop)]
+                            [20 (s/gen :e.t/garden)]
+                            [30 (s/gen :e.t/teleport)]
+                            [30 (s/gen :e.t/repository)]])
+            (count ps))]
+    (map (fn [x]
+           (assoc x :e/pos [1 1])) xs)))
+
+
 
 (comment
-
   
+  (take 5 (make-entities {}))
+
+  (gen/generate (s/gen :e.t/garden))
 
   ;;
   )
