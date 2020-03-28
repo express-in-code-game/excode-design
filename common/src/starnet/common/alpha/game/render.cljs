@@ -37,13 +37,12 @@
             ra-test-status @ra-test-status*
             timer @timer*]
         [:<>
-         [:div "rc-game"]
          [:div  uuid]
          [:div  [:span "game status: "] [:span status]]
          [:div  [:span "map status: "] [:span (str m-status)]]
          [:div  [:span "total entities: "] [:span count-entities]]
-         [:div  [:span "ra-test status: "] [:span (str ra-test-status)]]
-         [:div  [:span "timer: "] [:span timer]]]))))
+         #_[:div  [:span "ra-test status: "] [:span (str ra-test-status)]]
+         #_[:div  [:span "timer: "] [:span timer]]]))))
 
 (comment
 
@@ -62,7 +61,7 @@
   (go
     (swap! ra-test assoc :status :starting)
     (let [c (chan 1)]
-      (>! (-channels :ch-worker) {:worker/op :data/make-entities
+      (>! (-channels :ch-worker) {:worker/op :starnet.common.alpha.game.data/make-entities
                                   :ch/c-out c})
       (swap! ra-test assoc :status :generating)
       (let [o (<! c)]

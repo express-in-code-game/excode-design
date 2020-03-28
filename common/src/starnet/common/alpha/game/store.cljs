@@ -143,7 +143,7 @@
   
   (go
     (let [c (chan 1)]
-      (>! (-channels :ch-worker) {:worker/op :data/make-entities
+      (>! (-channels :ch-worker) {:worker/op :starnet.common.alpha.game.data/make-entities
                                   :ch/c-out c})
       (let [o (<! c)]
         (println "asd" (count o)))))

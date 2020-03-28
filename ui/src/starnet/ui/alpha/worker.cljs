@@ -53,7 +53,7 @@
         (if-let [v (<! ch-ops-in)]
           (let [{:keys [worker/op ch/c-out]} v]
             (condp = op
-              :data/make-entities (let [o (make-entities v)]
+              :starnet.common.alpha.game.data/make-entities (let [o (make-entities v)]
                                     (>! c-out o))
               :a (>! c-out {:a (rand-int 10)})
               :b (>! c-out {:b (rand-int 10)}))))
