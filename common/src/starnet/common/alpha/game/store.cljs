@@ -19,10 +19,14 @@
   []
   (let [ch-game (chan (sliding-buffer 10))
         ch-game-events (chan (sliding-buffer 10))
-        ch-inputs (chan (sliding-buffer 10))]
+        ch-inputs (chan (sliding-buffer 10))
+        ch-worker-in (chan (sliding-buffer 10))
+        ch-worker-out (chan (sliding-buffer 10))]
     {:ch-game ch-game
      :ch-game-events ch-game-events
-     :ch-inputs ch-inputs}))
+     :ch-inputs ch-inputs
+     :ch-worker-in ch-worker-in
+     :ch-worker-out ch-worker-out}))
 
 (defn make-store
   ([]
@@ -47,8 +51,8 @@
 ;for repl only
 (defonce ^:private -store nil)
 (defonce ^:private -channels nil)
-(defn proc-game
-  [{:keys [ch-game ch-game-events ch-inputs] :as channels} store-arg]
+(defn proc-store
+  [{:keys [ch-game-events ch-inputs] :as channels} store-arg]
   (set! -store store-arg)
   (set! -channels channels)
   (let []
@@ -114,3 +118,52 @@
         (println "done")))
     (println "end")
     state))
+
+(def ^:private -worker nil)
+
+(defn proc-shared-worker
+  [{:keys [ch-worker-in ch-worker-out] :as channels} store-arg]
+  (let [worker (js/SharedWorker. "/js-out/worker.js")]
+    (aset (.-port worker) "onmessage" (fn [e]
+                                        (js/console.log "; msg from sharedworker")
+                                        (js/console.log e)))
+    (set! -worker worker)
+    (go (loop []
+          (if-let [[v port] (alts! [ch-worker-out])]
+            (condp = port
+              ch-worker-out (let []
+                              (println "; ch-worker-out " v)
+                              (.. worker -port (postMessage "to shared worker"))
+                              (recur)))))
+        (println "proc-worker closing"))))
+
+(defn proc-worker
+  [{:keys [ch-worker-in ch-worker-out] :as channels} store-arg]
+  (let [worker (js/Worker. "/js-out/worker.js")]
+    (aset worker "onmessage" (fn [e]
+                               (js/console.log "; msg from worker")
+                               (js/console.log e)))
+    (set! -worker worker)
+    (go (loop []
+          (if-let [[v port] (alts! [ch-worker-out])]
+            (condp = port
+              ch-worker-out (let []
+                              (println "; ch-worker-out " v)
+                              (.postMessage worker "to worker")
+                              (recur)))))
+        (println "proc-worker closing"))))
+
+
+
+
+(comment
+
+  (put! (-channels :ch-worker-out) {})
+  (js/console.log -worker)
+  (.. -worker  -postMessage)
+  (.. -worker -port -onmessage)
+
+  
+  
+  ;;
+  )

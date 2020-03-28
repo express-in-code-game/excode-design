@@ -10,6 +10,9 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    [starnet.common.alpha.core :refer [make-inst with-gen-fmap]]
+
+   [starnet.common.alpha.spec]
+
    [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]
    #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethod-set derive-set]]
       :clj  [starnet.common.alpha.macros :refer [defmethod-set derive-set]])))

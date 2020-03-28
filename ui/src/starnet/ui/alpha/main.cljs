@@ -92,7 +92,8 @@
                              _ (>! (channels :ch-db) {:db/op :get-ratoms :ch/c-out c})
                              ratoms (<! c)]
                          (proc-render-ui (select-keys channels [:ch-db :pb-sys :ch-inputs]) ratoms)
-                         (game/proc-game (channels :game-channels) (ratoms :game-store))
+                         (game/proc-store (channels :game-channels) (ratoms :game-store))
+                         (game/proc-worker (channels :game-channels) (ratoms :game-store))
                          (put! (channels :ch-sys) {:ch/topic :proc-render-ui :proc/op :render})))
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
                      (put! (channels :ch-sys) {:ch/topic :proc-history :proc/op :start})
