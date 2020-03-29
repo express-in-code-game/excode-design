@@ -60,6 +60,8 @@
     - events
     - users and events
     - as there will be no limitations like 'add to friends' 'follow' etc. - user creates their own lookup lists
+  - export (to load, exahnge) game as data
+    - load can be a url to a file (edn or transit, possibly edn for readabiity)
 - no chat
 - user profile has rating and event results (can be reset)
 - official and community map templates and configurable events
