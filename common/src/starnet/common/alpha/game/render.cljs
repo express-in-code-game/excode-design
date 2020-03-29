@@ -13,6 +13,8 @@
    [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]
 
    [reagent.core :as r]
+   [goog.string :as gstring]
+   [goog.string.format]
 
    ["antd/lib/layout" :default AntLayout]
    ["antd/lib/menu" :default AntMenu]
@@ -102,6 +104,26 @@
                                            [:p (str x)]])}
                   [:div {:class ["tile"]}]]) entities)]]))))
 
+(defn rc-raw-svg-grid
+  [channels ratoms]
+  (let [entities* (ratoms :ra.g/entities)]
+    (fn [_ _]
+      (let [entities @entities*]
+        [:svg {:view-box (gstring/format "0 0 %s %s" (* 64 16)  (* 64 16))
+               :stroke "grey"
+               :fill "none"
+               :width (str (* 64 16) "px")
+               :height (str (* 64 16) "px")}
+         (map-indexed (fn [i p]
+                        [:<> {:key i}
+                         (map-indexed (fn [j x]
+                                        [:rect {:key (:e/uuid x)
+                                                :x (* 16 (mod j 64))
+                                                :y (* 16 i)
+                                                :width 16
+                                                :height 16}]) p)]) (partition 64 entities))])))
+  )
+
 (defn rc-game
   [channels ratoms]
   (let [{:keys [ch-inputs]} channels
@@ -131,7 +153,8 @@
           [:div  [:span "game status: "] [:span status]]
           [:div  [:span "map status: "] [:span (str m-status)]]
           [:div  [:span "count entities: "] [:span count-entities]]
-          #_[:div  [:span "timer: "] [:span timer]]]]))))
+          #_[:div  [:span "timer: "] [:span timer]]]
+         [rc-raw-svg-grid channels ratoms]]))))
 
 (comment
 

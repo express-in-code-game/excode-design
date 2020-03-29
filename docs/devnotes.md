@@ -167,6 +167,8 @@
       - https://vega.github.io/vega-lite/examples/
       - https://vega.github.io/vega/tutorials/airports/
       - https://github.com/metasoarous/oz
+    - https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg
+      - https://developer.mozilla.org/en-US/docs/Web/SVG/Element/rect
     
 - docker
   - https://docs.docker.com/config/containers/resource_constraints/
