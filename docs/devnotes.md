@@ -159,6 +159,10 @@
     - https://developer.mozilla.org/en-US/docs/Web/API/History_API/Working_with_the_History_API
     - https://github.com/juxt/bidi
     - https://github.com/clj-commons/pushy
+  - render
+    - https://github.com/vega/vega
+      - https://vega.github.io/vega/tutorials/airports/
+      - https://github.com/metasoarous/oz
     
 - docker
   - https://docs.docker.com/config/containers/resource_constraints/
