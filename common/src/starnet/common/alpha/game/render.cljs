@@ -149,7 +149,8 @@
                                           [:rect {:key (:e/uuid x)
                                                   :class ["tile"]}]
                                           [:polygon {:stroke (rand-hexcolor :alpha "88")
-                                                     :points (->> (repeatedly 4 #(-> [(rand-int 30) (rand-int 30)]))
+                                                     :points (->> (repeatedly (+ 0 (rand-int 7)) 
+                                                                              #(-> [(rand-int 30) (rand-int 30)]))
                                                                   (map #(clojure.string/join \, %))
                                                                   (clojure.string/join \space))
                                                      :fill "none"}]]
