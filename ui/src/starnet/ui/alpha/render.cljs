@@ -34,7 +34,6 @@
    ["antd/lib/divider" :default AntDivider]
    ["@ant-design/icons/SmileOutlined" :default AntSmileOutlined]))
 
-(js/console.log )
 
 (def ant-row (r/adapt-react-class AntRow))
 (def ant-col (r/adapt-react-class AntCol))
@@ -250,9 +249,7 @@
   (let []
     (fn [_ _]
       (let []
-        [layout-game channels ratoms
-         [:<>
-          [rc-game (channels :game-channels) (ratoms :game-store)]]]))))
+        [rc-game (channels :game-channels) (ratoms :game-store)]))))
 
 (defn rc-page-stats-id
   [channels ratoms]
