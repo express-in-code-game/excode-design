@@ -12,6 +12,8 @@
    
    [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]))
 
+(declare next-state)
+
 (defn make-state
   ([]
    (make-state {}))
@@ -20,54 +22,16 @@
            :g/events []}
           (select-keys opts [:g/events :g/uuid]))))
 
-(declare next-state*)
-
-(defn next-state
-  ([state k ev]
-   (next-state state k ev nil))
-  ([state k ev tags]
-   (cond
-     (and (vector? tags)
-          (descendants (first tags))) (cond
-                                        (-> (first tags)
-                                            (descendants)
-                                            (:ev/type ev)) (next-state* state k ev tags)
-                                        :else state)
-     (and (coll? tags) (empty? tags)) state
-     (set? tags) (next-state* state k ev [(:ev/type ev) tags])
-     (vector? tags) (next-state* state k ev [(:ev/type ev) tags])
-     (list? tags) (next-state (next-state state k ev (first tags)) k ev (rest tags))
-     :else (next-state* state k ev tags))))
-
-(comment
-
-  (ns-unmap *ns* 'next-state*)
-
-  (next-state nil nil {:ev/type :ev.g/create} '([:ev/event #{:plain}] #{:plain}))
-
-  ;;
-  )
-
-
 (defmulti next-state*
   {:arglists '([state key event dispatch-v])}
   (fn [state k ev dispatch-v] dispatch-v))
 
-(defmethod next-state* :default
-  [state k ev dispatch-v]
-  #_(println (format "; warning: next-state* :default invoked %s %s" (:ev/type ev) dispatch-v))
-  state)
+
 
 (defmethod next-state* [:ev/event #{:plain}]
   [state k ev _]
   (-> state
       (update :g/events #(-> % (conj ev)))))
-
-(defmethod next-state* [:ev/event #{:derived}]
-  [state k ev _]
-  (let []
-    (swap! (:ra.g/state state) merge (dissoc state :ra.g/state :g/events :db/ds :ra.g/map))
-    state))
 
 (defmethod next-state* [:ev/batch #{:plain}]
   [state k ev _]
@@ -131,3 +95,56 @@
   (let [{:keys [u/uuid g/role]} ev]
     (-> state
         (update-in [:g/participants] assoc uuid role))))
+
+(defmethod next-state* :default
+  [state k ev dispatch-v]
+  #_(println (format "; warning: next-state* :default invoked %s %s" (:ev/type ev) dispatch-v))
+  state)
+
+
+#_(defn next-state
+    ([state k ev]
+     (next-state state k ev nil))
+    ([state k ev tags]
+     (cond
+       (and (vector? tags)
+            (descendants (first tags))) (cond
+                                          (-> (first tags)
+                                              (descendants)
+                                              (:ev/type ev)) (next-state* state k ev tags)
+                                          :else state)
+       (and (coll? tags) (empty? tags)) state
+       (set? tags) (next-state* state k ev [(:ev/type ev) tags])
+       (vector? tags) (next-state* state k ev [(:ev/type ev) tags])
+       (list? tags) (next-state (next-state state k ev (first tags)) k ev (rest tags))
+       :else (next-state* state k ev tags))))
+
+(comment
+
+  (ns-unmap *ns* 'next-state*)
+
+  (next-state nil nil {:ev/type :ev.g/create} '([:ev/event #{:plain}] #{:plain}))
+
+  ;;
+  )
+
+(defn makef-event-tags-recursion
+  [next-state-f]
+  (fn event-tags-recursion
+    ([state k ev]
+     (event-tags-recursion state k ev nil))
+    ([state k ev tags]
+     (cond
+       (and (vector? tags)
+            (descendants (first tags))) (cond
+                                          (-> (first tags)
+                                              (descendants)
+                                              (:ev/type ev)) (next-state-f state k ev tags)
+                                          :else state)
+       (and (coll? tags) (empty? tags)) state
+       (set? tags) (next-state-f state k ev [(:ev/type ev) tags])
+       (vector? tags) (next-state-f state k ev [(:ev/type ev) tags])
+       (list? tags) (event-tags-recursion (event-tags-recursion state k ev (first tags)) k ev (rest tags))
+       :else (next-state-f state k ev tags)))))
+
+(def next-state (makef-event-tags-recursion next-state*))

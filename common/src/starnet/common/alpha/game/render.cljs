@@ -108,9 +108,11 @@
         uuid* (r/cursor (ratoms :ra.g/state) [:g/uuid])
         status* (r/cursor (ratoms :ra.g/state) [:g/status])
         m-status* (r/cursor (ratoms :ra.g/map) [:m/status])
+        count-entities* (ratoms :ra.g/count-entities)
+        entities* (ratoms :ra.g/entities)
         timer* (r/atom 0)
         _ (go (loop [c-interval (timeout 1000)
-                     c-duration (timeout 20000)]
+                     c-duration (timeout 2000000)]
                 (alt!
                   c-interval (do
                                (swap! timer* inc)
@@ -120,12 +122,15 @@
       (let [uuid @uuid*
             status @status*
             m-status  @m-status* #_(-> @(ratoms :ra.g/map) :m/status)
+            entities @entities*
+            count-entities @count-entities*
             timer @timer*]
         [:<>
          [:div {:style {:position "absolute" :top 0 :left 0}}
           [:div  uuid]
           [:div  [:span "game status: "] [:span status]]
           [:div  [:span "map status: "] [:span (str m-status)]]
+          [:div  [:span "count entities: "] [:span count-entities]]
           [:div  [:span "timer: "] [:span timer]]]]))))
 
 (comment

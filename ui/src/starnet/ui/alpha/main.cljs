@@ -49,8 +49,7 @@
                         ch-http (chan (sliding-buffer 10))
                         ch-ops (chan (sliding-buffer 100))
                         ch-inputs (chan (sliding-buffer 100))
-                        pb-inputs (pub ch-inputs :ch/topic (fn [_] (sliding-buffer 100)))
-                        ch-worker (chan (sliding-buffer 10))]
+                        pb-inputs (pub ch-inputs :ch/topic (fn [_] (sliding-buffer 100)))]
                     {:ch-proc-main ch-proc-main
                      :ch-sys ch-sys
                      :pb-sys pb-sys
@@ -66,7 +65,6 @@
                      :pb-inputs pb-inputs
                      :ch-socket-in ch-socket-in
                      :ch-socket-out ch-socket-out
-                     :ch-worker ch-worker
                      :game-channels (game/make-channels)}))
 
 (defn ^:export main
@@ -89,15 +87,14 @@
                      (proc-derived-state (select-keys channels [:ml-router :ml-http-res :ch-db]))
                      (proc-http (select-keys channels [:ch-sys :ch-http :ch-db]))
                      (proc-ops (select-keys channels [:ch-sys :ch-db :ch-http :pb-inputs :ch-ops]))
-                     (proc-worker (select-keys channels [:ch-worker]))
                      (go
                        (let [c (chan 1)
                              _ (>! (channels :ch-db) {:db/op :get-ratoms :ch/c-out c})
                              ratoms (<! c)]
                          (proc-render-ui (select-keys channels [:ch-db :pb-sys :ch-inputs]) ratoms)
-                         (game/proc-store (merge (channels :game-channels)
-                                                 (select-keys channels [:ch-worker]))
+                         (game/proc-store (channels :game-channels)
                                           (ratoms :game-store))
+                         (game/proc-worker (channels :game-channels))
                          (put! (channels :ch-sys) {:ch/topic :proc-render-ui :proc/op :render})))
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
                      (put! (channels :ch-sys) {:ch/topic :proc-history :proc/op :start})
@@ -235,7 +232,8 @@
      :user user
      :local-storage local-storage
      :token token
-     :game-store (game/make-store {:g/uuid (gen/generate gen/uuid)})}))
+     :game-store (game/make-store {:g/uuid (gen/generate gen/uuid)
+                                   :channels (channels :game-channels)})}))
 
 (defonce ^:private -ratoms nil)
 
@@ -514,20 +512,3 @@
   ;;
   )
 
-(def ^:private -worker nil)
-
-(defn proc-worker
-  [{:keys [ch-worker] :as channels}]
-  (let [worker (js/Worker. "/js-out/worker.js")
-        queue (chan 10)]
-    (aset worker "onmessage" (fn [e]
-                               (take! queue (fn [c]
-                                              (put! c (cljs.reader/read-string (.-data e)))))))
-    (set! -worker worker)
-    (go (loop []
-          (if-let [v (<! ch-worker)]
-            (let [{:keys [ch/c-out]} v]
-              (.postMessage worker (pr-str (dissoc v :ch/c-out)))
-              (put! queue c-out)
-              (recur))))
-        (println "proc-worker closing"))))
