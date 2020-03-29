@@ -161,6 +161,8 @@
     - https://github.com/clj-commons/pushy
   - render
     - https://github.com/vega/vega
+      - https://vega.github.io/vega/examples/
+      - https://vega.github.io/vega-lite/examples/
       - https://vega.github.io/vega/tutorials/airports/
       - https://github.com/metasoarous/oz
     
