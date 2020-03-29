@@ -160,6 +160,8 @@
     - https://github.com/juxt/bidi
     - https://github.com/clj-commons/pushy
   - render
+    - https://github.com/d3/d3
+      - https://observablehq.com/@peatroot/stars-and-constellations?collection=@observablehq/visualization
     - https://github.com/vega/vega
       - https://vega.github.io/vega/examples/
       - https://vega.github.io/vega-lite/examples/
