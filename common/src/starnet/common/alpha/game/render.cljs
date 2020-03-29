@@ -131,7 +131,7 @@
           [:div  [:span "game status: "] [:span status]]
           [:div  [:span "map status: "] [:span (str m-status)]]
           [:div  [:span "count entities: "] [:span count-entities]]
-          [:div  [:span "timer: "] [:span timer]]]]))))
+          #_[:div  [:span "timer: "] [:span timer]]]]))))
 
 (comment
 
