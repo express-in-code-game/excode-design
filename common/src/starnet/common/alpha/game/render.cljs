@@ -101,27 +101,37 @@
                    :title "entity"
                    :trigger "click"
                    :content (r/as-element [:div
-                                           [:p (str x)]])}
+                                           [:p (str (:e/uuid x))]])}
                   [:div {:class ["tile"]}]]) entities)]]))))
 
 (defn rc-raw-svg-grid
   [channels ratoms]
   (let [entities* (ratoms :ra.g/entities)]
     (fn [_ _]
-      (let [entities @entities*]
-        [:svg {:view-box (gstring/format "0 0 %s %s" (* 64 16)  (* 64 16))
-               :stroke "grey"
-               :fill "none"
-               :width (str (* 64 16) "px")
-               :height (str (* 64 16) "px")}
+      (let [entities @entities*
+            rows 64
+            cols 64
+            w 48
+            h 48]
+        [:svg {:view-box (gstring/format "0 0 %s %s" (* 64 w)  (* 64 h))
+               :stroke "#efefefff"
+               :fill "#ffffff88"
+               :width (str (* cols w) "px")
+               :height (str (* 64 h) "px")}
          (map-indexed (fn [i p]
                         [:<> {:key i}
                          (map-indexed (fn [j x]
-                                        [:rect {:key (:e/uuid x)
-                                                :x (* 16 (mod j 64))
-                                                :y (* 16 i)
-                                                :width 16
-                                                :height 16}]) p)]) (partition 64 entities))])))
+                                        [ant-popover
+                                         {:placement "top"
+                                          :key (:e/uuid x)
+                                          :title "entity"
+                                          :trigger "click"
+                                          :content (r/as-element [:div
+                                                                  [:p (str (:e/uuid x))]])}
+                                         [:rect {:key (:e/uuid x)
+                                                 :x (* w (mod j 64))
+                                                 :y (* h i)
+                                                 :class ["tile"]}]]) p)]) (partition cols entities))])))
   )
 
 (defn rc-game
