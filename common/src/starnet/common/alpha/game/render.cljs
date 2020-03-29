@@ -13,8 +13,7 @@
    [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]
 
    [reagent.core :as r]
-   [goog.string :as gstring]
-   [goog.string.format]
+   [goog.string :refer [format]]
 
    ["antd/lib/layout" :default AntLayout]
    ["antd/lib/menu" :default AntMenu]
@@ -32,7 +31,6 @@
 
    ["antd/lib/divider" :default AntDivider]
    ["@ant-design/icons/SmileOutlined" :default AntSmileOutlined]))
-
 
 (def ant-row (r/adapt-react-class AntRow))
 (def ant-col (r/adapt-react-class AntCol))
@@ -104,6 +102,24 @@
                                            [:p (str (:e/uuid x))]])}
                   [:div {:class ["tile"]}]]) entities)]]))))
 
+(defn rc-polygon1
+  [channels ratoms]
+  [:polygon {:points "100,100 150,25 150,75 200,0"
+             :fill "none"}])
+
+#_(defn rc-polygon1
+    [channels ratoms]
+    [:polygon {:points "100,100 150,25 150,75 200,0"
+               :fill "none"}])
+#_[:rect {:x (* w (mod j 64))
+          :y (* h i)
+          :key (:e/uuid x)
+          :class ["tile"]}]
+
+(defn rand-hexcolor
+  [& {:keys [alpha] :or {alpha "ff"}}]
+  (str "#" (.toString (rand-int 16rFFFFFF) 16) alpha))
+
 (defn rc-raw-svg-grid
   [channels ratoms]
   (let [entities* (ratoms :ra.g/entities)]
@@ -113,7 +129,7 @@
             cols 64
             w 48
             h 48]
-        [:svg {:view-box (gstring/format "0 0 %s %s" (* 64 w)  (* 64 h))
+        [:svg {:view-box (format "0 0 %s %s" (* 64 w)  (* 64 h))
                :stroke "#efefefff"
                :fill "#ffffff88"
                :width (str (* cols w) "px")
@@ -128,10 +144,16 @@
                                           :trigger "click"
                                           :content (r/as-element [:div
                                                                   [:p (str (:e/uuid x))]])}
-                                         [:rect {:key (:e/uuid x)
-                                                 :x (* w (mod j 64))
-                                                 :y (* h i)
-                                                 :class ["tile"]}]]) p)]) (partition cols entities))])))
+                                         
+                                         [:g {:transform (format "translate(%s %s)" (* w (mod j 64)) (* h i))}
+                                          [:rect {:key (:e/uuid x)
+                                                  :class ["tile"]}]
+                                          [:polygon {:stroke (rand-hexcolor :alpha "88")
+                                                     :points (->> (repeatedly 4 #(-> [(rand-int 30) (rand-int 30)]))
+                                                                  (map #(clojure.string/join \, %))
+                                                                  (clojure.string/join \space))
+                                                     :fill "none"}]]
+                                         ]) p)]) (partition cols entities))])))
   )
 
 (defn rc-game

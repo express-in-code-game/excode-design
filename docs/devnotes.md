@@ -169,6 +169,8 @@
       - https://github.com/metasoarous/oz
     - https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg
       - https://developer.mozilla.org/en-US/docs/Web/SVG/Element/rect
+    - https://github.com/plouc/nivo
+      - https://nivo.rocks/geomap/canvas/
     
 - docker
   - https://docs.docker.com/config/containers/resource_constraints/
