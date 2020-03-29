@@ -19,12 +19,10 @@
   []
   (let [ch-game (chan (sliding-buffer 10))
         ch-game-events (chan (sliding-buffer 10))
-        ch-inputs (chan (sliding-buffer 10))
-        ch-worker (chan (sliding-buffer 10))]
+        ch-inputs (chan (sliding-buffer 10))]
     {:ch-game ch-game
      :ch-game-events ch-game-events
-     :ch-inputs ch-inputs
-     :ch-worker ch-worker}))
+     :ch-inputs ch-inputs}))
 
 (defn make-store
   ([]
@@ -113,23 +111,7 @@
     (println "end")
     state))
 
-(def ^:private -worker nil)
 
-(defn proc-worker
-  [{:keys [ch-worker] :as channels} store-arg]
-  (let [worker (js/Worker. "/js-out/worker.js")
-        queue (chan 10)]
-    (aset worker "onmessage" (fn [e]
-                               (take! queue (fn [c]
-                                              (put! c (cljs.reader/read-string (.-data e)))))))
-    (set! -worker worker)
-    (go (loop []
-          (if-let [v (<! ch-worker)]
-            (let [{:keys [ch/c-out]} v]
-              (.postMessage worker (pr-str (dissoc v :ch/c-out)))
-              (put! queue c-out)
-              (recur))))
-        (println "proc-worker closing"))))
 
 
 (comment

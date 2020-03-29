@@ -51,16 +51,16 @@
   [{:keys [ch-ops-in]}]
   (go (loop []
         (if-let [v (<! ch-ops-in)]
-          (let [{:keys [worker/op ch/c-out]} v]
+          (let [{:keys [worker/op ch/c-out worker/args]} v]
             (condp = op
-              :starnet.common.alpha.game.data/make-entities (let [o (make-entities v)]
-                                    (>! c-out o))
-              :a (>! c-out {:a (rand-int 10)})
-              :b (>! c-out {:b (rand-int 10)}))))
+              :starnet.common.alpha.game.data/make-entities (let [o (make-entities args)]
+                                                              (>! c-out o)))))
         (recur))))
 
 
 (comment
+  
+  
   
   ;;
   )
