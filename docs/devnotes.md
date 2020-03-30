@@ -180,7 +180,9 @@
     - https://github.com/konvajs/konva
       - https://konvajs.org/docs/react/index.html
         - https://github.com/konvajs/react-konva
-    - 
+    - https://leafletjs.com/#features
+    - https://github.com/prc5/react-zoom-pan-pinch
+    - http://hammerjs.github.io/getting-started/
     
 - docker
   - https://docs.docker.com/config/containers/resource_constraints/
