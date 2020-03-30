@@ -182,7 +182,7 @@
         - https://github.com/konvajs/react-konva
     - https://leafletjs.com/#features
     - https://github.com/prc5/react-zoom-pan-pinch
-    - http://hammerjs.github.io/getting-started/
+    - https://github.com/chrvadala/react-svg-pan-zoom
     
 - docker
   - https://docs.docker.com/config/containers/resource_constraints/
