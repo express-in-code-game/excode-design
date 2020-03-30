@@ -2,6 +2,7 @@
   (:require
    [clojure.repl :refer [doc]]
    [reagent.core :as r]
+   [cljs.reader :refer [read-string]]
    [clojure.core.async :as a :refer [<! >!  timeout chan alt! go
                                      alts!  take! put! mult tap untap
                                      pub sub sliding-buffer mix admix unmix]]
@@ -40,7 +41,7 @@
   [{:keys [ch-ops-in]}]
   (let [on-message (fn [e]
                      (let [c-out (chan 1)]
-                       (put! ch-ops-in (merge (cljs.reader/read-string (.-data e))
+                       (put! ch-ops-in (merge (read-string (.-data e))
                                               {:ch/c-out c-out}))
                        (take! c-out (fn [v]
                                       (.postMessage js/self (pr-str v))))))]

@@ -4,6 +4,7 @@
    [clojure.core.async :as a :refer [<! >!  timeout chan alt! go
                                      alts!  take! put! mult tap untap
                                      pub sub sliding-buffer mix admix unmix]]
+   [cljs.reader :refer [read-string]]
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
    [clojure.spec.test.alpha :as stest]
@@ -154,7 +155,7 @@
         queue (chan 10)]
     (aset worker "onmessage" (fn [e]
                                (take! queue (fn [c]
-                                              (put! c (cljs.reader/read-string (.-data e)))))))
+                                              (put! c (read-string (.-data e)))))))
     (set! -worker worker)
     (go (loop []
           (if-let [v (<! ch-worker)]
