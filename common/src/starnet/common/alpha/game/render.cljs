@@ -120,6 +120,37 @@
   [& {:keys [alpha] :or {alpha "ff"}}]
   (str "#" (.toString (rand-int 16rFFFFFF) 16) alpha))
 
+(defn rand-points
+  []
+  (->> (repeatedly (+ 0 (rand-int 7))
+                   #(-> [(rand-int 30) (rand-int 30)]))
+       (map #(clojure.string/join \, %))
+       (clojure.string/join \space)))
+
+(defn svg-entity-1
+  [channels ratoms {:keys [entity transform]}]
+  (let [rand-col* (r/atom (rand-hexcolor :alpha "88"))
+        points* (r/atom (rand-points))]
+    (go (loop []
+          (<! (timeout (+ 500 (rand-int 800))))
+          (if (odd? (rand-int 10))
+            (reset! rand-col* (rand-hexcolor :alpha "88"))
+            (reset! points* (rand-points)))
+          (recur)))
+    (fn [_ _ _]
+      (let []
+        [ant-popover
+         {:placement "top"
+          :title "entity"
+          :trigger "click"
+          :content (r/as-element [:div
+                                  [:p (str (:e/uuid entity))]])}
+         [:g {:transform transform}
+          [:rect {:class ["tile"]}]
+          [:polygon {:stroke @rand-col*
+                     :points @points*
+                     :fill "none"}]]]))))
+
 (defn rc-raw-svg-grid
   [channels ratoms]
   (let [entities* (ratoms :ra.g/entities)]
@@ -137,24 +168,11 @@
          (map-indexed (fn [i p]
                         [:<> {:key i}
                          (map-indexed (fn [j x]
-                                        [ant-popover
-                                         {:placement "top"
-                                          :key (:e/uuid x)
-                                          :title "entity"
-                                          :trigger "click"
-                                          :content (r/as-element [:div
-                                                                  [:p (str (:e/uuid x))]])}
-                                         
-                                         [:g {:transform (format "translate(%s %s)" (* w (mod j 64)) (* h i))}
-                                          [:rect {:key (:e/uuid x)
-                                                  :class ["tile"]}]
-                                          [:polygon {:stroke (rand-hexcolor :alpha "88")
-                                                     :points (->> (repeatedly (+ 0 (rand-int 7)) 
-                                                                              #(-> [(rand-int 30) (rand-int 30)]))
-                                                                  (map #(clojure.string/join \, %))
-                                                                  (clojure.string/join \space))
-                                                     :fill "none"}]]
-                                         ]) p)]) (partition cols entities))])))
+                                        ^{:key (:e/uuid x)}
+                                        [svg-entity-1 channels ratoms
+                                         {:entity x
+                                          :transform (format "translate(%s %s)" (* w (mod j 64)) (* h i))}]) p)])
+                      (partition cols entities))])))
   )
 
 (defn rc-game
@@ -186,7 +204,9 @@
           [:div  [:span "game status: "] [:span status]]
           [:div  [:span "map status: "] [:span (str m-status)]]
           [:div  [:span "count entities: "] [:span count-entities]]
-          #_[:div  [:span "timer: "] [:span timer]]]]))))
+          #_[:div  [:span "timer: "] [:span timer]]]
+         [rc-raw-svg-grid channels ratoms]
+         ]))))
 
 (comment
 
