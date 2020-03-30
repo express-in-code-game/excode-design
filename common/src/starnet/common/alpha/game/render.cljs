@@ -179,6 +179,23 @@
                   (partition cols @entities*))]
     (finally (println "rc-raw-svg-grid unmount"))))
 
+(defn mouse-pos []
+  (r/with-let [pointer (r/atom nil)
+               handler #(swap! pointer assoc
+                               :x (.-pageX %)
+                               :y (.-pageY %))
+               _ (.addEventListener js/document "mousemove" handler)]
+    @pointer
+    (finally
+      (.removeEventListener js/document "mousemove" handler))))
+
+(defn tracked-pos []
+  (let [rt (r/track mouse-pos)]
+    (fn []
+      [:div
+       "Pointer moved to: "
+       (str @rt)])))
+
 (defn rc-game
   [channels ratoms]
   (let [{:keys [ch-inputs ch-game-events]} channels
@@ -205,6 +222,7 @@
         [:<>
          [:div {:style {:position "absolute" :top 0 :left 0}}
           #_[:div  uuid]
+          [tracked-pos]
           [:div  [:span "game status: "] [:span status]]
           [:div  [:span "map status: "] [:span (str m-status)]]
           [:div  [:span "count entities: "] [:span count-entities]]
