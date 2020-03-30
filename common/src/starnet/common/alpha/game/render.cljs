@@ -129,51 +129,55 @@
 
 (defn svg-entity-1
   [channels ratoms {:keys [entity transform]}]
-  (let [rand-col* (r/atom (rand-hexcolor :alpha "88"))
-        points* (r/atom (rand-points))]
-    (go (loop []
-          (<! (timeout (+ 500 (rand-int 800))))
-          (if (odd? (rand-int 10))
-            (reset! rand-col* (rand-hexcolor :alpha "88"))
-            (reset! points* (rand-points)))
-          (recur)))
-    (fn [_ _ _]
-      (let []
-        [ant-popover
-         {:placement "top"
-          :title "entity"
-          :trigger "click"
-          :content (r/as-element [:div
-                                  [:p (str (:e/uuid entity))]])}
-         [:g {:transform transform}
-          [:rect {:class ["tile"]}]
-          [:polygon {:stroke @rand-col*
-                     :points @points*
-                     :fill "none"}]]]))))
+  (r/with-let [rand-col* (r/atom (rand-hexcolor :alpha "88"))
+               points* (r/atom (rand-points))
+               chan-close (chan 1)
+               _ (go (loop []
+                       (alt!
+                         (timeout (+ 500 (rand-int 800))) (do
+                                                            (if (odd? (rand-int 10))
+                                                              (reset! rand-col* (rand-hexcolor :alpha "88"))
+                                                              (reset! points* (rand-points)))
+                                                            (recur))
+
+                         chan-close (println "chan-close")))
+                     (println "exiting loop"))]
+    [ant-popover
+     {:placement "top"
+      :title "entity"
+      :trigger "click"
+      :content (r/as-element [:div
+                              [:p (str (:e/uuid entity))]])}
+     [:g {:transform transform}
+      [:rect {:class ["tile"]}]
+      [:polygon {:stroke @rand-col*
+                 :points @points*
+                 :fill "none"}]]]
+    (finally
+      (println "svg-entity-1 unmount")
+      (a/close! chan-close))))
 
 (defn rc-raw-svg-grid
   [channels ratoms]
-  (let [entities* (ratoms :ra.g/entities)]
-    (fn [_ _]
-      (let [entities @entities*
-            rows 64
-            cols 64
-            w 48
-            h 48]
-        [:svg {:view-box (format "0 0 %s %s" (* 64 w)  (* 64 h))
-               :stroke "#efefefff"
-               :fill "#ffffff88"
-               :width (str (* cols w) "px")
-               :height (str (* 64 h) "px")}
-         (map-indexed (fn [i p]
-                        [:<> {:key i}
-                         (map-indexed (fn [j x]
-                                        ^{:key (:e/uuid x)}
-                                        [svg-entity-1 channels ratoms
-                                         {:entity x
-                                          :transform (format "translate(%s %s)" (* w (mod j 64)) (* h i))}]) p)])
-                      (partition cols entities))])))
-  )
+  (r/with-let [entities* (ratoms :ra.g/entities)
+               rows 64
+               cols 64
+               w 48
+               h 48]
+    [:svg {:view-box (format "0 0 %s %s" (* 64 w)  (* 64 h))
+           :stroke "#efefefff"
+           :fill "#ffffff88"
+           :width (str (* cols w) "px")
+           :height (str (* 64 h) "px")}
+     (map-indexed (fn [i p]
+                    [:<> {:key i}
+                     (map-indexed (fn [j x]
+                                    ^{:key (:e/uuid x)}
+                                    [svg-entity-1 channels ratoms
+                                     {:entity x
+                                      :transform (format "translate(%s %s)" (* w (mod j 64)) (* h i))}]) p)])
+                  (partition cols @entities*))]
+    (finally (println "rc-raw-svg-grid unmount"))))
 
 (defn rc-game
   [channels ratoms]
@@ -205,8 +209,7 @@
           [:div  [:span "map status: "] [:span (str m-status)]]
           [:div  [:span "count entities: "] [:span count-entities]]
           #_[:div  [:span "timer: "] [:span timer]]]
-         [rc-raw-svg-grid channels ratoms]
-         ]))))
+         #_[rc-raw-svg-grid channels ratoms]]))))
 
 (comment
 
