@@ -163,9 +163,10 @@
     - https://github.com/reagent-project/reagent/blob/2027a2d8881bae0567ecf9d4c90550b064a2ad0c/doc/CreatingReagentComponents.md#appendix-b---with-let-macro
   - render
     - https://github.com/d3/d3
-      - https://observablehq.com/@peatroot/stars-and-constellations?collection=@observablehq/visualization
-      - https://csaladenes.wordpress.com/2015/03/10/the-global-center-of-mass-of-higher-education-university-rankings-mapped/
-        - https://blog.csaladen.es/universities%20geo/
+      - https://github.com/d3/d3/wiki/Gallery
+        - https://observablehq.com/@peatroot/stars-and-constellations?collection=@observablehq/visualization
+        - https://csaladenes.wordpress.com/2015/03/10/the-global-center-of-mass-of-higher-education-university-rankings-mapped/
+          - https://blog.csaladen.es/universities%20geo/
     - https://github.com/quil/quil
     - https://github.com/vega/vega
       - https://vega.github.io/vega/examples/
