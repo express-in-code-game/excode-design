@@ -164,6 +164,8 @@
   - render
     - https://github.com/d3/d3
       - https://observablehq.com/@peatroot/stars-and-constellations?collection=@observablehq/visualization
+      - https://csaladenes.wordpress.com/2015/03/10/the-global-center-of-mass-of-higher-education-university-rankings-mapped/
+        - https://blog.csaladen.es/universities%20geo/
     - https://github.com/quil/quil
     - https://github.com/vega/vega
       - https://vega.github.io/vega/examples/
@@ -174,6 +176,10 @@
       - https://developer.mozilla.org/en-US/docs/Web/SVG/Element/rect
     - https://github.com/plouc/nivo
       - https://nivo.rocks/geomap/canvas/
+    - https://github.com/konvajs/konva
+      - https://konvajs.org/docs/react/index.html
+        - https://github.com/konvajs/react-konva
+    - 
     
 - docker
   - https://docs.docker.com/config/containers/resource_constraints/
