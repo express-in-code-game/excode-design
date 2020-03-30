@@ -144,9 +144,7 @@
     - https://tonsky.me/blog/datascript-chat/
     - https://github.com/kristianmandrup/datascript-tutorial/blob/master/SUMMARY.md
 
-- reagent
-    - http://reagent-project.github.io/docs/master/reagent.core.html#var-cursor
-    - https://clojuredocs.org/clojure.core/add-watch
+
 
 - cljs
   - antd
@@ -159,6 +157,10 @@
     - https://developer.mozilla.org/en-US/docs/Web/API/History_API/Working_with_the_History_API
     - https://github.com/juxt/bidi
     - https://github.com/clj-commons/pushy
+  - reagent
+    - http://reagent-project.github.io/docs/master/reagent.core.html#var-cursor
+    - https://clojuredocs.org/clojure.core/add-watch
+    - https://github.com/reagent-project/reagent/blob/2027a2d8881bae0567ecf9d4c90550b064a2ad0c/doc/CreatingReagentComponents.md#appendix-b---with-let-macro
   - render
     - https://github.com/d3/d3
       - https://observablehq.com/@peatroot/stars-and-constellations?collection=@observablehq/visualization
