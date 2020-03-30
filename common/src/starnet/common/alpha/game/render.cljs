@@ -181,7 +181,7 @@
 
 (defn rc-game
   [channels ratoms]
-  (let [{:keys [ch-inputs]} channels
+  (let [{:keys [ch-inputs ch-game-events]} channels
         uuid* (r/cursor (ratoms :ra.g/state) [:g/uuid])
         status* (r/cursor (ratoms :ra.g/state) [:g/status])
         m-status* (r/cursor (ratoms :ra.g/map) [:m/status])
@@ -202,14 +202,18 @@
             entities @entities*
             count-entities @count-entities*
             timer @timer*]
-        #_[:<>
-           [:div {:style {:position "absolute" :top 0 :left 0}}
-            [:div  uuid]
-            [:div  [:span "game status: "] [:span status]]
-            [:div  [:span "map status: "] [:span (str m-status)]]
-            [:div  [:span "count entities: "] [:span count-entities]]
-            #_[:div  [:span "timer: "] [:span timer]]]
-           [rc-raw-svg-grid channels ratoms]]))))
+        [:<>
+         [:div {:style {:position "absolute" :top 0 :left 0}}
+          #_[:div  uuid]
+          [:div  [:span "game status: "] [:span status]]
+          [:div  [:span "map status: "] [:span (str m-status)]]
+          [:div  [:span "count entities: "] [:span count-entities]]
+          [ant-button {:on-click (fn [_]
+                                   (put! ch-game-events {:ev/type :ev.g/start
+                                                         :g/uuid (gen/generate gen/uuid)
+                                                         :u/uuid (gen/generate gen/uuid)}))} "generate"]
+          #_[:div  [:span "timer: "] [:span timer]]]
+         [rc-raw-svg-grid channels ratoms]]))))
 
 (comment
 

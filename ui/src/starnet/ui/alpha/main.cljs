@@ -91,7 +91,7 @@
                        (let [c (chan 1)
                              _ (>! (channels :ch-db) {:db/op :get-ratoms :ch/c-out c})
                              ratoms (<! c)]
-                         (proc-render-ui (select-keys channels [:ch-db :pb-sys :ch-inputs]) ratoms)
+                         (proc-render-ui (select-keys channels [:ch-db :pb-sys :ch-inputs :game-channels]) ratoms)
                          (game/proc-store (channels :game-channels)
                                           (ratoms :game-store))
                          (game/proc-worker (channels :game-channels))
@@ -317,7 +317,7 @@
             (println (gstring/format "proc-render %s" op))
             (condp = op
               :render (do
-                        (render/render-ui (select-keys channels [:ch-inputs]) ratoms)
+                        (render/render-ui (select-keys channels [:ch-inputs :game-channels]) ratoms)
                         (recur)))))
         (println "closing proc-render"))))
 
