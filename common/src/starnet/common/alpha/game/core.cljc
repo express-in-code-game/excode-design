@@ -9,11 +9,31 @@
    [clojure.spec.test.alpha :as stest]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-   [starnet.common.alpha.core :refer [make-inst with-gen-fmap]]
-
+   
    [starnet.common.alpha.spec]
+   [starnet.common.alpha.core :refer [make-inst with-gen-fmap]]
+   [starnet.common.alpha.macros :refer [defmethod-set derive-set]]
+   [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]))
 
-   [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]
-   #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethod-set derive-set]]
-      :clj  [starnet.common.alpha.macros :refer [defmethod-set derive-set]])))
+
+(defn make-state
+  ([]
+   (make-state {}))
+  ([opts]
+   (merge {:g/uuid (gen/generate gen/uuid)
+           :g/events []}
+          (select-keys opts [:g/events :g/uuid]))))
+
+(defn make-channels
+  []
+  (let [ch-game (chan 10)
+        ch-game-events (chan 100)
+        ch-inputs (chan 100)
+        ch-worker (chan 100)]
+    {:ch-game ch-game
+     :ch-game-events ch-game-events
+     :ch-inputs ch-inputs
+     :ch-worker ch-worker}))
+
+
 
