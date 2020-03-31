@@ -16,7 +16,7 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    
-   [starnet.common.alpha.game.render :refer [rc-game]]
+   #_[starnet.common.alpha.game.render :refer [rc-game]]
 
    ["antd/lib/layout" :default AntLayout]
    ["antd/lib/menu" :default AntMenu]
@@ -249,7 +249,7 @@
   (let []
     (fn [_ _]
       (let []
-        [rc-game (channels :game-channels) (ratoms :game-store)]))))
+        #_[rc-game (channels :game-channels) (ratoms :game-store)]))))
 
 (defn rc-page-stats-id
   [channels ratoms]

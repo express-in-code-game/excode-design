@@ -25,7 +25,7 @@
    [starnet.common.alpha.spec]
    [starnet.ui.alpha.tests]
    [starnet.ui.alpha.render :as render]
-   [starnet.common.alpha.game.store :as game])
+   #_[starnet.common.alpha.game.store :as game])
   (:import [goog.net XhrIo EventType WebSocket]
            [goog Uri]
            goog.history.Html5History))
@@ -65,7 +65,8 @@
                      :pb-inputs pb-inputs
                      :ch-socket-in ch-socket-in
                      :ch-socket-out ch-socket-out
-                     :game-channels (game/make-channels)}))
+                    ;;  :game-channels (game/make-channels)
+                     }))
 
 (defn ^:export main
   []
@@ -92,9 +93,9 @@
                              _ (>! (channels :ch-db) {:db/op :get-ratoms :ch/c-out c})
                              ratoms (<! c)]
                          (proc-render-ui (select-keys channels [:ch-db :pb-sys :ch-inputs :game-channels]) ratoms)
-                         (game/proc-store (channels :game-channels)
-                                          (ratoms :game-store))
-                         (game/proc-worker (channels :game-channels))
+                         #_(game/proc-store (channels :game-channels)
+                                            (ratoms :game-store))
+                         #_(game/proc-worker (channels :game-channels))
                          (put! (channels :ch-sys) {:ch/topic :proc-render-ui :proc/op :render})))
                      (put! (channels :ch-sys) {:ch/topic :proc-socket :proc/op :open})
                      (put! (channels :ch-sys) {:ch/topic :proc-history :proc/op :start})
@@ -232,8 +233,8 @@
      :user user
      :local-storage local-storage
      :token token
-     :game-store (game/make-store {:g/uuid (gen/generate gen/uuid)
-                                   :channels (channels :game-channels)})}))
+     #_:game-store #_(game/make-store {:g/uuid (gen/generate gen/uuid)
+                                       :channels (channels :game-channels)})}))
 
 (defonce ^:private -ratoms nil)
 
