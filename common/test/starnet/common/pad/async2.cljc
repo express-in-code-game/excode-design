@@ -162,3 +162,13 @@
   (a/close! chan-close)
   ;;
   )
+
+
+(comment
+  
+  (def pc (a/promise-chan ))
+  (put! pc 3)
+  (take! pc (fn [v] (println v)))
+  
+  ;;
+  )
