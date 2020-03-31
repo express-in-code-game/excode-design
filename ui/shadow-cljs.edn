@@ -30,6 +30,7 @@
         {:browser-inject :main ; <- https://shadow-cljs.github.io/docs/UsersGuide.html#_web_workers
          :repl-init-ns starnet.ui.alpha.main
          :repl-pprint true
+         :autobuild false
          :http-root  "resources/public"
          :http-port  9500
        ;   :preloads   [day8.re-frame-10x.preload]
