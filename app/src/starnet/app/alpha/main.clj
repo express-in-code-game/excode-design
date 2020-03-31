@@ -24,7 +24,7 @@
    [starnet.common.pad.async2]
    [starnet.common.pad.datascript1]
    [starnet.common.alpha.game.core]
-   [starnet.common.alpha.pad.transducers1]
+   [starnet.common.pad.transducers1]
 
    [starnet.app.alpha.streams :refer [create-topics-async list-topics
                                       delete-topics produce-event create-kvstore
