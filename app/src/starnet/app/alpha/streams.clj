@@ -11,7 +11,7 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
 
-   [starnet.common.alpha.game.state :refer [next-state]]
+   #_[starnet.common.alpha.game.state :refer [next-state]]
    [starnet.common.alpha.spec])
   (:import
    starnet.app.alpha.aux.serdes.TransitJsonSerializer
@@ -433,7 +433,7 @@
                                    (reify Aggregator
                                      (apply [this k v ag]
                                        (try
-                                         (assert-next-game-body (next-state ag k v))
+                                         #_(assert-next-game-body (next-state ag k v))
                                          (catch Exception e
                                            (println (ex-message e))
                                            (println (ex-data e))

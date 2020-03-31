@@ -55,6 +55,10 @@
         - http://swannodette.github.io/2013/07/31/extracting-processes
         - http://swannodette.github.io/2013/08/17/comparative
         - ...
+  - transducers
+    - https://blog.cognitect.com/blog/2014/8/6/transducers-are-coming
+    - https://github.com/clojure/clojure/blob/master/src/clj/clojure/core.clj#L2729
+    - https://github.com/clojure/clojure/blob/master/src/clj/clojure/core.clj#L2863
   - spec
     - guides
       - https://clojure.org/guides/spec
