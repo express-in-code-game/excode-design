@@ -1,7 +1,8 @@
 (ns starnet.common.pad.async2
   (:require
-   [clojure.core.async :as a :refer [<! >! <!! chan go alt! take! put! offer! poll! alts! timeout thread pub sub
-                                     >!! <!! alt!! alts!! go-loop pipeline pipeline-async pipeline-async close!]]))
+   [clojure.core.async :as a :refer [<! >! <!! chan go alt! take! put! offer! poll! alts! to-chan
+                                     timeout thread pub sub  >!! <!! alt!! alts!! close!
+                                     go-loop pipeline pipeline-async pipeline-blocking]]))
 
 
 (defn main-process
@@ -210,6 +211,21 @@
   (go-loop []
     (println (<! c2))
     (recur))
+
+  ; pipeline-blocking
+
+
+  (time (let [blocking-operation (fn [arg] (do
+                                             (<!! (timeout 1000))
+                                             (inc arg)))
+              concurrent 4
+              output-chan (chan)
+              input-coll (range 0 4)]
+          (pipeline-blocking concurrent
+                             output-chan
+                             (map blocking-operation)
+                             (to-chan input-coll))
+          (count (<!! (a/into [] output-chan))))) ; ~ 1000 ms
 
 
   ;;
