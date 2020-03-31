@@ -9,7 +9,7 @@
    [goog.string :as gstring]
    [goog.string.format]
 
-   [starnet.common.alpha.game.data :refer [make-entities]]))
+   #_[starnet.common.alpha.game.data :refer [make-entities]]))
 
 (declare start-worker proc-ops)
 
@@ -54,7 +54,7 @@
         (if-let [v (<! ch-ops-in)]
           (let [{:keys [worker/op ch/c-out worker/args]} v]
             (condp = op
-              :starnet.common.alpha.game.data/make-entities (let [o (make-entities args)]
+              :starnet.common.alpha.game.data/make-entities (let [o nil #_(make-entities args)]
                                                               (>! c-out o)))))
         (recur))))
 
