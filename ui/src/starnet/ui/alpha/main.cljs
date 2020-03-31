@@ -213,7 +213,6 @@
   ;;
   )
 
-
 (defn make-deafult-ratoms
   []
   (let [state (r/atom {})

@@ -20,7 +20,7 @@ test(){
 
 dev(){
     npm i
-    shadow -A:core:dev:local watch app
+    shadow -A:core:dev:local watch :app
     # npx shadow-cljs -A:dev:local watch app
     # yarn dev
 }
