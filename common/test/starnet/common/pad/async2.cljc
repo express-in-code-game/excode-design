@@ -1,8 +1,7 @@
 (ns starnet.common.pad.async2
   (:require
-   [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go
-                                     >!! <!! alt!! alts! alts!! take! put! offer! poll!
-                                     thread pub sub]]))
+   [clojure.core.async :as a :refer [<! >! <!! chan go alt! take! put! offer! poll! alts! timeout thread pub sub
+                                     >!! <!! alt!! alts!! go-loop pipeline pipeline-async pipeline-async close!]]))
 
 
 (defn main-process
@@ -181,6 +180,36 @@
 
   (let [c (chan 1)]
     (offer! c 42))
+
+  ; pipeline
+
+  (def c1 (chan 10))
+  (def c2 (chan 10))
+
+  (def _ (pipeline 4 c2 (map inc) c1))
+
+  (doseq [i (range 10)]
+    (put! c1 i))
+  (go-loop []
+    (println (<! c2))
+    (recur))
+
+  ; pipeline-async
+
+  (def c1 (chan 10))
+  (def c2 (chan 10))
+  (def af (fn [input port]
+            (go
+              (<! (timeout (+ 500 (rand-int 1000))))
+              (offer! port (inc input))
+              (close! port))))
+
+  (def _ (pipeline-async 4 c2 af c1))
+  (doseq [i (range 10)]
+    (put! c1 i))
+  (go-loop []
+    (println (<! c2))
+    (recur))
 
 
   ;;
