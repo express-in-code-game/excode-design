@@ -1,7 +1,7 @@
 (ns starnet.common.pad.async2
   (:require
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go
-                                     >!! <!! alt!! alts! alts!! take! put!
+                                     >!! <!! alt!! alts! alts!! take! put! offer! poll!
                                      thread pub sub]]))
 
 
@@ -170,5 +170,18 @@
   (put! pc 3)
   (take! pc (fn [v] (println v)))
   
+  ;;
+  )
+
+
+(comment
+
+  (let [c (chan)]
+    (offer! c 42))
+
+  (let [c (chan 1)]
+    (offer! c 42))
+
+
   ;;
   )
