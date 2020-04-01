@@ -20,6 +20,12 @@ link_spaces(){
   ln -s ../../../common/src spaces/app/common/src
   ln -s ../../../common/test spaces/app/common/test
 
+  mkdir -p  spaces/system/ spaces/system/starnet/ spaces/system/resources/public/
+
+  ln -s ../../.vscode spaces/system/.vscode
+  ln -s ../../../system/src/starnet/alpha spaces/system/starnet/alpha
+  ln -s ../../system/test spaces/system/test
+  ln -s ../../../../ui/resources/public/css spaces/system/resources/public/css
 
 }
 
