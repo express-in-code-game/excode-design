@@ -1,4 +1,4 @@
-(ns starnet.common.alpha.spec2
+(ns starnet.alpha.core.spec2
   (:require
    [clojure.repl :refer [doc]]
    [clojure.spec.alpha :as s]
@@ -6,9 +6,9 @@
    [clojure.spec.test.alpha :as stest]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-   [starnet.common.alpha.core :refer [with-gen-fmap ]]
-   #?(:cljs [starnet.common.alpha.macros :refer-macros [defmethod-set]]
-      :clj  [starnet.common.alpha.macros :refer [defmethod-set]])))
+   [starnet.alpha.core.tmp :refer [with-gen-fmap ]]
+   #?(:cljs [starnet.alpha.core.macros :refer-macros [defmethod-set]]
+      :clj  [starnet.alpha.core.macros :refer [defmethod-set]])))
 
 (def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
 
@@ -94,7 +94,7 @@
 (s/def :ev.u/event (s/multi-spec ev-user :ev/type))
 
 
-(s/fdef starnet.common.alpha.user/next-state-user
+(s/fdef starnet.alpha.core.user/next-state-user
   :args (s/cat :state (s/nilable :u/user)
                :k uuid?
                :ev :ev.u/event)
@@ -102,9 +102,9 @@
 
 (comment
 
-  (ns-unmap 'starnet.common.alpha.user 'next-state-user)
-  (stest/instrument ['starnet.common.alpha.user/next-state-user])
-  (stest/unstrument ['starnet.common.alpha.user/next-state-user])
+  (ns-unmap 'starnet.alpha.core.user 'next-state-user)
+  (stest/instrument ['starnet.alpha.core.user/next-state-user])
+  (stest/unstrument ['starnet.alpha.core.user/next-state-user])
 
   ;;
   )
@@ -235,11 +235,11 @@
 
 
 
-(s/fdef starnet.common.alpha.game/make-game-state
+(s/fdef starnet.alpha.core.game/make-game-state
   :args (s/cat)
   :ret :g/game)
 
-(s/fdef starnet.common.alpha.game/next-state-game
+(s/fdef starnet.alpha.core.game/next-state-game
   :args (s/cat :state (s/nilable :g/game)
                :k uuid?
                :ev :ev.g/event)
@@ -247,16 +247,16 @@
 
 (comment
 
-  (ns-unmap 'starnet.common.alpha.game 'next-state-game)
-  (stest/instrument ['starnet.common.alpha.game/next-state-game])
-  (stest/unstrument ['starnet.common.alpha.game/next-state-game])
+  (ns-unmap 'starnet.alpha.core.game 'next-state-game)
+  (stest/instrument ['starnet.alpha.core.game/next-state-game])
+  (stest/unstrument ['starnet.alpha.core.game/next-state-game])
 
   (gen/sample (s/gen :ev.g.u/update-role) 10)
   (gen/sample (s/gen :ev.g.u/create) 10)
   (gen/sample (s/gen :g.r/role) 10)
 
 
-  (stest/check 'starnet.common.alpha.game/next-state-game)
+  (stest/check 'starnet.alpha.core.game/next-state-game)
 
   ;;
   )

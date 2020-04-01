@@ -1,4 +1,4 @@
-(ns starnet.common.alpha.core-test
+(ns starnet.alpha.core.tmp-test
   (:require
    [clojure.set :refer [subset?]]
    [clojure.repl :refer [doc]]
@@ -10,7 +10,7 @@
    [clojure.test.check.properties :as prop]
    [clojure.test.check.clojure-test :refer [defspec]]
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
-   [starnet.common.alpha.core :refer [with-gen-cyclic
+   [starnet.alpha.core.tmp :refer [with-gen-cyclic
                                       rand-uuid
                                       make-inst]]))
 

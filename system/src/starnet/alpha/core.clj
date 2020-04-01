@@ -11,7 +11,7 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
    [buddy.hashers :as hashers]
-   [starnet.alpha.common.spec]))
+   [starnet.alpha.core.spec]))
 
 
 (defn db-tx

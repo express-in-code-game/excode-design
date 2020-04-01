@@ -1,4 +1,4 @@
-(ns starnet.common.alpha.game.state
+(ns starnet.alpha.core.game.state
   (:require
    [clojure.repl :refer [doc]]
    [clojure.core.async :as a :refer [<! >!  timeout chan alt! go

@@ -12,7 +12,7 @@
    
    [starnet.alpha.aux.serdes]
 
-   [starnet.alpha.common.spec]
+   [starnet.alpha.core.spec]
    [starnet.alpha.spec]
    [starnet.pad.all]
 
@@ -23,7 +23,7 @@
    #_[starnet.app.pad.all]
    [starnet.pad.async2]
    [starnet.pad.datascript1]
-   [starnet.alpha.common.game.core]
+   [starnet.alpha.core.game.core]
    [starnet.pad.transducers1]
 
    [starnet.alpha.streams :refer [create-topics-async list-topics

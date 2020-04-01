@@ -1,4 +1,4 @@
-(ns starnet.alpha.common.spec
+(ns starnet.alpha.core.spec
   (:require
    [clojure.repl :refer [doc]]
    [clojure.spec.alpha :as s]
@@ -6,9 +6,9 @@
    [clojure.spec.test.alpha :as stest]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-   [starnet.alpha.common.core :refer [with-gen-fmap ]]
-   #?(:cljs [starnet.alpha.common.macros :refer-macros [defmethod-set]]
-      :clj  [starnet.alpha.common.macros :refer [defmethod-set]])))
+   [starnet.alpha.core.tmp :refer [with-gen-fmap ]]
+   #?(:cljs [starnet.alpha.core.macros :refer-macros [defmethod-set]]
+      :clj  [starnet.alpha.core.macros :refer [defmethod-set]])))
 
 (def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
 

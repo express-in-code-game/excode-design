@@ -1,4 +1,4 @@
-(ns starnet.common.alpha.tests
+(ns starnet.alpha.core.tests
   (:require
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
@@ -8,8 +8,8 @@
    [clojure.test.check.properties :as prop]
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
 
-   [starnet.common.alpha.game-test]
-   [starnet.common.alpha.core-test]))
+   [starnet.alpha.core.game-test]
+   [starnet.alpha.core.tmp-test]))
 
 (deftest sample-test
   (testing "Arihtmetic"

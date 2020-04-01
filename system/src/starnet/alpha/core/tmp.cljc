@@ -1,4 +1,4 @@
-(ns starnet.alpha.common.core
+(ns starnet.alpha.core.tmp
   (:require
    [clojure.repl :refer [doc]]
    [clojure.spec.alpha :as s]

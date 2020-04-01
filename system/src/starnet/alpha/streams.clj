@@ -11,8 +11,8 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
 
-   #_[starnet.alpha.common.game.state :refer [next-state]]
-   [starnet.alpha.common.spec])
+   #_[starnet.alpha.core.game.state :refer [next-state]]
+   [starnet.alpha.core.spec])
   (:import
    starnet.alpha.aux.serdes.TransitJsonSerializer
    starnet.alpha.aux.serdes.TransitJsonDeserializer

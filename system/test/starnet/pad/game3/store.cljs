@@ -1,4 +1,4 @@
-(ns starnet.common.alpha.game.store
+(ns starnet.alpha.core.game.store
   (:require
    [clojure.repl :refer [doc]]
    [clojure.core.async :as a :refer [<! >!  timeout chan alt! go
@@ -10,10 +10,10 @@
    [clojure.spec.test.alpha :as stest]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-   [starnet.common.alpha.core :refer [make-inst with-gen-fmap]]
+   [starnet.alpha.core.tmp :refer [make-inst with-gen-fmap]]
    [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]
-   [starnet.common.alpha.game.state :refer [ next-state make-state makef-event-tags-recursion]]
-   [starnet.common.alpha.game.data :refer [make-entities]]
+   [starnet.alpha.core.game.state :refer [ next-state make-state makef-event-tags-recursion]]
+   [starnet.alpha.core.game.data :refer [make-entities]]
    [reagent.core :as r]))
 
 (declare update-store)
@@ -130,7 +130,7 @@
     (swap! map* assoc :m/status :generating/entities)
     (go
       (let [c-out (chan 1)]
-        (>! (-channels :ch-worker) {:worker/op :starnet.common.alpha.game.data/make-entities
+        (>! (-channels :ch-worker) {:worker/op :starnet.alpha.core.game.data/make-entities
                                     :worker/args [{}]
                                     :ch/c-out c-out})
         (let [o (<! c-out)]
@@ -177,7 +177,7 @@
   
   (go
     (let [c (chan 1)]
-      (>! (-channels :ch-worker) {:worker/op :starnet.common.alpha.game.data/make-entities
+      (>! (-channels :ch-worker) {:worker/op :starnet.alpha.core.game.data/make-entities
                                   :ch/c-out c})
       (let [o (<! c)]
         (println "asd" (count o)))))

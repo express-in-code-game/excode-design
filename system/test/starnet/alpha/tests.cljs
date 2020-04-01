@@ -8,12 +8,12 @@
    [clojure.test.check.properties :as prop]
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
 
-   [starnet.common.alpha.spec]
+   [starnet.alpha.core.spec]
    
-   [starnet.common.alpha.tests]
+   [starnet.alpha.core.tests]
    [starnet.common.sample-tests]
    [starnet.ui.sample-tests]
-   [starnet.common.alpha.core :refer [rand-uuid]]))
+   [starnet.alpha.core.tmp :refer [rand-uuid]]))
 
 (defn start []
   (run-all-tests #"starnet.ui.+tests?$|starnet.common.+tests?$"))

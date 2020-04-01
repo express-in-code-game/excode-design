@@ -9,17 +9,17 @@
    [clojure.test :refer [is run-all-tests testing deftest run-tests] :as t]
 
    
-   [starnet.common.alpha.spec]
+   [starnet.alpha.core.spec]
    [starnet.alpha.spec]
 
    [starnet.common.sample-tests]
    [starnet.app.sample-tests]
    
-   [starnet.common.alpha.tests]
+   [starnet.alpha.core.tests]
    [starnet.alpha.streams-test]
    [starnet.alpha.spec-test]
    [starnet.alpha.http-test]
-   [starnet.common.alpha.core :refer [rand-uuid]]))
+   [starnet.alpha.core.tmp :refer [rand-uuid]]))
 
 (defn -main []
   (run-all-tests #"starnet.app.+tests?$|starnet.common.+tests?$")

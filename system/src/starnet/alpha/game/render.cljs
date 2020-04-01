@@ -1,4 +1,4 @@
-(ns starnet.alpha.common.game.render
+(ns starnet.alpha.game.render
   (:require
    [clojure.repl :refer [doc]]
    [clojure.core.async :as a :refer [<! >!  timeout chan alt! go
@@ -9,7 +9,7 @@
    [clojure.spec.test.alpha :as stest]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-   [starnet.alpha.common.core :refer [make-inst with-gen-fmap]]
+   [starnet.alpha.core.tmp :refer [make-inst with-gen-fmap]]
    [clojure.test :as test :refer [is are run-all-tests testing deftest run-tests]]
 
    [reagent.core :as r]

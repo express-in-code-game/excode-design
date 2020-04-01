@@ -22,10 +22,10 @@
    [datascript.core :as ds]
 
    [starnet.pad.datascript1]
-   [starnet.alpha.common.spec]
+   [starnet.alpha.core.spec]
    [starnet.alpha.tests]
    [starnet.alpha.render :as render]
-   #_[starnet.alpha.common.game.store :as game])
+   #_[starnet.alpha.core.game.store :as game])
   (:import [goog.net XhrIo EventType WebSocket]
            [goog Uri]
            goog.history.Html5History))

@@ -11,9 +11,9 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
 
-   [starnet.common.alpha.spec :refer [event-to-topic event-to-recordkey]]
-   [starnet.common.alpha.game :refer [next-state-game]]
-   [starnet.common.alpha.user :refer [next-state-user]])
+   [starnet.alpha.core.spec :refer [event-to-topic event-to-recordkey]]
+   [starnet.alpha.core.game :refer [next-state-game]]
+   [starnet.alpha.core.user :refer [next-state-user]])
   (:import
    starnet.alpha.aux.serdes.TransitJsonSerializer
    starnet.alpha.aux.serdes.TransitJsonDeserializer

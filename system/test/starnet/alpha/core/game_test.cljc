@@ -1,4 +1,4 @@
-(ns starnet.common.alpha.game-test
+(ns starnet.alpha.core.game-test
   (:require
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
@@ -16,8 +16,8 @@
 
 #_(deftest all-specchecks
   (testing "running spec.test/check via stest/enumerate-namespace"
-    (let [summary (-> #?(:clj (stest/enumerate-namespace 'starnet.common.alpha.game)
-                         :cljs 'starnet.common.alpha.game)
+    (let [summary (-> #?(:clj (stest/enumerate-namespace 'starnet.alpha.core.game)
+                         :cljs 'starnet.alpha.core.game)
                       (stest/check {:clojure.spec.test.check/opts {:num-tests 10}})
                       (stest/summarize-results))]
       (is (not (contains? summary :check-failed))))))
