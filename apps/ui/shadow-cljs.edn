@@ -2,7 +2,7 @@
 
  :nrepl        {:port 8899
                 :host "0.0.0.0"
-              ;   :init-ns starnet.entrypoints.main
+              ;   :init-ns starnet.entrypoints.ui
                 }
 
  :http {:port 9630
@@ -14,21 +14,21 @@
         :module-loader true
         :modules
         {:shared {:entries []}
-         :main {:entries [starnet.entrypoints.main]
+         :main {:entries [starnet.alpha.main]
                 :depends-on #{:shared}}
-         :worker {:entries [starnet.ui.alpha.worker]
-                  :init-fn starnet.ui.alpha.worker/main
+         :worker {:entries [starnet.alpha.worker]
+                  :init-fn starnet.alpha.worker/main
                   :depends-on #{:shared}
                   :web-worker true}}
         :compiler-options
         {:infer-externs    :auto
          :externs ["datascript/externs.js"]
          :closure-warnings {:global-this :off}
-         :closure-defines  {"starnet.entrypoints.main._some_val_"         true}}
+         :closure-defines  {"starnet.alpha.main._some_val_"         true}}
 
         :devtools
         {:browser-inject :main ; <- https://shadow-cljs.github.io/docs/UsersGuide.html#_web_workers
-         :repl-init-ns starnet.entrypoints.main
+         :repl-init-ns starnet.alpha.main
          :repl-pprint true
          :autobuild false
          :http-root  "resources/public"
@@ -41,7 +41,7 @@
          :compiler-options
          {:infer-externs    :auto
           :closure-warnings {:global-this :off}
-          :closure-defines  {"starnet.entrypoints.main._some_val_"         true}}
+          :closure-defines  {"starnet.alpha.main._some_val_"         true}}
          :devtools
          {:http-root  "resources/public/js-out/test"
           :http-port  9501}}}}
