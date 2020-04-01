@@ -29,7 +29,6 @@
     #(gen/fmap (fn [v] (apply str v)) (gen/vector gen-char min max))))
 
 (comment
-
   
   (gen/generate gen/string)
   (gen/generate gen/string-ascii)

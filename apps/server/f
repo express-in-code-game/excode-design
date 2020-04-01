@@ -22,7 +22,7 @@ permissions(){
 
 dock() {
   
-    docker build -t starnet.app -f Dockerfile ..
+    docker build -t starnet.app -f Dockerfile ../../
     docker run  --rm \
                 --cpus=4.0 \
                 --memory=8g \
@@ -32,8 +32,8 @@ dock() {
                 -p 7788:7788 \
                 -p 8080:8080 \
                 -p 8443:8443 \
-                -v "$(cd ../ && pwd)"/system:/ctx/system \
-                -v "$(cd ../ && pwd)"/app:/ctx/app \
+                -v "$(cd ../../ && pwd)"/system:/ctx/system \
+                -v ./:/ctx/app \
                 --mount type=volume,source=starnet.crux,target=/ctx/data,volume-nocopy=true \
                 -e "appenv={:optimized false}" \
                  starnet.app \

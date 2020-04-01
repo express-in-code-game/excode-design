@@ -56,8 +56,8 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - && \
 ## ctx
 WORKDIR /ctx/system
 COPY system/deps.edn /ctx/system
-WORKDIR /ctx/ui
-COPY ui/deps.edn .
+WORKDIR /ctx/app
+COPY apps/ui/deps.edn .
 RUN clojure -A:core:dev:optimized:local -Stree
 
 EXPOSE 9500 9501 9630 8899 

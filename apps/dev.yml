@@ -6,12 +6,12 @@ networks:
 
 services:
 
-  app:
-    image: starnet.app
+  server:
+    image: starnet.server
     volumes:
-      - ./app:/app/root
+      - ./server:/ctx/app
     build:
-      context: ./app
+      context: ./server
       dockerfile: ./Dockerfile
     ports:
       - 7788:7788
@@ -31,7 +31,7 @@ services:
   ui:
     image: starnet.ui
     volumes:
-      - ./ui:/app/root
+      - ./ui:/ctx/app
     build:
       context: ./ui
       dockerfile: ./Dockerfile

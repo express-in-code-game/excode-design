@@ -50,7 +50,7 @@ RUN curl -O https://raw.githubusercontent.com/technomancy/leiningen/${LEIN_VERSI
 WORKDIR /ctx/system
 COPY system/deps.edn /ctx/system
 WORKDIR /ctx/app
-COPY app/deps.edn .
+COPY apps/server/deps.edn .
 RUN clojure -A:core:dev:optimized:local -Stree
 
 EXPOSE 7788 8080 8443
