@@ -1,4 +1,4 @@
-(ns starnet.alpha.compile
+(ns starnet.alpha.aux.compile
   (:require
    [clojure.repl :as repl]
    [starnet.alpha.aux.serdes]))

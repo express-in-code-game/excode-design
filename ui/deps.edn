@@ -15,4 +15,4 @@
                               cider/cider-nrepl {:mvn/version "0.24.0"}
                               cider/piggieback {:mvn/version "0.4.2"}}}
            :optimized {:extra-deps {}}
-           :local {:extra-deps {common {:local/root "../common"}}}}}
+           :local {:extra-deps {starnet/system {:local/root "../system"}}}}}

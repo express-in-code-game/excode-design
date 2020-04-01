@@ -1,7 +1,6 @@
 {:paths ["src" "test" "resources" "classes"]
  :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
-             "clojars" {:url "https://clojars.org/repo/"}
-             }
+             "clojars" {:url "https://clojars.org/repo/"}}
  :deps {}
  :aliases
  {:core {:extra-deps
@@ -36,5 +35,4 @@
   :dev {:extra-deps
         {}}
   :optimized {:extra-deps {}}
-  :local {:extra-deps {common {:local/root "../common"}}}}
-}
+  :local {:extra-deps {starnet/system {:local/root "../system"}}}}}

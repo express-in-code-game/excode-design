@@ -1,6 +1,5 @@
-(ns starnet.entrypoints.ui
+(ns starnet.entrypoints.main
   (:require [starnet.alpha.main]))
 
-(defn ^:export main
-  []
+(defn -main  [& args]
   (apply starnet.alpha.main/-main args))

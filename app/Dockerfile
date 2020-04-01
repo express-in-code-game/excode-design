@@ -47,8 +47,8 @@ RUN curl -O https://raw.githubusercontent.com/technomancy/leiningen/${LEIN_VERSI
     lein version
 
 ## ctx
-WORKDIR /ctx/common
-COPY common/deps.edn /ctx/common
+WORKDIR /ctx/system
+COPY system/deps.edn /ctx/system
 WORKDIR /ctx/app
 COPY app/deps.edn .
 RUN clojure -A:core:dev:optimized:local -Stree
