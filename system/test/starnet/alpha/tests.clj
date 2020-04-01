@@ -12,9 +12,6 @@
    [starnet.alpha.core.spec]
    [starnet.alpha.spec]
 
-   [starnet.common.sample-tests]
-   [starnet.app.sample-tests]
-   
    [starnet.alpha.core.tests]
    [starnet.alpha.streams-test]
    [starnet.alpha.spec-test]

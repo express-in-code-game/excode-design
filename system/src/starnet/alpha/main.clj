@@ -14,7 +14,6 @@
 
    [starnet.alpha.core.spec]
    [starnet.alpha.spec]
-   [starnet.pad.all]
 
    [starnet.alpha.repl]
    [starnet.alpha.tests]
@@ -23,7 +22,7 @@
    #_[starnet.app.pad.all]
    [starnet.pad.async2]
    [starnet.pad.datascript1]
-   [starnet.alpha.core.game.core]
+   [starnet.alpha.game.core]
    [starnet.pad.transducers1]
 
    [starnet.alpha.streams :refer [create-topics-async list-topics
