@@ -43,7 +43,7 @@ dock() {
                 -p 9501:9501 \
                 -p 9630:9630 \
                 -v "$(cd ../../ && pwd)"/system:/ctx/system \
-                -v ./:/ctx/ui \
+                -v "$(cd ../../ && pwd)"/apps/ui:/ctx/app \
                 -e "appenv={:optimized false}" \
                  starnet.ui \
                  bash

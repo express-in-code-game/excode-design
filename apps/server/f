@@ -33,7 +33,7 @@ dock() {
                 -p 8080:8080 \
                 -p 8443:8443 \
                 -v "$(cd ../../ && pwd)"/system:/ctx/system \
-                -v ./:/ctx/app \
+                -v "$(cd ../../ && pwd)"/apps/server:/ctx/app \
                 --mount type=volume,source=starnet.crux,target=/ctx/data,volume-nocopy=true \
                 -e "appenv={:optimized false}" \
                  starnet.app \
