@@ -11,8 +11,6 @@
    [starnet.alpha.core.spec]
    
    [starnet.alpha.core.tests]
-   [starnet.common.sample-tests]
-   [starnet.ui.sample-tests]
    [starnet.alpha.core.tmp :refer [rand-uuid]]))
 
 (defn start []

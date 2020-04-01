@@ -54,8 +54,8 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - && \
     sudo apt-get update && sudo apt-get -y install yarn
 
 ## ctx
-WORKDIR /ctx/common
-COPY common/deps.edn /ctx/common
+WORKDIR /ctx/system
+COPY system/deps.edn /ctx/system
 WORKDIR /ctx/ui
 COPY ui/deps.edn .
 RUN clojure -A:core:dev:optimized:local -Stree

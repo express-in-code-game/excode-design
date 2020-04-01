@@ -26,6 +26,7 @@ link_spaces(){
   ln -s ../../../system/src/starnet/alpha spaces/system/starnet/alpha
   ln -s ../../system/test spaces/system/test
   ln -s ../../../../ui/resources/public/css spaces/system/resources/public/css
+  ln -s ../../ui/shadow-cljs.edn spaces/system/shadow-cljs.edn
 
 }
 
