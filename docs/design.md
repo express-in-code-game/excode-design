@@ -485,3 +485,5 @@
     - worker generates in batches and sends events :generated-batch 1 of 10 2 of 10 etc
     - finally, :generation-complete event, which trigger ui change
     - while it's in process, ui thread is completely free and responsive, with no serialization spikes
+- rendering
+  - precompute assets' states needed for animation, choose a state like a sprite

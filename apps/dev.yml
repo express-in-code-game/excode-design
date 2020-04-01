@@ -1,0 +1,52 @@
+version: "3.7"
+
+networks:
+  compute.server:
+    name: compute.server
+
+services:
+
+  server:
+    image: starnet.server
+    volumes:
+      - ./server:/ctx/app
+    build:
+      context: ./server
+      dockerfile: ./Dockerfile
+    ports:
+      - 7788:7788
+      - 8080:8080
+    # command: bash f dev
+    command: tail -f /dev/null
+    environment:
+      - BUILD=dev
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
+  ui:
+    image: starnet.ui
+    volumes:
+      - ./ui:/ctx/app
+    build:
+      context: ./ui
+      dockerfile: ./Dockerfile
+    ports:
+      - 8899:8899
+      - 9500:9500
+      - 9630:9630
+    # command: bash f main
+    command: tail -f /dev/null
+    environment:
+      - BUILD=dev
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
