@@ -42,7 +42,8 @@ dock() {
                 -p 9500:9500 \
                 -p 9501:9501 \
                 -p 9630:9630 \
-                -v "$(cd ../ && pwd)":/ctx \
+                -v "$(cd ../ && pwd)"/system:/ctx/system \
+                -v "$(cd ../ && pwd)"/ui:/ctx/ui \
                 -e "appenv={:optimized false}" \
                  starnet.ui \
                  bash
