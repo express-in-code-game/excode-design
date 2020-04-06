@@ -5,7 +5,8 @@
                                      sliding-buffer dropping-buffer
                                      go-loop pipeline pipeline-async pipeline-blocking]]
    [starnet.pad.protocols.foo1 :as foo1]
-   [starnet.pad.protocols.bar1 :as bar1]))
+   [starnet.pad.protocols.bar1 :as bar1]
+   [starnet.pad.protocols.baz1| :as p.baz1|]))
 
 (comment
 
@@ -47,6 +48,10 @@
   (foo1/-foo o)
   (satisfies? foo1/Foo o) ; => false
   (extends? foo1/Foo (type o)) ; => false
+  
+  p.baz1|/-baz
+  p.baz1|/Baz1|
+  
   
   ;;
   )
