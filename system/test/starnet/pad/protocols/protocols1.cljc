@@ -14,6 +14,8 @@
            (foo1/-one [_ x] [x])))
 
   (foo1/-one o 1)
+  (satisfies? foo1/Foo o) ; => true
+  (extends? foo1/Foo (type o)) ; => true
 
   (def o (reify
            foo1/Foo
@@ -32,15 +34,20 @@
 
   ;https://groups.google.com/forum/#!topic/clojure/pdfj13ppwik
   ;https://ask.clojure.org/index.php/1952/cannot-implement-protocol-methods-of-the-same-name-inline?show=2307
-  
+
   ;https://clojure.atlassian.net/browse/CLJ-1625
-  
+
   (def o (with-meta {} {`foo1/-one (fn [_ x] [x])
+                        `foo1/-two (fn [_ x y] [x y])
+                        `foo1/-foo (fn [_] [])
                         `bar1/-one (fn [_ x] #{x})}))
-  
+
   (bar1/-one o 1)
   (foo1/-one o 1)
-
+  (foo1/-foo o)
+  (satisfies? foo1/Foo o) ; => false
+  (extends? foo1/Foo (type o)) ; => false
+  
   ;;
   )
 
