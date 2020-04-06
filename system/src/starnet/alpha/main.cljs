@@ -25,6 +25,7 @@
    [starnet.alpha.core.spec]
    [starnet.alpha.tests]
    [starnet.alpha.render :as render]
+   [starnet.pad.async2]
    #_[starnet.alpha.core.game.store :as game])
   (:import [goog.net XhrIo EventType WebSocket]
            [goog Uri]
