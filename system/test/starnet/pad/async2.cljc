@@ -270,24 +270,3 @@
   ;;
   )
 
-(comment
-
-  ; collison
-
-  (defprotocol A
-    (abc [_ x] [x]))
-
-  (defprotocol B
-    (abc [_ x] '(x)))
-
-  ; https://clojure.org/reference/protocols#_extend_via_metadata
-
-  (defprotocol Component
-    :extend-via-metadata true
-    (start [component]))
-
-  (def component (with-meta {:name "db"} {`start (constantly "started")}))
-  (start component)
-
-  ;;
-  )

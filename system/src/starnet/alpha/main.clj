@@ -9,7 +9,7 @@
    [clojure.spec.test.alpha :as stest]
 
    [buddy.core.keys :as keys]
-   
+
    [starnet.alpha.aux.serdes]
 
    [starnet.alpha.core.spec]
@@ -21,14 +21,15 @@
    [starnet.alpha.http]
    #_[starnet.app.pad.all]
    [starnet.pad.async2]
+   [starnet.pad.protocols.protocols1]
    [starnet.pad.datascript1]
    [starnet.alpha.game.core]
    [starnet.pad.transducers1]
-
+   
    [starnet.alpha.streams :refer [create-topics-async list-topics
-                                      delete-topics produce-event create-kvstore
-                                      future-call-consumer read-store
-                                      send-event  create-kstreams-game create-kstreams-crux-docs]]
+                                  delete-topics produce-event create-kvstore
+                                  future-call-consumer read-store
+                                  send-event  create-kstreams-game create-kstreams-crux-docs]]
    [starnet.alpha.http  :as app-http]
    [starnet.alpha.crux :as app-crux]
    [starnet.alpha.core :as appcore]
