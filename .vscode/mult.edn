@@ -1,0 +1,11 @@
+{:connections {:server {:conn/host "localhost"
+                        :conn/port 7788
+                        :conn/type :deps}
+               :ui {:conn/host "localhost"
+                    :conn/port 8899
+                    :conn/type :shadow-cljs}}
+ :tabs {:system {:tab/connections {:server {:conn.regex/file-uri [".+.clj"]}
+                                   :conn2 {:conn/namespaces [".+.cljs"]}}
+                 :tab/position 2
+                 :tab/cljc-runtime-priority :recent}}
+ :tabs/default #{:system}}

@@ -1,8 +1,9 @@
 (ns starnet.pad.async2
   (:require
-   [clojure.core.async :as a :refer [<! >! <!! chan go alt! take! put! offer! poll! alts! to-chan
-                                     timeout thread pub sub  >!! <!! alt!! alts!! close!
-                                     go-loop pipeline pipeline-async pipeline-blocking]]))
+   [clojure.core.async :as a :refer [<! >! chan go alt! take! put! offer! poll! alts! to-chan
+                                     timeout pub sub close! mult tap untap mix admix unmix
+                                     sliding-buffer dropping-buffer
+                                     go-loop pipeline pipeline-async]]))
 
 
 (defn main-process
@@ -230,3 +231,83 @@
 
   ;;
   )
+
+(comment
+
+  (def src| (chan 10))
+  (def src|m (mult src|))
+  (def src|p (pub (tap src|m (chan 10)) :topic (fn [_] (sliding-buffer 10))))
+  (def c1| (sub src|p :abc (chan 1)))
+  (def c2| (tap src|m (chan 1)))
+
+  (go
+    (loop []
+      (let []
+        (alt!
+          c1| ([v] (println "c1" v))
+          c2| ([v] (println "c2" v)))
+        (recur))))
+
+  (put! src| {:topic :abc :v 1})
+
+  (go
+    (loop []
+      (if-let [xs (<! (a/map vector [c1| c2|]))]
+        (println xs)
+        (recur))))
+
+  (put! src| {:topic :abc :v 1})
+
+  (close! c1|)
+  (close! c2|)
+
+  (take! c1| (fn [v] (println v)))
+  (take! c2| (fn [v] (println v)))
+
+
+
+
+  ;;
+  )
+
+(comment
+
+  (def out| (chan 10))
+
+  (def out|mix (mix out|))
+
+  (def c1| (chan 10))
+  (def c2| (chan 10))
+  (admix out|mix c1|)
+  (admix out|mix c2|)
+
+  (put! c1| 1)
+  (put! c2| 1)
+
+  (take! out| (fn [v] (println v)))
+
+
+  ;;
+  )
+
+(comment
+
+  (def source| (chan 1))
+  (def source|m (mult source|))
+
+  (admix some|mix (tap source|m (chan 10)))
+
+  (close! source|)
+  ; source closes
+  ; tap closes
+  ; mix removed?
+  ; mult closed?
+
+  (def x (eval '(fn [s] (re-matches #".+\.clj" s))))
+  (x "abc.clj")
+  (re-matches  (re-pattern ".+\\.clj") "asd.clj")
+
+  
+  ;;
+  )
+
