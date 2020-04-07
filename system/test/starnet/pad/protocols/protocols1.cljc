@@ -12,6 +12,11 @@
 
   (def o (reify
            foo1/Foo
+           (-one [_ x] [x])))
+  (foo1/-one o 1)
+
+  (def o (reify
+           foo1/Foo
            (foo1/-one [_ x] [x])))
 
   (foo1/-one o 1)
@@ -48,11 +53,11 @@
   (foo1/-foo o)
   (satisfies? foo1/Foo o) ; => false
   (extends? foo1/Foo (type o)) ; => false
-  
+
   p.baz1|/-baz
   p.baz1|/Baz1|
-  
-  
+
+
   ;;
   )
 
