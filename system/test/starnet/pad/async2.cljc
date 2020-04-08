@@ -284,10 +284,26 @@
   (put! c1| 1)
   (put! c2| 1)
 
-  (take! out| (fn [v] (println v) ))
+  (take! out| (fn [v] (println v)))
+
+
+  ;;
+  )
+
+(comment
   
-
-
+  (def source| (chan 1))
+  (def source|m (mult source|) )
+  
+  (admix some|mix (tap source|m (chan 10)) )
+  
+  (close! source|)
+  ; source closes
+  ; tap closes
+  ; mix removed?
+  ; mult closed?
+  
+  
   ;;
   )
 
