@@ -1,9 +1,9 @@
 (ns starnet.pad.async2
   (:require
-   [clojure.core.async :as a :refer [<! >! <!! chan go alt! take! put! offer! poll! alts! to-chan
-                                     timeout thread pub sub  >!! <!! alt!! alts!! close! mult tap untap
+   [clojure.core.async :as a :refer [<! >! chan go alt! take! put! offer! poll! alts! to-chan
+                                     timeout pub sub close! mult tap untap
                                      sliding-buffer dropping-buffer
-                                     go-loop pipeline pipeline-async pipeline-blocking]]))
+                                     go-loop pipeline pipeline-async]]))
 
 
 (defn main-process
