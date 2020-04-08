@@ -1,7 +1,7 @@
 (ns starnet.pad.async2
   (:require
    [clojure.core.async :as a :refer [<! >! chan go alt! take! put! offer! poll! alts! to-chan
-                                     timeout pub sub close! mult tap untap
+                                     timeout pub sub close! mult tap untap mix admix unmix
                                      sliding-buffer dropping-buffer
                                      go-loop pipeline pipeline-async]]))
 
@@ -265,6 +265,27 @@
   (take! c2| (fn [v] (println v)))
 
 
+
+
+  ;;
+  )
+
+(comment
+
+  (def out| (chan 10))
+
+  (def out|mix (mix out|))
+
+  (def c1| (chan 10))
+  (def c2| (chan 10))
+  (admix out|mix c1|)
+  (admix out|mix c2|)
+
+  (put! c1| 1)
+  (put! c2| 1)
+
+  (take! out| (fn [v] (println v) ))
+  
 
 
   ;;
