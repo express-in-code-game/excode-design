@@ -291,19 +291,21 @@
   )
 
 (comment
-  
+
   (def source| (chan 1))
-  (def source|m (mult source|) )
-  
-  (admix some|mix (tap source|m (chan 10)) )
-  
+  (def source|m (mult source|))
+
+  (admix some|mix (tap source|m (chan 10)))
+
   (close! source|)
   ; source closes
   ; tap closes
   ; mix removed?
   ; mult closed?
-  
-  
+
+  (def x (eval '(fn [s] (re-matches #".+.clj" s))))
+  (x "abc.clj")
+
   ;;
   )
 
