@@ -303,9 +303,11 @@
   ; mix removed?
   ; mult closed?
 
-  (def x (eval '(fn [s] (re-matches #".+.clj" s))))
+  (def x (eval '(fn [s] (re-matches #".+\.clj" s))))
   (x "abc.clj")
+  (re-matches  (re-pattern ".+\\.clj") "asd.clj")
 
+  
   ;;
   )
 
