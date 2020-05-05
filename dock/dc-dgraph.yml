@@ -1,0 +1,50 @@
+version: "3.7"
+
+volumes:
+  starnet.dgraph:
+    name: starnet.dgraph
+
+networks:
+  starnet.system:
+    name: starnet.system
+
+services:
+  zero:
+    image: dgraph/dgraph:v20.03.1
+    volumes:
+      - type: volume
+        source: starnet.dgraph
+        target: /dgraph
+        volume:
+          nocopy: true
+    ports:
+      - 5080:5080
+      - 6080:6080
+    networks:
+      - starnet.system
+    # restart: on-failure
+    command: dgraph zero --my=zero:5080
+
+  alpha:
+    image: dgraph/dgraph:v20.03.1
+    volumes:
+      - type: volume
+        source: starnet.dgraph
+        target: /dgraph
+        volume:
+          nocopy: true
+    ports:
+      - 8080:8080
+      - 9080:9080
+    networks:
+      - starnet.system
+    # restart: on-failure
+    command: dgraph alpha --my=alpha:7080 --lru_mb=2048 --zero=zero:5080
+
+  ratel:
+    image: dgraph/dgraph:v20.03.1
+    ports:
+      - 8000:8000
+    networks:
+      - starnet.system
+    command: dgraph-ratel

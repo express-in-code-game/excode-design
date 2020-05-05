@@ -1,0 +1,52 @@
+#!/bin/bash
+
+clean(){
+    rm -rf .shadow-cljs node_modules .cpcache resources/public/js-out
+}
+
+shadow(){
+    ./node_modules/.bin/shadow-cljs "$@"
+}
+
+server(){
+    shadow -A:core server
+    # yarn server
+}
+
+test(){
+    npm i
+    shadow -A:core:dev:local watch test
+}
+
+dev(){
+    npm i
+    shadow -A:core:dev:local watch :app
+    # npx shadow-cljs -A:dev:local watch app
+    # yarn dev
+}
+
+release(){
+    npm i
+    shadow -A:dev release app
+}
+
+dock() {
+
+    docker build -t starnet.ui -f Dockerfile ../../
+    docker run  --rm \
+                --cpus=4.0 \
+                --memory=4g \
+                --name starnet.ui \
+                -it \
+                -p 8899:8899 \
+                -p 9500:9500 \
+                -p 9501:9501 \
+                -p 9630:9630 \
+                -v "$(cd ../../ && pwd)"/system:/ctx/system \
+                -v "$(cd ../../ && pwd)"/apps/ui:/ctx/app \
+                -e "appenv={:optimized false}" \
+                 starnet.ui \
+                 bash
+}
+
+"$@"

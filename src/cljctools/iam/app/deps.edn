@@ -1,0 +1,19 @@
+{:paths ["src"]
+ :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
+             "clojars" {:url "https://clojars.org/repo/"}}
+ :deps {org.clojure/clojure {:mvn/version "1.10.1"}
+        org.clojure/core.async {:mvn/version "1.1.587"}
+
+        io.pedestal/pedestal.service {:mvn/version "0.5.7"}
+        io.pedestal/pedestal.route   {:mvn/version "0.5.7"}
+        io.pedestal/pedestal.jetty   {:mvn/version "0.5.7"}
+
+        buddy/buddy-auth {:mvn/version "2.2.0"}
+        buddy/buddy-sign {:mvn/version "3.1.0"}
+        buddy/buddy-hashers {:mvn/version "1.4.0"}
+
+        clj-time {:mvn/version "0.15.2"}
+        cheshire {:mvn/version "5.10.0"}
+        system/iam.common {:local/root "../common"}
+        system/dgraph.api {:local/root "../../dgraph/api"}
+        cljctools/dgraph.client {:local/root "../../../cljctools/dgraph/client/clj-grpc"}}}

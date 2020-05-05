@@ -1,0 +1,18 @@
+version: "3.7"
+
+services:
+
+  dgraph-app:
+    build:
+      context: ../
+      dockerfile: ./dock/dgraph-app/prod.Dockerfile
+
+  iam:
+    build:
+      context: ../
+      dockerfile: ./dock/iam/prod.Dockerfile
+
+  ui:
+    build:
+      context: ../
+      dockerfile: ./dock/ui/prod.Dockerfile

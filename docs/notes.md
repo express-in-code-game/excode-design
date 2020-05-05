@@ -29,6 +29,8 @@
     - https://www.confluent.io/blog/optimizing-kafka-streams-applications/
     - https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html#streams_concepts_globalktable
     - https://cwiki.apache.org/confluence/display/KAFKA/KIP-99%3A+Add+Global+Tables+to+Kafka+Streams
+  - pull vs push
+    - https://kafka.apache.org/documentation/#design_pull
 
 - clj
   - async
@@ -197,3 +199,117 @@
 - issues
   - "attempting to call unbound transit-json..." when ineracting with kafka from repl
     - starnet.app.alpha.aux.serdes namespace must be imported 
+
+
+- certificates
+  - using Letsencrypt certificate & private key with Jetty
+    - https://gist.github.com/xkr47/920ffe94f6a4c171ee59
+  - using Letsencrypt with nginx 
+    - https://www.nginx.com/blog/using-free-ssltls-certificates-from-lets-encrypt-with-nginx/
+  - mozilla SSL Configuration Generator
+    - https://community.letsencrypt.org/t/recommended-apache-config/58294/2
+    - https://ssl-config.mozilla.org/
+
+- traefik
+  - https://docs.traefik.io/
+  - https belongs to dynamic configuration
+    - https://docs.traefik.io/getting-started/configuration-overview/#the-dynamic-configuration
+  - configuration file
+    - https://docs.traefik.io/reference/static-configuration/file/
+  - "You can configure Traefik to use an ACME provider (like Let's Encrypt) for automatic certificate generation"
+    - https://docs.traefik.io/https/acme/#lets-encrypt
+    - "If certResolver is defined, Traefik will try to generate certificates based on routers Host & HostSNI rules"
+      - https://docs.traefik.io/routing/routers/#certresolver
+  - "Traefik will terminate the SSL connections (meaning that it will send decrypted data to the services)"
+    - https://docs.traefik.io/routing/routers/#tls
+    - same applies for tcp routers
+      - https://docs.traefik.io/routing/routers/#tls_1
+  - ability to include headers from the forward auth server's response in the subsequent forwarded request
+    - https://docs.traefik.io/middlewares/forwardauth/#authresponseheaders
+  - next step, add those headers to final response (so far issue open)
+    - https://github.com/containous/traefik/issues/3660
+
+
+- chrome
+  - https://developer.chrome.com/apps/fileSystem
+  - app vs extension
+    - https://developer.chrome.com/webstore/apps_vs_extensions
+      - "You can still build a standard web app running on a regular website, but make it an installable web app and you can add extension behavior to enhance the experience for those who install it"
+    - https://stackoverflow.com/questions/5341206/difference-between-chrome-apps-and-extensions
+  - removing support for apps
+    - https://blog.chromium.org/2020/01/moving-forward-from-chrome-apps.html
+  - native file sstem api from web apps
+    - https://wicg.github.io/native-file-system/
+    - https://github.com/GoogleChromeLabs/text-editor/
+
+- datomic
+  - text search
+    - https://docs.datomic.com/on-prem/query.html#fulltext
+    - example
+      - https://github.com/Datomic/mbrainz-sample/wiki/Queries#fulltext
+      - https://github.com/Datomic/mbrainz-sample/blob/master/src/clj/datomic/samples/mbrainz/rules.clj#L66
+    - limitations
+      - https://docs.datomic.com/on-prem/moving-to-cloud.html#text-search
+
+- cloudsearch
+  - https://docs.aws.amazon.com/cloudsearch/latest/developerguide/how-search-works.html
+
+- influxdb
+  - https://github.com/influxdata/influxdb
+  - https://v2.docs.influxdata.com/v2.0/query-data/get-started/query-influxdb/
+    - https://v2.docs.influxdata.com/v2.0/query-data/flux/
+
+- dgraph
+  - https://dgraph.io/docs/query-language/#full-text-search
+  - https://dgraph.io/docs/query-language/#regular-expressions
+    - "If the partial result (for subset of trigrams) exceeds 1000000 uids during index scan, the query is stopped to prohibit expensive queries"
+  - https://dgraph.io/docs/clients/#java
+    - https://github.com/dgraph-io/dgraph4j
+    - https://github.com/dgraph-io/dgraph4j/tree/master/samples/DgraphJavaSample
+  - on graphql+-
+    - https://dgraph.io/blog/post/building-native-graphql-database-dgraph/
+    - dgraph support for spec compliant graphql
+      - https://graphql.dgraph.io/docs/
+  - graphql and clojure
+    - https://graphql.org/code/#clojure
+      - https://github.com/alumbra/alumbra
+        - https://github.com/alumbra/alumbra.spec
+      - https://github.com/walmartlabs/lacinia
+      - https://github.com/tendant/graphql-clj
+
+- dgraph-client
+  - https://dgraph.io/docs/clients/
+  - https://github.com/dgraph-io/dgraph4j#creating-a-client
+  - https://godoc.org/github.com/dgraph-io/dgo#NewDgraphClient
+  - grpc api
+    - https://github.com/dgraph-io/dgo/blob/master/protos/api/api.pb.go
+
+- oauth
+  - https://en.wikipedia.org/wiki/OAuth
+  - https://oauth.net/2/
+  - https://aaronparecki.com/oauth-2-simplified/
+  - https://github.com/dexidp/dex
+    - an example https://github.com/fydrah/loginapp
+  - https://github.com/ory
+    - https://www.ory.sh/docs/ecosystem/projects
+    - https://github.com/ory/hydra
+      - https://www.ory.sh/hydra/docs/oauth2/#authenticating-users-and-requesting-consent
+    - https://github.com/ory/kratos
+      - https://www.ory.sh/kratos/docs/concepts/index/
+      - example (works) 
+        - https://www.ory.sh/kratos/docs/quickstart/
+        - https://github.com/ory/kratos-selfservice-ui-node/tree/v0.1.1-alpha.1
+      - "Each identity has one or more credentials associated with it" - indeed
+        - https://www.ory.sh/kratos/docs/concepts/credentials
+      - run jobs aftr login 
+        - https://www.ory.sh/kratos/docs/self-service/flows/user-login-user-registration#executing-jobs-after-user-login
+        - possibly, for updating central db user data (to decouple from iam's internal db)
+    - https://github.com/ory/oathkeeper
+      - https://www.ory.sh/oathkeeper/docs/pipeline/index
+    - https://github.com/ory/keto
+  - traefik related examples
+    - https://github.com/thomseddon/traefik-forward-auth
+  - https://github.com/go-authboss/authboss
+    - https://github.com/volatiletech/authboss-sample
+  - https://github.com/keycloak/keycloak
+    - https://www.keycloak.org/docs/latest/securing_apps/index.html

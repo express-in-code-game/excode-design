@@ -1,0 +1,18 @@
+<uuid>: string @index(exact) @count .
+
+<u/username>: string @index(exact, fulltext) @count .
+<u/email>: string @index(exact) .
+<u/fullname>: string @index(trigram) .
+<u/links>: [string] .
+<u/password>: string .
+<u/password-TMP>: string .
+
+type User {
+  <uuid>
+  <u/username>
+  <u/email>
+  <u/fullname>
+  <u/links>
+  <u/password>
+  <u/password-TMP>
+}

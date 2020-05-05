@@ -1,0 +1,41 @@
+{:deps         true
+
+ :nrepl        {:port 8899
+                :host "0.0.0.0"
+              ;   :init-ns starnet.entrypoints.ui
+                }
+
+ :http {:port 9630
+        :host "0.0.0.0"}
+ :builds
+ {:app {:target :browser
+        :output-dir "resources/public/js-out"
+        :asset-path "/js-out"
+        :module-loader true
+        :modules
+        {:main {:entries [system.ui.main]}}
+        :compiler-options
+        {:infer-externs    :auto
+         :externs ["datascript/externs.js"]
+         :closure-warnings {:global-this :off}
+         :closure-defines  {"system.ui.main._some_val_"         true}}
+
+        :devtools
+        {:browser-inject :main ; <- https://shadow-cljs.github.io/docs/UsersGuide.html#_web_workers
+         :repl-init-ns system.ui.main
+         :repl-pprint true
+         :autobuild false
+         :http-root  "resources/public"
+         :http-port  9500
+       ;   :preloads   [day8.re-frame-10x.preload]
+         }}
+  :test {:target    :browser-test
+         :test-dir  "resources/public/js-out/test"
+         :runner-ns system.ui.tests
+         :compiler-options
+         {:infer-externs    :auto
+          :closure-warnings {:global-this :off}
+          :closure-defines  {"system.ui.main._some_val_"         true}}
+         :devtools
+         {:http-root  "resources/public/js-out/test"
+          :http-port  9501}}}}

@@ -1,0 +1,47 @@
+#!/bin/bash
+
+
+dc(){
+  docker-compose --compatibility \
+  -f dc.yml \
+  "$@"
+}
+
+dev(){
+  docker-compose --compatibility \
+  -f dc.yml \
+  -f dc-dev.yml \
+  "$@"
+}
+
+prod(){
+  docker-compose --compatibility \
+  -f dc.yml \
+  -f dc-prod.yml \
+  "$@"
+}
+
+dgraph(){
+  docker-compose --compatibility \
+  -f dc-dgraph.yml \
+  "$@"
+}
+
+term(){
+  dc exec $1 bash -c "bash;"
+}
+
+scale(){
+  dc up -d --build --scale whoami=2
+}
+
+behold_loadbalance(){
+  curl -H Host:whoami.docker.localhost http://127.0.0.1
+}
+
+permissions(){
+  sudo chmod -R 777 volumes
+}
+
+
+"$@"

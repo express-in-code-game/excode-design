@@ -1,0 +1,9 @@
+{:paths ["src"]
+ :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
+             "clojars" {:url "https://clojars.org/repo/"}}
+ :deps {org.clojure/clojure {:mvn/version "1.10.1"}
+        org.clojure/core.async {:mvn/version "1.1.587"}
+        io.dgraph/dgraph4j {:mvn/version "20.03.0"}
+        org.clojure/data.json {:mvn/version "1.0.0"}
+        cljctools/dgraph.client {:local/root "../../../cljctools/dgraph/client/clj-grpc"}
+        system/dgraph.api {:local/root "../api"}}}
