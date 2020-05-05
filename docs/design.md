@@ -23,7 +23,7 @@
   - are complex and interesting enough to be worhty of a community around
   - are moneytization free, come as whole available for everyone, no forced 'if you don't play, you have limit access to updates'
 
-## observaions
+## observations
 
 - HoMM3
   - AI battles are repetetive
@@ -79,33 +79,35 @@
     - all standard
     - to observe or play the game user clicks the match in the bracket, gets into the game lobby or game itself
     - players can mutually agree to nullify the result and re-play
+- game history and replays
+  - after game is fninished, game data is trasacted to db
+  - players can browse game history and watch replays
+  - games are also persisted in clients filesystem, can load a replay via a file
 
-## starnet game
+## game world
 
-### story
+- defend starnet, one shot opportunity of preventing launch of netconrol (controldrone)
+- research, change, build, balance a missiondrone and a team (a hero and research drones)
+  - the winner's missiondrone and team will take on the mission of protecting startnet from netcontrol's takeover
+- planets & teleports, remote controlled drones, ships
+- single map
+- start: teleport to the map (a planet)
+- players play for competing/fighting team, both thinking their missiondrone and team will perform better than opponents, so better build wins
+- entities vary, sets, tags, combinations: code,warp drives, fields, elements, fruit, self orient time .. etc.
+- characters, reserach drones start from 0
 
-  - defend starnet, one shot opportunity of preventing launch of netconrol (controldrone)
-  - research, change, build, balance a missiondrone and a team (a hero and research drones)
-    - the winner's missiondrone and team will take on the mission of protecting startnet from netcontrol's takeover
-  - planets & teleports, remote controlled drones, ships
-  - single map
-  - start: teleport to the map (a planet)
-  - players play for competing/fighting team, both thinking their missiondrone and team will perform better than opponents, so better build wins
-  - entities vary, sets, tags, combinations: code,warp drives, fields, elements, fruit, self orient time .. etc.
-  - characters, reserach drones start from 0
+## game features
 
-### gameplay
+- a tiled map
+- player collects varios items, chooses different options, experiencing effects to build a better missionship
+- game is values-transparent with little things to learn, provides calculations, more focuss on the picture and decisions, less arithmetics
+- maps , items quantities and even qualities are randomized
+- randomness on initial generation only
+- optimal game time ~15-90 min
 
-  - a tiled map
-  - player collects varios items, chooses different options, experiencing effects to build a better missionship
-  - game is values-transparent with little things to learn, provides calculations, more focuss on the picture and decisions, less arithmetics
-  - maps , items quantities and even qualities are randomized
-  - randomness on initial generation only
-  - optimal game time ~15-90 min
+## game completeness
 
-### balance
-
-- goal is game completeness, balance, so complete set of entities, no bloating expansions
+- game completeness, balance, so complete set of entities, no bloating expansions
   - entities have tags(sets): gathering organic discovery etc.
   - droids
     - drive types 
@@ -116,7 +118,7 @@
   - compute capabilities
   - decision making accuracy, energy, vision, vitality
 
-### game 0.1
+## gameplay
 
 - players (azure and orange) start on the map, charachter is represented with a cape
 - 1 hero, 3 research drones (represented with a colored sphere)
@@ -167,66 +169,7 @@
   - energy
   - hoisting (carrying) capacity
 
-## how
-
-- use repl from the start as it's the most powerful design tool, will inform the design
-
-### cloud
-
-- first, setup CD to the cloud - project must live
-- fixed single server instance
-  - aws
-    - https://aws.amazon.com/ec2/instance-types/
-    - https://aws.amazon.com/blogs/compute/amazon-ecs-and-docker-volume-drivers-amazon-ebs/
-    - https://aws.amazon.com/ec2/pricing/reserved-instances/pricing/
-    - https://aws.amazon.com/ebs/pricing/
-  - https://github.com/localstack/localstack
-  - persist data via docker volumes and EBS
-
-### system
-
-- CPS communicating sequential processes
-  - https://www.infoq.com/presentations/clojure-core-async/
-    - "function chains are poor machines
-    - "good programs should be made out of processes and queues
-    - "the 'api du jours' events/calbacks - Definition of du jour. 1 : made for a particular day
-    - "external flow state
-  - https://clojure.org/news/2013/06/28/clojure-clore-async-channels
-  - https://github.com/clojure/core.async
-<br/><br/>
-- queues and processes
-- a thing for a purpose: abstract only if obvious immediate reuse
-- spec fns when needed
-- processes know only args: pass channels explicitly
-- main file creates channels, imports and starts processes
-<br/><br/>
-- kafka (as event/record store)
-- datalog db (crux) to index data
-  - most data (not write-intensive) is persisted in crux's topics
-  - in-game events (higher throughput) flow through a dedicated kafka topic
-  - game as an enetity (low throughput) is persisted without state (has a ref) and is queryable as users and other data
-
-### game state
-
-- the game is powerful, so is the client
-- game is not computed on the server
-- game state is persisted on the server in compact form as {:game-events []}
-- client being powerful, computes all the needed derived/queryable state for interactivity
-  - derived state may be a map {:derived1 {} :derived2 {} ..}
-  - on every event, relevant deriver fns are invoked (derived1 ctx evt), where ctx contains all refs
-  - derived1 computes and updates :derived1 key in the map
-  - also a derived-db must be used (as a proper abstraction over joins) to store entities in in-memory, with a language like e.g. datalog
-- if client tab is closed
-  -  client reconnects
-  -  server sends the compact state 
-  -  client recomputes the game state as (apply next-state (into default-game-events game-events )) (recompute-derive-whaterver-is-needed ..)
-- if no disconnect, client receives only new game events and updates the game state
-- but server adds timestamps - so time is independent from the client
-- games are stored in db to be queryable/joinable: transacted on creation, completion or configuration
-- game state is a record of another topic, changed on in-game events
-
-
-### assets
+## assets
 
 - use s-expressions to gen svg
 - colors, lines, shapes (for cape, spheres, facilities, skills, fruit tree etc.)
@@ -237,26 +180,57 @@
 - point is: assets are code, files are generated
 - but first: events, words, simple shapes; assets will form last
 
-### documentation
+## documentation
 
 - github repo with .md files
 - docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
 
-### steps
 
-- setup clj cljs cljc
-- clojure.async clojure.spec test.check
-- add tests, pad
-- setup kafka, kafka docs, experiment
-- choose a datalog db
-- user abstraction: identity, crud
-- add http(s)
-- auth tokens
-- user abstraction: ui via CSP
-- sockets
-- simple game: tiles with values
+## system design
 
-### considerations
+- CPS communicating sequential processes
+  - https://www.infoq.com/presentations/clojure-core-async/
+    - "function chains are poor machines
+    - "good programs should be made out of processes and queues
+    - "the 'api du jours' events/calbacks - Definition of du jour. 1 : made for a particular day
+    - "external flow state
+  - https://clojure.org/news/2013/06/28/clojure-clore-async-channels
+  - https://github.com/clojure/core.async
+- datastore soultion
+  - allows connections from multiple apps, querying, searching
+  - options: datomic dgraph
+- routing, https
+  - traefik
+- on data
+  - clients emit events
+  - server persists minimal state (raw events) in memory, acts as coordinator or/and broadcaster
+  - clients compute state
+  - after game is finished, server trasacts game data to database, players can browse history
+  - games are autosaveed on the client as well: to file system via browser extension
+  - if server goes down, game can be restored from save files
+
+## identity
+
+- ideally should be implemented via providers (github google twitch ..)
+  - system apps should be completely unaware of identity process, only receiving user's identity (or key to get it) along with request
+  - signup, singin, change of password, auth, authz, web interface, support existing providers -  should be abstracted into a service (with plugins and/or client)
+  - all existing names in different provider domains should be already reserved for users of the new system
+    - to avoid name collisions provider domain should be used to fully qualify a name
+    - e.g. github.com/user1 and google.com/user1 may belong to different users, but should be unique in the system
+  - users should be able to link accounts, merge accounts - history etc., name of the account is one of the merged
+  - system is free to have its own user abstraction and data, with identity being handled by a decoupled layer
+- however, as of now, exising providers auth is not yet automated
+  - you have to manually (via provider's web interface) register apps, provide urls and use keys
+  - unlike let's encrypt project, which automates tls
+- implementing your own custom identity (not oauth) is a step back and a waste
+- considering all that
+  - system should run its own oauth provider service and identoty service as the client
+  - the resulting layer should be self-contained and decoupled from the system, may have its own db
+  - existing providers can be added later when proper tooling(automation) is created
+
+
+
+## notes on implementation
 
 - figwheel main if it's less cpu consuming than shadow-cljs
 - search
@@ -481,3 +455,14 @@
     - worker generates in batches and sends events :generated-batch 1 of 10 2 of 10 etc
     - finally, :generation-complete event, which trigger ui change
     - while it's in process, ui thread is completely free and responsive, with no serialization spikes
+- queues and processes
+- protocols
+- simplicity: bad abstractions are worse than no abstractions
+- a process (service) may have its own runtime (container) 
+- app = process, apps are smart
+- connections and channels are global defined (on top of service's main), explicit
+- development through traefik(http) and docker-compose
+- lein + deps with lein-deps-plugin
+- apps know database and http, no communication queue required
+- game can be played (state-wise) from cljc repl
+- consider electron
