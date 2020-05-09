@@ -1,0 +1,13 @@
+.git
+.vscode
+docs
+**/.cpcache
+**/.lein-repl-history
+**/.data
+**/target
+**/tmp
+**/node_modules
+**/.shadow-cljs
+**/js-out
+**/classes
+**/.user

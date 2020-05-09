@@ -48,16 +48,19 @@
   - show as :deleted in graph (brackets, game hsitory etc.) where user data was used (as it does not exist any more)
   - ability to restore account within a week/month after delete initiation
 
-- bots
-  - are processes running in bot app (later in ui)
+- agents
+  - are processes running in agents app (later in ui)
   - use the system by putting ops on channels
-  - bot provider (analogous to real oauth providers) to login/logout
-  - when dev, singin to the system via bot aacount using browser guest window
-  - bots also can also play the game
-  - ns: system.bot.app system.bot.a1.main ..
+  - agents can play the game
 
 - access to the game (authz)
   - to allow application of tools for http based authorization, socket connections should be decoupled from join/leave game logic
     - user joining or leaving the game is an http request and/or db operation
     - users that joined the game are queryable, and thus, authorization app is decoupled from gamehub
     - when user disconnects, it is shown in the ui (both setup and game), but game is unaffected - user can reconnect
+
+- genral app(service) structure: http api as a layer
+  - app is a process, that has an api/interface (as a library)
+  - http interface is a layer (namespace), that uses base api to perform operations
+  - namesapces: app.main app.api app.http
+  - app may add a different interface as a layer, preserving core api

@@ -1,39 +1,114 @@
 version: "3.7"
 
+networks:
+  network1:
+    name: ${NETWORK1}
+
 services:
 
-  dgraph-app:
-    volumes:
-      - ./dgraph-app:/ctx/app
-      - ./dgraph-app/.user:/root
-      - ../src:/ctx/src
-    build:
-      context: ./dgraph-app
-      dockerfile: ./Dockerfile
-    # command: tail -f /dev/null
-    command: bash f dev
+  # dgraph-app:
+  #   image: starnet.dgraph-app.dev
+  #   volumes:
+  #     - ./dgraph-app:/ctx/app
+  #     - ./dgraph-app/.user:/root
+  #     - ../src:/ctx/src
+  #   build:
+  #     context: ./dgraph-app
+  #     dockerfile: ./Dockerfile
+  #   command: tail -f /dev/null
+  #   # command: bash f dev
+  #   expose:
+  #     - 8080
+  #     - 7788
+  #   ports:
+  #     - 7701:7788
+  #     - 8801:8080
+  #   networks:
+  #     - network1
+  #   stdin_open: true
+  #   tty: true
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '4'
+  #         memory: 4096M
 
-  iam:
+  gamehub:
+    image: starnet.gamehub.dev
     volumes:
-      - ./iam:/ctx/app
-      - ./iam/.user:/root
+      - ./containers/gamehub/.user:/root
+      - ./containers/gamehub:/ctx/dock/containers/gamehub
       - ../src:/ctx/src
     build:
-      context: ./iam
-      dockerfile: ./Dockerfile
+      context: ./containers/gamehub
+      dockerfile: ./dev.Dockerfile
+      args:
+        workdir: /ctx/dock/containers/gamehub
     command: tail -f /dev/null
     # command: bash f dev
+    expose:
+      - 8080
+      - 7788
+    ports:
+      - 7702:7788
+      - 8802:8080
+    networks:
+      - network1
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
 
   ui:
+    image: starnet.ui.dev
     volumes:
-      - ./ui:/ctx/app
+      - ./containers/ui/.user:/root
+      - ./containers/ui:/ctx/dock/containers/ui
       - ../src:/ctx/src
     build:
-      context: ./ui
-      dockerfile: ./Dockerfile
-    # command: tail -f /dev/null
-    command: bash f dev
+      context: ./containers/ui
+      dockerfile: ./dev.Dockerfile
+      args:
+        workdir: /ctx/dock/containers/ui
+    command: tail -f /dev/null
+    # command: bash f dev
     ports:
       - 8899:8899
-      - 9500:9500
       - 9630:9630
+      - 9500:9500
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
+  aden:
+    image: starnet.agents-identity.dev
+    volumes:
+      - ./containers/agents-identity/.user:/root
+      - ./containers/agents-identity:/ctx/dock/containers/agents-identity
+      - ../src:/ctx/src
+    build:
+      context: ./containers/agents-identity
+      dockerfile: ./dev.Dockerfile
+      args:
+        workdir: /ctx/dock/containers/agents-identity
+    command: tail -f /dev/null
+    # command: bash f dev
+    ports:
+      - 7703:7788
+      - 8803:8080
+    networks:
+      - network1
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M

@@ -313,3 +313,24 @@
     - https://github.com/volatiletech/authboss-sample
   - https://github.com/keycloak/keycloak
     - https://www.keycloak.org/docs/latest/securing_apps/index.html
+
+
+- jre/jdk
+  - lightweight jre images
+    - https://stackoverflow.com/questions/53669151/java-11-application-as-lightweight-docker-image
+    - https://stackoverflow.com/questions/53669151/java-11-application-as-lightweight-docker-image/57145029#57145029
+  - https://hub.docker.com/_/openjdk
+    - https://github.com/docker-library/docs/blob/master/openjdk/README.md#supported-tags-and-respective-dockerfile-links
+  - perf experiences
+    - https://stackoverflow.com/questions/22358071/differences-between-oracle-jdk-and-openjdk
+    - https://technology.amis.nl/2018/11/23/comparing-jvm-performance-zulu-openjdk-openjdk-oracle-jdk-graalvm-ce/
+    - http://sparkjava.com/
+      - https://github.com/perwendel/spark
+      - https://medium.com/@lusardichristian/java-microservices-the-right-way-8f9d9ea2715a
+  
+- nodejs
+  - jre and nodejs
+    - https://stackoverflow.com/questions/5062614/how-to-decide-when-to-use-node-js
+  - 10 Things I Regret About Node.js - Ryan Dahl 
+    - https://youtu.be/M3BM9TB-8yA
+  - https://github.com/denoland/deno

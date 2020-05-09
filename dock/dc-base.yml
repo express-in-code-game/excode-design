@@ -1,0 +1,53 @@
+version: "3.7"
+
+services:
+
+  openjdk-jdk11-clj-lein:
+    image: local.openjdk-jdk11-clj-lein
+    build:
+      context: ./images/openjdk-jdk11-clj-lein
+      dockerfile: ./Dockerfile
+
+  openjdk-jre11-clj-lein:
+    image: local.openjdk-jre11-clj-lein
+    build:
+      context: ./images/openjdk-jre11-clj-lein
+      dockerfile: ./Dockerfile
+
+  openjdk-jdk11-clj-lein-node:
+    image: local.openjdk-jdk11-clj-lein-node
+    build:
+      context: ./images/openjdk-jdk11-clj-lein-node
+      dockerfile: ./Dockerfile
+
+  jvm-prod-builder:
+    image: local.jvm-prod-builder
+    build:
+      context: ./images/jvm-prod
+      dockerfile: ./builder.Dockerfile
+      args:
+        - BASE_IMAGE=${BASE_IMAGE_JVM_PROD_BUILDER}
+
+  jvm-prod-runner:
+    image: local.jvm-prod-runner
+    build:
+      context: ./images/jvm-prod
+      dockerfile: ./runner.Dockerfile
+      args:
+        - BASE_IMAGE=${BASE_IMAGE_JVM_PROD_RUNNER}
+
+  ui-prod-builder:
+    image: local.ui-prod-builder
+    build:
+      context: ./images/ui-prod
+      dockerfile: ./builder.Dockerfile
+      args:
+        - BASE_IMAGE=${BASE_IMAGE_UI_PROD_BUILDER}
+
+  ui-prod-runner:
+    image: local.ui-prod-runner
+    build:
+      context: ./images/ui-prod
+      dockerfile: ./runner.Dockerfile
+      args:
+        - BASE_IMAGE=${BASE_IMAGE_UI_PROD_RUNNER}

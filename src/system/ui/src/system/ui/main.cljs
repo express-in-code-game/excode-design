@@ -1,7 +1,7 @@
 (ns system.ui.main
   (:require
    [clojure.core.async :as async :refer [<! >!  chan go alt! take! put!  alts! pub sub]]
-   [system.common.core]))
+   [system.common.spec]))
 
 (defn ^:export main
   []
@@ -9,7 +9,7 @@
 
 (comment
 
-  (system.common.core/foo)
+  (system.common.spec/foo)
 
   (+ 1 2)
 

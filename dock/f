@@ -1,24 +1,44 @@
 #!/bin/bash
 
-
 dc(){
   docker-compose --compatibility \
-  -f dc.yml \
+  -f dc-dev.yml \
   "$@"
 }
 
-dev(){
+up(){
+  dc up -d --build "$@"
+}
+
+down(){
+  dc down "$@"
+}
+
+run(){
+  # https://docs.docker.com/compose/reference/run/
+  dc run $1 bash -c "bash;"
+}
+
+term(){
+  dc exec $1 bash -c "bash;"
+}
+
+base(){
   docker-compose --compatibility \
-  -f dc.yml \
-  -f dc-dev.yml \
+  -f dc-base.yml \
+  build \
   "$@"
 }
 
 prod(){
   docker-compose --compatibility \
-  -f dc.yml \
   -f dc-prod.yml \
   "$@"
+}
+
+release(){
+  base
+  prod build
 }
 
 dgraph(){
@@ -27,9 +47,12 @@ dgraph(){
   "$@"
 }
 
-term(){
-  dc exec $1 bash -c "bash;"
+traefik(){
+  docker-compose --compatibility \
+  -f dc-traefik.yml \
+  "$@"
 }
+
 
 scale(){
   dc up -d --build --scale whoami=2
@@ -41,6 +64,10 @@ behold_loadbalance(){
 
 permissions(){
   sudo chmod -R 777 volumes
+}
+
+symlinks(){
+  ln -s ../../../src containers/src
 }
 
 

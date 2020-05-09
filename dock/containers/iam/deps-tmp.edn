@@ -1,0 +1,12 @@
+{:paths ["src" "test" "resources" "classes"]
+ :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
+             "clojars" {:url "https://clojars.org/repo/"}}
+ :deps {; ring/ring-core  {:mvn/version "1.8.1"}
+        ; ring/ring-jetty-adapter {:mvn/version "1.8.1"}
+        ; com.sparkjava/spark-core {:mvn/version "2.9.1"}
+
+        io.pedestal/pedestal.service {:mvn/version "0.5.7"}
+        io.pedestal/pedestal.route   {:mvn/version "0.5.7"}
+        io.pedestal/pedestal.jetty   {:mvn/version "0.5.7"}
+        
+        }}

@@ -229,6 +229,21 @@
   - the resulting layer should be self-contained and decoupled from the system, may have its own db
   - existing providers can be added later when proper tooling(automation) is created
 
+- agent user
+  - system has the user abstraction
+  - identity is resolved in the identity layer (via identity apps e.g. ory) and mapped to the user, so user abstraction is very loosely (almost de-) coupled from identity
+  - the identity layer follows oauth, meeting the standards: user can create an account or login with providers
+  - system also has agent identity: it  allows to create a user and use the system
+  - creation requires no input, returns a token and user data with a random name
+  - agent user is equal to any other user; if token is lost, a person can create another agent user
+  - agent users can be used at any time, they are fundamental to the system
+  - data behind agent user is not persistent long term, but can be relevant within a week/month etc.
+    - e.g. you can create an agent user and use the system until token is in your browser's localStorage
+    - or you may want to create agent users daily or even more frequently
+    - until the token is in your browser and active
+  - system will develop mechanisms to expire agent accounts and clear data once the identity layer is operational
+  - but: agent users will remain a way to use the system
+
 
 
 ## notes on implementation
