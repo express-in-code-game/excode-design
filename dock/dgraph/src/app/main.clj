@@ -1,10 +1,9 @@
-(ns system.dgraph.app.main
+(ns app.main
   (:require
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go close!
                                      >!! <!! alt!! alts! alts!! take! put! mult tap untap
                                      thread pub sub sliding-buffer mix admix unmix]]
-   [cljctools.dgraph.client :as dg]
-   [system.dgraph.api]))
+   [cljctools.dgraph.client :as dg]))
 
 
 (defn -main [& args]
@@ -19,7 +18,7 @@
   (dg/release cl)
 
 
-  (def schema (slurp "../src/system/dgraph/app/src/system/dgraph/app/schema"))
+  (def schema (slurp "../../src/system/db/schema"))
 
   (alts!! [(dg/alter cl {:schema schema}) (timeout 10000)])
 

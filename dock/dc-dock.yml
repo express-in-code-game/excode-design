@@ -1,0 +1,35 @@
+version: "3.7"
+
+networks:
+  network1:
+    name: ${NETWORK1}
+
+services:
+
+  dgraph:
+    image: starnet.dock.dgraph
+    volumes:
+      - ./dgraph/.user:/root
+      - ./dgraph:/ctx/dock/dgraph
+      - ../src:/ctx/src
+    build:
+      context: ./dgraph
+      dockerfile: ./Dockerfile
+      args:
+        workdir: /ctx/dock/dgraph
+    command: tail -f /dev/null
+    # command: bash f dev
+    expose:
+      - 8080
+      - 7788
+    ports:
+      - 6601:7788
+    networks:
+      - network1
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M

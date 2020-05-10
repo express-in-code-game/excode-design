@@ -14,13 +14,33 @@ down(){
   dc down "$@"
 }
 
-run(){
-  # https://docs.docker.com/compose/reference/run/
-  dc run $1 bash -c "bash;"
+build(){
+  # https://docs.docker.com/compose/reference/build/
+  $1 build $2 "${@:3}"
 }
 
-term(){
-  dc exec $1 bash -c "bash;"
+run(){
+  # https://docs.docker.com/compose/reference/run/
+  $1 run --service-ports $2 "${@:3}"
+}
+
+runbash(){
+  # https://docs.docker.com/compose/reference/run/
+  run $1 $2 bash -c "bash;"
+}
+
+buildrun(){
+  build $1 $2
+  run $1 $2 "${@:3}"
+}
+
+mount(){
+  build $1 $2 "${@:3}"
+  runbash $1 $2
+}
+
+into(){
+  $1 exec $2 bash -c "bash;"
 }
 
 base(){
@@ -50,6 +70,12 @@ dgraph(){
 traefik(){
   docker-compose --compatibility \
   -f dc-traefik.yml \
+  "$@"
+}
+
+dock(){
+  docker-compose --compatibility \
+  -f dc-dock.yml \
   "$@"
 }
 

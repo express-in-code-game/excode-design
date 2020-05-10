@@ -64,3 +64,8 @@
   - http interface is a layer (namespace), that uses base api to perform operations
   - namesapces: app.main app.api app.http
   - app may add a different interface as a layer, preserving core api
+
+- websockets
+  - api.http layer of an app handles sockets
+  - uses procs (app) api to convey data via channels
+  - so from app's perspective, there are only channels and api

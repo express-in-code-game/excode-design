@@ -1,4 +1,4 @@
-(def MAIN 'system.dgraph.app.main)
+(def MAIN 'app.main)
 
 (defproject app "0.1.0"
 
@@ -28,18 +28,28 @@
                               [cider/cider-nrepl "0.24.0"]]}
 
              :prod ^:leaky {:main ~MAIN
-                            :uberjar-name "app.uberjar.jar"
+                            :uberjar-name "app.standalone.jar"
                             :jar-name     "app.jar"
                             :uberjar-exclusions []
                             :aot  nil #_[datastore.serdes]}
              :uberjar {:aot :all
                        :native-image {:jvm-opts ["-Dclojure.compiler.direct-linking=true"]}}}
 
+  :native-image {:name "app.native"            ;; name of output image, optional
+                ;  :graal-bin "/path/to/graalvm/" ;; path to GraalVM home, optional
+                 :opts ["--no-server" ;; pass-thru args to GraalVM native-image, optional
+                        ; "--report-unsupported-elements-at-runtime"
+                        "--allow-incomplete-classpath"
+                        "--initialize-at-build-time"
+                        "--enable-url-protocols=http"
+                        "--verbose"
+                        "--no-fallback"]}
+
   :main ^{:skip-aot false} ~MAIN
   :jvm-opts ["-Xms768m" "-Xmx11998m"]
 
   :source-paths ["src"]
   :java-source-paths ["src"]
-  :test-paths ["test"]
-  :resource-paths ["resources" "config"]
+  :test-paths [] #_["test"]
+  :resource-paths [] #_["resources" "config"]
   :auto-clean false)

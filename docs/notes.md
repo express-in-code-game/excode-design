@@ -334,3 +334,7 @@
   - 10 Things I Regret About Node.js - Ryan Dahl 
     - https://youtu.be/M3BM9TB-8yA
   - https://github.com/denoland/deno
+
+- git
+  - https://stackoverflow.com/questions/9110310/update-git-commit-author-date-when-amending/13497026
+    - git commit --amend --no-edit --date=now 

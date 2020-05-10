@@ -6,33 +6,6 @@ networks:
 
 services:
 
-  # dgraph-app:
-  #   image: starnet.dgraph-app.dev
-  #   volumes:
-  #     - ./dgraph-app:/ctx/app
-  #     - ./dgraph-app/.user:/root
-  #     - ../src:/ctx/src
-  #   build:
-  #     context: ./dgraph-app
-  #     dockerfile: ./Dockerfile
-  #   command: tail -f /dev/null
-  #   # command: bash f dev
-  #   expose:
-  #     - 8080
-  #     - 7788
-  #   ports:
-  #     - 7701:7788
-  #     - 8801:8080
-  #   networks:
-  #     - network1
-  #   stdin_open: true
-  #   tty: true
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         cpus: '4'
-  #         memory: 4096M
-
   gamehub:
     image: starnet.gamehub.dev
     volumes:
@@ -46,9 +19,6 @@ services:
         workdir: /ctx/dock/containers/gamehub
     command: tail -f /dev/null
     # command: bash f dev
-    expose:
-      - 8080
-      - 7788
     ports:
       - 7702:7788
       - 8802:8080
