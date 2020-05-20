@@ -1,0 +1,7 @@
+{:paths ["src"]
+ :deps {bidi {:mvn/version "2.1.6"}
+        clj-commons/pushy {:mvn/version "0.3.10"}
+
+        ext/loader.core {:local/root "../core"}
+        ext/host.client {:local/root "../../host/client"}
+        ext/router.client {:local/root "../../router/client"}}}

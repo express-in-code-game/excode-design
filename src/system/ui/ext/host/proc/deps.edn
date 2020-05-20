@@ -1,0 +1,2 @@
+{:paths ["src"]
+ :deps {ext/host.core {:local/root "../core"}}}

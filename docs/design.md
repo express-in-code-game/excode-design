@@ -243,6 +243,7 @@
     - or you may want to create auto users daily or even more frequently
     - until the token is in your browser and active
   - system will develop mechanisms to expire auto accounts and clear data once the oauth identity layer is operational
+  - name is namespaced (as with providers): auto/user1 auto/user2 or starnetgame.io.auto/user1 
 
 ## notes on implementation
 

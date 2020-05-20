@@ -1,0 +1,7 @@
+{:paths ["src"]
+ :deps {org.clojure/core.async {:mvn/version "1.2.603"}
+        bidi {:mvn/version "2.1.6"}
+        clj-commons/pushy {:mvn/version "0.3.10"}
+
+        ext/router.core {:local/root "../core"}
+        ext/host.client {:local/root "../../host/client"}}}

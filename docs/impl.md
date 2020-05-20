@@ -69,3 +69,52 @@
   - api.http layer of an app handles sockets
   - uses procs (app) api to convey data via channels
   - so from app's perspective, there are only channels and api
+
+- server side rendering vs client side rendering (SSR vs CSR)
+  - SSR puts additional load on the server in exhange for
+    - faster load time
+    - search engines
+  - SSR is better, indeed
+  - however, opt for CSR
+    - orient towards search engines supporting js and optimizing code for that
+    - provide proper robots.txt and sitemap.xml
+    - pre-rendering
+      - generating html files has no benefits: loading htmls is slower than client side routing
+    - CSR is fastest, execpt for initial load
+      - solve via code splitting into dymanic loading (e.g. webpack shadow-cljs)
+
+- code splitting
+  - https://shadow-cljs.github.io/docs/UsersGuide.html#CodeSplitting
+  - https://github.com/thheller/code-splitting-clojurescript
+  - https://github.com/shadow-cljs/examples/tree/master/code-split
+  - https://code.thheller.com/blog/shadow-cljs/2019/03/03/code-splitting-clojurescript.html
+
+- UI
+  - UI should be an app with extenions
+  - route is a process
+    - navigating is alike an editor's a command that activates/deactivates extensions
+    - rendering the page may or may not be what extension does, it's up to the extension
+  - extensions use UI's api
+  - ui may preload a template to render from an extension
+  - but it's extension  that loads data, renders content; it's a process, an app within app
+  - 'sign in/sign out with' and other potential menus can also be extensions
+  - iden reading and ops are part of api
+  - routes 
+    - routes represent namespaces that contain operations for user to perform in the system
+    - e.g. /game/:uuid route allows use to perform game ops (play the game)
+    - or /stats/rankings page allows user to see the data and perform further querying ops
+    - so route is a namespace, a process, an app, handled by one of the extentions
+    - 404 page is also an extension, handling not-found-by-router routes
+  - router puts vals on channel of what the route is, extensions activate/deactivate themselves (processes take from chan)
+  - channels
+    - extension expose channels (mults), so other extenions can tap if needed
+    - extension api though is available to host only (activate deactivate ..)
+    - extensions provide api for the channels (no deps) and maybe read-only direct api (doubtful)
+  - extenion api
+    - vsode example of accessing ext api
+      - https://stackoverflow.com/questions/49719436/can-an-extension-require-other-extensions-and-call-functions-from-them
+  - define and expose extension channels once (def channels ..)
+  - extensions should be dynamically loadable (for better abstraction)
+
+- observing
+  - consider using server-sent-events for observers, sockets for participants

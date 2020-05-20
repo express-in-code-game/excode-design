@@ -1,0 +1,19 @@
+{:paths ["src"]
+ :deps {org.clojure/clojure {:mvn/version "1.10.1"}
+        org.clojure/core.async {:mvn/version "1.2.603"}
+        org.clojure/clojurescript {:mvn/version "1.10.758"}
+       ;;   com.andrewmcveigh/cljs-time {:mvn/version "0.5.2"}
+       ;;   com.cognitect/transit-cljs {:mvn/version "0.8.256"}
+       ;;  cljs-http/cljs-http {:mvn/version "0.1.46"}
+        
+        org.clojure/spec.alpha {:mvn/version "0.2.187"}
+        org.clojure/test.check {:mvn/version "1.0.0"}
+
+        ext/host {:local/root "../ext/host/proc"}
+        ext/router {:local/root "../ext/router/proc"}
+        ext/loader {:local/root "../ext/loader/proc"}
+        ext/layout {:local/root "../ext/layout/proc"}
+
+        ext/events {:local/root "../ext/events/proc"}
+        ext/games {:local/root "../ext/games/proc"}
+        ext/starnet {:local/root "../../../starnet/ext/proc"}}}

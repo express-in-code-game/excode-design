@@ -1,0 +1,84 @@
+version: "3.7"
+
+networks:
+  network1:
+    name: ${NETWORK1}
+
+services:
+
+  gamehub:
+    image: starnet.gamehub.dev
+    volumes:
+      - ./system/gamehub/.user:/root
+      - ./system/gamehub:/ctx/dock/system/gamehub
+      - ../src:/ctx/src
+    build:
+      context: ./system/gamehub
+      dockerfile: ./dev.Dockerfile
+      args:
+        workdir: /ctx/dock/system/gamehub
+    command: tail -f /dev/null
+    # command: bash f dev
+    ports:
+      - 7702:7788
+      - 8802:8080
+    networks:
+      - network1
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
+  ui:
+    image: starnet.ui.dev
+    volumes:
+      - ./system/ui/.user:/root
+      - ./system/ui:/ctx/dock/system/ui
+      - ../src:/ctx/src
+    build:
+      context: ./system/ui
+      dockerfile: ./dev.Dockerfile
+      args:
+        workdir: /ctx/dock/system/ui
+    command: tail -f /dev/null
+    # command: bash f dev
+    ports:
+      - 8899:8899
+      - 9630:9630
+      - 9500:9500
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
+  auto:
+    image: starnet.auto.dev
+    volumes:
+      - ./system/auto/.user:/root
+      - ./system/auto:/ctx/dock/system/auto
+      - ../src:/ctx/src
+    build:
+      context: ./system/auto
+      dockerfile: ./dev.Dockerfile
+      args:
+        workdir: /ctx/dock/system/auto
+    command: tail -f /dev/null
+    # command: bash f dev
+    ports:
+      - 7703:7788
+      - 8803:8080
+    networks:
+      - network1
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M

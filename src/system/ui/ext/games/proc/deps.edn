@@ -1,0 +1,7 @@
+{:paths ["src"]
+ :deps {reagent {:mvn/version "1.0.0-alpha2"}
+
+        ext/games.core {:local/root "../core"}
+
+        ext/host.client {:local/root "../../host/client"}
+        ext/router.client {:local/root "../../router/client"}}}
