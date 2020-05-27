@@ -39,23 +39,5 @@ gen_tmpl(){
 }
 
 
-dock() {
-
-    docker build -t starnet.ui -f Dockerfile ../../
-    docker run  --rm \
-                --cpus=4.0 \
-                --memory=4g \
-                --name starnet.ui \
-                -it \
-                -p 8899:8899 \
-                -p 9500:9500 \
-                -p 9501:9501 \
-                -p 9630:9630 \
-                -v "$(cd ../../ && pwd)"/system:/ctx/system \
-                -v "$(cd ../../ && pwd)"/apps/ui:/ctx/app \
-                -e "appenv={:optimized false}" \
-                 starnet.ui \
-                 bash
-}
 
 "$@"

@@ -7,7 +7,7 @@ networks:
 services:
 
   gamehub:
-    image: starnet.gamehub.prod
+    image: cloud.gamehub.prod
     build:
       context: ../
       dockerfile: ./dock/containers/gamehub/prod.Dockerfile
@@ -31,7 +31,7 @@ services:
           memory: 4096M
 
   ui:
-    image: starnet.ui.prod
+    image: cloud.ui.prod
     build:
       context: ../
       dockerfile: ./dock/containers/ui/prod.Dockerfile

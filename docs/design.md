@@ -1,12 +1,4 @@
 
-## what
-
-- Starnet
-  - a board-like game
-  - with a server and regular events(tournaments)
-  - complete, free and open to everyone
-  - to be worthy of a scene and community around
-
 ## on games in general
 
 - games are fundamentally magic, one of the better ways for beings to interact
@@ -85,101 +77,6 @@
   - players can browse game history and watch replays
   - games are also persisted in clients filesystem, can load a replay via a file
 
-## game world
-
-- defend starnet, one shot opportunity of preventing launch of netconrol (controldrone)
-- research, change, build, balance a missiondrone and a team (a hero and research drones)
-  - the winner's missiondrone and team will take on the mission of protecting startnet from netcontrol's takeover
-- planets & teleports, remote controlled drones, ships
-- single map
-- start: teleport to the map (a planet)
-- players play for competing/fighting team, both thinking their missiondrone and team will perform better than opponents, so better build wins
-- entities vary, sets, tags, combinations: code,warp drives, fields, elements, fruit, self orient time .. etc.
-- characters, reserach drones start from 0
-
-## game features
-
-- a tiled map
-- player collects varios items, chooses different options, experiencing effects to build a better missionship
-- game is values-transparent with little things to learn, provides calculations, more focuss on the picture and decisions, less arithmetics
-- maps , items quantities and even qualities are randomized
-- randomness on initial generation only
-- optimal game time ~15-90 min
-
-## game completeness
-
-- game completeness, balance, so complete set of entities, no bloating expansions
-  - entities have tags(sets): gathering organic discovery etc.
-  - droids
-    - drive types 
-    - research abilities
-    - distance speed
-  - combine parts compute fields drives etc.
-  - research quality
-  - compute capabilities
-  - decision making accuracy, energy, vision, vitality
-
-## gameplay
-
-- players (azure and orange) start on the map, charachter is represented with a cape
-- 1 hero, 3 research drones (represented with a colored sphere)
-- missiondrone is represented with a large sphere (possible made of nanites) and orbiting supporting spheredrones
-- map is visible and open to both opponents equally, 128x128
-- players are not competing for resources, what one can get, the other can as well
-- players choose their initial position on the map 
-- research, collect, rebalance, by roaming the map
-- players choose what to visit and collect, make choices, balance the missiondrone's and the team's characterisitics
-- players see each others moves, but not choices (the missiondrone build, team's stats etc.)
-- player can visit a fruit tree to improve certain skills of a hero, for example, or visit and select nanite modules for the missiondrone
-- players have limited moves per day, limited days (say, 7)
-- total time for 7 days - 15min
-- every 5 mins there is an battle simulation, 30sec per move, 3rd battle is final
-- in the battle goal is to disable(defeat) opponent's mission drone
-- hero and research drones are engaged and support (they also develop skills and abilities)
-- no distance
-  - movement in terms of energy spent at places, maybe increasable limit on how many places can be visited
-  - visiting a lot should not matter though 
-- missiondrone attributes
-  - compute capabilities
-  - data bank
-  - knowledge bank
-  - independent agent programs (for unpredictability)
-  - fields
-  - networking range
-  - design quility
-  - human interface simplicity
-  - abstraction level (like an age in AoE)
-  - defensive/offensive resources
-  - energy
-  - ...
-- hero
-  - accuracy
-  - decisionmaking
-  - resolve
-  - drone design 
-  - reach (movement)
-  - creativity(ideas)
-  - endurance (energy)
-  - vision
-- reserach drone
-  - reach
-  - reserach capabilites
-  - absctraction level
-  - fields
-  - hull
-  - energy
-  - hoisting (carrying) capacity
-
-## assets
-
-- use s-expressions to gen svg
-- colors, lines, shapes (for cape, spheres, facilities, skills, fruit tree etc.)
-- use DOM for the board, but keep it simple - details and info in windows/popups/panels
-- file per asset, little to no shared code, an asset as sexp, use lib, render into canvas/svg/png
-- gen assets into files, preload, set as sources to tiles
-- if needed, run assets as code (render into svg/canvas) in enetity information window, 
-- point is: assets are code, files are generated
-- but first: events, words, simple shapes; assets will form last
 
 ## documentation
 
@@ -187,7 +84,17 @@
 - docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
 
 
-## system design
+## cloud
+
+- system runs in the cluster
+- cluster is dynamic, opt-in: machines(nodes) join and leave
+- preferably, cluster is decentralized, domain-less: list of master nodes is maintained by a clsuter job in a e.g. public repo
+- public doc decribes how volunteers can install an agent that adds a machine as a node to the cluster
+- ui is deployed on a public domain (github.io), loads the list of master node address and makes requests to the cluster via master nodes
+- master nodes are dymanic: cluster specifies desired state with min-max number of master hosts at a time; when mnode leaves, another assumes the role
+
+
+## language of the system
 
 - CPS communicating sequential processes
   - https://www.infoq.com/presentations/clojure-core-async/
@@ -197,18 +104,7 @@
     - "external flow state
   - https://clojure.org/news/2013/06/28/clojure-clore-async-channels
   - https://github.com/clojure/core.async
-- datastore soultion
-  - allows connections from multiple apps, querying, searching
-  - options: datomic dgraph
-- routing, https
-  - traefik
-- on data
-  - clients emit events
-  - server persists minimal state (raw events) in memory, acts as coordinator or/and broadcaster
-  - clients compute state
-  - after game is finished, server trasacts game data to database, players can browse history
-  - games are autosaveed on the client as well: to file system via browser extension
-  - if server goes down, game can be restored from save files
+
 
 ## identity
 
@@ -247,6 +143,18 @@
 
 ## notes on implementation
 
+- datastore soultion
+  - allows connections from multiple apps, querying, searching
+  - options: datomic dgraph
+- routing, https
+  - traefik
+- on data
+  - clients emit events
+  - server persists minimal state (raw events) in memory, acts as coordinator or/and broadcaster
+  - clients compute state
+  - after game is finished, server trasacts game data to database, players can browse history
+  - games are autosaveed on the client as well: to file system via browser extension
+  - if server goes down, game can be restored from save files
 - queues and processes
 - protocols
 - simplicity: bad abstractions are worse than no abstractions

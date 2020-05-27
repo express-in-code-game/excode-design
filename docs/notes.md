@@ -198,7 +198,7 @@
 
 - issues
   - "attempting to call unbound transit-json..." when ineracting with kafka from repl
-    - starnet.app.alpha.aux.serdes namespace must be imported 
+    - cloud.app.alpha.aux.serdes namespace must be imported 
 
 
 - certificates

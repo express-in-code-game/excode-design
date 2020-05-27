@@ -7,7 +7,7 @@ networks:
 services:
 
   dgraph:
-    image: starnet.dock.dgraph
+    image: cloud.dock.dgraph
     volumes:
       - ./dgraph/.user:/root
       - ./dgraph:/ctx/dock/dgraph

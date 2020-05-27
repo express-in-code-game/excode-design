@@ -7,7 +7,7 @@ networks:
 services:
 
   gamehub:
-    image: starnet.gamehub.dev
+    image: cloud.gamehub.dev
     volumes:
       - ./system/gamehub/.user:/root
       - ./system/gamehub:/ctx/dock/system/gamehub
@@ -33,7 +33,7 @@ services:
           memory: 4096M
 
   ui:
-    image: starnet.ui.dev
+    image: cloud.ui.dev
     volumes:
       - ./system/ui/.user:/root
       - ./system/ui:/ctx/dock/system/ui
@@ -58,7 +58,7 @@ services:
           memory: 4096M
 
   auto:
-    image: starnet.auto.dev
+    image: cloud.auto.dev
     volumes:
       - ./system/auto/.user:/root
       - ./system/auto:/ctx/dock/system/auto

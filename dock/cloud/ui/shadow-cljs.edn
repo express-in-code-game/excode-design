@@ -2,7 +2,7 @@
 
  :nrepl        {:port 8899
                 :host "0.0.0.0"
-              ;   :init-ns starnet.entrypoints.ui
+              ;   :init-ns app.main
                 }
 
  :http {:port 9630
