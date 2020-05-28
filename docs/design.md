@@ -92,10 +92,10 @@
 - public doc decribes how volunteers can install an agent that adds a machine as a node to the cluster
 - ui is deployed on a public domain (github.io), loads the list of master node address and makes requests to the cluster via master nodes
 - master nodes are dymanic: cluster specifies desired state with min-max number of master hosts at a time; when mnode leaves, another assumes the role
-- agent installation
-  - prerequisite for agent installation is docker and/or kubernetes
+- cluster installation
+  - prerequisite for agent installation is docker/k8s
   - this way a node may host multiple systems and installation is OS-agnostic
-  - agent is installed as container
+  - agent and node should be installed as container
 
 ## language of the system
 
