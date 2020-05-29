@@ -125,3 +125,12 @@
   - develop using localhost and HA-cluster of container nodes (same node containers  can be run on other machines as well)
   - use localost browser ui, should be same as using sub.domain.io
   - if it's possible, consider installing cluster certificates dynamically using ?extension (it would allow https requests to control nodes)
+
+- master nodes
+  - cluster auto handles master node promotion/demotion
+  - there can be from 1 up to 7 master nodes
+    - https://docs.docker.com/engine/swarm/how-swarm-mode-works/nodes/
+  - what's important: at any point in time master has at least 1 master node
+
+- cluster spec/config
+  - clsuter spec/config should be in files, version controled
