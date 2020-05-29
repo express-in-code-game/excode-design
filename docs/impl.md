@@ -118,3 +118,10 @@
 
 - observing
   - consider using server-sent-events for observers, sockets for participants
+
+
+- developing cluster
+  - nodes run in containers
+  - develop using localhost and HA-cluster of container nodes (same node containers  can be run on other machines as well)
+  - use localost browser ui, should be same as using sub.domain.io
+  - if it's possible, consider installing cluster certificates dynamically using ?extension (it would allow https requests to control nodes)
