@@ -134,3 +134,8 @@
 
 - cluster spec/config
   - clsuter spec/config should be in files, version controled
+
+- controlling the cluster
+  - certain (e.g. cluster control) operations require security keys
+  - keys are stored in a private repo and used during image builds
+  - once origin image is built, cluster can be stared (originate) anywhere (at any node) using the origin image
