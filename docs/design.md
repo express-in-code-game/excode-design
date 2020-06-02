@@ -466,3 +466,17 @@
 - apps know database and http, no communication queue required
 - game can be played (state-wise) from cljc repl
 - consider electron
+
+
+# starnet gameplay 20-06-02
+
+- map, entities and even som eprinciples are generated, and may be as unique as uuids/hashes: so basically, every game (set) is unique
+- player don't focus on collecting or moving, but rather on assembling, solving
+- you can look at the screen for two minutes (only highlighting entites) and come up with an arrangement (of team memebers, droids etc.)
+- e.g. if you position beings too closely, they lose freedom and creativity and in later rounds the composition will be inferior
+- otoh, if you position two isolated, the flow on infomation breaks and it also may not be optimal
+- players think and compose, and within an interval compositions are tested, after that players can improve further
+- players have exact same opportunities and resources, only initial generation is random
+- players can see each others compositions with maybe a few in-flight (not yet commited) details concealled
+- so game is about creating a compoosition given uniquely generated map/entities/principles, with only core principles being consistent
+- the better/clearer a player thinks, the more games they will come up with a functioning system/composition
