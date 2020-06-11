@@ -480,3 +480,16 @@
 - players can see each others compositions with maybe a few in-flight (not yet commited) details concealled
 - so game is about creating a compoosition given uniquely generated map/entities/principles, with only core principles being consistent
 - the better/clearer a player thinks, the more games they will come up with a functioning system/composition
+
+
+# notes
+
+- no portion-feeding
+  - game map should be visible/open-to-understanding from the beginning
+  - so the player knows their options and can build towards final composition
+  - some things may become available on certain conditions, but they are completely transparent
+  - there's no capping of a palyers though process: if palyer opts, they can think start-to-end
+  - along with: randomness on-gen-only, equal resources, players see each others progress and decisions
+- language principle
+  - would be great to game build process be via a language
+
