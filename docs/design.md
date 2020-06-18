@@ -551,3 +551,12 @@ For example, players may be given a set of elements to build something(a droid) 
 One player can build a sophisticated droid, another a cloud of micro mahcines, antoher a 5 droid squad etc.
 Another example, player may need to build a system that exposes an 'api' (has to provide certain behaviors).
 Then system are 'tested' and a better one wins.
+
+Decouling:
+A better approach is to not couple things (by wrapping), but connect.
+For example, instead of exposing a partial language inside the game, it's better to use the actual language (as-is),
+but a player can only operate on the provided data (map elements).
+Editor: players can choose to use graphical insterface of the game for interaction or to use code.
+If code, again, instead of building a pseudo editor, it is better to provide an existing one with an option to use another.
+Maybe the game can be an extension for an existing editor ? Or expose files to be opened with an editor.
+The point is to keep the language the languge, the editor the editor, and provide game boundaries by exposing bounded data and game apis, instead of wrapping. 
