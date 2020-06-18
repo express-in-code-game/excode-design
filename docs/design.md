@@ -560,3 +560,16 @@ Editor: players can choose to use graphical insterface of the game for interacti
 If code, again, instead of building a pseudo editor, it is better to provide an existing one with an option to use another.
 Maybe the game can be an extension for an existing editor ? Or expose files to be opened with an editor.
 The point is to keep the language the languge, the editor the editor, and provide game boundaries by exposing bounded data and game apis, instead of wrapping. 
+
+Exploring the map and buidling: REPL
+Both players can see the map. They have editors open (may be just one virtual or real file).
+They can evaluate expressions and explore the map (data).
+For example,  different 'field-generators' are on the map. You can '(count (filter #(= type filed-genrator) map-data ))' and get ,say, 5 .
+You can check what happens when two fields interact. It may also be seen on the may if mouse clicked or hovered.
+Then you can program your droid to deflect ceratian kind of attacks, for example: (when (and field-1 field-2) ...).
+
+Players expose the resulting s-expression(s), droids engage in a battle. Players then adjust. Finally, the winner is determined.
+This is just an example, map templates can have different objectives.
+
+So map is graphically represented, as well as the mechanisms/syshtems players are building.
+Building can be done via an editor or (maybe) the pane that shows the build also allows for interactive programming.
