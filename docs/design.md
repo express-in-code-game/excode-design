@@ -493,3 +493,58 @@
 - language principle
   - would be great to game build process be via a language
 
+
+
+# building is about developing a language
+
+When we build, we describe the phenomena using words, and compose those to achieve the desirable result.
+
+For example, physics is like a giant repository that contains functions (words that describe physics phenomena). 
+Scientists use existing funtions to describe new findings and observations, give it new names and commit.
+As an example, physists explore and strudy the behaviors observed on micro level. They chose to call the elements particles.
+Some kinds of particles may very well be just one particle behaving differently. When/if such understanding is reached, it will be the new word  (function) in the repository of physics knowledge (language).
+And current names of particles will become deprecated. 
+So physics is about describing the system of material world in a language. It's like getting the working operating system and writing down its api. As you go, you add/deprecate methods.
+
+Same applies to the speaking laguanges themselves. We start with creatings symbols for sounds, so we could speak what we write.
+Then we assign words to things, emotiions, patterns of thought, behaviors. And use those to compose larger abstractions.
+And this languge is constantly growing on the level of 'higher api' - new words. We don't change symbols, but we, again, add/deprecate words as we observe new phenomena.
+
+In programming, abstractions of elements, arrays, vectors, maps etc. exists. These words transcend languages, they describe the phenomena on the level of logic, they way we think.
+They abstract, same way as math, elements and sets and what can be done with them. 
+
+So it's aobut the language that makes the process of creating/composing truely free and least bounded.
+
+To make the game about compsing and building, players should have access to the basic elements of the system and compose their solution.
+The base of the game should be a set of elements, the language that can be applied to generated elements to build a solution.
+
+Preferably, the game should not be using it's own language and entities, but rather provide an abstraction for existing phenomena, so that a person could realte to the enetites and principles of the game.
+Most games create their characters and behaviors and relations - so you have to learn the words and numbers to understand the damages, for example. 
+But things like adding (when units collect something) or movement etc. are realtable: if units in a strategy game collect stone, it is relatable and adding is logical.
+But composing of things is always arbitrary and limited: you can only compose units/elements in a predefined and completely arbitrary way.
+
+To the point:
+The desired approach is to give players language-level compsing ability.
+It is much better to use an actual laguage rather than creating your own.
+But the programming laguage should be (optionally) abstracted away from players in a cool way.
+So , for example, a player sees some-amazing-device and can apply it and get the effect. Device is fuction partition-by.
+So the player sees both the game-world name 'some-amazing-device' and the effect - partition-by.
+Moreover, player should be given higher, game specific abstactions for compsing processes and queues and other higher-level abstactions, but still usable as an language (api of funtions).
+Player can do it graphically or type it in.
+
+The elements of the game are generated at the start. Players use the language of the game (which is an actual language) to truely build their soltuions.
+The boundaries are natural: the map caontains only what was generated, to players are building from those elements. And since generation is always ramdomized and
+almost always unique, the resulting build compositions may also be quite different.
+The qualities and characteristics of generated elements can be themseles randomized.
+
+For example, players may have a goal of building a droid. They literally compose it from exiting elemnts and use the language to program the droid.
+Say, you could do smth like '(go (doseq (range 0 2) (<! (timeout 300)) (emit-some-field)  ))'.
+emit-some-field comes from generation. It is a function that is represented by a cool-named-device for example.
+So the player builds the droid as a system and then droid will do things.
+When droids interact, those behaviors will be exectuted.
+
+This way the game gives players the ability to build systems/mechanism only bound by the map generation.
+It is unlimiting and fun: you could configure game to be simplier of go fo mutli-hour compettions with more sopishticated systems.
+
+
+
