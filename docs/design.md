@@ -546,5 +546,8 @@ When droids interact, those behaviors will be exectuted.
 This way the game gives players the ability to build systems/mechanism only bound by the map generation.
 It is unlimiting and fun: you could configure game to be simplier of go fo mutli-hour compettions with more sopishticated systems.
 
-
-
+The objective should be part of the map template and can be anything.
+For example, players may be given a set of elements to build something(a droid) that would defeat the opposing build.
+One player can build a sophisticated droid, another a cloud of micro mahcines, antoher a 5 droid squad etc.
+Another example, player may need to build a system that exposes an 'api' (has to provide certain behaviors).
+Then system are 'tested' and a better one wins.
