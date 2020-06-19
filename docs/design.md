@@ -573,3 +573,6 @@ This is just an example, map templates can have different objectives.
 
 So map is graphically represented, as well as the mechanisms/syshtems players are building.
 Building can be done via an editor or (maybe) the pane that shows the build also allows for interactive programming.
+
+Generated map data (entities) - droid parts, fields, systems, networks, fruit trees, nanites or any other anything - may both be data and have an api.
+Similar to physical devices having api, in-game (virtual) devices may have an api.
