@@ -576,3 +576,17 @@ Building can be done via an editor or (maybe) the pane that shows the build also
 
 Generated map data (entities) - droid parts, fields, systems, networks, fruit trees, nanites or any other anything - may both be data and have an api.
 Similar to physical devices having api, in-game (virtual) devices may have an api.
+
+What is shown on the screen is template dependent. Since entities and devices (functions, api available for palyers, for example, 'mix' function)
+are available for palyers from the beginning, no repetetive  collecting - straight to buidling the solution, map can consist, for example, of 
+what-is-available section (that can be sorf of a map or list, but positions do not matter - in essence, it is a set) and solution section  (that may contain whatever),
+where the soltion is built, tested and final competetion will take place.
+It can be a battle. Or Efficiency. Or, for example, two rovers exploring some palnet (which does best), or even some positional/movement competition or anything else.
+What template is about is limited only by imagination. Template is a game in itself. 
+
+It can be even, that templates may not be needed: every game may be built standalone, but be using shared librarires for this kind of games.
+The point is, it should be clear gow to create new maps/templates/games/challenges like extensions or something. 
+For example, it may be an extension of the editor that uses git url to resolve to games-templates, so that players can install all or specific tempaltes, games.
+But be able to create arbitrary mixed competetions: say, a tournamnet where a,b,c templates are used with certain conditions. This configuration of a tournamnet
+should be gittable, so it could be reused later. 
+This way, tournament tamplates can be freely created and re-used via a git repo (sub)url.
