@@ -590,3 +590,9 @@ For example, it may be an extension of the editor that uses git url to resolve t
 But be able to create arbitrary mixed competetions: say, a tournamnet where a,b,c templates are used with certain conditions. This configuration of a tournamnet
 should be gittable, so it could be reused later. 
 This way, tournament tamplates can be freely created and re-used via a git repo (sub)url.
+
+The solution space (section, plane) obviously has some state and maybe apis. Players' prgrams can infer needed data.
+For example, there can be a constantly changing field of a kind. So programs may read the state of the field and use that information.
+Or it can be positions. Or anything else that is that template/space specific. A droid may have an automated nav system that constantly reads changin properties of
+the space enviroment and adjusts droids position. 
+Point is, the reosurce space has data, where elements/phenomena may have apis. The solution space may have data (again, elements may have apis), api and state.
