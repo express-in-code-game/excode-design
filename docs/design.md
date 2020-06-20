@@ -642,4 +642,11 @@ A player programs the ships, positions them on thier side of the solution space.
 For example, you may program a ship 'when damage is taken, assess the enviroment (using solution space api), if such-such, move closer to your other ships, otherwise move towards  the opponent and attack'.
 Both fleets operate simulteneously. For example, battle lasts 30 seconds. The remaninig fleet wins, or it's a draw and overtime. Players adjust and battle repeats. Overtimes continue until the winner is determined.
 
-
+A strategy genre.
+Soltuion space is a map. In this genre of game players compete for resources.
+Players are given resources and can collect more on the map. Players start by building/assempling their units/entities.
+Say, there are 3-2-1-1-1 minute rounds with 30 seconds runs (after every ruound scneraio runs for 30 seconds).
+After each round the state of the map persists to the next round. So like in real time stratgy, resources are finite and oppoents actions affect your soltuion.
+For example, after first 3 minutes players (using provided elements and apis) built/assembled their units. They program their teams/squads/armies to operate on the map.
+The first 30 second run puts the map in a new state. Players can now explore the new state and adust/compose further.
+Units can collect resources or attack or anything else, within the boundaries of this particular scenario.
