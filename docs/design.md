@@ -596,3 +596,34 @@ For example, there can be a constantly changing field of a kind. So programs may
 Or it can be positions. Or anything else that is that template/space specific. A droid may have an automated nav system that constantly reads changin properties of
 the space enviroment and adjusts droids position. 
 Point is, the reosurce space has data, where elements/phenomena may have apis. The solution space may have data (again, elements may have apis), api and state.
+
+One game, many scenarios.
+This is one game. But it may have varoius scenarios, or it could be better to call them spaces or challenges.
+The game allows players to connect and ,for example, create various tournamnets.
+Players can choose which scenarios and how they will be used in the tournament. 
+And can pre-configure scenarios for the tournament. This tournament setup can be saved and reused later (or shared via a url to be installed elsewhere).
+Scenario represents a game, a unique challenge, a map. (For example, droid battle, or planet exploration etc.).
+Scenarios can have its own tempalates and should have rich configuration.
+Scenarios are addded as extensions. 
+Game contains default scenarios, but more can be added using git url.
+
+Examples of scenarios:
+Planets.
+Players start by building droids/rovers using what is provied by the resource space. 
+Players are free to build one or multiple drones.
+The solution space represents a planet. It has a state. The conditions (state) of the planet changes overtime. 
+From the beginning of the game players can see the whole cycle. There will be no randomness when the solutions will run. So both players can see and explore exactly (via repl and ui) what the events will be. The scenario shows the surface of the planet as it changes daily. Scenario may run several rounds, each lasting, for example, a day.
+Players can adjust after each round. And the final round can be, say, a week.
+There planet surface contains consistent (no randomness, same) generated objectives. 
+Now, this can be , say, a few simple points or a rich grid of entites and fields and whatever.
+The goal of the scenario is, for example, to collect/research/visit this points.
+If it is simple, players can hard-code their droid to literally go to each point. And it is completely vialble.
+But, when a more complex grid and changing conditions (no randomness though, jsut changing) the goal of visting max number of points becomes more interesting.
+Simply hardcoding ,say, 1000 points, becomes unrealistic, espacially if droid can get stuck/run out of energy between points.
+The correct approach is to observe/study the environment (state) of the planet, provided api (what is possible for droids to know/do) and program the droid to auto-decide where to go.
+A player  may choose build one complex droid and program it to never run out of energy and visit some number of locations.
+Another palyer may choose to built more simple droids, even of of different kind (give them sevral programs). They will fail faster, but may visit more locations.
+
+
+
+
