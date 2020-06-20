@@ -607,7 +607,17 @@ Scenarios can have its own tempalates and should have rich configuration.
 Scenarios are addded as extensions. 
 Game contains default scenarios, but more can be added using git url.
 
+Observing.
+Observers can ,as palyers, interact with the map.
+Player's actions and current suild are seen. But if player prefers to think without any inout until final seconds, observers can just comment or try their ideas.
+For example, say the scenario consists of 3-2-1-1 minutes rounds. During the first round palyer may choose to think for two minutes, and only then build a solution.
+That is completely fine for observing, as the observer can fully interact with the reosurce and solution space.
+After the first round, players current solution exists and can be always observed.
+
 Examples of scenarios:
+
+Droids.
+See above.
 
 Planets.
 Players start by building droids/rovers using what is provied by the resource space. 
