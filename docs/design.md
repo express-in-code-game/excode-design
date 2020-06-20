@@ -608,6 +608,7 @@ Scenarios are addded as extensions.
 Game contains default scenarios, but more can be added using git url.
 
 Examples of scenarios:
+
 Planets.
 Players start by building droids/rovers using what is provied by the resource space. 
 Players are free to build one or multiple drones.
@@ -624,6 +625,11 @@ The correct approach is to observe/study the environment (state) of the planet, 
 A player  may choose build one complex droid and program it to never run out of energy and visit some number of locations.
 Another palyer may choose to built more simple droids, even of of different kind (give them sevral programs). They will fail faster, but may visit more locations.
 
-
+Fleets.
+Resource space represents planets and stations where you (using apis) can build ships and assemple a team.
+Solution space represent a square grid where positions matter.
+A player programs the ships, positions them on thier side of the solution space.
+For example, you may program a ship 'when damage is taken, assess the enviroment (using solution space api), if such-such, move closer to your other ships, otherwise move towards  the opponent and attack'.
+Both fleets operate simulteneously. For example, battle lasts 30 seconds. The remaninig fleet wins, or it's a draw and overtime. Players adjust and battle repeats. Overtimes continue until the winner is determined.
 
 
