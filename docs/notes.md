@@ -1,3 +1,0 @@
-- merging text files
-    - https://stackoverflow.com/questions/4779582/markdown-and-including-multiple-files
-    - https://github.com/jgm/pandoc
