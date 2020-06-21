@@ -598,7 +598,7 @@ the space enviroment and adjusts droids position.
 Point is, the reosurce space has data, where elements/phenomena may have apis. The solution space may have data (again, elements may have apis), api and state.
 
 One game, many scenarios.
-This is one game. But it may have varoius scenarios, or it could be better to call them spaces or challenges.
+This is one game. But it may have varoius scenarios.
 The game allows players to connect and ,for example, create various tournamnets.
 Players can choose which scenarios and how they will be used in the tournament. 
 And can pre-configure scenarios for the tournament. This tournament setup can be saved and reused later (or shared via a url to be installed elsewhere).
@@ -614,7 +614,7 @@ For example, say the scenario consists of 3-2-1-1 minutes rounds. During the fir
 That is completely fine for observing, as the observer can fully interact with the reosurce and solution space.
 After the first round, players current solution exists and can be always observed.
 
-Examples of scenarios:
+## Examples of scenarios:
 
 Droids.
 See above.
@@ -635,14 +635,14 @@ The correct approach is to observe/study the environment (state) of the planet, 
 A player  may choose build one complex droid and program it to never run out of energy and visit some number of locations.
 Another palyer may choose to built more simple droids, even of of different kind (give them sevral programs). They will fail faster, but may visit more locations.
 
-Fleets.
+Fleets scneario.
 Resource space represents planets and stations where you (using apis) can build ships and assemple a team.
 Solution space represent a square grid where positions matter.
 A player programs the ships, positions them on thier side of the solution space.
 For example, you may program a ship 'when damage is taken, assess the enviroment (using solution space api), if such-such, move closer to your other ships, otherwise move towards  the opponent and attack'.
 Both fleets operate simulteneously. For example, battle lasts 30 seconds. The remaninig fleet wins, or it's a draw and overtime. Players adjust and battle repeats. Overtimes continue until the winner is determined.
 
-A strategy genre.
+A strategy genre scneario.
 Soltuion space is a map. In this genre of game players compete for resources.
 Players are given resources and can collect more on the map. Players start by building/assempling their units/entities.
 Say, there are 3-2-1-1-1 minute rounds with 30 seconds runs (after every ruound scneraio runs for 30 seconds).
@@ -651,7 +651,10 @@ For example, after first 3 minutes players (using provided elements and apis) bu
 The first 30 second run puts the map in a new state. Players can now explore the new state and adust/compose further.
 Units can collect resources or attack or anything else, within the boundaries of this particular scenario.
 
-Approach to creating the game, game evolution.
+A guide scemario.
+Introduces a player to the game via examples.
+
+## Approach to creating the game, game evolution.
 A better way is to build around diverse scenarios.
 Instead of creating one-all-incompassing scenario, use multiple scenarios within a match, tournament.
 For example, game comes with a number of default scenarios, each being quite simple and specific, but unique in terms of graphics and reosurce/solution space organization.
