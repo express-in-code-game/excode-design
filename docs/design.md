@@ -650,3 +650,15 @@ After each round the state of the map persists to the next round. So like in rea
 For example, after first 3 minutes players (using provided elements and apis) built/assembled their units. They program their teams/squads/armies to operate on the map.
 The first 30 second run puts the map in a new state. Players can now explore the new state and adust/compose further.
 Units can collect resources or attack or anything else, within the boundaries of this particular scenario.
+
+Approach to creating the game, game evolution.
+A better way is to build around diverse scenarios.
+Instead of creating one-all-incompassing scenario, use multiple scenarios within a match, tournament.
+For example, game comes with a number of default scenarios, each being quite simple and specific, but unique in terms of graphics and reosurce/solution space organization.
+Players can select scenarios for the match, event, veto within their e.g. bo3 or bo5.
+Scenarios can be created without strict guidelines. This would allow for more creative and exciting scenarios to appear.
+And the is no need to worry about every scenario being completely unfamiliar: the better, well built scenarios will become the standard naturally.
+Scneario will need to be compatible with the game, obviously, but it should be possible to use different graphics appraoch in scnearios, different ui organization, as long as certain game criteria is matched.
+So it one game, but multiple scenarios.
+As game evolves, more rich scenarios will be developed, the better ones becoming a part of the 'standard set' used for tournaments and events.
+  
