@@ -651,9 +651,21 @@ For example, after first 3 minutes players (using provided elements and apis) bu
 The first 30 second run puts the map in a new state. Players can now explore the new state and adust/compose further.
 Units can collect resources or attack or anything else, within the boundaries of this particular scenario.
 
-A guide scemario.
+A guide scenario.
 Introduces a player to the game via examples.
 
+Evolving solution (e.g. one droid, changing environments) scenario.
+For example, players are buidling systems (one or many droids) for planet exploration or other objectives.
+Within the scneario, multiple planets are generated (each having a unique resource and solution space, and even different objectives).
+Players' builds persist from round to round, such that it has to perform operations in different environemnts (planets).
+For exampple, players play a macro game with 10-8-6-4-2 minut rounds. 
+In the first round players build their system from the first resource and solution space (planet). They can explore resource and solution spaces for all rounds. 
+Obviously, there is not enogh time for detailed analysys of all the next rounds, so they can only get the idea of what kinds of objectives their build will resolve each round.
+They focus on the first round, but build the system generically enough to change during the next round.
+The more specific you build is for the round, the harder it will be to adapt to the next soltuion space. 
+It means, that the player who builds more generacally and parametarized will succeed more, as they will be able to adapt their code faster and accomplish more within each round.
+The point of the scenario is: playing a longer game, where you build a more sophiscticated more generic  multi-purporse solution.
+ 
 ## Approach to creating the game, game evolution.
 A better way is to build around diverse scenarios.
 Instead of creating one-all-incompassing scenario, use multiple scenarios within a match, tournament.
