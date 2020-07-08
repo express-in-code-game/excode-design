@@ -10,4 +10,4 @@
     - so either the ip/domain is publicly announced or is sent to the players/observers only
     - event is played and streamed, after the event orgnaizer may choose to upload the game data for public access
 - identity is an issue with such approach, as system starts fresh, but it is, again, non blocking, a future goal
-
+- ui app has an extension, through which player can access the server: connect/browse/query etc.
