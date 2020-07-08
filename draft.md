@@ -3,7 +3,7 @@
 
 - auto-cluster is a higher level abstraction that is closer to an ideal tool, but not a blockng requirement
 - the goal, clearly is to have events , so what's the approach ?
-- simple, like any game with a server hsoting, but with event system included; let's call it per-event hosting 
+- per-event hosting: well, it's just LAN, but with event system included
     - an event is announced and discussed via existing public methods of communication
     - event organizer launches the system (which is open source and one command lauchnable in docker)
     - event organizer may or may not choose invitational format or open access
