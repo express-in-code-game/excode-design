@@ -26,3 +26,9 @@
         - ...
 - files will be read by the game, it's up to the player to edit and save on time
 - REPL server should be local, apply updates from upstream and handle expression evaluations 
+
+## scenario leads the way
+
+- scenario chooses and implements ui and win conditions, game flow
+- it complies to game apis and uses them to read/eval code etc.
+- this way scenarios stay diverse and unbounded, decoupling general concerns from a scneario's gameplay
