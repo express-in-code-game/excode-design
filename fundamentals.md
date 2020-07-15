@@ -47,7 +47,7 @@
     - should project be eventually moneytized ?
     - should those who create the game and scenarios be paid, should anybody 'make a living' from it ?
     - should there be an organization behind, some fund or pot or whatever (for donations and fundraising and stuff) ?
-    - should events(tornaments) have prize pools ? If not, what should the system be ?
+    - should events(tournaments) have prize pools ? If not, what should the system be ?
 - the answer is **no**
 - because 
     - this project will be sort of a children's palyground - children come and play and build stuff, no reason needed except for wanting to
@@ -55,7 +55,7 @@
     - the point is to play games/events, enjoy competetion, be inspired by the project, commercialization will devalue the product(game and the scene)
     - companies eventually lose the ability to innovate and eventually gravitate to revenue/stability goals, which kills the freedom, simplicity and individual creativity so desperately needed for games and playing
     - the project should be completely any-money-concerns free space, no strings attached or hidden, openly created and contributed, for anyone to play
-    - tournament system should be like other systems(groups, brackets, seasons etc.), except with points only, no prize money: playing games does not require any extra motivation, maybe some bragging rights
+    - tournament system should be like other systems(groups, brackets, seasons etc.), except with points only, no prize money: playing games does not require any extra motivation, except for some bragging rights
     - it is also important to keep the development process (game and scenarios) creative and pressure-free, which will lead to better product
 
 As Jesus says:
