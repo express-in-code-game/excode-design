@@ -58,7 +58,6 @@
     - tournament system should be like other systems(groups, brackets, seasons etc.), except with points only, no prize money: playing games does not require any extra motivation, maybe some bragging rights
     - it is also important to keep the development process (game and scenarios) creative and pressure-free, which will lead to better product
 
----
 as Jesus says:
 > <b>19 “Do not store up for yourselves treasures on earth, where moths and vermin destroy, and where thieves break in and steal. 20 But store up for yourselves treasures in heaven, where moths and vermin do not destroy, and where thieves do not break in and steal. 21 For where your treasure is, there your heart will be also.</b>
 
@@ -66,6 +65,6 @@ as Jesus says:
 
 > <b>24 “No one can serve two masters. Either you will hate the one and love the other, or you will be devoted to the one and despise the other. You cannot serve both God and money.</b>
 
-source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
+<small>source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)</small>
 
 
