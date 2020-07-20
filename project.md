@@ -60,7 +60,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
     - point is
         - players have a real language to express logic, not just clicks and hotkeys
         - scenarios should be designed not for fast-typer-wins, but for clearer-thinker-wins
-- what about the events(tournaments) ?
+- what about events(tournaments) ?
     - should be possible to host an event from your pc (schedule it via social networks)
     - players would add your IP/domain to their game client, connect and play
     - should be possible to select a tournamnet format and what scenarios will be used in which rounds
