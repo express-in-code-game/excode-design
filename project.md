@@ -67,3 +67,25 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
     - should be possible to export tournament configuration as a file (code or data), so that it can be shared via github
     - ideally, there should be a way to export data from self-hosted events to have global data stats (but that's not a priority)
     - later would be awesome to create a new type of volunteer cluster (cloud), so that computers can be volunterily added and system could run decentralized
+
+## development
+
+- the project's organization will only contain docs
+- docs will contain links to
+    - concepts
+    - designs
+    - implementations
+    - labs (code experiments)
+    - ...
+- people create pull-requests into github/project/docs to add links to their design/implementation/lab
+    - for example, 
+    - github/some-user/project.deisgn 
+    - github/another-user/project.implementation
+    - github/diff-user/project.lab
+- so people who are interseted will experiment with stuff in their repos and share
+- then, we will graviate towards better designs/implementaions, start joining/contributing to better repos
+- eventually
+    - there will be one or more implementaions of the game in some users' repos (or even new orgnizations)
+    - those repos will have many contibutors and releases and own docs for how to install/paly the game
+    - there will be links to all that stuff in github/project/docs
+    - point being: we would finally be able to play the game, have events and compete
