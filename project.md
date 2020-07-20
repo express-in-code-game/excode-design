@@ -69,7 +69,9 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
     - should be possible to export tournament configuration as a file (code or data), so that it can be shared via github
     - ideally, there should be a way to export data from self-hosted events to have global data stats (but that's not a priority)
     - later would be awesome to create a new type of volunteer cluster (cloud), so that computers can be volunterily added and system could run decentralized
-
+- what programming language will this prject use ?
+    - clojure and/or clojurescript
+    - these are unmatched in terms of REPL, reach and features
 
 ## links
 
