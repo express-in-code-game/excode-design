@@ -1,4 +1,6 @@
 
+# express-in-code game
+
 ## first things first: project and money
 
 - these questions cause confusion, need to be addressed
@@ -38,7 +40,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
     - but they are all click-focused and quite stale, only maps change
     - not enough events, no/few automated ways to create events and invite people, only 1v1s
     - 90% of twitch streams are crap, because games are mostly uncomfortable or boring to play, so channels become stale
-    - there is a culture of 'you can only play if click fast enough, before you body broke down from poisonous drinks events advertise'
+    - there is a culture of 'you can only play if click fast enough, before you body breaks down from poisonous crap-foods events advertise'
     - still, great games like Age of Empires, Starcraft have impressive scenes and are fun to watch
     - but we can do better by contributing to the world of games a new kind of games
 - what kind of games ?
@@ -68,24 +70,9 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
     - ideally, there should be a way to export data from self-hosted events to have global data stats (but that's not a priority)
     - later would be awesome to create a new type of volunteer cluster (cloud), so that computers can be volunterily added and system could run decentralized
 
-## development
 
-- the project's organization will only contain docs
-- docs will contain links to
-    - concepts
-    - designs
-    - implementations
-    - labs (code experiments)
-    - ...
-- people create pull-requests into github/project/docs to add links to their design/implementation/lab
-    - for example, 
-    - github/some-user/project.deisgn 
-    - github/another-user/project.implementation
-    - github/diff-user/project.lab
-- so people who are interseted will experiment with stuff in their repos and share
-- then, we will graviate towards better designs/implementaions, start joining/contributing to better repos
-- eventually
-    - there will be one or more implementaions of the game in some users' repos (or even new orgnizations)
-    - those repos will have many contibutors and releases and own docs for how to install/paly the game
-    - there will be links to all that stuff in github/project/docs
-    - point being: we would finally be able to play the game, have events and compete
+## links
+
+- [thought process behind the game](https://github.com/express-in-code-game/lab.search-for-the-game/blob/master/docs/design.md#building-is-about-developing-a-language)
+- [idea of a volunteer automated cluster](https://github.com/express-in-code-game/lab.origin-cluster/blob/master/docs/design.md)
+- [some notes on events](https://github.com/express-in-code-game/lab.cloud-native-system/blob/master/docs/design.md#user-experience)
