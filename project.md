@@ -72,6 +72,20 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 - what programming language will this prject use ?
     - clojure and/or clojurescript
     - these are unmatched in terms of REPL, reach and features
+- there are already lots and lots of games based on this idea, plus some more specialized (analogous to e-sports you might say) events, like ICFP and similar ones. How exactly is this different?
+    - very true, it's a poor presentation; the point is to share and idea and find people who have the same problem/goals already
+    - please, link me to such games if possible! I've been following e-sports for about 10 years and could not find any..
+    - for example 
+        - this is https://liquipedia.net/starcraft2/Main_Page , probably the best resource for tournaments, and all games there are usual suspects
+        - or obviously https://www.twitch.tv/directory,  is there a category for such a game(s)?
+    - and main point: it should not be a napkin-game, or 'look-ma-what-i-have-done'; it should be better than Blizzard does things, because it should be open source
+    - and better than Microsoft, that just released Age of Empires 2: Definitive Edition and are investing into tournaments and game updates to catch up with Blizzard
+    - I'm not mentioning Dota, LoL , CS:GO and stuff like that
+    - those are scenes, those games; they gather 100 000 viewer streams on twitch
+    - and all games are closed and moneytized, dark and click driven
+    - this game(s) should do all that, but be open source and less stale
+    - and not like Heroes of Might and Magic 3 scene on twitch, where some dudes got the source code, maintain a server and although do it for free, it is again, happening under the carpet, and again, all tournaments are organized via forums and happen rarely
+    - hidden, hidden, private, hidden... so I don't think such game exists yet, otherwise we would have noticed it
 
 ## links
 
