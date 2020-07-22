@@ -72,6 +72,10 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 - what programming language will this prject use ?
     - clojure and/or clojurescript
     - these are unmatched in terms of REPL, reach and features
+    - language will be used as is, unmodified
+- what will game's code editor look like ?
+    - players will edit files using an editor of their choice
+    - this way there is no wrapping or coupling
 - this document is not very good presentation-wise. There are already lots and lots of games based on this idea, plus some more specialized (analogous to e-sports you might say) events, like ICFP and similar ones. How exactly is this different?
     - very true, it's a poor presentation; the point is to share and idea and find people who have the same problem/goals already
     - please, link me to such games if possible! I've been following e-sports for about 10 years and could not find any..
