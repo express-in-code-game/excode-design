@@ -54,6 +54,8 @@
         - so when simulation starts, game gets what player has written, and uses that code in addition to scenario's to run somehting on screen
         - anyway, players score points or whatever, so evetually winner is decided
         - game over
+    - how about
+        - screw db: no need for the weekend two much mess with schemas and stuff
 
 ## links
 
