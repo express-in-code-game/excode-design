@@ -10,7 +10,11 @@
 
 ## design
 
-- 
+- what should happen when friend arrives
+    - friend brings his laptop, we install him an editor
+    - we glone the code and start the game from code
+    - connect to my laptop and play a scenario, after which he concedes and proclaims this kind of games 'great' :)
+    - a scenario must be fun, yet dead simple, so that a person with no knowledge of the language could learn in 5 min how to play this scenario
 
 ## notes
 
