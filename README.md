@@ -60,6 +60,10 @@
         - or maybe: release binaries as part of this repo
     - how about
         - screw db: no need for the weekend two much mess with schemas and stuff
+    - order
+        - start with the scenario and game! 
+        - otherwise networking will never end
+        - once it happens graphics wise and game wise, proceed to networking 
 
 ## links
 
