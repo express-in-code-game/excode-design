@@ -57,6 +57,7 @@
     - build
         - on friend's laptop tooling is needed to build from code
         - so: either build a binary beforehand and share that, or install docker, use a container to compile to js, and install nodejs to run it
+        - or maybe: release binaries as part of this repo
     - how about
         - screw db: no need for the weekend two much mess with schemas and stuff
 
