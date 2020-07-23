@@ -18,6 +18,8 @@
 - what to avoid
     - solving f-ing fundamental problems
     - "to build this on a weekend, stupid-simple it kept must be" Yoda, 2020
+- any rational reasons why this will work ?
+    - I've got clojure, clojurescript and core.async, so I can build anything
 
 ## notes
 
