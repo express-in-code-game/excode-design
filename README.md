@@ -60,7 +60,7 @@
         - or maybe: release binaries as part of this repo
     - how about
         - screw db: no need for the weekend two much mess with schemas and stuff
-        - check out java-based desktop alternative to electron ? that would be nice, althow won't have the reach of web tools (would mean no antd)
+        - check out java-based desktop alternative to electron ? that would be nice, althow won't have the reach of web tools (would mean no html5,react,antd)
     - order
         - start with the scenario and game! 
         - otherwise networking will never end
