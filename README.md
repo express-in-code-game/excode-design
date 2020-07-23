@@ -15,6 +15,9 @@
     - we clone the repo and start the game from code on his laptop and mine
     - then connect and play a scenario, after which he concedes and proclaims this kind of games 'great' :)
     - a scenario must be fun, yet dead simple, such that a person with no knowledge of the language could learn in 5 min how to play this scenario
+- what to avoid
+    - solving f-ing fundamental problems
+    - "to build this on a weekend, stupid-simple it kept must be" Yoda, 2020
 
 ## notes
 
