@@ -4,4 +4,18 @@
 - naturally I feel dared!
 - so self-generated childish challenge accepted: make a version of a game to play when friend arrives, so he could realize the fututre of this kind of games
 
+## rationale
 
+- none :)
+
+## design
+
+- 
+
+## notes
+
+- 
+
+## links
+
+- 
