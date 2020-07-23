@@ -54,6 +54,9 @@
         - so when simulation starts, game gets what player has written, and uses that code in addition to scenario's to run somehting on screen
         - anyway, players score points or whatever, so evetually winner is decided
         - game over
+    - build
+        - on friend's laptop tooling is needed to build from code
+        - so: either build a binary beforehand and share that, or install docker, use a container to compile to js, and install nodejs to run it
     - how about
         - screw db: no need for the weekend two much mess with schemas and stuff
 
