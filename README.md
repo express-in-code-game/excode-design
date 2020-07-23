@@ -68,4 +68,5 @@
 
 ## links
 
-- 
+- electron alternatives
+    - https://github.com/sudhakar3697/electron-alternatives
