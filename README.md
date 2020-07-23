@@ -50,7 +50,7 @@
         - another player connects to server, sees the game, joins
         - palyer starts, files are read periodically accroding to scenario
         - electron app will expose api to scenario; scenario will be just a namespace (not external, git loadable yet, part of the weekend implementation)
-        - so that scenario namespace will use fns like 'read-palyer-files' and stuff, 'send-then' or whatever; point is: as api
+        - so that scenario namespace will use fns like 'read-palyer-files' and stuff, 'send-some-data' or whatever; point is: as api
         - so when simulation starts, game gets what palyer written, and uses that code in addition to scenario's to run somehting on screen
         - points and stuff; winner is evetually decided
         - game over
