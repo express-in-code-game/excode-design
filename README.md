@@ -69,6 +69,11 @@
         - in node, you'd have to spaw a child_process (which will have to be jvm with both leiningen and shadow-cljs); damn, rip rich npm-tool-world ?
         - in principle, it should be possible to connect to multiple repls: resource space, solution space and be able to create/discard nrepl sessions
         - client should abstract all that away, proving tips, addresses, start/stop options to the player/observer (yes, observers are basically players in regards to repls)
+            - game starts, stuff is generated and (why not), files are created with apis and such
+            - player sees addresses to connect repl to, and can discard a session and start anew (via button in ui)
+            - cleint should start/stop nrepl server, add/remove sessions, read player files
+            - resource and solution space data and api(s) are generated under a unique namespace (same as the ns in game-dir where player edits code)
+            - so it comes down to files: scenario generation -> files created ->  nrepl started -> sessions created -> addresses exposed to the user
     - order
         - start with the scenario and game! 
         - otherwise networking will never end
