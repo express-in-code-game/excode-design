@@ -78,6 +78,7 @@
         - "compile-and-restart-the-app-and-then-navigate-the-UI-to-see-your-change" - nah, you can simply eval '(render)' in browser/node, opt out of reload-on-save
         - https://github.com/cljfx/cljfx
             - not CSP, alas
+    - http://tutorials.jenkov.com/javafx/webview.html
 - eclipse
     - https://www.eclipse.org/articles/Whitepaper-Platform-3.1/eclipse-platform-whitepaper.html
     - https://www.eclipse.org/articles/Article-SWT-graphics/SWT_graphics.html
