@@ -75,6 +75,9 @@
             - resource and solution space data and api(s) are generated under a unique namespace (same as the ns in game-dir where player edits code)
             - so it comes down to files: scenario generation -> files created ->  nrepl started -> sessions created -> addresses exposed to the user
         - essentially, client reads/writes files, start/stops nrepls, while user's editor only needs to open files and connect to addresses shown in gui
+        - so game generates data (code), it is written to files, then those files are evaluated and ,say, '(main)' is run and graphically we see the soltuion space
+        - same with resource space
+        - then user code file is read, user's api is applied/used in soltuion space code, graphics render the user-code-included solution space
     - order
         - start with the scenario and game! 
         - otherwise networking will never end
