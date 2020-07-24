@@ -1,7 +1,7 @@
 ## what it is
 
 - players build/compose/create compositions/solutions using a language
-- players express/describe a program/expression using a language
+- players express/describe a program/logic/expression using a language
 
 ## name
 
