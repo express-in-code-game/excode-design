@@ -12,55 +12,55 @@
 
 ## words
 
-- build bild
-- solutiion
-- language
-- source sorce
-- builder maker author
-- genesis origin
-- creation making
-- growth surge evolve buildup
-- expression
-- define
-- expansion
-- proces
-- advance
-- explicit
+    - build bild
+    - solutiion
+    - language
+    - source sorce
+    - builder maker author
+    - genesis origin
+    - creation making
+    - growth surge evolve buildup
+    - expression
+    - define
+    - expansion
+    - proces
+    - advance
+    - explicit
 
-- describe
-- declare
-- define
-- declaration
-- expression
+    - describe
+    - declare
+    - define
+    - declaration
+    - expression
 
-- unbounded
-- continual
-- continuos
-- continuum
+    - unbounded
+    - continual
+    - continuos
+    - continuum
 
-- convey
-- reveal
-- expose
+    - convey
+    - reveal
+    - expose
 
-- composition
-- exposition
-- manuscript
-- thesis
-- structure
-- arrangement
+    - composition
+    - exposition
+    - manuscript
+    - thesis
+    - structure
+    - arrangement
 
-- semantics
-- meaning
-- definition
-- significs
-- signify
-- indicate
+    - semantics
+    - meaning
+    - definition
+    - significs
+    - signify
+    - indicate
 
-- bildspace
-- createspace
+    - bildspace
+    - createspace
 
-- access
-- terminal
+    - access
+    - terminal
 
 
 
