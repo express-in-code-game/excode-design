@@ -78,6 +78,7 @@
         - so game generates data (code), it is written to files, then those files are evaluated and ,say, '(main)' is run and graphically we see the soltuion space
         - same with resource space
         - then user code file is read, user's api is applied/used in soltuion space code, graphics render the user-code-included solution space
+        - wait, why sessions? what about one session (at first), different namesapces (soltuion,resource, user code)
     - order
         - start with the scenario and game! 
         - otherwise networking will never end
