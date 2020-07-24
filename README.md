@@ -72,6 +72,8 @@
     - https://github.com/sudhakar3697/electron-alternatives
 - javafx
     - https://github.com/openjdk/jfx
+    - https://openjfx.io/openjfx-docs/ getting started
+    - https://openjfx.io/javadoc/14/ javadoc
     - https://openjdk.java.net/projects/openjfx/
     - https://wiki.openjdk.java.net/display/OpenJFX/Main
     - https://vlaaad.github.io/year-of-clojure-on-the-desktop
