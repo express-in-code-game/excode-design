@@ -61,7 +61,8 @@
     - how about
         - screw db: no need for the weekend two much mess with schemas and stuff
         - check out java-based desktop alternative to electron ? that would be nice, althow won't have the reach of web tools (would mean no html5,react,antd)
-    - connecting from editor to get intellisense when editing the file with the game code
+    - ~~connecting from editor to get intellisense when editing the file with the game code~~
+    - *heck, for the weekend: no intellisense!!! just write/read files (as text), keep client simple, focus on the scenario fun-ness and graphics*
         - game ui exposes a host:port for nrepl server running locally, player connects editor
         - game dir contains subdirs with generated names, each contains files; both client and editor read those files
         - and it is the client app, that starts a build with an nrepl (so project.clj for example is part of the client, with repl namepsace being subtitued for each new game)
@@ -79,6 +80,7 @@
         - same with resource space
         - then user code file is read, user's api is applied/used in soltuion space code, graphics render the user-code-included solution space
         - wait, why sessions? what about one session (at first), different namesapces (soltuion,resource, user code)
+        - this way, lein can be started from shell after files are generated, and client only reads/writes files, no nrepl control
     - order
         - start with the scenario and game! 
         - otherwise networking will never end
