@@ -70,3 +70,7 @@
 
 - electron alternatives
     - https://github.com/sudhakar3697/electron-alternatives
+    - javafx
+        - https://github.com/openjdk/jfx
+        - https://openjdk.java.net/projects/openjfx/
+        - https://wiki.openjdk.java.net/display/OpenJFX/Main
