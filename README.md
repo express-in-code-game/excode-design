@@ -113,6 +113,8 @@
         - https://github.com/cljfx/cljfx
             - not CSP, alas
     - http://tutorials.jenkov.com/javafx/webview.html
+    - why say 'no' to raw javafx
+        - because stone age: some ugly-ass custom language (fxml) to define ui separte from code... as if we're back to 2008. Unacceptable, knowing what is possible with reagent in cljs
 - eclipse
     - https://www.eclipse.org/articles/Whitepaper-Platform-3.1/eclipse-platform-whitepaper.html
     - https://www.eclipse.org/articles/Article-SWT-graphics/SWT_graphics.html
