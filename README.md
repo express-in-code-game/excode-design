@@ -74,6 +74,7 @@
             - cleint should start/stop nrepl server, add/remove sessions, read player files
             - resource and solution space data and api(s) are generated under a unique namespace (same as the ns in game-dir where player edits code)
             - so it comes down to files: scenario generation -> files created ->  nrepl started -> sessions created -> addresses exposed to the user
+        - essentially, client reads/writes files, start/stops nrepls, while user's editor only needs to open files and connect to addresses shown in gui
     - order
         - start with the scenario and game! 
         - otherwise networking will never end
