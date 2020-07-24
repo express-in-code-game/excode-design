@@ -61,6 +61,12 @@
     - how about
         - screw db: no need for the weekend two much mess with schemas and stuff
         - check out java-based desktop alternative to electron ? that would be nice, althow won't have the reach of web tools (would mean no html5,react,antd)
+    - connecting from editor to get intellisense when editing the file with the game code
+        - game ui exposes a host:port for nrepl server running locally, player connects editor
+        - game dir contains subdirs with generated names, each contains files; both client and editor read those files
+        - and it is the client app, that starts a build with an nrepl (so project.clj for example is part of the client, with repl namepsace being subtitued for each new game)
+        - so the client app should be capable of starting/stopping such a tool; obviously, it requires jvm runtime; obviously, wuold be great for the client gui to be jvm for that matter
+        - in node, you'd have to spaw a child_process (which will have to be jvm with both leiningen and shadow-cljs); damn, rip rich npm-tool-world ?
     - order
         - start with the scenario and game! 
         - otherwise networking will never end
@@ -85,6 +91,7 @@
     - https://www.eclipse.org/articles/Whitepaper-Platform-3.1/eclipse-platform-whitepaper.html
     - https://www.eclipse.org/articles/Article-SWT-graphics/SWT_graphics.html
     - https://www.eclipse.org/swt/widgets/
+    - https://en.wikipedia.org/wiki/Standard_Widget_Toolkit
 - clojure and GUI
     - https://clojureverse.org/t/building-a-non-web-gui-app-with-clojure/5026
     - https://github.com/fn-fx/fn-fx#a-note-on-javafx-vs-openjfx
