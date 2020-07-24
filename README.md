@@ -93,9 +93,12 @@
 
 - simpler
     - choose a gui environment
+        - cljfx seems the right tool for the weekend challenge (because clojure only, should be faster and simpler )
+        - plus, would be fun to explore javafx tech branch, see how ot compares to browser/electron
     - create scenario generation and graphics (schema)
     - make it runnbale/playable on one computer
     - then, look into networking
+
 
 ## links
 
