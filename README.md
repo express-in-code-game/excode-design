@@ -67,6 +67,7 @@
         - and it is the client app, that starts a build with an nrepl (so project.clj for example is part of the client, with repl namepsace being subtitued for each new game)
         - so the client app should be capable of starting/stopping such a tool; obviously, it requires jvm runtime; obviously, wuold be great for the client gui to be jvm for that matter
         - in node, you'd have to spaw a child_process (which will have to be jvm with both leiningen and shadow-cljs); damn, rip rich npm-tool-world ?
+        - in principle, it should be possible to connect to multiple repls: resource space, solution space and be able to create/discard nrepl sessions
     - order
         - start with the scenario and game! 
         - otherwise networking will never end
