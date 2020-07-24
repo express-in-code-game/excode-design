@@ -81,4 +81,9 @@
 - eclipse
     - https://www.eclipse.org/articles/Whitepaper-Platform-3.1/eclipse-platform-whitepaper.html
     - https://www.eclipse.org/articles/Article-SWT-graphics/SWT_graphics.html
+    - https://www.eclipse.org/swt/widgets/
+- clojure and GUI
+    - https://clojureverse.org/t/building-a-non-web-gui-app-with-clojure/5026
+    - https://github.com/fn-fx/fn-fx#a-note-on-javafx-vs-openjfx
+    - https://www.reddit.com/r/Clojure/comments/dbqq0h/question_fastest_way_to_get_started_in_desktop/
     
