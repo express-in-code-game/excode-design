@@ -23,7 +23,8 @@
 
 ## notes
 
-- walkthrough 1
+### walkthrough 1
+
     - make cljs browser app (from previous labs, comprised of extensions, that uses antd) work in electron
     - so it was possible to navigate and add extensions(= views), so now it's like browser app but in electron
     - now read/write files to a dir (from settings.edn file, all constants are in settings)
@@ -87,6 +88,14 @@
         - start with the scenario and game! 
         - otherwise networking will never end
         - once it happens graphics wise and game wise, proceed to networking 
+
+### walkthrough 2
+
+- simpler
+    - choose a gui environment
+    - create scenario generation and graphics (schema)
+    - make it runnbale/playable on one computer
+    - then, look into networking
 
 ## links
 
