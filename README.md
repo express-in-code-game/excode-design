@@ -109,8 +109,10 @@
     - https://openjdk.java.net/projects/openjfx/
     - https://wiki.openjdk.java.net/display/OpenJFX/Main
     - https://vlaaad.github.io/year-of-clojure-on-the-desktop
-    - https://github.com/cljfx/cljfx
     - http://tutorials.jenkov.com/javafx/webview.html
+- cljfx
+    - https://github.com/cljfx/cljfx
+    - https://github.com/cljfx/css
 - eclipse
     - https://www.eclipse.org/articles/Whitepaper-Platform-3.1/eclipse-platform-whitepaper.html
     - https://www.eclipse.org/articles/Article-SWT-graphics/SWT_graphics.html
