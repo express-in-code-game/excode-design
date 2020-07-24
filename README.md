@@ -75,3 +75,5 @@
         - https://openjdk.java.net/projects/openjfx/
         - https://wiki.openjdk.java.net/display/OpenJFX/Main
         - https://vlaaad.github.io/year-of-clojure-on-the-desktop
+            - "compile-and-restart-the-app-and-then-navigate-the-UI-to-see-your-change" - nah, you can simply eval '(render)' in browser/node, opt out of reload-on-save
+        - 
