@@ -70,10 +70,15 @@
 
 - electron alternatives
     - https://github.com/sudhakar3697/electron-alternatives
-    - javafx
-        - https://github.com/openjdk/jfx
-        - https://openjdk.java.net/projects/openjfx/
-        - https://wiki.openjdk.java.net/display/OpenJFX/Main
-        - https://vlaaad.github.io/year-of-clojure-on-the-desktop
-            - "compile-and-restart-the-app-and-then-navigate-the-UI-to-see-your-change" - nah, you can simply eval '(render)' in browser/node, opt out of reload-on-save
-        - 
+- javafx
+    - https://github.com/openjdk/jfx
+    - https://openjdk.java.net/projects/openjfx/
+    - https://wiki.openjdk.java.net/display/OpenJFX/Main
+    - https://vlaaad.github.io/year-of-clojure-on-the-desktop
+        - "compile-and-restart-the-app-and-then-navigate-the-UI-to-see-your-change" - nah, you can simply eval '(render)' in browser/node, opt out of reload-on-save
+        - https://github.com/cljfx/cljfx
+            - not CSP, alas
+- eclipse
+    - https://www.eclipse.org/articles/Whitepaper-Platform-3.1/eclipse-platform-whitepaper.html
+    - https://www.eclipse.org/articles/Article-SWT-graphics/SWT_graphics.html
+    
