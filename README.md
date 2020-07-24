@@ -104,6 +104,7 @@
 - javafx
     - https://github.com/openjdk/jfx
     - https://openjfx.io/openjfx-docs/ getting started
+    - https://docs.oracle.com/javase/8/javafx/get-started-tutorial/get_start_apps.htm guides
     - https://openjfx.io/javadoc/14/ javadoc
     - https://openjdk.java.net/projects/openjfx/
     - https://wiki.openjdk.java.net/display/OpenJFX/Main
