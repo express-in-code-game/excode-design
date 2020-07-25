@@ -102,6 +102,10 @@
     - server will be a separate app
     - but for weekend build, consider running it within gui app's jvm
     - so players can 'host' right from the client
+- settings
+    - add ability to edit edn with settings from within the client (colors are strings "#fff" for example)
+    - even give users ability to customize certain functions (like you would in editor) using clj code (so clj editor if exists)
+    - key is being able to configure scnenario, preferably without ui (instead, edn with comments for each setting/key)
 
 ### scenario
 
