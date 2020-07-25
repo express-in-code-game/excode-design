@@ -116,6 +116,32 @@
 - cljfx
     - https://github.com/cljfx/cljfx
     - https://github.com/cljfx/css
+    - https://github.com/cljfx/cljfx#more-examples
+        - https://github.com/cljfx/cljfx/blob/master/examples/e07_extra_props.clj
+            - nice overall example (tabs with a tiles, imgs, grids )
+        - https://github.com/cljfx/cljfx/blob/master/examples/e12_interactive_development.clj
+            - chart with animation, example has step-by-step walkthrough
+        - https://github.com/cljfx/cljfx/blob/master/examples/e14_charts.clj
+            - tabs with charts
+        - https://github.com/cljfx/cljfx/blob/master/examples/e16_cell_factories.clj
+            - tabs, data tree and excel like components
+        - https://github.com/cljfx/cljfx/blob/master/examples/e18_pure_event_handling.clj
+            - http request to github to get repo metadata, data tree component to view
+        - https://github.com/cljfx/cljfx/blob/master/examples/e19_instant_repl.clj
+            - put code into left window, instant eval result in the right window
+        - https://github.com/cljfx/cljfx/blob/master/examples/e20_markdown_editor.clj
+            - editor in the left window, preview in the right
+            - example might be useful in terms of configuring initial size of the app window
+        - https://github.com/cljfx/cljfx/blob/master/examples/e21_extension_lifecycles.clj
+            - not sure yet what it is
+        - https://github.com/cljfx/cljfx/blob/master/examples/e27_selection_models.clj
+            - lists and selections
+        - https://github.com/cljfx/cljfx/blob/master/examples/e28_canvas.clj
+            - progress bar on canvas, code looks concise
+        - https://github.com/cljfx/cljfx/blob/master/examples/e30_devtools_via_event_filters.clj
+            - compnents change color on hover and show info
+        - https://github.com/cljfx/cljfx/blob/master/examples/e31_indefinite_transitions.clj
+            - rotations and other animations
 - eclipse
     - https://www.eclipse.org/articles/Whitepaper-Platform-3.1/eclipse-platform-whitepaper.html
     - https://www.eclipse.org/articles/Article-SWT-graphics/SWT_graphics.html
