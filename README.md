@@ -102,10 +102,22 @@
     - server will be a separate app
     - but for weekend build, consider running it within gui app's jvm
     - so players can 'host' right from the client
-- scenario
-    - simulteneous turns (say, 1min), for ease of learning players must press 'ready' before runs
-    - simple, elegant graphical part (shapes/symbols, words and other values)
 
+### scenario
+
+- start with a more simple/basic scenario
+- simulteneous turns (say, 1min), for ease of learning players must press 'ready' before runs
+- simple, elegant graphical part (basic geomentric shapes/symbols, words and other values)
+- to start, make a  scenario that does not require the player to know the language, rather general logic
+    - map is a grid devided into squares (tiles)
+    - both players get a droid/rover (a circle/square/some-other-symbol on the grid/map)
+    - droid has APIs (listed in resource space): scan move attack1 attack2 attackN research pick examine repair cloak ...
+    - each API costs energy
+    - each turn player's droid start with 100%, they spend it on move and other stuff, but can find recharges on map (maybe not)
+    - each API fn has associated animation with it
+    - the player whos droid first gets to the flag (for example, in the middle of the map), wins
+    - there are obstacles: traps stones sands fields and other stuff
+    - players write fn (or fns) to define droids behavior that is used, say, for three turns: 1min think -> 3turns run -> 1min change logic -> 3 turns run ...
 
 ## links
 
