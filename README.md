@@ -98,6 +98,13 @@
     - create scenario generation and graphics (schema)
     - make it runnbale/playable on one computer
     - then, look into networking
+- one jvm instance
+    - server will be a separate app
+    - but for weekend build, consider running it within gui app's jvm
+    - so players can 'host' right from the client
+- scenario
+    - simulteneous turns (say, 1min), for ease of learning players must press 'ready' before runs
+    - simple, elegant graphical part (shapes/symbols, words and other values)
 
 
 ## links
