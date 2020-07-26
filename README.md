@@ -106,12 +106,18 @@
     - add ability to edit edn with settings from within the client (colors are strings "#fff" for example)
     - even give users ability to customize certain functions (like you would in editor) using clj code (so clj editor if exists)
     - key is being able to configure scnenario, preferably without ui (instead, edn with comments for each setting/key)
-- gui extensions 
+- ui extensions 
     - base (layout and base gui components)
     - connect (specify address(s) to connect to server)
     - server (configure .edn map that will be passed to server app, start embedded server)
     - games (list of games, create/join a game, game opens in a new tab)
     - game (pick a scenario, configure game, start the game; pick a tournament format)
+- how extensions handle their ui with cljfx
+    - with DOM and react, base ui can render a slot div element with id, and extension can use such element as target to render it's subui
+    - it is yet unclear how to do it with javafx/cljfx (maybe fx/ext-let-refs)
+    - since cljfx provides docs and examples of using standard single tree for the app that uses global state, let's embrace
+    - so: extensions will enter and change the state, registering fns/refs to their ui components
+    - main ui will use this refs to render subui in app tree (or null if none were registered yet)
 
 ### scenario
 
