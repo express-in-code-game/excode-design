@@ -191,6 +191,8 @@
     - https://github.com/AlmasB/FXGL
         - JavaFX Game Development Framework
     - https://github.com/FXMisc/RichTextFX
+    - https://github.com/manuel-mauky/Grid
+        - A Component for grid based games like sudoku or chess.
 - eclipse
     - https://www.eclipse.org/articles/Whitepaper-Platform-3.1/eclipse-platform-whitepaper.html
     - https://www.eclipse.org/articles/Article-SWT-graphics/SWT_graphics.html
