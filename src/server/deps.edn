@@ -1,4 +1,12 @@
 {:paths ["src"]
  :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
              "clojars" {:url "https://clojars.org/repo/"}}
- :deps {}}
+ :deps {;; com.cognitect/transit-clj {:mvn/version "1.0.324"}
+
+        ;; io.pedestal/pedestal.service {:mvn/version "0.5.7"}
+        ;; io.pedestal/pedestal.route   {:mvn/version "0.5.7"}
+        ;; io.pedestal/pedestal.jetty   {:mvn/version "0.5.7"}
+
+        ;; clj-time {:mvn/version "0.15.2"}
+        ;; cheshire {:mvn/version "5.10.0"}
+        }}

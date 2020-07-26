@@ -1,4 +1,6 @@
 {:paths ["src"]
  :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
              "clojars" {:url "https://clojars.org/repo/"}}
- :deps {}}
+ :deps {org.clojure/spec.alpha {:mvn/version "0.2.187"}
+        org.clojure/test.check {:mvn/version "1.0.0"}
+        net.mikera/core.matrix {:mvn/version "0.62.0"}}}
