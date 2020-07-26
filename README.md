@@ -180,6 +180,8 @@
             - rotations and other animations
     - example of HN app, with cljfx cljfx/css jpackage
         - https://github.com/cljfx/hn
+    - cljfx-fy javafx components
+        - https://github.com/cljfx/cljfx/issues/41
 - javafx libraries
     - https://github.com/topics/javafx
     - https://github.com/mhrimaz/AwesomeJavaFX#libraries-tools-and-projects
