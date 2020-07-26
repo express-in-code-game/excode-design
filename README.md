@@ -151,6 +151,8 @@
     - http://tutorials.jenkov.com/javafx/webview.html
 - cljfx
     - https://github.com/cljfx/cljfx
+    - talk 
+        - https://www.youtube.com/watch?v=xcMNTKFmEgI
     - https://github.com/cljfx/css
     - https://github.com/cljfx/cljfx#more-examples
         - https://github.com/cljfx/cljfx/blob/master/examples/e07_extra_props.clj
