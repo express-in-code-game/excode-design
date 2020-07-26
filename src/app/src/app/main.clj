@@ -7,20 +7,13 @@
    (fx/create-component
     {:fx/type :stage
      :showing true
-     :always-on-top true
-     :style :transparent
      :scene {:fx/type :scene
-             :fill :transparent
-             :stylesheets #{"styles.css"}
-             :root {:fx/type :v-box
-                    :children [{:fx/type :label
-                                :effect {:fx/type :drop-shadow
-                                         :radius 1
-                                         :offset-y 2}
-                                :tooltip {:fx/type :tooltip
-                                          :text "I am a tooltip!"}
-                                :text "Hi! What's your name?"}
-                               {:fx/type :text-field}]}}})))
+             :root {:fx/type :pagination
+                    :page-count 10
+                    :current-page-index 4
+                    :page-factory (fn [i]
+                                    {:fx/type :label
+                                     :text (str "This is a page " (inc i))})}}})))
 
 (defn -main [& args]
   (render))

@@ -1,0 +1,38 @@
+{
+    "files.exclude": {
+        "**/.git": false
+    },
+    "editor.tabSize": 2,
+    "calva.fmt.allgnMapItems": true,
+    "calva.fmt.newIndentEngine": true,
+    "explorer.confirmDragAndDrop": false,
+    "explorer.confirmDelete": false,
+    "calva.autoConnect": false,
+    "workbench.sideBar.location": "left",
+    "editor.autoClosingBrackets": "never",
+    "editor.autoClosingQuotes": "never",
+    "calva.evalOnSave": false,
+    "window.zoomLevel": -1,
+    "workbench.panel.defaultLocation": "bottom",
+    "files.autoSave": "off",
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "java.configuration.checkProjectSettingsExclusions": false,
+    "java.errors.incompleteClasspath.severity": "ignore",
+    "workbench.colorTheme": "Default Light+",
+    "git.autofetch": false,
+    "git.terminalAuthentication": false,
+    "calva.syncReplNamespaceToCurrentFile": true,
+    "calva.openBrowserWhenFigwheelStarted": false,
+    "calva.highlight.commentFormStyle": {"textDecoration": "none; opacity: 1"},
+    "explorer.openEditors.visible": 0,
+    "calva.highlight.enableBracketColors": true,
+    "calva.sendAsyncOutputTo": "REPL Window",
+    "explorer.compactFolders": true,
+    "calva.prettyPrintingOptions": {
+        "enabled": true,
+        "printEngine": "pprint",
+        "width": 120
+    },
+    "calva.showDocstringInParameterHelp": true
+}
