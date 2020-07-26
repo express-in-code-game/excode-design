@@ -149,8 +149,11 @@
     - https://wiki.openjdk.java.net/display/OpenJFX/Main
     - https://vlaaad.github.io/year-of-clojure-on-the-desktop
     - http://tutorials.jenkov.com/javafx/webview.html
-    - controls
+    - javadoc
+        - https://openjfx.io/javadoc/14/
         - https://openjfx.io/javadoc/14/javafx.controls/javafx/scene/control/package-summary.html
+        - https://openjfx.io/javadoc/14/javafx.graphics/module-summary.html
+        - https://openjfx.io/javadoc/14/javafx.web/javafx/scene/web/package-summary.html
 - cljfx
     - https://github.com/cljfx/cljfx
     - talk 
