@@ -118,6 +118,7 @@
     - since cljfx provides docs and examples of using standard single tree for the app that uses global state, let's embrace
     - so: extensions will enter and change the state, registering fns/refs to their ui components
     - main ui will use this refs to render subui in app tree (or null if none were registered yet)
+    - so content (of a tab or pane or panel) is a value in the state, that is passed as prop to app's ui
 
 ### scenario
 
