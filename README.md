@@ -112,7 +112,7 @@
     - server (configure .edn map that will be passed to server app, start embedded server)
     - games (list of games, create/join a game, game opens in a new tab)
     - game (pick a scenario, configure game, start the game; pick a tournament format)
-- how extensions handle their ui with cljfx
+- how extensions will handle their ui with cljfx
     - with DOM and react, base ui can render a slot div element with id, and extension can use such element as target to render it's subui
     - it is yet unclear how to do it with javafx/cljfx (maybe fx/ext-let-refs)
     - since cljfx provides docs and examples of using standard single tree for the app that uses global state, let's embrace
