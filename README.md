@@ -154,6 +154,9 @@
         - https://openjfx.io/javadoc/14/javafx.controls/javafx/scene/control/package-summary.html
         - https://openjfx.io/javadoc/14/javafx.graphics/module-summary.html
         - https://openjfx.io/javadoc/14/javafx.web/javafx/scene/web/package-summary.html
+    - icons
+        - https://github.com/kordamp/ikonli
+            - https://dlsc.com/2020/03/11/javafx-tip-32-need-icons-use-ikonli/
 - cljfx
     - https://github.com/cljfx/cljfx
     - talk 
