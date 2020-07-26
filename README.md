@@ -106,6 +106,12 @@
     - add ability to edit edn with settings from within the client (colors are strings "#fff" for example)
     - even give users ability to customize certain functions (like you would in editor) using clj code (so clj editor if exists)
     - key is being able to configure scnenario, preferably without ui (instead, edn with comments for each setting/key)
+- gui extensions 
+    - base (layout and base gui components)
+    - connect (specify address(s) to connect to server)
+    - server (configure .edn map that will be passed to server app, start embedded server)
+    - games (list of games, create/join a game, game opens in a new tab)
+    - game (pick a scenario, configure game, start the game; pick a tournament format)
 
 ### scenario
 
