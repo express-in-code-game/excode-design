@@ -180,6 +180,17 @@
             - rotations and other animations
     - example of HN app, with cljfx cljfx/css jpackage
         - https://github.com/cljfx/hn
+- javafx libraries
+    - https://github.com/topics/javafx
+    - https://github.com/mhrimaz/AwesomeJavaFX#libraries-tools-and-projects
+    - https://www.jrebel.com/blog/best-javafx-libraries
+    - https://github.com/controlsfx/controlsfx
+        - https://github.com/controlsfx/controlsfx/wiki/ControlsFX-Features
+    - https://github.com/jfoenixadmin/JFoenix
+        - http://www.jfoenix.com/documentation.html
+    - https://github.com/AlmasB/FXGL
+        - JavaFX Game Development Framework
+    - https://github.com/FXMisc/RichTextFX
 - eclipse
     - https://www.eclipse.org/articles/Whitepaper-Platform-3.1/eclipse-platform-whitepaper.html
     - https://www.eclipse.org/articles/Article-SWT-graphics/SWT_graphics.html
