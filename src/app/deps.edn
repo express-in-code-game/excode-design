@@ -1,0 +1,10 @@
+{:paths ["src"]
+ :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
+             "clojars" {:url "https://clojars.org/repo/"}}
+ :deps {org.clojure/clojure {:mvn/version "1.10.1"}
+        org.clojure/core.async {:mvn/version "1.3.610"}
+
+        cljfx {:git/url "https://github.com/cljfx/cljfx" :sha "c09343d357eb30b046d1ff752cf303d261f6c3e3"}
+       ;;  cljfx {:mvn/version "1.7.4"}
+
+        #_app/api.que #_{:local/root "../api.que"}}}
