@@ -165,6 +165,8 @@
             - compnents change color on hover and show info
         - https://github.com/cljfx/cljfx/blob/master/examples/e31_indefinite_transitions.clj
             - rotations and other animations
+    - example of HN app, with cljfx cljfx/css jpackage
+        - https://github.com/cljfx/hn
 - eclipse
     - https://www.eclipse.org/articles/Whitepaper-Platform-3.1/eclipse-platform-whitepaper.html
     - https://www.eclipse.org/articles/Article-SWT-graphics/SWT_graphics.html
