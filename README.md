@@ -40,6 +40,12 @@
     - how to avoid using channels just to lookup some state like :is-running? or :connected? etc.
 - render process and its dependencies should be an extension (so deps are not part of the app), so the system/game/editor is decoupled from gui library/other tools
 - extension is unique: one-of for the system
+- ways to approach channels, processes and api
+    - channles have protocols, reify to create interface instance to put/take on channel
+    - client: for every(needed) process write a separate client that hnadles discovery/connection, exposes clean api and needs to be created(def) only once
+    - runtime discovery: like in vscode, extension exposes a map/api; during runtime other extensions must discover it themselves, but not client needed; again, no compile time errors
+    - chaos: no protocols, put maps on channels; no compile-time errors, find ut what's broken in runtime
+    - ???
 
 ### walkthrough 1
 
