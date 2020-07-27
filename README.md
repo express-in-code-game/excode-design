@@ -39,6 +39,7 @@
     - if api, how to avoid requiring extensions from other extensions: to keep dependencies wisely distributed per process
     - how to avoid using channels just to lookup some state like :is-running? or :connected? etc.
 - render process and its dependencies should be an extension (so deps are not part of the app), so the system/game/editor is decoupled from gui library/other tools
+- extension is unique: one-of for the system
 
 ### walkthrough 1
 
