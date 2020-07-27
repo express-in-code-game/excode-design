@@ -5,40 +5,78 @@
   (:import
    (javafx.application Platform)))
 
-;; Define application state
-
 (def *state
   (atom {:title "App title"}))
-
-;; Define render functions
 
 (defn title-input [{:keys [title]}]
   {:fx/type :text-field
    :on-text-changed #(swap! *state assoc :title %)
    :text title})
 
+(def title-demo
+  {:fx/type :v-box
+   :children [{:fx/type :label
+               :text "Window title input"}
+              {:fx/type title-input
+               :title "asd"}]})
+
+#_(System/getProperty "java.version")
+#_(com.sun.javafx.runtime.VersionInfo/getRuntimeVersion)
+
+(def v-box
+  {:fx/type :v-box
+   :spacing 5
+   :fill-width true
+   :alignment :top-center
+   :children [{:fx/type :label :text "just label"}
+              {:fx/type :label
+               :v-box/vgrow :always
+               :style {:-fx-background-color :lightgray}
+               :max-height Double/MAX_VALUE
+               :max-width Double/MAX_VALUE
+               :text "expanded label"}]})
+
+(def tabs
+  {:fx/type :tab-pane
+   :pref-width 960
+   :pref-height 540
+   :tabs [{:fx/type :tab
+           :text "settings"
+           :closable false
+           :content v-box}
+          {:fx/type :tab
+           :text "scenarios"
+           :closable false
+           :content v-box}
+          {:fx/type :tab
+           :text "game1s"
+           :closable false
+           :content v-box}
+          {:fx/type :tab
+           :text "connect"
+           :closable false
+           :content v-box}
+          {:fx/type :tab
+           :text "server"
+           :closable false
+           :content title-demo}]})
+
+
 (defn root [{:keys [title]}]
   {:fx/type :stage
    :showing true
    :title title
+   :always-on-top true
    :scene {:fx/type :scene
-           :root {:fx/type :v-box
-                  :children [{:fx/type :label
-                              :text "Window title input"}
-                             {:fx/type title-input
-                              :title title}]}}})
-
-;; Create renderer with middleware that maps incoming data - description -
-;; to component description that can be used to render JavaFX state.
-;; Here description is just passed as an argument to function component.
-
+           :root tabs}})
 (def renderer
   (fx/create-renderer
    :middleware (fx/wrap-map-desc assoc :fx/type root)))
 
-;; Convenient way to add watch to an atom + immediately render app
-
 (defn -main [& args]
   (Platform/setImplicitExit true)
   (fx/mount-renderer *state renderer))
+
+#_(renderer)
+#_(fx/unmount-renderer *state renderer)
 

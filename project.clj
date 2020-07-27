@@ -17,6 +17,7 @@
 
   :repl-options {:init-ns          ~MAIN
                  :main             ~MAIN
+                 :init (-main)
                  :host             "0.0.0.0"
                  :port             7788}
   :profiles {:dev  {:main         ^{:skip-aot false} ~MAIN
