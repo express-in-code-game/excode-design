@@ -11,4 +11,4 @@
        ;;  cljfx {:mvn/version "1.7.4"}
        ;;  cljfx/css {:mvn/version "1.1.0"}
 
-        #_app/api.que #_{:local/root "../api.que"}}}
+        scenario/rovers {:local/root "../scenario/rovers"}}}
