@@ -23,6 +23,22 @@
 
 ## notes
 
+### key moment: processes and queues
+
+- "functions make poor machines" Rich Hickey ~2013
+- why editors, apps, systems fail ? because it is inherently complex to build using functions when it's not a library
+- mechanisms (machines/systems) are logically processes, that should put/take thoughtlessly values on/from queues
+- from the get-go even a small system should be built from processes (even hello-world)
+- that will create breathing room for adding/removing logic to the system without complexing it
+- an extension is a process, so if you have processes, you are one step away from extensions
+- what is left to consider is
+    - how will values be put on channels (how to do it via a protocol)
+    - how processes look up state (menatlly understand it as a db request: one db, many apps)
+    - how to make extensions unware of each other and yet convey/lookup what is needed; and what is needed ?
+    - how to make it totally about channels, yet via an api
+    - if api, how to avoid requiring extensions from other extensions: to keep dependencies wisely distributed per process
+    - how to avoid using channels just to lookup some state like :is-running? or :connected? etc.
+
 ### walkthrough 1
 
     - make cljs browser app (from previous labs, comprised of extensions, that uses antd) work in electron
