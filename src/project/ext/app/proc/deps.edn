@@ -11,4 +11,5 @@
        ;;  cljfx {:mvn/version "1.7.4"}
        ;;  cljfx/css {:mvn/version "1.1.0"}
 
+        project.ext.app/meta {:local/root "../meta"}
         project.scenario/rovers1 {:local/root "../../scenario/rovers1"}}}
