@@ -58,6 +58,8 @@
     - when extB is installed, it probably has to get some unique, gensymed namespace; so how do you tell it, that it's channels already exist ?
     - and how do you make ext/meta unique if it is statically required ??? damn
     - scratch that: let the author of the ext guarantee the uniqueness of the namespace; namespaces for the win!
+- installing from git
+    - app will be a binary, so even if it's possible (using tool.deps) to get ext and it's deps, running would mean relying on .clojure/.m2 dir for jars
 
 ### walkthrough 1
 
