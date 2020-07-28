@@ -11,6 +11,5 @@
        ;;  cljfx {:mvn/version "1.7.4"}
        ;;  cljfx/css {:mvn/version "1.1.0"}
 
-        project.ext.base/meta {:local/root "../meta"}
-
-        project.ext.scenarios/proc {:local/root "../../scenarios/proc"}}}
+        project.ext.scenarios/meta {:local/root "../meta"}
+        project.scenario/rovers1 {:local/root "../../../scenario/rovers1"}}}
