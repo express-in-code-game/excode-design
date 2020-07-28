@@ -55,7 +55,8 @@
         - since they should be static and unchaging by desgin, define them as part of meta package
         - say, extA requires extB/meta and taps and subs; but extB might not have been installed!; if channels are part of meta, it would not be a problem - values won't be taken untill ext is installed 
         - this way channels are decoupled from the process: extB can be installed/uninstalled without breaking other exts which through extB/meta.api unknowingly depend on the channels
-
+    - when extB is installed, it probably has to get some unique, gensymed namespace; so how do you tell it, that it's channels already exist ?
+    - and how do you make ext/meta unique if it is statically required ??? damn
 
 ### walkthrough 1
 
