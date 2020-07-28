@@ -1,7 +1,6 @@
 (ns project.ext.base.proc.render
   (:require
-   [cljfx.api :as fx]
-   [scenario.rovers.main])
+   [cljfx.api :as fx])
   (:import
    (javafx.application Platform)))
 
