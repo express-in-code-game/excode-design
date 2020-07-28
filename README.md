@@ -69,6 +69,15 @@
         - incode manifest may be ok, say, extB.api ext-info to tell that it requires git-url:hash or version (in deps.edn) or smth
         - or throw error; let ext readme tell user which exts to install prior
     - anyway, is it correct to assume that meta is unnecessary ? that anytime you run extB, extA namespaces must already be there somehow ? 
+    - yes! it is correct indeed (was a typical cart-before-the-horse, solving non-exiting problem)
+        - extension is essentially a namespace, by design; it must be unique; it may have deps
+        - when extB deps extA
+            - case1, native (included) to the app exts: no problem here - obviuosly all namespaces are present
+            - case2, developing extB: creator must ensure that extA is installed (app catches an error on installation of extB and maybe hints 'chck if all the ext are present')
+            - case3, user installs extB: same, user sees the error and should check extB's readme - it should tell which exts extB depends on
+            - maybe later (not critical,not essential, myabe not) some chain-install mechanism can be added
+        - so whenever extB :requires namespaces from extB, they must be already in the classpath or runtime
+        - case closed
 
 ### walkthrough 1
 
