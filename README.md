@@ -57,6 +57,7 @@
         - this way channels are decoupled from the process: extB can be installed/uninstalled without breaking other exts which through extB/meta.api unknowingly depend on the channels
     - when extB is installed, it probably has to get some unique, gensymed namespace; so how do you tell it, that it's channels already exist ?
     - and how do you make ext/meta unique if it is statically required ??? damn
+    - scratch that: let the author of the ext guarantee the uniqueness of the namespace; namespaces for the win!
 
 ### walkthrough 1
 
