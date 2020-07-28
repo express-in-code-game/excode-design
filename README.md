@@ -77,7 +77,7 @@
             - case3, user installs extB: same, user sees the error and should check extB's readme - it should tell which exts extB depends on
             - maybe later (not critical,not essential, myabe not) some chain-install mechanism can be added
         - so whenever extB :requires namespaces from extB, they must be already in the classpath or runtime
-        - case closed
+        - case closed, meta not needed
 
 ### walkthrough 1
 
