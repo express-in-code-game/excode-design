@@ -13,4 +13,5 @@
 
         project.ext.base/meta {:local/root "../meta"}
 
-        project.ext.scenarios/proc {:local/root "../../scenarios/proc"}}}
+        project.ext.scenarios/proc {:local/root "../../scenarios/proc"}
+        project.ext.log/proc {:local/root "../../log/proc"}}}
