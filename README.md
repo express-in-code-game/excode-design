@@ -46,6 +46,16 @@
     - runtime discovery: like in vscode, extension exposes a map/api; during runtime other extensions must discover it themselves, but not client needed; again, no compile time errors
     - chaos: no protocols, put maps on channels; no compile-time errors, find ut what's broken in runtime
     - ???
+- ways to approach channels, processes and api part 2
+    - it seems the only way to have apis and sanity is to define a process (extension) as two packages: meta and proc
+    - meta should be dependecy-less, other extensions will import it and use meta.api to communicate with extension
+    - meta.api contains extension metadata, that has an id: can be url or hash or any string; if ext with id already exists, the new will not be loaded
+    - with channels two options
+        - create a client, that creates copies of ext channels and subs/taps/unsubs/etc whenever ext is registered/unregistered
+        - since they should be static and unchaging by desgin, define them as part of meta package
+        - say, extA requires extB/meta and taps and subs; but extB might not have been installed!; if channels are part of meta, it would not be a problem - values won't be taken untill ext is installed 
+        - this way channels are decoupled from the process: extB can be installed/uninstalled without breaking other exts which through extB/meta.api unknowingly depend on the channels
+
 
 ### walkthrough 1
 
