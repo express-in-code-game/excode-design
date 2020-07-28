@@ -1,0 +1,8 @@
+{:paths ["src"]
+ :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
+             "clojars" {:url "https://clojars.org/repo/"}}
+ :deps {cljfx/cljfx {:git/url "https://github.com/cljfx/cljfx" :sha "c09343d357eb30b046d1ff752cf303d261f6c3e3"}
+        cljfx/css {:git/url "https://github.com/cljfx/css" :sha "b96e952f9c0e90029bd79d63c7c4c59924d99592"}
+       ;;  cljfx {:mvn/version "1.7.4"}
+       ;;  cljfx/css {:mvn/version "1.1.0"}
+        project.ext.render/meta {:local/root "../meta"}}}

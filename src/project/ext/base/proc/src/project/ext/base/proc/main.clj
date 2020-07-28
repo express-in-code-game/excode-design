@@ -1,9 +1,9 @@
 (ns project.ext.base.proc.main
   (:require
    [project.ext.base.meta.protocols :as base.p]
-   [project.ext.base.proc.render :as base.render]
+   [project.ext.render.proc.main :as render.main]
    [project.ext.scenarios.proc.main :as scenarios.main]
-   [project.ext.log.proc.main :as log.main]))
+   [project.ext.console.proc.main :as console.main]))
 
 (defn -main [& args]
-  (base.render/-main))
+  (render.main/-main))

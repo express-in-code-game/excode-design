@@ -1,6 +1,7 @@
-(ns project.ext.base.proc.render
+(ns project.ext.render.proc.main
   (:require
-   [cljfx.api :as fx])
+   [cljfx.api :as fx]
+   [project.ext.render.meta.protocols :as render.p])
   (:import
    (javafx.application Platform)))
 
