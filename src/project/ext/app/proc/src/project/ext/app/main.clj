@@ -1,4 +1,4 @@
-(ns app.main
+(ns project.ext.app.main
   (:require
    [cljfx.api :as fx]
    [scenario.rovers.main])

@@ -11,4 +11,4 @@
        ;;  cljfx {:mvn/version "1.7.4"}
        ;;  cljfx/css {:mvn/version "1.1.0"}
 
-        scenario/rovers {:local/root "../scenario/rovers"}}}
+        project.scenario/rovers1 {:local/root "../../scenario/rovers1"}}}
