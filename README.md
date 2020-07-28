@@ -60,6 +60,15 @@
     - scratch that: let the author of the ext guarantee the uniqueness of the namespace; namespaces for the win!
 - installing from git
     - app will be a binary, so even if it's possible (using tool.deps) to get ext and it's deps, running would mean relying on .clojure/.m2 dir for jars
+- extB depends on extA
+    - extB must not contain extA as a dep, extA must be installed
+    - if you :require extA in code, those namespaces must be already present
+    - it means, that to develop extB, it must be run within a runtime of a running app/editor, that has extA installed
+    - how do you develop extB? how do you run it via your own devtools but within app/editor runtime ???
+    - if you install extB without extA, app should somehow know to install extA or inform that extA must be installed first; how (preferably without manifests) ?
+        - incode manifest may be ok, say, extB.api ext-info to tell that it requires git-url:hash or version (in deps.edn) or smth
+        - or throw error; let ext readme tell user which exts to install prior
+    - anyway, is it correct to assume that meta is unnecessary ? that anytime you run extB, extA namespaces must already be there somehow ? 
 
 ### walkthrough 1
 
