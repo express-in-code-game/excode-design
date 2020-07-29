@@ -75,7 +75,7 @@
   (fx/create-renderer
    :middleware (fx/wrap-map-desc assoc :fx/type root)))
 
-(defn create-proc
+(defn create-proc-render
   [channels]
   (let []
     (with-meta
@@ -85,6 +85,12 @@
                         (Platform/setImplicitExit true)
                         (fx/mount-renderer *state renderer))
        `core.p/unmount* (fn [_])})))
+
+(defn mount [proc]
+  (core.p/mount* proc))
+
+(defn unmount [proc]
+  (core.p/unmount* proc))
 
 #_(renderer)
 #_(fx/unmount-renderer *state renderer)

@@ -11,6 +11,4 @@
        ;;  cljfx {:mvn/version "1.7.4"}
        ;;  cljfx/css {:mvn/version "1.1.0"}
 
-        project/core {:local/root "../../core"}
-        project.ext/store {:local/root "../store"}
-        project.ext/render {:local/root "../render"}}}
+        project/core {:local/root "../../core"}}}

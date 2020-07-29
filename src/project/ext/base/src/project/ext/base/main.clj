@@ -2,25 +2,28 @@
   (:require
    [project.core.protocols :as core.p]
    [project.ext.base.protocols :as base.p]
-   [project.ext.base.render :as render]
-   [project.ext.store.api :as store.api]))
+   [project.ext.base.render :as base.render]
+   [project.ext.base.store :as base.store]))
 
 
 (def channels (let []
                 {}))
 
-(defn create-proc
-  [channels]
+(defn create-proc-main
+  [channels {:keys [proc-render]}]
   (go (loop []
         (let [v (<! (chan 1))])))
   (with-meta
     {}
     {`core.p/mount* (fn [_]
-                      (core.p/mount* proc-render)
-                      (core.p/mount* store.api/proc-ext))
+                      (base.render/mount proc-render)
+                      (base.render/unmount store.api/proc-ext))
      `core.p/unmount* (fn [_])}))
 
-(def proc-ext (create-proc-ext channels))
+
+(def proc-render (base.render/create-proc-render channels))
+
+(def proc-main (create-proc-main channels {:proc-render proc-render}))
 
 
 
