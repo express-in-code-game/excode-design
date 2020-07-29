@@ -1,4 +1,4 @@
-(ns project.ext.connect.impl.proc)
+(ns project.ext.connect.proc)
 
 
 (defn create-proc-ext

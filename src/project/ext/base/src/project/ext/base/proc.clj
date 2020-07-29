@@ -1,4 +1,4 @@
-(ns project.ext.base.impl.proc
+(ns project.ext.base.proc
   (:require
    [project.ext.base.meta.protocols :as base.p]
    [project.ext.render.proc.main :as render.main]

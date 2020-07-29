@@ -1,4 +1,4 @@
 {:paths ["src"]
  :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
              "clojars" {:url "https://clojars.org/repo/"}}
- :deps {#_should_be_empty_by_design}}
+ :deps {}}
