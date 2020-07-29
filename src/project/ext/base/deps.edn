@@ -6,7 +6,6 @@
 
         clj-http {:mvn/version "3.10.1"}
 
-        project.ext.base/meta {:local/root "../meta"}
-        project.ext.scenarios/proc {:local/root "../../scenarios/proc"}
-        project.ext.render/proc {:local/root "../../render/proc"}
-        project.ext.console/proc {:local/root "../../console/proc"}}}
+        project/core {:local/root "../../../core"}
+        project.ext/store {:local/root "../../store"}
+        project.ext/render {:local/root "../../render"}}}

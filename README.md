@@ -6,7 +6,7 @@
 
 ## rationale
 
-- none :)
+- none
 
 ## design
 
