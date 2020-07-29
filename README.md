@@ -78,6 +78,14 @@
             - maybe later (not critical,not essential, myabe not) some chain-install mechanism can be added
         - so whenever extB :requires namespaces from extB, they must be already in the classpath or runtime
         - case closed, meta not needed
+- on api
+    - say, a process namespace contains fns, process fn and even some variables(state)
+    - yes, proc is reified, but also some fns are exported that depend on some state (sort of api)
+    - but: you cannot import this namespace because of circluar deps for example
+    - so you add an api namespace that take proc instance as arg and does not :require the above namepsace
+    - in that case, some api functions will duplicate fns from the process namespace
+    - and it is absolutely fine
+    - as an example, https://github.com/clojure/core.async/blob/master/src/main/clojure/clojure/core/async.clj#L68
 
 ### walkthrough 1
 
