@@ -1,4 +1,7 @@
-(ns project.ext.store.proc)
+(ns project.ext.store.proc
+  (:require
+   [project.core.protocols :as core.p]
+   [project.ext.store.protocols :as store.p]))
 
 
 (defn create-proc-ext
@@ -7,7 +10,6 @@
         (let [v (<! (chan 1))])))
   (with-meta
     {}
-    {`mount (fn [_]
-              (render.main/-main))
-     `unmount (fn [_])}))
+    {`core.p/mount* (fn [_])
+     `core.p/unmount* (fn [_])}))
 

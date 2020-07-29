@@ -1,8 +1,8 @@
-(ns project.ext.render.proc
+(ns project.ext.base.proc.render
   (:require
    [cljfx.api :as fx]
    [project.core.protocols :as core.p]
-   [project.ext.render.protocols :as render.p])
+   [project.ext.base.protocols :as render.p])
   (:import
    (javafx.application Platform)))
 
@@ -75,8 +75,8 @@
   (fx/create-renderer
    :middleware (fx/wrap-map-desc assoc :fx/type root)))
 
-(defn create-proc-ext
-  []
+(defn create-proc
+  [channels]
   (let []
     (with-meta
       {}
