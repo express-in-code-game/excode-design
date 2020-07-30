@@ -15,9 +15,11 @@
 (def state* (atom (fx/create-context @base.store/state* cache/lru-cache-factory)))
 
 #_(keys @state* )
+#_(:cljfx.context/m @state*)
 
 (do (add-watch base.store/state* :watcher
                (fn [key ref v-old v-new]
+                 #_(swap! state* fx/swap-context merge v-new)
                  (reset! state* (fx/reset-context @state* v-new)))))
 
 (def inputs|* (chan (sliding-buffer 100)))
