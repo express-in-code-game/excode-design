@@ -32,14 +32,14 @@
                :max-width 300
                :text "Text field in top-right corner"}]})
 
-(defn content (let [ext-key :project.ext/connect]
-                {:ext/key ext-key
-                 :ext/fx-tab-fn (fn []
-                                  {:fx/type :tab
-                                   :fx/key ext-key
-                                   :text "connect"
-                                   :closable false
-                                   :content button-bar})}))
+(def content (let [ext-key :project.ext/connect]
+               {:ext/key ext-key
+                :ext/fx-tab-fn (fn []
+                                 {:fx/type :tab
+                                  :fx/key ext-key
+                                  :text "connect"
+                                  :closable false
+                                  :content button-bar})}))
 
 
 (defn create-proc-render

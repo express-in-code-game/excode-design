@@ -55,12 +55,17 @@
 
 (defn tabs [{:keys [fx/context]}]
   (let [exts (fx/sub context :ext/fx-content)]
-    (prn "tabs")
-    (prn (mapv (fn [[k v]] ((:ext/fx-tab-fn v)) ) exts))
+    (println exts)
+    (println "tabs")
+    (println (mapv (fn [[k v]] ((:ext/fx-tab-fn v))) exts))
     {:fx/type :tab-pane
      :pref-width 1600
      :pref-height 900
-     :tabs (mapv (fn [[k v]] ((:ext/fx-tab-fn v))) exts)
+     :tabs (into []
+                 (comp
+                  (filter (fn [[k v]] (#{:project.ext/scenarios} k)))
+                  (map (fn [[k v]] ((:ext/fx-tab-fn v))))
+                  exts))
      #_[{:fx/type :tab
          :text "settings"
          :closable false
