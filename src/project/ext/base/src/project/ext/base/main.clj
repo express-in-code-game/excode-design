@@ -13,15 +13,19 @@
                 {}))
 
 (defn create-proc-main
-  [channels {:keys [proc-render proc-store]}]
+  [{:keys [] :as channels} {:keys [proc-render proc-store]}]
   (go (loop []
         (let [v (<! (chan 1))])))
-  (with-meta
-    {}
-    {`core.p/mount* (fn [_]
-                      (core.p/mount* proc-render)
-                      (core.p/mount* proc-store))
-     `core.p/unmount* (fn [_])}))
+  (reify
+    core.p/Mountable
+    (core.p/mount* [_]
+      (core.p/mount* proc-render)
+      (core.p/mount* proc-store))
+    (core.p/unmount* [_]))
+  #_(with-meta
+      {}
+      {`core.p/mount* (fn [_])
+       `core.p/unmount* (fn [_])}))
 
 
 (def proc-render (base.render/create-proc-render channels))
