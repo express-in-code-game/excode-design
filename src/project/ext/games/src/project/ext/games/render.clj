@@ -1,4 +1,4 @@
-(ns project.ext.scenarios.render
+(ns project.ext.games.render
   (:require
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go close!
                                      >!! <!! alt!! alts! alts!! take! put! mult tap untap
@@ -16,24 +16,30 @@
   [op data]
   (put! inputs|* {:op op :data data}))
 
-(def button-bar
-  {:fx/type :button-bar
-   :button-min-width 100
-   :buttons [{:fx/type :button
-              :button-bar/button-data :yes
-              :text "Yes"}
-             {:fx/type :button
-              :button-bar/button-data :no
-              :text "No"}]})
+(def grid-pane
+  {:fx/type :grid-pane
+   :children (concat
+              (for [i (range 16)]
+                {:fx/type :label
+                 :grid-pane/column i
+                 :grid-pane/row i
+                 :grid-pane/hgrow :always
+                 :grid-pane/vgrow :always
+                 :text "boop"})
+              [{:fx/type :label
+                :grid-pane/row 2
+                :grid-pane/column 3
+                :grid-pane/column-span 2
+                :text "I am a long label spanning 2 columns"}])})
 
-(def content (let [ext-key :project.ext/scenarios]
+(def content (let [ext-key :project.ext/games]
                {:ext/key ext-key
                 :ext/fx-tab-fn (fn []
                                  {:fx/type :tab
                                   :fx/key ext-key
-                                  :text "scenarios"
+                                  :text "games"
                                   :closable false
-                                  :content button-bar})}))
+                                  :content grid-pane})}))
 
 (defn create-proc-render
   [channels]

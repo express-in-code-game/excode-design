@@ -1,4 +1,4 @@
-(ns project.ext.scenarios.render
+(ns project.ext.server.render
   (:require
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go close!
                                      >!! <!! alt!! alts! alts!! take! put! mult tap untap
@@ -16,24 +16,20 @@
   [op data]
   (put! inputs|* {:op op :data data}))
 
-(def button-bar
-  {:fx/type :button-bar
-   :button-min-width 100
-   :buttons [{:fx/type :button
-              :button-bar/button-data :yes
-              :text "Yes"}
-             {:fx/type :button
-              :button-bar/button-data :no
-              :text "No"}]})
+(def flow-pane
+  {:fx/type :flow-pane
+   :vgap 5
+   :hgap 5
+   :padding 5
+   :children (repeat 100 {:fx/type :rectangle :width 25 :height 25})})
 
-(def content (let [ext-key :project.ext/scenarios]
+(def content (let [ext-key :project.ext/server]
                {:ext/key ext-key
-                :ext/fx-tab-fn (fn []
-                                 {:fx/type :tab
-                                  :fx/key ext-key
-                                  :text "scenarios"
-                                  :closable false
-                                  :content button-bar})}))
+                :ext/fx-tab {:fx/type :tab
+                             :fx/key ext-key
+                             :text "server"
+                             :closable false
+                             :content flow-pane}}))
 
 (defn create-proc-render
   [channels]

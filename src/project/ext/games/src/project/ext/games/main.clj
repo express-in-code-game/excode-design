@@ -1,17 +1,16 @@
-(ns project.ext.scenarios.main
+(ns project.ext.games.main
   (:require
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go close!
                                      >!! <!! alt!! alts! alts!! take! put! mult tap untap
                                      thread pub sub sliding-buffer mix admix unmix]]
    [project.core.protocols :as core.p]
    [project.core]
-   [project.ext.scenarios.render :as scenarios.render]
+   [project.ext.games.render :as games.render]
    [project.ext.base.store :as base.store]))
 
 
 (def channels (let []
                 {}))
-
 
 (defn create-proc-main
   [{:keys [] :as channels} {:keys [proc-render]}]
@@ -21,7 +20,7 @@
           (when-let [{:keys [op opts out|]} (<! ops|)]
             (condp = op
               :mount (let []
-                       (base.store/write {:op :ext/fx-content-add :data scenarios.render/content})
+                       (base.store/write {:op :ext/fx-content-add :data games.render/content})
                        (<! (core.p/mount* proc-render {}))
                        (put! out| true)
                        (close! out|))
@@ -37,7 +36,7 @@
          `core.p/unmount* (fn [_])})))
 
 
-(def proc-render (scenarios.render/create-proc-render channels))
+(def proc-render (games.render/create-proc-render channels))
 
 (def proc-main (create-proc-main channels {:proc-render proc-render}))
 

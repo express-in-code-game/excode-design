@@ -1,4 +1,4 @@
-(ns project.ext.scenarios.render
+(ns project.ext.connect.render
   (:require
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go close!
                                      >!! <!! alt!! alts! alts!! take! put! mult tap untap
@@ -17,23 +17,30 @@
   (put! inputs|* {:op op :data data}))
 
 (def button-bar
-  {:fx/type :button-bar
-   :button-min-width 100
-   :buttons [{:fx/type :button
-              :button-bar/button-data :yes
-              :text "Yes"}
-             {:fx/type :button
-              :button-bar/button-data :no
-              :text "No"}]})
+  {:fx/type :stack-pane
+   :children [{:fx/type :rectangle
+               :width 200
+               :height 200
+               :fill :lightgray}
+              {:fx/type :label
+               :stack-pane/alignment :bottom-left
+               :stack-pane/margin 5
+               :text "stacked label"}
+              {:fx/type :text-field
+               :stack-pane/alignment :top-right
+               :stack-pane/margin 5
+               :max-width 300
+               :text "Text field in top-right corner"}]})
 
-(def content (let [ext-key :project.ext/scenarios]
-               {:ext/key ext-key
-                :ext/fx-tab-fn (fn []
-                                 {:fx/type :tab
-                                  :fx/key ext-key
-                                  :text "scenarios"
-                                  :closable false
-                                  :content button-bar})}))
+(defn content (let [ext-key :project.ext/connect]
+                {:ext/key ext-key
+                 :ext/fx-tab-fn (fn []
+                                  {:fx/type :tab
+                                   :fx/key ext-key
+                                   :text "connect"
+                                   :closable false
+                                   :content button-bar})}))
+
 
 (defn create-proc-render
   [channels]

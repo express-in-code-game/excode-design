@@ -54,29 +54,34 @@
                :text "expanded label"}]})
 
 (defn tabs [{:keys [fx/context]}]
-  {:fx/type :tab-pane
-   :pref-width 1600
-   :pref-height 900
-   :tabs [{:fx/type :tab
-           :text "settings"
-           :closable false
-           :content v-box}
-          {:fx/type :tab
-           :text "scenarios"
-           :closable false
-           :content v-box}
-          {:fx/type :tab
-           :text "game1s"
-           :closable false
-           :content v-box}
-          {:fx/type :tab
-           :text "connect"
-           :closable false
-           :content v-box}
-          {:fx/type :tab
-           :text "server"
-           :closable false
-           :content title-demo}]})
+  (let [exts (fx/sub context :ext/fx-content)]
+    (prn "tabs")
+    (prn (mapv (fn [[k v]] ((:ext/fx-tab-fn v)) ) exts))
+    {:fx/type :tab-pane
+     :pref-width 1600
+     :pref-height 900
+     :tabs (mapv (fn [[k v]] ((:ext/fx-tab-fn v))) exts)
+     #_[{:fx/type :tab
+         :text "settings"
+         :closable false
+         :content v-box}
+        {:fx/type :tab
+         :text "scenarios"
+         :closable false
+         :content v-box}
+        {:fx/type :tab
+         :text "game1s"
+         :closable false
+         :content v-box}
+        {:fx/type :tab
+         :text "connect"
+         :closable false
+         :content v-box}
+        {:fx/type :tab
+         :text "server"
+         :closable false
+         :content title-demo}]})
+  )
 
 
 (defn root [{:keys [fx/context]}]
@@ -116,8 +121,7 @@
                        :mount (let []
                                 (prn :mount)
                                 (mount-fx)
-                                (<! (timeout 1000))
-                                (put! out| 123)
+                                (put! out| true)
                                 (close! out|))
                        :unmount (future (let []
                                           (prn :unmount)))))

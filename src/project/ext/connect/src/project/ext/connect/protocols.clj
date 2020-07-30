@@ -1,1 +1,1 @@
-(ns project.ext.connect.protocols)
+(ns project.ext.scenarios.protocols)
