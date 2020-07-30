@@ -20,7 +20,7 @@
           (when-let [{:keys [op opts out|]} (<! ops|)]
             (condp = op
               :mount (let []
-                       (base.store/write {:op :ext/fx-content-add :data server.render/content})
+                       (base.store/tx-fx-content-add server.render/content)
                        (<! (core.p/mount* proc-render {}))
                        (put! out| true)
                        (close! out|))

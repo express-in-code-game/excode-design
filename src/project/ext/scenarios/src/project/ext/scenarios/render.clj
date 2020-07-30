@@ -53,8 +53,7 @@
 
               inputs| (let [{:keys [op data]} vl]
                         (condp = op
-                          :some-input (let []
-                                        (base.store/write {:op :some-input :data data}))))))
+                          :some-input (let [])))))
           (recur)))
     (reify core.p/Mountable
       (core.p/mount* [_ opts] (operation :mount opts))

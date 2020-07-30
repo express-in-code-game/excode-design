@@ -3,6 +3,8 @@
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go close!
                                      >!! <!! alt!! alts! alts!! take! put! mult tap untap
                                      thread pub sub sliding-buffer mix admix unmix]]
+   [cljfx.api :as fx]
+   [clojure.core.cache :as cache]
    [project.core.protocols :as core.p]
    [project.core]))
 
@@ -12,19 +14,37 @@
   {:app/title "App title"
    :ext/fx-content {}})
 
-(def state* (atom (make-default-state)))
+#_(def state* (atom (make-default-state)))
 
-(defmulti write
-  {:arglists '([vl])}
-  (fn [vl] (:op vl)))
+(def state* (atom (fx/create-context (make-default-state) cache/lru-cache-factory)))
 
-(defmethod write :app/title
-  [{:keys [op data]}]
-  (swap! state* assoc :app/title data))
+(defn tx-app-title
+  [title]
+  (swap! state* fx/swap-context assoc :app/title title))
 
-(defmethod write :ext/fx-content-add
-  [{:keys [op data]}]
-  (swap! state* update :ext/fx-content assoc (:ext/key data) data))
+(defn tx-fx-content-add
+  [data]
+  (swap! state* fx/swap-context update :ext/fx-content assoc (:ext/key data) data))
+
+(defn tx-fx-content-remove
+  [data]
+  (swap! state* fx/swap-context update :ext/fx-content dissoc data))
+
+;; (defmulti write
+;;   {:arglists '([vl])}
+;;   (fn [vl] (:op vl)))
+
+;; (defmethod write :app/title
+;;   [{:keys [op data]}]
+;;   (swap! state* fx/swap-context assoc :app/title data))
+
+;; (defmethod write :ext/fx-content-add
+;;   [{:keys [op data]}]
+;;   (swap! state* fx/swap-context update :ext/fx-content assoc (:ext/key data) data))
+
+;; (defmethod write :ext/fx-content-remove
+;;   [{:keys [op data]}]
+;;   (swap! state* fx/swap-context update :ext/fx-content dissoc data))
 
 (defn create-proc-store
   [channels]

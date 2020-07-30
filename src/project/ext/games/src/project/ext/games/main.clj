@@ -20,7 +20,8 @@
           (when-let [{:keys [op opts out|]} (<! ops|)]
             (condp = op
               :mount (let []
-                       (base.store/write {:op :ext/fx-content-add :data games.render/content})
+                       (base.store/tx-fx-content-add games.render/content)
+                       #_(base.store/tx-fx-content-remove (:ext/key games.render/content))
                        (<! (core.p/mount* proc-render {}))
                        (put! out| true)
                        (close! out|))

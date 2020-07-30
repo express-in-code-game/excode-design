@@ -12,15 +12,16 @@
   (:import
    (javafx.application Platform)))
 
-(def state* (atom (fx/create-context @base.store/state* cache/lru-cache-factory)))
+#_(def state* (atom (fx/create-context @base.store/state* cache/lru-cache-factory)))
+(def state* base.store/state*)
 
 #_(keys @state* )
 #_(:cljfx.context/m @state*)
 
-(do (add-watch base.store/state* :watcher
-               (fn [key ref v-old v-new]
-                 #_(swap! state* fx/swap-context merge v-new)
-                 (reset! state* (fx/reset-context @state* v-new)))))
+#_(do (add-watch base.store/state* :watcher
+                 (fn [key ref v-old v-new]
+                   #_(swap! state* fx/swap-context merge v-new)
+                   (reset! state* (fx/reset-context @state* v-new)))))
 
 (def inputs|* (chan (sliding-buffer 100)))
 
@@ -136,7 +137,7 @@
               inputs| (let [{:keys [op data]} vl]
                         (condp = op
                           :app/title (let []
-                                       (base.store/write {:op :app/title :data data}))))))
+                                       (base.store/tx-app-title data))))))
           (recur)))
     (reify core.p/Mountable
       (core.p/mount* [_ opts] (operation :mount opts))
