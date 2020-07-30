@@ -175,6 +175,10 @@
     - so: extensions will enter and change the state, registering fns/refs to their ui components
     - main ui will use this refs to render subui in app tree (or null if none were registered yet)
     - so content (of a tab or pane or panel) is a value in the state, that is passed as prop to app's ui
+- scenario and the system (game)
+    - join/leave, connect/disconn to the game are part of the game (system)
+    - scenario does its own ui, config, veto, start/stop, load code on interval (using system's api)
+
 
 ### scenario
 
