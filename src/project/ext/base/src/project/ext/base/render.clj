@@ -35,7 +35,7 @@
    :children [{:fx/type :label
                :text "Window title input"}
               {:fx/type title-input
-               :title "asd"}]})
+               :title "abc"}]})
 
 #_(System/getProperty "java.version")
 #_(com.sun.javafx.runtime.VersionInfo/getRuntimeVersion)
@@ -53,7 +53,7 @@
                :max-width Double/MAX_VALUE
                :text "expanded label"}]})
 
-(def tabs
+(defn tabs [{:keys [fx/context]}]
   {:fx/type :tab-pane
    :pref-width 1600
    :pref-height 900
@@ -82,10 +82,13 @@
 (defn root [{:keys [fx/context]}]
   {:fx/type :stage
    :showing true
-   :title (fx/sub context :title)
+   :title (fx/sub context :app/title)
    :always-on-top true
    :scene {:fx/type :scene
-           :root tabs}})
+           :root {:fx/type :scroll-pane
+                  :fit-to-width true
+                  :fit-to-height true
+                  :content {:fx/type tabs}}}})
 
 
 (def renderer
