@@ -32,3 +32,23 @@
 - scenario chooses and implements ui and win conditions, game flow
 - it complies to game apis and uses them to read/eval code etc.
 - this way scenarios stay diverse and unbounded, decoupling general concerns from a scneario's gameplay
+
+
+## scenarios
+
+#### battle
+
+- units like in rts, but with more hp (like heroes)
+- initial position may be random, but mirrored
+- palyers control units via code, changes are made between action
+- for example
+    - 'attack move from x to y, but if this that go to z'
+    - 'repair these types of untis in this area'
+    - 'rotate shield frequencies this way to better defend agains ground or air'
+    - 'move these units here, those there'
+    - 'reconfigure to use air-attack'
+    - ...
+- 30sec program, 30sec action (battle), 30sec program, 30sec action, 2min program, final 2min battle
+- or any other configuurable durations/settings
+- no mouse needed, but still amazing for viewership and discussion
+- api's of units should be high level enough, but more than standard 'move, a-move, hold, build, collect,repair + some unit specific commands'
