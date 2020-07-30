@@ -65,7 +65,10 @@
     {:fx/type :tab-pane
      :pref-width 1600
      :pref-height 900
-     :tabs (into []
+     :tabs (into [{:fx/type :tab
+                   :text "tmp"
+                   :closable false
+                   :content title-demo}]
                  (comp
                   #_(filter (fn [[k v]] (#{:project.ext/scenarios} k)))
                   (map (fn [[k v]] ((:ext/fx-tab-fn v)))))
