@@ -1,6 +1,6 @@
 (ns app.main
   (:require
-   [project.ext.base.api]))
+   [project.ext.base.main]))
 
 (defn -main [& args]
-  (project.ext.base.api/mount))
+  (project.ext.base.main/mount))

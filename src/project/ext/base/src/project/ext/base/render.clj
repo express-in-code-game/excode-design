@@ -1,4 +1,4 @@
-(ns project.ext.base.proc.render
+(ns project.ext.base.render
   (:require
    [cljfx.api :as fx]
    [project.core.protocols :as core.p]
@@ -86,11 +86,6 @@
                         (fx/mount-renderer *state renderer))
        `core.p/unmount* (fn [_])})))
 
-(defn mount [proc]
-  (core.p/mount* proc))
-
-(defn unmount [proc]
-  (core.p/unmount* proc))
 
 #_(renderer)
 #_(fx/unmount-renderer *state renderer)
