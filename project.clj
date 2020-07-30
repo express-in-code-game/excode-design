@@ -1,4 +1,5 @@
 (def MAIN 'app.main)
+(prn (clojure-version))
 
 (defproject app "0.1.0"
 
@@ -6,7 +7,7 @@
                  ["clojars" {:url "https://clojars.org/repo/"}]
                  ["conjars" {:url "https://conjars.org/repo"}]]
 
-  :min-lein-version "2.8.0"
+  :min-lein-version "2.9.4"
 
   :plugins [[org.clojure/tools.deps.alpha "0.8.677"]
             [lein-tools-deps "0.4.5" :exclusions [org.clojure/tools.deps.alpha]]
