@@ -25,11 +25,12 @@
 
 (def content (let [ext-key :project.ext/server]
                {:ext/key ext-key
-                :ext/fx-tab {:fx/type :tab
-                             :fx/key ext-key
-                             :text "server"
-                             :closable false
-                             :content flow-pane}}))
+                :ext/fx-tab-fn (fn []
+                                 {:fx/type :tab
+                                  :fx/key ext-key
+                                  :text "server"
+                                  :closable false
+                                  :content flow-pane})}))
 
 (defn create-proc-render
   [channels]

@@ -14,6 +14,8 @@
 
 (def state* (atom (fx/create-context @base.store/state* cache/lru-cache-factory)))
 
+#_(keys @state* )
+
 (do (add-watch base.store/state* :watcher
                (fn [key ref v-old v-new]
                  (reset! state* (fx/reset-context @state* v-new)))))
@@ -55,17 +57,16 @@
 
 (defn tabs [{:keys [fx/context]}]
   (let [exts (fx/sub context :ext/fx-content)]
-    (println exts)
     (println "tabs")
-    (println (mapv (fn [[k v]] ((:ext/fx-tab-fn v))) exts))
+    (println (mapv (fn [[k v]] k) exts))
     {:fx/type :tab-pane
      :pref-width 1600
      :pref-height 900
      :tabs (into []
                  (comp
-                  (filter (fn [[k v]] (#{:project.ext/scenarios} k)))
-                  (map (fn [[k v]] ((:ext/fx-tab-fn v))))
-                  exts))
+                  #_(filter (fn [[k v]] (#{:project.ext/scenarios} k)))
+                  (map (fn [[k v]] ((:ext/fx-tab-fn v)))))
+                 exts)
      #_[{:fx/type :tab
          :text "settings"
          :closable false
@@ -85,8 +86,7 @@
         {:fx/type :tab
          :text "server"
          :closable false
-         :content title-demo}]})
-  )
+         :content title-demo}]}))
 
 
 (defn root [{:keys [fx/context]}]
