@@ -35,7 +35,8 @@
                             :uberjar-exclusions []
                             :aot  nil #_[datastore.serdes]}
              :uberjar {:aot :all
-                       :native-image {:jvm-opts ["-Dclojure.compiler.direct-linking=true"]}}}
+                       :native-image {:jvm-opts ["-Dclojure.compiler.direct-linking=true"]}}
+             :hidpi-ui-scale {:jvm-opts ["-Dglass.gtk.uiScale=2"]}}
 
   :native-image {:name "app.native"            ;; name of output image, optional
                 ;  :graal-bin "/path/to/graalvm/" ;; path to GraalVM home, optional

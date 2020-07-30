@@ -273,3 +273,10 @@
     - https://github.com/fn-fx/fn-fx#a-note-on-javafx-vs-openjfx
     - https://www.reddit.com/r/Clojure/comments/dbqq0h/question_fastest_way_to_get_started_in_desktop/
     
+- javafx scales tiny on HiDPI ubuntu
+    - https://github.com/defold/editor2-issues/issues/563
+        - -Dglass.gtk.uiScale=2 works
+
+- merging lein profiles :jvm-opts
+    - https://stackoverflow.com/questions/38054983/use-leiningen-aliases-to-specify-jvm-flags
+        - https://stackoverflow.com/a/38097107/10589291

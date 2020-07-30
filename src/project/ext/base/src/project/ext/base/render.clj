@@ -43,8 +43,10 @@
 
 (def tabs
   {:fx/type :tab-pane
-   :pref-width 960
-   :pref-height 540
+   :pref-width 1600
+   :pref-height 900
+  ;;  :percent-width 80
+  ;;  :percent-height 80
    :tabs [{:fx/type :tab
            :text "settings"
            :closable false

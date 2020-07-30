@@ -9,6 +9,10 @@ dev(){
 
 }
 
+dev2(){
+  lein with-profile +hidpi-ui-scale repl :headless
+}
+
 run_dev(){
   lein run dev
 }
