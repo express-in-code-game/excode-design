@@ -93,6 +93,7 @@
               :mount (let []
                        (prn :mount)
                        (mount-fx)
+                       (<! (timeout 1000))
                        (put! out| 123)
                        (close! out|))
               :unmount (future (let []
