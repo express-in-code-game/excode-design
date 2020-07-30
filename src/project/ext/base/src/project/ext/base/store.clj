@@ -9,7 +9,8 @@
 
 (defn make-default-state
   []
-  {:title "App title"})
+  {:app/title "App title"
+   :ext/fx-content {}})
 
 (def state* (atom (make-default-state)))
 
@@ -17,9 +18,13 @@
   {:arglists '([vl])}
   (fn [vl] (:op vl)))
 
-(defmethod write :app-title
+(defmethod write :app/title
   [{:keys [op data]}]
-  (swap! state* assoc :title data))
+  (swap! state* assoc :app/title data))
+
+(defmethod write :ext/fx-content-add
+  [{:keys [op data]}]
+  (swap! state* update :ext/fx-content assoc (:ext/key data) data))
 
 (defn create-proc-store
   [channels]

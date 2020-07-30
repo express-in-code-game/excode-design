@@ -27,7 +27,7 @@
 (defn title-input [{:keys [title]}]
   {:fx/type :text-field
    :on-text-changed (fn [x]
-                      (input! :app-title x))  #_#(swap! *state assoc :title %)
+                      (input! :app/title x))  #_#(swap! *state assoc :title %)
    :text title})
 
 (def title-demo
@@ -121,8 +121,8 @@
 
               inputs| (let [{:keys [op data]} vl]
                         (condp = op
-                          :app-title (let []
-                                       (base.store/write {:op :app-title :data data}))))))
+                          :app/title (let []
+                                       (base.store/write {:op :app/title :data data}))))))
           (recur)))
     (reify core.p/Mountable
       (core.p/mount* [_ opts] (operation :mount opts))
