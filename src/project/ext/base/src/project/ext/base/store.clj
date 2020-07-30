@@ -4,17 +4,22 @@
                                      >!! <!! alt!! alts! alts!! take! put! mult tap untap
                                      thread pub sub sliding-buffer mix admix unmix]]
    [project.core.protocols :as core.p]
-   [project.core]
-
-   [cljfx.api :as fx]
-   [clojure.core.cache :as cache]))
+   [project.core]))
 
 
 (defn make-default-state
   []
   {:title "App title"})
 
-(def *state (atom (fx/create-context (make-default-state) cache/lru-cache-factory)))
+(def state* (atom (make-default-state)))
+
+(defmulti write
+  {:arglists '([vl])}
+  (fn [vl] (:op vl)))
+
+(defmethod write :app-title
+  [{:keys [op data]}]
+  (swap! state* assoc :title data))
 
 (defn create-proc-store
   [channels]

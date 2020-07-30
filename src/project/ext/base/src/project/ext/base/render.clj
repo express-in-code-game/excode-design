@@ -4,18 +4,25 @@
                                      >!! <!! alt!! alts! alts!! take! put! mult tap untap
                                      thread pub sub sliding-buffer mix admix unmix]]
    [cljfx.api :as fx]
+   [clojure.core.cache :as cache]
    [project.core.protocols :as core.p]
    [project.core]
-   [project.ext.base.store :as base.store :refer [*state]]
+   [project.ext.base.store :as base.store]
    [project.ext.base.protocols :as render.p])
   (:import
    (javafx.application Platform)))
 
-(def *inputs| (chan (sliding-buffer 100)))
+(def state* (atom (fx/create-context @base.store/state* cache/lru-cache-factory)))
+
+(do (add-watch base.store/state* :watcher
+               (fn [key ref v-old v-new]
+                 (reset! state* (fx/reset-context @state* v-new)))))
+
+(def inputs|* (chan (sliding-buffer 100)))
 
 (defn input!
   [op data]
-  (put! *inputs| {:op op :data data}))
+  (put! inputs|* {:op op :data data}))
 
 (defn title-input [{:keys [title]}]
   {:fx/type :text-field
@@ -91,12 +98,12 @@
 
 (defn mount-fx []
   (Platform/setImplicitExit true)
-  (fx/mount-renderer *state renderer))
+  (fx/mount-renderer state* renderer))
 
 (defn create-proc-render
   [channels]
   (let [ops| (chan 10)
-        inputs| *inputs|
+        inputs| inputs|*
         operation (project.core/operation-fn ops|)]
     (go (loop []
           (when-let [[vl port] (alts! [ops| inputs|])]
@@ -115,7 +122,7 @@
               inputs| (let [{:keys [op data]} vl]
                         (condp = op
                           :app-title (let []
-                                       (swap! *state fx/swap-context assoc :title data))))))
+                                       (base.store/write {:op :app-title :data data}))))))
           (recur)))
     (reify core.p/Mountable
       (core.p/mount* [_ opts] (operation :mount opts))
