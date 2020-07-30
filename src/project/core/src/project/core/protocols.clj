@@ -2,5 +2,5 @@
 
 (defprotocol Mountable
   :extend-via-metadata true
-  (mount* [_])
-  (unmount* [_]))
+  (mount* [_] [_ opts])
+  (unmount* [_] [_ opts]))

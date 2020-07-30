@@ -1,7 +1,11 @@
 (ns project.ext.base.render
   (:require
+   [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go close!
+                                     >!! <!! alt!! alts! alts!! take! put! mult tap untap
+                                     thread pub sub sliding-buffer mix admix unmix]]
    [cljfx.api :as fx]
    [project.core.protocols :as core.p]
+   [project.core]
    [project.ext.base.protocols :as render.p])
   (:import
    (javafx.application Platform)))
@@ -75,16 +79,32 @@
   (fx/create-renderer
    :middleware (fx/wrap-map-desc assoc :fx/type root)))
 
+(defn mount-fx []
+  (Platform/setImplicitExit true)
+  (fx/mount-renderer *state renderer))
+
 (defn create-proc-render
   [channels]
-  (let []
-    (with-meta
-      {}
-      {'Mountable '_
-       `core.p/mount* (fn [_]
-                        (Platform/setImplicitExit true)
-                        (fx/mount-renderer *state renderer))
-       `core.p/unmount* (fn [_])})))
+  (let [ops| (chan 10)
+        operation (project.core/operation-fn ops|)]
+    (go (loop []
+          (when-let [{:keys [op opts out|]} (<! ops|)]
+            (condp = op
+              :mount (let []
+                       (prn :mount)
+                       (mount-fx)
+                       (put! out| 123)
+                       (close! out|))
+              :unmount (future (let []
+                                 (prn :unmount)))))))
+    (reify core.p/Mountable
+      (core.p/mount* [_ opts] (operation :mount opts))
+      (core.p/unmount* [_ opts] (operation :unmount opts)))
+    #_(with-meta
+        {}
+        {'Mountable '_
+         `core.p/mount* (fn [_])
+         `core.p/unmount* (fn [_])})))
 
 
 #_(renderer)
