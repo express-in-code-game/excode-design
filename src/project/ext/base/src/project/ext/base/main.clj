@@ -49,4 +49,16 @@
   (core.p/mount* proc-main {}))
 
 
+(defprotocol P1
+  (foo [_])
+  (bar [_]))
+
+(def p1 (reify P1
+          (foo [_] 3)))
+
+(defn x [p]
+  (foo p)
+  (bar p))
+
+
 
