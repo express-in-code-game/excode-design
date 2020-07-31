@@ -317,3 +317,7 @@
 - merging lein profiles :jvm-opts
     - https://stackoverflow.com/questions/38054983/use-leiningen-aliases-to-specify-jvm-flags
         - https://stackoverflow.com/a/38097107/10589291
+
+- macros
+    - https://github.com/clojure/core.async/blob/e2fcb458b58f8aed2dd0390903338c9331bf0620/src/main/clojure/cljs/core/async.clj#L103
+    - http://bryangilbert.com/post/code/clojure/anatomy-of-a-clojure-macro/

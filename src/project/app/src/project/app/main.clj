@@ -57,16 +57,25 @@
     (sp/op :main/ops| ::mount1)))
 
 ;; works
-(defn f3
-  []
-  (a/go-loop
-   (sp/op :main/ops| ::mount1)))
+#_(defn f3
+    []
+    (a/go-loop
+     (sp/op :main/ops| ::mount1)))
 
 ;; does not work
 (defn f4
   []
   (a/go
     (sp/op :main/ops| ::mount1)))
+
+(defmacro go2
+  [& body]
+  `(go ~@body))
+
+(defn f4
+  []
+  (go2
+   (sp/op :main/ops| ::mount1)))
 
 ;; does not work
 (defn proc-main-f
