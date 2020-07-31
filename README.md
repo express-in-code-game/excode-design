@@ -21,9 +21,35 @@
 - any rational reasons why this will work ?
     - I've got clojure, clojurescript and core.async, so I can build anything
 
+
 ## notes
 
-### key moment: processes and queues
+### scenario
+
+- start with a more simple/basic scenario
+- simulteneous turns (say, 1min), for ease of learning players must press 'ready' before runs
+- simple, elegant graphical part (basic geomentric shapes/symbols, words and other values)
+- to start, make a  scenario that does not require the player to know the language, rather general logic
+    - map is a grid devided into squares (tiles)
+    - both players get a droid/rover (a circle/square/some-other-symbol on the grid/map)
+    - droid has APIs (listed in resource space): scan move attack1 attack2 attackN research pick examine repair cloak ...
+    - each API costs energy
+    - each turn player's droid start with 100%, they spend it on move and other stuff, but can find recharges on map (maybe not)
+    - each API fn has associated animation with it
+    - the player whos droid first gets to the flag (for example, in the middle of the map), wins
+    - there are obstacles: traps stones sands fields and other stuff
+    - players write fn (or fns) to define droids behavior that is used, say, for three turns: 1min think -> 3turns run -> 1min change logic -> 3 turns run ...
+
+
+### walkthrough 4: define system as channels, values, channels api/protocols
+
+- channels and values, channels and values everywhere
+- channels should be on the system level, 'static'
+- otherwise it's oop mess with actor model: instances talking to instances
+- mult pub mix, tap sub admix - to get transparent and fluid system
+- server will literally ignoarantly broadcast events, apps will send or recieve-apply events, because channels are defined
+
+### walkthrough 3: processes and queues
 
 - "functions make poor machines" Rich Hickey ~2013
 - why editors, apps, systems fail ? because it is inherently complex to build using functions when it's not a library
@@ -78,6 +104,41 @@
             - maybe later (not critical,not essential, myabe not) some chain-install mechanism can be added
         - so whenever extB :requires namespaces from extB, they must be already in the classpath or runtime
         - case closed, meta not needed
+
+
+### walkthrough 2
+
+- simpler
+    - choose a gui environment
+        - cljfx seems the right tool for the weekend challenge (because clojure only, should be faster and simpler )
+        - plus, would be fun to explore javafx tech branch, see how ot compares to browser/electron
+    - create scenario generation and graphics (schema)
+    - make it runnbale/playable on one computer
+    - then, look into networking
+- one jvm instance
+    - server will be a separate app
+    - but for weekend build, consider running it within gui app's jvm
+    - so players can 'host' right from the client
+- settings
+    - add ability to edit edn with settings from within the client (colors are strings "#fff" for example)
+    - even give users ability to customize certain functions (like you would in editor) using clj code (so clj editor if exists)
+    - key is being able to configure scnenario, preferably without ui (instead, edn with comments for each setting/key)
+- ui extensions 
+    - base (layout and base gui components)
+    - connect (specify address(s) to connect to server)
+    - server (configure .edn map that will be passed to server app, start embedded server)
+    - games (list of games, create/join a game, game opens in a new tab)
+    - game (pick a scenario, configure game, start the game; pick a tournament format)
+- how extensions will handle their ui with cljfx
+    - with DOM and react, base ui can render a slot div element with id, and extension can use such element as target to render it's subui
+    - it is yet unclear how to do it with javafx/cljfx (maybe fx/ext-let-refs)
+    - since cljfx provides docs and examples of using standard single tree for the app that uses global state, let's embrace
+    - so: extensions will enter and change the state, registering fns/refs to their ui components
+    - main ui will use this refs to render subui in app tree (or null if none were registered yet)
+    - so content (of a tab or pane or panel) is a value in the state, that is passed as prop to app's ui
+- scenario and the system (game)
+    - join/leave, connect/disconn to the game are part of the game (system)
+    - scenario does its own ui, config, veto, start/stop, load code on interval (using system's api)
 
 ### walkthrough 1
 
@@ -145,56 +206,7 @@
         - otherwise networking will never end
         - once it happens graphics wise and game wise, proceed to networking 
 
-### walkthrough 2
 
-- simpler
-    - choose a gui environment
-        - cljfx seems the right tool for the weekend challenge (because clojure only, should be faster and simpler )
-        - plus, would be fun to explore javafx tech branch, see how ot compares to browser/electron
-    - create scenario generation and graphics (schema)
-    - make it runnbale/playable on one computer
-    - then, look into networking
-- one jvm instance
-    - server will be a separate app
-    - but for weekend build, consider running it within gui app's jvm
-    - so players can 'host' right from the client
-- settings
-    - add ability to edit edn with settings from within the client (colors are strings "#fff" for example)
-    - even give users ability to customize certain functions (like you would in editor) using clj code (so clj editor if exists)
-    - key is being able to configure scnenario, preferably without ui (instead, edn with comments for each setting/key)
-- ui extensions 
-    - base (layout and base gui components)
-    - connect (specify address(s) to connect to server)
-    - server (configure .edn map that will be passed to server app, start embedded server)
-    - games (list of games, create/join a game, game opens in a new tab)
-    - game (pick a scenario, configure game, start the game; pick a tournament format)
-- how extensions will handle their ui with cljfx
-    - with DOM and react, base ui can render a slot div element with id, and extension can use such element as target to render it's subui
-    - it is yet unclear how to do it with javafx/cljfx (maybe fx/ext-let-refs)
-    - since cljfx provides docs and examples of using standard single tree for the app that uses global state, let's embrace
-    - so: extensions will enter and change the state, registering fns/refs to their ui components
-    - main ui will use this refs to render subui in app tree (or null if none were registered yet)
-    - so content (of a tab or pane or panel) is a value in the state, that is passed as prop to app's ui
-- scenario and the system (game)
-    - join/leave, connect/disconn to the game are part of the game (system)
-    - scenario does its own ui, config, veto, start/stop, load code on interval (using system's api)
-
-
-### scenario
-
-- start with a more simple/basic scenario
-- simulteneous turns (say, 1min), for ease of learning players must press 'ready' before runs
-- simple, elegant graphical part (basic geomentric shapes/symbols, words and other values)
-- to start, make a  scenario that does not require the player to know the language, rather general logic
-    - map is a grid devided into squares (tiles)
-    - both players get a droid/rover (a circle/square/some-other-symbol on the grid/map)
-    - droid has APIs (listed in resource space): scan move attack1 attack2 attackN research pick examine repair cloak ...
-    - each API costs energy
-    - each turn player's droid start with 100%, they spend it on move and other stuff, but can find recharges on map (maybe not)
-    - each API fn has associated animation with it
-    - the player whos droid first gets to the flag (for example, in the middle of the map), wins
-    - there are obstacles: traps stones sands fields and other stuff
-    - players write fn (or fns) to define droids behavior that is used, say, for three turns: 1min think -> 3turns run -> 1min change logic -> 3 turns run ...
 
 ## links
 
