@@ -19,7 +19,7 @@
 
 (defn -main [& args]
   (p/mount* proc-main {})
-  (<!! (:loop| proc-main)))
+  #_(<!! (:loop| proc-main)))
 
 (defn proc-main-f
   [channels ctx]
