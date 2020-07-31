@@ -45,6 +45,7 @@
 
 - channels and values, channels and values everywhere
 - channels should be on the system level, 'static'
+- channels should have an interface/api; processes as well, but only for performance purposes and used with singleton processes (e.g. host/editor)
 - otherwise it's oop mess with actor model: instances talking to instances
 - mult pub mix, tap sub admix - to get transparent and fluid system
 - server will literally ignoarantly broadcast events, apps will send or recieve-apply events, because channels are defined
