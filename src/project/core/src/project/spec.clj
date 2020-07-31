@@ -7,13 +7,33 @@
 (s/def ::op-key #{OP})
 (s/def ::out| any?)
 
-(def vals
+(def channel-keys #{:main/ops|
+                    :game|
+                    :render/ops|})
+
+(def ops
   {:app.main/mount (s/keys :req [::op-key ::out|])})
 
-(defmulti op-type OP)
+(def op-keys (set (keys ops)))
 
-(defmethod op-type :app.main/mount
-  [vl]
-  (s/keys :req [::op ::out|]))
+;; (defmulti op-type OP)
 
-(s/def ::op (s/multi-spec op-type OP))
+;; (defmethod op-type :app.main/mount
+;;   [vl]
+;;   (s/keys :req [::op ::out|]))
+
+;; (s/def ::op (s/multi-spec op-type OP))
+;; 
+
+(defmacro vl
+  [channel-key val-map]
+  `~m)
+
+(s/fdef vl
+  :args (s/and
+         (s/cat :channel-key channel-keys
+                :val-map #(ops (:op %)))
+         (fn [{:keys [channel-key val-map] :as argm}]
+           
+           ))
+  :ret any?)
