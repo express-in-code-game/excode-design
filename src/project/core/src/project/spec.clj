@@ -31,11 +31,22 @@
 ;; 
 
 (s/def ::channel-exists channels-keys)
-(s/def ::op-exists #(ops-keys (OP %)))
-(s/def ::channel-op-exists (fn [{:keys [channel-key val-map]}]
-                             ((channel-key channels) (OP val-map))))
+(s/def ::op-exists #(ops-keys (if (keyword? %) % (OP %))))
+(s/def ::channel-op-exists (fn [{:keys [channel-key val-map op-key]}]
+                             ((channel-key channels) (or op-key (OP val-map)))))
 (s/def ::val-map-valid (fn [{:keys [channel-key val-map]}]
                          (s/valid? ((OP val-map) ops) val-map)))
+
+(defmacro op
+  [channel-key op-key]
+  `~op-key)
+
+(s/fdef op
+  :args (s/and
+         (s/cat :channel-key ::channel-exists
+                :op-key ::op-exists)
+         ::channel-op-exists)
+  :ret any?)
 
 (defmacro vl
   [channel-key val-map]
