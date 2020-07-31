@@ -20,6 +20,7 @@
 
 (def ctx (atom {:exts {}}))
 
+;; works
 (defn f1
   [channels ctx]
   (let [ops| (chan 10)
@@ -49,11 +50,25 @@
         (p/mount* [_ opts] (put! ops| {:op :mount}))
         (p/unmount* [_ opts] (put! ops| {:op :unmount})))))
 
+;; does not work
 (defn f2
   []
   (go
     (sp/op :main/ops| ::mount1)))
 
+;; works
+(defn f3
+  []
+  (a/go-loop
+   (sp/op :main/ops| ::mount1)))
+
+;; does not work
+(defn f4
+  []
+  (a/go
+    (sp/op :main/ops| ::mount1)))
+
+;; does not work
 (defn proc-main-f
   [channels ctx]
   (let [ops| (chan 10)
