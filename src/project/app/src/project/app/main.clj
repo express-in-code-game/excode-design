@@ -28,7 +28,7 @@
                   (loop []
                     (when-let [{:keys [op opts out|]} ops|]
                       (condp = op
-                        (sp/op :main/ops| ::mount1) (let [exts {:project.ext/scenarios (project.ext.scenarios.main/mount channels ctx)
+                        (sp/op :main/ops| ::mount) (let [exts {:project.ext/scenarios (project.ext.scenarios.main/mount channels ctx)
                                                                :project.ext/connect (project.ext.connect.main/mount channels ctx)
                                                                :project.ext/server (project.ext.server.main/mount channels ctx)
                                                                :project.ext/games (project.ext.games.main/mount channels ctx)}]
@@ -48,6 +48,11 @@
         p/Mountable
         (p/mount* [_ opts] (put! ops| {:op :mount}))
         (p/unmount* [_ opts] (put! ops| {:op :unmount})))))
+
+(defn f2
+  []
+  (go
+    (sp/op :main/ops| ::mount1)))
 
 (defn proc-main-f
   [channels ctx]
