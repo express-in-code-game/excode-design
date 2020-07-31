@@ -40,6 +40,19 @@
     - there are obstacles: traps stones sands fields and other stuff
     - players write fn (or fns) to define droids behavior that is used, say, for three turns: 1min think -> 3turns run -> 1min change logic -> 3 turns run ...
 
+### exts
+
+- base
+- connect
+- console/tepm/system
+- events
+- games
+- game
+- player/fs-palyer
+- scenarios
+- record
+- server
+- settings
 
 ### walkthrough 4: define system as channels, values, channels api/protocols
 
