@@ -59,8 +59,8 @@
 ;; works
 #_(defn f3
     []
-    (a/go-loop
-     (sp/op :main/ops| ::mount1)))
+    (a/go-loop []
+      (sp/op :main/ops| ::mount1)))
 
 ;; does not work
 (defn f4
@@ -72,10 +72,51 @@
   [& body]
   `(go ~@body))
 
+;; does not work
 (defn f4
   []
   (go2
    (sp/op :main/ops| ::mount1)))
+
+;; works
+(defn f5
+  []
+  (let [ops| (chan 10)
+        loop| (a/go-loop []
+                (sp/op :main/ops| ::mount1)
+                #_(when-let [{:keys [op opts out|]} (<! ops|)]
+                    (condp = op
+                      (sp/op :main/ops| ::mount1) (let [exts {:project.ext/scenarios (project.ext.scenarios.main/mount channels ctx)
+                                                              :project.ext/connect (project.ext.connect.main/mount channels ctx)
+                                                              :project.ext/server (project.ext.server.main/mount channels ctx)
+                                                              :project.ext/games (project.ext.games.main/mount channels ctx)}]
+                                                    (prn ::mount)
+                                                    (swap! ctx update :exts merge exts)
+                                                    (put! out| true)
+                                                    (close! out|))
+                      (sp/op :main/ops| ::unmount) (future (let []
+                                                             (prn ::unmount)))))
+                (recur))]))
+
+;; does not work
+(defn f5
+  []
+  (let [ops| (chan 10)
+        loop| (a/go-loop []
+                (sp/op :main/ops| ::mount1)
+                (when-let [{:keys [op opts out|]} (<! ops|)]
+                  (condp = op
+                    (sp/op :main/ops| ::mount1) (let [exts {:project.ext/scenarios (project.ext.scenarios.main/mount channels ctx)
+                                                            :project.ext/connect (project.ext.connect.main/mount channels ctx)
+                                                            :project.ext/server (project.ext.server.main/mount channels ctx)
+                                                            :project.ext/games (project.ext.games.main/mount channels ctx)}]
+                                                  (prn ::mount)
+                                                  (swap! ctx update :exts merge exts)
+                                                  (put! out| true)
+                                                  (close! out|))
+                    (sp/op :main/ops| ::unmount) (future (let []
+                                                           (prn ::unmount)))))
+                (recur))]))
 
 ;; does not work
 (defn proc-main-f
