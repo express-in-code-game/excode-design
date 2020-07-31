@@ -9,12 +9,14 @@
 (s/def ::out| any?)
 
 (def ops
-  {:project.app.main/mount (s/keys :req-un [::op #_::out|])})
+  {:project.app.main/mount (s/keys :req-un [::op #_::out|])
+   :project.app.main/unmount (s/keys :req-un [::op #_::out|])})
+
 (def ops-keys (set (keys ops)))
 (s/def ::op ops-keys)
 
 (def channels
-  {:main/ops| #{:project.app.main/mount}
+  {:main/ops| #{:project.app.main/mount :project.app.main/unmount}
    :game| #{}
    :render/ops| #{}})
 
