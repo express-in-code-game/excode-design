@@ -1,4 +1,4 @@
-(ns app.main
+(ns project.app.main
   (:require
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go close!
                                      >!! <!! alt!! alts! alts!! take! put! mult tap untap

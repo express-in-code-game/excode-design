@@ -1,4 +1,4 @@
-(def MAIN 'app.main)
+(def MAIN 'project.app.main)
 (prn (clojure-version))
 
 (defproject app "0.1.0"
