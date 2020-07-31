@@ -18,29 +18,33 @@
 (def proc-main (proc-main-f channels ctx))
 
 (defn -main [& args]
-  (<!! (proc-main))
-
-  (project.ext.scenarios.main/mount)
-  (project.ext.connect.main/mount)
-  (project.ext.server.main/mount)
-  (project.ext.games.main/mount))
+  (p/mount* proc-main {})
+  (<!! (:loop| proc-main)))
 
 (defn proc-main-f
   [channels ctx]
-  (let [ops| (chan 10)]
-    (go (loop []
-          (when-let [{:keys [op opts out|]} (<! ops|)]
-            (condp = op
-              :mount (let []
-                       (prn :mount)
-                       (<! (core.p/mount* proc-render {}))
-                       (<! (core.p/mount* proc-store {}))
-                       (put! out| 123)
-                       (close! out|))
-              :unmount (future (let []
-                                 (prn :unmount))))))
-        (println ";; proc-main exiting"))
-    (reify
-      core.p/Mountable
-      (core.p/mount* [_ opts] (put! ops| {:op :mount}))
-      (core.p/unmount* [_ opts] (put! ops| {:op :unmount})))))
+  (let [ops| (chan 10)
+        loop| (go (loop []
+                    (when-let [{:keys [op opts out|]} (<! ops|)]
+                      (condp = op
+                        :mount (let [exts {:project.ext/scenarios (project.ext.scenarios.main/mount channels ctx)
+                                           :project.ext/connect (project.ext.connect.main/mount channels ctx)
+                                           :project.ext/server (project.ext.server.main/mount channels ctx)
+                                           :project.ext/games (project.ext.games.main/mount channels ctx)}]
+                                 (prn :mount)
+                                 (swap! ctx update :exts merge exts)
+                                 (put! out| true)
+                                 (close! out|))
+                        :unmount (future (let []
+                                           (prn :unmount)))))
+                    (recur))
+                  (println ";; proc-main exiting"))]
+    (with-meta
+      {:loop| loop|}
+      {'p/Mountable '_
+       `p/mount* (fn [_ opts] (put! ops| {:op :mount}))
+       `p/unmount* (fn [_ opts] (put! ops| {:op :unmount}))})
+    #_(reify
+        p/Mountable
+        (p/mount* [_ opts] (put! ops| {:op :mount}))
+        (p/unmount* [_ opts] (put! ops| {:op :unmount})))))
