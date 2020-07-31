@@ -6,6 +6,7 @@
    [clojure.spec.alpha :as s]
    [project.core.protocols :as p]
    [project.core]
+   [project.spec :as sp]
    [project.ext.base.main]
    [project.ext.scenarios.main]
    [project.ext.connect.main]
@@ -25,23 +26,23 @@
         loop| (go (loop []
                     (when-let [{:keys [op opts out|]} (<! ops|)]
                       (condp = op
-                        :mount (let [exts {:project.ext/scenarios (project.ext.scenarios.main/mount channels ctx)
-                                           :project.ext/connect (project.ext.connect.main/mount channels ctx)
-                                           :project.ext/server (project.ext.server.main/mount channels ctx)
-                                           :project.ext/games (project.ext.games.main/mount channels ctx)}]
-                                 (prn :mount)
-                                 (swap! ctx update :exts merge exts)
-                                 (put! out| true)
-                                 (close! out|))
-                        :unmount (future (let []
-                                           (prn :unmount)))))
+                        (sp/op :main/ops| ::mount) (let [exts {:project.ext/scenarios (project.ext.scenarios.main/mount channels ctx)
+                                                               :project.ext/connect (project.ext.connect.main/mount channels ctx)
+                                                               :project.ext/server (project.ext.server.main/mount channels ctx)
+                                                               :project.ext/games (project.ext.games.main/mount channels ctx)}]
+                                                     (prn ::mount)
+                                                     (swap! ctx update :exts merge exts)
+                                                     (put! out| true)
+                                                     (close! out|))
+                        (sp/op :main/ops| ::unmount) (future (let []
+                                                               (prn ::unmount)))))
                     (recur))
                   (println ";; proc-main exiting"))]
     (with-meta
       {:loop| loop|}
       {'p/Mountable '_
-       `p/mount* (fn [_ opts] (put! ops| {:op :mount}))
-       `p/unmount* (fn [_ opts] (put! ops| {:op :unmount}))})
+       `p/mount* (fn [_ opts] (put! ops| (sp/vl :main/ops| {:op ::mount})))
+       `p/unmount* (fn [_ opts] (put! ops| {:op ::unmount}))})
     #_(reify
         p/Mountable
         (p/mount* [_ opts] (put! ops| {:op :mount}))

@@ -4,22 +4,19 @@
 
 (def ^:const OP :op)
 
-(s/def ::op-key #{OP})
+(s/def ::op #{OP})
 (s/def ::out| any?)
 
-
-
 (def ops
-  {:app.main/mount (s/keys :req [::op-key ::out|])})
+  {:project.app.main/mount (s/keys :req-un [::op #_::out|])})
 
 (def channels
-  {:main/ops| #{:app.main/mount}
+  {:main/ops| #{:project.app.main/mount}
    :game| #{}
    :render/ops| #{}})
 
 (def ops-keys (keys ops))
 (def channels-keys (keys channels))
-
 
 ;; (defmulti op-type OP)
 
