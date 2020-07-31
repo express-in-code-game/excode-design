@@ -1,22 +1,25 @@
 (ns project.spec
   (:require
-   [clojure.spec.alpha :as s]))
+   [clojure.spec.alpha :as s]
+   [clojure.test.check.generators :as gen]))
 
 (def ^:const OP :op)
 
-(s/def ::op #{OP})
+
 (s/def ::out| any?)
 
 (def ops
   {:project.app.main/mount (s/keys :req-un [::op #_::out|])})
+(def ops-keys (set (keys ops)))
+(s/def ::op ops-keys)
 
 (def channels
   {:main/ops| #{:project.app.main/mount}
    :game| #{}
    :render/ops| #{}})
 
-(def ops-keys (keys ops))
-(def channels-keys (keys channels))
+
+(def channels-keys (set (keys channels)))
 
 ;; (defmulti op-type OP)
 
@@ -34,6 +37,9 @@
 (s/def ::val-map-valid (fn [{:keys [channel-key val-map]}]
                          (s/valid? ((OP val-map) ops) val-map)))
 
+#_(s/valid? (:project.app.main/mount ops) {:op :project.app.main/mount})
+#_(gen/generate (s/gen (:project.app.main/mount ops)))
+
 (defmacro op
   [channel-key op-key]
   `~op-key)
@@ -47,7 +53,7 @@
 
 (defmacro vl
   [channel-key val-map]
-  `~m)
+  `~val-map)
 
 (s/fdef vl
   :args (s/and

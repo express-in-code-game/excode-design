@@ -26,14 +26,14 @@
         loop| (go (loop []
                     (when-let [{:keys [op opts out|]} (<! ops|)]
                       (condp = op
-                        (sp/op :main/ops| ::mount) (let [exts {:project.ext/scenarios (project.ext.scenarios.main/mount channels ctx)
-                                                               :project.ext/connect (project.ext.connect.main/mount channels ctx)
-                                                               :project.ext/server (project.ext.server.main/mount channels ctx)
-                                                               :project.ext/games (project.ext.games.main/mount channels ctx)}]
-                                                     (prn ::mount)
-                                                     (swap! ctx update :exts merge exts)
-                                                     (put! out| true)
-                                                     (close! out|))
+                        (sp/op :main/ops| ::mount1) (let [exts {:project.ext/scenarios (project.ext.scenarios.main/mount channels ctx)
+                                                                :project.ext/connect (project.ext.connect.main/mount channels ctx)
+                                                                :project.ext/server (project.ext.server.main/mount channels ctx)
+                                                                :project.ext/games (project.ext.games.main/mount channels ctx)}]
+                                                      (prn ::mount)
+                                                      (swap! ctx update :exts merge exts)
+                                                      (put! out| true)
+                                                      (close! out|))
                         (sp/op :main/ops| ::unmount) (future (let []
                                                                (prn ::unmount)))))
                     (recur))
