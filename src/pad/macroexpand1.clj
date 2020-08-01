@@ -1,4 +1,4 @@
-(ns pad.go1
+(ns pad.macroexpand1
   (:require
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go close!
                                      >!! <!! alt!! alts! alts!! take! put! mult tap untap
@@ -215,6 +215,7 @@
 
   ;; does not work: should throw, but it expands
   (clojure.walk/macroexpand-all '(go (loop []
+                                       (prn (opr :main/ops| ::mount2)) ; gets expanded into (clojure.core/prn :pad.macroexpand1/mount2), but does not throw! why ?
                                        (when-let [{:keys [op opts out|]} (<! (chan 1))]
                                          (condp = op
                                            (opr :main/ops| ::mount1) (let [exts {}
