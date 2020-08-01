@@ -181,6 +181,22 @@
         (opr :main/ops| ::mount1)
         (<! ops|))))
 
+(comment
+  (macroexpand '(go (let []
+                      (opr :main/ops| ::mount1)
+                      (<! (chan 1)))))
+  
+  (macroexpand '(go (let []
+                      (opr :main/ops| ::mount1)
+                      (do (chan 1)))))
+  
+  (macroexpand-1 '(go (let []
+                        (opr :main/ops| ::mount1)
+                        (do (chan 1)))))
+
+
+  ;;
+  )
 
 
 ;; does not work
