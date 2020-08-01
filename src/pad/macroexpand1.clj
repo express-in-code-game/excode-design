@@ -229,6 +229,18 @@
                                        (recur))
                                      (println ";; proc-main exiting")))
 
+  ;; works! what's the diff ?
+  ;; (clojure.core/prn :pad.macroexpand1/mount2) vs (prn :pad.macroexpand1/mount) ?
+  (clojure.walk/macroexpand-all '(go (loop []
+                                       (prn (opr :main/ops| ::mount2)))))
+
+  ;; also works
+  (clojure.walk/macroexpand-all '(go (prn (opr :main/ops| ::mount2))))
+
+  ;; does not work; why ?
+  (clojure.walk/macroexpand-all '(go (opr :main/ops| ::mount2)))
+  (clojure.walk/macroexpand-all '(go (do (opr :main/ops| ::mount2))))
+  
   ;;
   )
 
