@@ -325,3 +325,5 @@
     - https://ask.clojure.org/index.php/9015/spec-error-on-simple-threading-in-clj-cljs
     - https://stackoverflow.com/questions/37048167/what-is-the-difference-between-macroexpand-and-macroexpand-1-in-clojure
         - https://stackoverflow.com/a/37048974/10589291
+    - clojure 1.9 alpha ANN in clojure mlist (specs for macros)
+        - https://groups.google.com/g/clojure/c/_slHTn-Ej1Y/m/M_IVRODtCQAJ
