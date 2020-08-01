@@ -175,6 +175,15 @@
           (do ops|))))
 
 ;; does not work
+(defn f5-2-6
+  [ops|]
+  (go (let []
+        (opr :main/ops| ::mount1)
+        (<! ops|))))
+
+
+
+;; does not work
 (defn f5-3
   [channels ctx]
   (let [ops| (chan 10)
