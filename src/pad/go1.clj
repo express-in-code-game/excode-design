@@ -128,13 +128,13 @@
    (opr :main/ops| ::mount1)))
 
 ;; works
-(defn f5
-  [channels ctx]
-  (let [ops| (chan 10)
-        loop| (a/go-loop []
-                (opr :main/ops| ::mount1)
-                (opr :main/ops| ::unmount1)
-                (recur))]))
+#_(defn f5
+    [channels ctx]
+    (let [ops| (chan 10)
+          loop| (a/go-loop []
+                  (opr :main/ops| ::mount1)
+                  (opr :main/ops| ::unmount1)
+                  (recur))]))
 
 ;; does not work
 (defn f5-2
@@ -145,6 +145,27 @@
                 (opr :main/ops| ::unmount1)
                 (when-let [{:keys [op opts out|]} (<! ops|)])
                 (recur))]))
+
+;; does not work
+(defn f5-2-2
+  [ops|]
+  (a/go-loop []
+    (opr :main/ops| ::mount1)
+    (<! ops|)))
+
+;; works
+#_(defn f5-2-3
+    [ops|]
+    (a/go-loop []
+      (opr :main/ops| ::mount1)
+      (do ops|)))
+
+;; WORKS
+(defn f5-2-4
+  [ops|]
+  (go (loop []
+        (opr :main/ops| ::mount1)
+        (do ops|))))
 
 ;; does not work
 (defn f5-3
