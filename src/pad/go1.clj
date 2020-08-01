@@ -161,11 +161,18 @@
       (do ops|)))
 
 ;; WORKS
-(defn f5-2-4
-  [ops|]
-  (go (loop []
-        (opr :main/ops| ::mount1)
-        (do ops|))))
+#_(defn f5-2-4
+    [ops|]
+    (go (loop []
+          (opr :main/ops| ::mount1)
+          (do ops|))))
+
+;; WORKS
+#_(defn f5-2-5
+    [ops|]
+    (go (let []
+          (opr :main/ops| ::mount1)
+          (do ops|))))
 
 ;; does not work
 (defn f5-3
