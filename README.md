@@ -319,6 +319,7 @@
         - https://stackoverflow.com/a/38097107/10589291
 
 - macro expansion
+    - https://clojure.org/guides/spec#_macros
     - https://github.com/clojure/core.async/blob/e2fcb458b58f8aed2dd0390903338c9331bf0620/src/main/clojure/cljs/core/async.clj#L103
     - http://bryangilbert.com/post/code/clojure/anatomy-of-a-clojure-macro/
     - https://ask.clojure.org/index.php/9015/spec-error-on-simple-threading-in-clj-cljs
