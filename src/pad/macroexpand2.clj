@@ -32,7 +32,16 @@
 
   (clojure.walk/macroexpand-all '(go (declare2 foo abcd)))
 
-  (clojure.walk/macroexpand-all (declare2 foo abcd))
+  (clojure.walk/macroexpand-all '(declare2 foo abcd))
+  
+  (clojure.walk/macroexpand-all '(let () :foo))
+  
+  (clojure.walk/macroexpand-all '(go (let () :foo)))
+  
+  
+  (clojure.walk/macroexpand-all '(go
+                                   (<! (chan 1))
+                                   (let [] (declare2 foo abcd))))
 
 
 
