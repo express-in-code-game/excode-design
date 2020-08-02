@@ -57,3 +57,39 @@
 
   ;;
   )
+
+
+(def opkeys #{:o1 :o2})
+
+(defmacro assert-op
+  [chkey opkey]
+  `(do
+     (prn ~opkey)
+     (prn ~opkeys)
+     (prn ~(type opkeys))
+     (prn ~(into [] opkeys))
+     (prn ~(vector  opkey))
+     (prn (opkeys ~opkey))
+     (when-not (opkeys ~opkey)
+       (throw (Exception. "no such op")))))
+
+(defmacro op
+  [chkey opkey]
+  (assert-op chkey opkey)
+  `~opkey)
+
+
+(comment
+
+  (macroexpand '(op :c1 :o1))
+  
+  (macroexpand '(op :c1 :o21))
+  
+  (macroexpand '(go
+                  (op :c1 :o21)))
+
+  (macroexpand '(go (loop []
+                      (op :c1 :o21))))
+
+  ;;
+  )
