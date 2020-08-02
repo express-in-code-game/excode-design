@@ -103,7 +103,8 @@
 (s/def ::args (s/cat :chkey ::chkey
                      :opkey ::opkey))
 
-#_(do (clojure.spec.alpha/check-asserts true))
+(do (clojure.spec.alpha/check-asserts true))
+
 #_clojure.spec.alpha/*compile-asserts*
 #_(set! clojure.spec.alpha/*compile-asserts* false)
 #_(alter-var-root #'clojure.spec.alpha/*compile-asserts* (constantly false))
@@ -128,6 +129,7 @@
 
 (defn tmp1 []
   (go
+    (<! (chan 1))
     (op2 :c1 :o21)))
 
 (comment
