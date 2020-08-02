@@ -327,3 +327,5 @@
         - https://stackoverflow.com/a/37048974/10589291
     - clojure 1.9 alpha ANN in clojure mlist (specs for macros)
         - https://groups.google.com/g/clojure/c/_slHTn-Ej1Y/m/M_IVRODtCQAJ
+    - assert-args macro that leaves no code (code exists and runs during macroexpansion only)
+        - https://github.com/clojure/clojure/blob/clojure-1.10.1/src/clj/clojure/core.clj#L1832

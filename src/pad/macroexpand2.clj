@@ -21,27 +21,37 @@
 (defn f1
   []
   (go
+    #_(let () :foo)
     (declare2 foo abcd)))
 
 ;; throws, as expected
 #_(defn f2
-    []
-    (declare2 foo abcd))
+  []
+  (fn []
+    (prn 3)
+    (map (fn []
+           (let []
+             (declare2 foo abcd))) [])))
 
 (comment
 
   (clojure.walk/macroexpand-all '(go (declare2 foo abcd)))
 
   (clojure.walk/macroexpand-all '(declare2 foo abcd))
-  
+
   (clojure.walk/macroexpand-all '(let () :foo))
-  
+
   (clojure.walk/macroexpand-all '(go (let () :foo)))
-  
-  
+
+  (clojure.walk/macroexpand-all '(go (for (x (range 3)) x)))
+
+
+  (macroexpand '(when-let [x 3] x))
+
   (clojure.walk/macroexpand-all '(go
+                                   (declare2 foo abcd)
                                    (<! (chan 1))
-                                   (let [] (declare2 foo abcd))))
+                                   (let ())))
 
 
 
