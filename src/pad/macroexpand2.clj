@@ -93,3 +93,56 @@
 
   ;;
   )
+
+(s/def ::opkeys #{:o1 :o2})
+
+(s/def ::chkey keyword?)
+
+(s/def ::opkey ::opkeys)
+
+(s/def ::args (s/cat :chkey ::chkey
+                     :opkey ::opkey))
+
+#_(do (clojure.spec.alpha/check-asserts true))
+#_clojure.spec.alpha/*compile-asserts*
+#_(set! clojure.spec.alpha/*compile-asserts* false)
+#_(alter-var-root #'clojure.spec.alpha/*compile-asserts* (constantly false))
+#_(clojure.spec.alpha/check-asserts?)
+
+#_(gen/generate (s/gen ::opkey))
+#_(s/valid? ::opkey :o21)
+#_(s/assert ::opkey :o21)
+
+(defmacro assert-op2
+  [chkey opkey]
+  `(do
+     (s/assert ::chkey  ~chkey)
+     (s/assert ::opkey  ~opkey)
+     #_(when-not (opkeys ~opkey)
+         (throw (Exception. "no such op")))))
+
+(defmacro op2
+  [chkey opkey]
+  (assert-op2 chkey opkey)
+  `~opkey)
+
+(defn tmp1 []
+  (go
+    (op2 :c1 :o21)))
+
+(comment
+
+  (macroexpand '(op2 :c1 :o1))
+
+  (macroexpand '(op2 :c1 :o21))
+
+  (macroexpand '(go
+                  (op2 :c1 :o1)))
+  (macroexpand '(go
+                  (op2 :c1 :o21)))
+
+  (macroexpand '(go (loop []
+                      (op2 :c1 :o21))))
+
+  ;;
+  )
