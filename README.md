@@ -72,6 +72,7 @@
         - notice
             - using s/fdef does not work in all cases inside go block
             - but manually calling spec inside a macro does work, solves the problem
+                - like it is done with clojure.core/assert-args
 
 ### walkthrough 3: processes and queues
 
