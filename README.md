@@ -54,6 +54,24 @@
 - server
 - settings
 
+### walkthrough 5
+
+- "LAN" identity
+    - app has uuid (in settings.edn), it is user's identity; user can gen new uuid
+    - on launch path to settings.edn is specified (there are player name, uuid, data-dir etc.)
+    - this way can launch multiple instances for dev
+- naming
+    - channel names are simple (for destructuring)
+    - op types names are fully qualified
+- state
+    - is synced (server only broadcasts)
+    - a separate process accepts incoming socket evts and invokes local ops; so it is a layer
+    - state should be designed so it was possible to step back/forawrd (via repl)
+- next checkpoints
+    - redraw ui from repl without window repositioning
+    - redraw canvas-only from repl, with comform
+    - networking, players move a cirlce on canvas
+
 ### walkthrough 4: define system as channels, values, channels api/protocols
 
 - channels and values, channels and values everywhere
