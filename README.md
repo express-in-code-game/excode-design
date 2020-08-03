@@ -65,10 +65,13 @@
 - values and channels: how to compile-time validate that only protocoled values are being put on a channel and value map is correct ?
     - 1. use Vals protocol, create channels interface instances 
     - 2. a vals ns with unique fns to create ops/vals, multiple api ns for each channel which import vals ns and re-expose vls/ops valid for the channel
-    - 3. clojure.spec
+    - 3. clojure.spec via macroexpansion at compile-time
         - project ops, values, channels types, required map keys for each value map - are defined as data (sets) to be used with clojure.spec
         - note: clj and cljs have speccing mechanism for functions (probably, via macroexpansion?)
         - create a fn/macro that takes :channel-key {:op :op-type ..rest-of-value-map} and on compilation will cause error if that op is not specced for that channel
+        - notice
+            - using s/fdef does not work in all cases inside go block
+            - but manually calling spec inside a macro does work, solves the problem
 
 ### walkthrough 3: processes and queues
 
