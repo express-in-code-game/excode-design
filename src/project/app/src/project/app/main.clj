@@ -55,8 +55,9 @@
 (def proc-main (proc-main-f channels ctx))
 
 (def cli-options
-  [["-settings" nil ".edn file with settings"
-    :id :project/settings-filepath
+  [["-s" "--settings FILEPATH" "Path to settings file (.edn) "
+    :id :settings-filepath
+    :parse-fn str
     :default "data/settings.edn"]])
 
 (defn -main [& args]

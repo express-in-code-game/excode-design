@@ -14,11 +14,11 @@ devhidpi(){
 }
 
 dev1(){
-  devhidpi :port 7788 :settings data/settings1.edn
+  devhidpi :port 7788 --settings=data/settings1.edn
 }
 
 dev2(){
-   devhidpi :port 7799 :settings data/settings2.edn
+   devhidpi :port 7799 --settings "data/settings2.edn"
 }
 
 run_dev(){
