@@ -127,10 +127,11 @@
   (assert-op2 chkey opkey)
   `~opkey)
 
-(defn tmp1 []
-  (go
-    (<! (chan 1))
-    (op2 :c1 :o21)))
+;; throws, as it should
+#_(defn tmp1 []
+    (go
+      (<! (chan 1))
+      (op2 :c1 :o21)))
 
 (comment
 
@@ -146,5 +147,17 @@
   (macroexpand '(go (loop []
                       (op2 :c1 :o21))))
 
+  ;;
+  )
+
+(defmacro tmp2
+  [x]
+  (prn "prints during macroexpansion")
+  `~x)
+
+(comment
+  
+  (macroexpand '(tmp2 :a))
+  
   ;;
   )

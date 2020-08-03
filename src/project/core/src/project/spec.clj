@@ -46,21 +46,21 @@
   [channel-key op-key]
   `~op-key)
 
-(s/fdef op
-  :args (s/and
-         (s/cat :channel-key ::channel-exists
-                :op-key ::op-exists)
-         ::channel-op-exists)
-  :ret any?)
+#_(s/fdef op
+    :args (s/and
+           (s/cat :channel-key ::channel-exists
+                  :op-key ::op-exists)
+           ::channel-op-exists)
+    :ret any?)
 
 (defmacro vl
   [channel-key val-map]
   `~val-map)
 
-(s/fdef vl
-  :args (s/and
-         (s/cat :channel-key ::channel-exists
-                :val-map ::op-exists)
-         ::channel-op-exists
-         ::val-map-valid)
-  :ret any?)
+#_(s/fdef vl
+    :args (s/and
+           (s/cat :channel-key ::channel-exists
+                  :val-map ::op-exists)
+           ::channel-op-exists
+           ::val-map-valid)
+    :ret any?)
