@@ -13,7 +13,8 @@
    [project.ext.server.main]
    [project.ext.games.main]
    #_[pad.spec1]
-   [pad.macroexpand2]))
+   #_[pad.macroexpand2]
+   [pad.clj1]))
 
 
 (def channels (let []
