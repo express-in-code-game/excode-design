@@ -11,10 +11,7 @@
    [project.ext.scenarios.main]
    [project.ext.connect.main]
    [project.ext.server.main]
-   [project.ext.games.main]
-   #_[pad.spec1]
-   #_[pad.macroexpand2]
-   [pad.clj1]))
+   [project.ext.games.main]))
 
 
 (def channels (let []

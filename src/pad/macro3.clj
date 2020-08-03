@@ -18,3 +18,26 @@
 
   ;;
   )
+
+(defmacro assert-keys
+  [x]
+  `~x)
+
+(defmacro lets
+  [bindings & body]
+  (assert-keys 'a.b/c)
+  `(let []))
+
+(defn f2
+  [v]
+  (lets [{:keys []} v]
+        (prn c)))
+
+(comment
+
+  (assert-keys 'a.b/c)
+  (macroexpand '(assert-keys 3))
+  
+  ;;
+  )
+
