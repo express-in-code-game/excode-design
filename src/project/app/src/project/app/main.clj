@@ -54,8 +54,13 @@
 
 (def proc-main (proc-main-f channels ctx))
 
+(def cli-options
+  [["-settings" nil ".edn file with settings"
+    :id :project/settings-filepath
+    :default "data/settings.edn"]])
+
 (defn -main [& args]
+  (let [opts (parse-opts args cli-options)]
+    (prn opts))
   #_(p/mount* proc-main {})
-  (prn "main")
-  (prn args)
   #_(<!! (:loop| proc-main)))
