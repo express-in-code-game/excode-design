@@ -5,7 +5,7 @@
 - so self-generated childish challenge accepted: make a version of a game to play when friend arrives, so he could realize the fututre of this kind of games
 - update
     - visit was cancelled
-    - but goal remains! make a simpler version of the game and play with a friend(s) online
+    - still, goal is the same(even better): make a simpler version of the game and play with a friend(s) online
 
 ## rationale
 
