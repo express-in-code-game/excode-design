@@ -55,4 +55,5 @@
 (defn -main [& args]
   #_(p/mount* proc-main {})
   (prn "main")
+  (prn args)
   #_(<!! (:loop| proc-main)))

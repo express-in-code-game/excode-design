@@ -5,12 +5,20 @@ dev(){
   # lein repl :start :host 0.0.0.0 :port 7788
   # lein repl :headless :host 0.0.0.0 :port 7788
   # lein repl :connect 0.0.0.0:7878
-  lein repl :headless
+  lein run repl :headless "$@"
 
 }
 
+devhidpi(){
+  lein run with-profile +hidpi-ui-scale repl :headless "$@"
+}
+
+dev1(){
+  devhidpi :settings data/settings1.edn
+}
+
 dev2(){
-  lein with-profile +hidpi-ui-scale repl :headless
+   devhidpi :settings data/settings2.edn
 }
 
 run_dev(){
