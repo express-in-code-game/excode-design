@@ -7,6 +7,8 @@
         org.clojure/spec.alpha {:mvn/version "0.2.187"}
         org.clojure/test.check {:mvn/version "1.0.0"}
 
+        org.clojure/tools.cli {:mvn/version "1.0.194"}
+
         clj-http {:mvn/version "3.10.1"}
 
         cljfx/cljfx {:git/url "https://github.com/cljfx/cljfx" :sha "c09343d357eb30b046d1ff752cf303d261f6c3e3"}

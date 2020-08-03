@@ -1,4 +1,4 @@
-(ns pad.clj1
+(ns pad.macro3
   (:require
    [clojure.core.async :as a :refer [<! >! <!! timeout chan alt! go close!
                                      >!! <!! alt!! alts! alts!! take! put! mult tap untap
@@ -41,3 +41,17 @@
   ;;
   )
 
+(defmacro m1 []
+  `~(let [args '("aa" 3)]
+      (prn "init")
+      (prn args)
+      (concat '(apply -main) (list args))))
+
+
+(comment
+  
+  (macroexpand '(m1))
+  
+  
+  ;;
+  )

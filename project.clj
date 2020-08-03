@@ -1,5 +1,12 @@
 (def MAIN 'project.app.main)
 (prn (clojure-version))
+(prn *command-line-args*)
+
+(defmacro init-fn
+  [args]
+  (prn args)
+  (prn `(clojure.core/apply project.app.main/-main ~args))
+  `(clojure.core/apply project.app.main/-main '~args))
 
 (defproject app "0.1.0"
 
@@ -18,7 +25,11 @@
 
   :repl-options {:init-ns          ~MAIN
                  :main             ~MAIN
-                 :init (-main)
+                 :init ~(let [args *command-line-args*]
+                          (prn "init")
+                          (prn args)
+                          `(clojure.core/apply project.app.main/-main '~args))
+                 #_~(macroexpand  `(init-fn ~*command-line-args*))
                  :host             "0.0.0.0"
                  :port             7788}
   :profiles {:dev  {:main         ^{:skip-aot false} ~MAIN
