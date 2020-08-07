@@ -343,3 +343,7 @@
 - cli args
     - https://github.com/clojure/tools.cli
     - https://github.com/l3nz/cli-matic
+
+- websocket
+    - https://github.com/stalefruits/gniazdo
+    - https://github.com/ztellman/aleph
