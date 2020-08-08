@@ -1,6 +1,45 @@
 # lab.weekend-2020-07-23
 
-- make a minimal feature-simple (but no compromises) 1v1-network-playable version of the game
+- work moves to https://github.com/DeathStarGame/deathstar.ltee
+
+## to sum up:
+
+- mistakes
+  - doing a version within a time period (weekend) was a bad idea
+  - project should not be defined by a point in time,  but by a point in meaning
+  - to clarify
+    - the goal shapes the project, especially when it requires creativity and invention
+    - and point in time is a fragile basis, if creates the wrong state of mind, and if missed, you lose the drive, ingenuity, sense of the project
+    - so the goal should be a point in meaning, not in time: what the value looks like, not when or how
+
+- value
+  - understanding the value of a desktop jvm gui app
+    - one language - clojure - for the game, no need for cljs for ui
+    - user donwloads and starts one app, but can also host 
+    - same jvm can embed(start) server or nrepls as needed
+  - finally seeing how to use lisp macroexpansion to compile-time check if values put on channels are valid using clojure.spec
+    - no need for protocols, reify for channels
+    - and is a programmatic, yet declarative (spec) solution, elegant, lisp-y, data-y
+  - some other findings
+    - extensions (uniqueness via a namespace)
+    - passing cmd line args via 'lein repl'
+    - etc.
+
+- what is next
+  - it is still about making a simple version of a game, but without compromises
+  - and it should be a point in value
+  - what would be awesome ? to host on a laptop and play with others
+  - but instead of 1v1, which is a bit limiting, it is better to have a laptop event: a bracket/groups for multiple players
+  - when only 2 players join, its the same event, but the bracket consists of one match (so it becomes a 1v1)
+  - but: it so much better to invite multiple people, and if some don't show up, the event still holds, and it's just more fun
+  - the event configuration should be an .edn or .clj file, so you can share it via a link (github, obviously)
+  - like the scenario, which also is code + data, and installable via a git url
+
+So it'a about making it possible to host a laptop event: invite multiple people and have a tournament.
+A goal in meaning, in value.
+
+P.S.
+The repo https://github.com/express-in-code-game/lab.weekend-2020-07-23 will be removed
 
 ## rationale
 
@@ -8,7 +47,7 @@
 
 ## design
 
-- see notes
+- make a minimal feature-simple (but no compromises) 1v1-network-playable version of the game
 
 ## notes
 
