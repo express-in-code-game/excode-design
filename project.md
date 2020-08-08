@@ -1,5 +1,5 @@
 
-# express-in-code game
+# Death Star Game
 
 ## first things first: project and money
 

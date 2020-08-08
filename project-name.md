@@ -5,6 +5,17 @@
 
 ## name
 
+- Death Star Game
+
+> Finally realized what the name of the game is - Death Star!
+So many years, so many attempts, failing: freeverse, openmove, paradigm, starnet, express-in-code(excode) etc.
+But they all were too dy, yawn, unleavened. Just tasteless.
+Death Star is a reference to great classics - standing on the shoulders of giants. And it's juicy. Plus, Death Star resembles a computer system.
+Not to mention, the theme - perfect for the programming game - droids, space and stuff like that. But not limiting.
+I'm so relieved and pumped at the same time, like I figured out how to unify quantum mechanics and general relativity, lol !)
+
+## name attempts
+
 - express-in-langage (eil expil exlan exilan)
 - express-in-code (eic excode incode in-code)
 - express-via/in-a-language (eval)
