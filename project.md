@@ -93,12 +93,18 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 ## links
 
+- mailing list
+    - https://groups.google.com/g/deathstargame
+    - deathstargame@googlegroups.com
+
+<br/>
+
 - [thought process behind the game](https://github.com/express-in-code-game/lab.search-for-the-game/blob/master/docs/design.md#building-is-about-developing-a-language)
 - [idea of a volunteer automated cluster](https://github.com/express-in-code-game/lab.origin-cluster/blob/master/docs/design.md)
 - [some notes on events](https://github.com/express-in-code-game/lab.cloud-native-system/blob/master/docs/design.md#user-experience)
-- mailing list
-    - https://groups.google.com/g/express-in-code-game
-    - express-in-code-game@googlegroups.com
+
+<br/>
+
 - existing games that use languages
     - https://www.codingame.com/ide/puzzle/onboarding
         - https://github.com/CodinGame
