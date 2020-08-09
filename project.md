@@ -3,6 +3,9 @@
 
 ## first things first: project and money
 
+- [Q] "you're an indiot! why not monetize the project?"
+- [A] bitch please: Death Star is money free zone, children's playground
+
 - these questions cause confusion, need to be addressed
     - should project be eventually moneytized ?
     - should those who create the game and scenarios be paid, should anybody 'make a living' from it ?
