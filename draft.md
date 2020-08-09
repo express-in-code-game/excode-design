@@ -33,6 +33,21 @@
 - it complies to game apis and uses them to read/eval code etc.
 - this way scenarios stay diverse and unbounded, decoupling general concerns from a scneario's gameplay
 
+## drafts
+
+- Blizzards War Chest league is an absolutely brilliant event
+    - https://liquipedia.net/starcraft2/War_Chest_Team_League
+- because of the draft
+    - https://youtu.be/9Rg84bYapLU
+- so that should be possible to host an event (in laptop edition as well), and have draft and vetos
+    - and being able to draft players on your team is amazing
+    - and play in SC Proleague format (like Warchest, bo5, 4 games + ace)
+- it is a amazing way to have a team event for 1v1 game
+- and you can observe/enjoy other games while waiting for yours
+- it is intercative, communicative, yet still 1v1
+- and trash talk, and team strategy of which players for which scenarios
+- definately drafts should be a key element of Death Star Game
+
 
 ## scenarios
 
