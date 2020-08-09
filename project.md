@@ -99,9 +99,9 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 <br/>
 
-- [thought process behind the game](https://github.com/express-in-code-game/lab.search-for-the-game/blob/master/docs/design.md#building-is-about-developing-a-language)
-- [idea of a volunteer automated cluster](https://github.com/express-in-code-game/lab.origin-cluster/blob/master/docs/design.md)
-- [some notes on events](https://github.com/express-in-code-game/lab.cloud-native-system/blob/master/docs/design.md#user-experience)
+- [thought process behind the game](./search-for-the-game.md#building-is-about-developing-a-language)
+- [idea of a volunteer automated cluster](./origin-cluster/origin-cluster.md)
+- [some notes on events](./cloud-native-system/design.md#user-experience)
 
 <br/>
 
