@@ -61,3 +61,14 @@
 - the goal is to either have a new cljs-tool that would provide nrepl (maybe Socker REPL will do? ) or not use nrepl at all (most likely)
 - need to look into what Socket repl is and make cljs-everywhere work
 - boom, beatch
+
+
+#### or: vscode + background jvm process
+
+- vscode starts and extension works as it does
+- but it starts a background jvm for whatever can only be done in clojure
+    - for example, cljs compiler is written in clojure, so to have cljs-in-cljs you need to get compiler state somewhere
+    - OTOH, you can always use the extension's compiler state (or slection of namespaces)
+- so
+    - preferably, cljs only
+    - if not, it's plasible to have a background jvm process to handle certain operations (f memory either way, only value matters)
