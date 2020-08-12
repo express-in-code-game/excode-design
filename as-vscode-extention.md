@@ -72,3 +72,4 @@
 - so
     - preferably, cljs only
     - if not, it's plasible to have a background jvm process to handle certain operations (f memory either way, only value matters)
+- jvm process can be run in docker
