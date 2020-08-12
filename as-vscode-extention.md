@@ -52,3 +52,12 @@
 - and simulations can run in fresh tabs (each providing an independent enviroment for the player to experiment, even can be new on each simmulation)
 - so tabs, tabs, tabs
 - brilliant
+
+#### nrepl
+
+- to not rush to any conlusions, it's unclear exactly how to do, but cljs-everywhre is doable
+- cljs compiler and state need to be understood, and how to create new compiler sessions etc.
+- is nrepl server even needed ? can files be slurped and evaled via compiler isntance without running a dev tool ? the probably can, how can be figured out
+- the goal is to either have a new cljs-tool that would provide nrepl (maybe Socker REPL will do? ) or not use nrepl at all (most likely)
+- need to look into what Socket repl is and make cljs-everywhere work
+- boom, beatch
