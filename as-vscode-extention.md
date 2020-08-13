@@ -85,3 +85,19 @@
         - if it's jpackaged binary, it would have a large size within game release arhive
         - if it's uberjar, JRE (or JDK) will be required
         - if it's Dockerfile (or docker image), docker will be required
+
+
+#### repls and tabs
+
+- an example state of the editor when playing the game
+    - left side has explorer open (game repo), and a {current-game-hash}.cljs file tab
+    - right side is split into two: upper tab is solution space, bottom tab is resource space
+- player can with ease connect and reconnect into the apps running inside resource and soulition tabs (which are isolated, real browser tabs)
+- when connected to, say, solution, space, player can eval things and see the immediate result in solution space
+- if brekage happens, player can press "reset" button (or (reset) in the repl) and solution space restores to the intial state
+- tab is an evaluation environment, a runtime in which player runs their evalutaions, experiments (and graphically see changes)
+- after the scenario generates resource and solution space, cljs compiler states are created for each - those keep the true state of resource and solution space
+- when repl is given to the player, a copy of compiler state is created and exposed via nrepl/socket repl etc.
+- if the player "breaks" that copy or discard the tab, they with one click can get another copy from source state
+- during game simulation states are synced over network, and if all goes well, solution and resource space acquire new state
+- so player if free to get fresh tabs/repls, change reosurce and soltuion space (for example, when changing a file, each space has it's own generated file/ns)
