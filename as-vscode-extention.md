@@ -101,3 +101,41 @@
 - if the player "breaks" that copy or discard the tab, they with one click can get another copy from source state
 - during game simulation states are synced over network, and if all goes well, solution and resource space acquire new state
 - so player if free to get fresh tabs/repls, change reosurce and soltuion space (for example, when changing a file, each space has it's own generated file/ns)
+
+
+#### understanding nrepl, clj repl, cljs repl and shadow-cljs: Death Star tabs are like shadow-cljs builds
+
+- steps of evaluating cljs code via extension (shadow-cljs example)
+    - run multiple builds on shadow's jvm: :build1 :build2 :build3
+    - open 3 tabs in the browser for each build
+    - each tab has code injected by sahdow: it will connect to a certain host:port to recieve js for evaluation and send back data or error
+    - each build connects to shadow websocket server for builds (so 3 conns are held)
+    - each build has its own compiler state
+        - unlike clojuscript itself (or nrepl piggiback), shadow does not use cljs.repl 
+        - clojruescript compiles (on jvm) to js string, than it goes over a browser connection (part of cljs repl) to eval js and gets back result
+        - shadow only uses cljs to compile js, but does the go-eval-js step itself: because it supports multiple builds
+    - extension connects to nrepl server (hosted on jvm by shadow)
+    - eval expression, send nrepl {:op :eval :code ""}
+    - nrepl on jvm receives :op
+    - shadow intercepts 
+    - if it is a special shaodow :op "change build", it updates its :active-build state
+    - if its an eval :op for :build2
+        - shadow uses :build2 compiler state to get js string
+        - then it goes over :build2 broser tab connection to eval js and gets back error or data
+        - then it gives back result to nrepl
+        - nrepl returns it to extension
+    - so
+        - cljs repl has one connection
+        - shadow has multiple builds, multiple js-execution-enviroment connections, but one nrepl connection
+        - shadow has additional nrepl :ops to select build
+- given the explantion above
+    - for Death Star, each tab is similar to build: tab is a js execution enviroment, tabs are multiple
+    - yet, clj(s) extension should have one nrepl-protocol-compatible connection, that similar to shadow can be programmatically switched based on namespace for example
+    - example
+        - we have an nrepl-compatible server hosted on node (inside vscode)
+        - plus, a hub (build like process) on top to swtich tabs given incoming nrepl data (and it holds connections to tabs)
+        - we connect from clj(s) extension (mult)
+        - given the namespace (resource or solutino space), extension sends :select-tab kind of messages to nrepl
+        - build-like process (similar to sahdow) intercepts, selects a tab
+        - next eval :ops are compiler using compiler state for corresponding tab and evaled over tab connections
+    - so it's similar shadow, execpt in self-hosted env we have analyzer cache that is used for initial compiler states
