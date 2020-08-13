@@ -52,6 +52,12 @@
 - and simulations can run in fresh tabs (each providing an independent enviroment for the player to experiment, even can be new on each simmulation)
 - so tabs, tabs, tabs
 - brilliant
+- using vscode as a desktop user app is perfect
+    - it's a living used-by-many system, constantly moving forward
+    - it's lightweight and spacious
+    - distribution, releases is done, all is needed is to release compiled Death Star extension (as one archive) to be installed from source (can even do without ext store)
+    - all key abstractions are already in place: graphics, window resizing and other behavior, tabs, other extensions, editor etc.
+    - when thinking about doing Death Star ltee on jvm, all those came to mind as the first thing to do; but with vscode, you start working on the value of the game immediately
 
 #### nrepl
 
@@ -73,3 +79,9 @@
     - preferably, cljs only
     - if not, it's plasible to have a background jvm process to handle certain operations (f memory either way, only value matters)
 - jvm process can be run in docker
+- the question of installation: waht user needs to have
+    - if vsocde only, it's perfect
+    - if jvm background process
+        - if it's jpackaged binary, it would have a large size within game release arhive
+        - if it's uberjar, JRE (or JDK) will be required
+        - if it's Dockerfile (or docker image), docker will be required
