@@ -1,0 +1,76 @@
+{
+	"name": "mult",
+	"description": "cljc repl for vscode",
+	"version": "0.1.0",
+	"license": "MIT",
+	"publisher": "https://github.com/clojuretools/mult",
+	"repository": "https://github.com/clojuretools/mult",
+	"engines": {
+		"vscode": "^1.30.0"
+	},
+	"activationEvents": [
+		"onLanguage:clojure",
+		"onCommand:mult.open"
+	],
+	"main": "./resources/out/extension.js",
+	"scripts": {
+		"postinstall": "node ./node_modules/vscode/bin/install"
+	},
+	"dependencies": {
+		"bencode": "2.0.1",
+		"nrepl-client": "0.3.0",
+		"react": "16.13.0",
+		"react-dom": "16.13.0",
+		"vscode": "1.1.36"
+	},
+	"devDependencies": {
+		"shadow-cljs": "2.10.21"
+	},
+	"contributes": {
+		"commands": [
+			{
+				"command": "mult.open",
+				"title": "mult.open"
+			},
+			{
+				"command": "mult.ping",
+				"title": "mult.ping"
+			},
+			{
+				"command": "mult.eval",
+				"title": "mult.eval"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "mult.open",
+				"key": "ctrl+alt+m ctrl+alt+o"
+			},
+			{
+				"command": "mult.ping",
+				"key": "ctrl+alt+m ctrl+alt+p"
+			},
+			{
+				"command": "mult.eval",
+				"key": "alt+w"
+			}
+		],
+		"languages": [
+			{
+				"id": "clojure",
+				"aliases": [
+					"Clojure",
+					"clojure"
+				],
+				"extensions": [
+					".clj",
+					".cljs",
+					".cljc",
+					".cljx",
+					".clojure",
+					".edn"
+				]
+			}
+		]
+	}
+}

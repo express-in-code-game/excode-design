@@ -1,0 +1,45 @@
+{:deps         true
+ :nrepl {:host "0.0.0.0"
+         :port 2200}
+ :http {:port 2201
+        :host "0.0.0.0"}
+ :builds {:deathstar {;;       :target :node-library
+                      :target :node-script
+                      :main deathstar.extension/main
+                      :exports-var deathstar.extension/exports
+                      :output-to "resources/out/deathstar/extension.js"
+                      :compiler-options {:optimizations :simple
+                                         :infer-externs   false  #_:auto
+                                        ;;  :dump-core false
+                                         :stable-names true
+                                         :recompile-dependents true
+                                         :source-maps true
+                                         :cross-chunk-method-motion false  ; https://github.com/thheller/shadow-cljs/issues/611#issuecomment-620845276
+                                        ;;  :verbose true
+                                         }
+                      :devtools {:repl-init-ns deathstar.extension
+                                 :repl-pprint true
+                                 :autobuild true
+                                 :devtools-url "http://localhost:2201"
+                                 :after-load deathstar.extension/reload}}
+          :tabapp-space {:target :browser
+                         :output-dir "resources/out/deathstar"
+                         :asset-path "/out"
+                         :module-loader true
+                         :modules {:tabapp {:entries [deathstar.tabapp-space]}}
+                         :compiler-options {:infer-externs   false  #_:auto
+                                            :closure-warnings {:global-this :off}
+                                            :closure-defines  {"deathstar.tabapp-space._some_val_"         true}}
+                         :devtools {:repl-init-ns deathstar.impl.tabapp
+                                    :repl-pprint true
+                                    :autobuild true
+                                    :devtools-url "http://localhost:2201"
+                                    :http-root  "resources"
+                                    :http-port  2202}}
+
+          :bootstrap {:target :bootstrap
+                      :output-dir "resources/out/deathstar/bootstrap"
+                      :exclude #{cljs.js}
+                      :compiler-options {:infer-externs   false  #_:auto}
+                      :entries [cljs.js deathstar.extension clojure.core.async]
+                      :macros []}}}
