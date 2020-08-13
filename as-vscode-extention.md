@@ -139,3 +139,16 @@
         - build-like process (similar to sahdow) intercepts, selects a tab
         - next eval :ops are compiler using compiler state for corresponding tab and evaled over tab connections
     - so it's similar shadow, execpt in self-hosted env we have analyzer cache that is used for initial compiler states
+
+
+#### how to approach creating a multiple-tabs-nrepl environment for the game ?
+
+- jvm is not the issue: it's a different kind of functionality needed for the game, shadow-cljs does not cut it
+- first, it should be built game specific, and from that a generic abstraction (tool) may appear
+- how it would look like
+    - the key is to expose nrepl protocol
+    - the rest would be game specfic processes providing compiler states, tab connections and tab evaluations
+    - tab app for solution space and resource space would have a process that would have an :eval op (of js code)
+    - the other parts of the mechanism would be part of the extension runtime, doing necessary switching and compiling cljs to js, sending to tabs
+- game specific, execpt maybe for nrepl-protocol server
+- done this way, any extension would be able to connect 
