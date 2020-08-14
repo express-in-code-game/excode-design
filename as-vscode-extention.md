@@ -22,6 +22,10 @@
     - settings.json is a file, openeing a directory is simple, extensions are many
     - vscode feels spacious and non-enforcing
     - why ? becuase it was designed by one of the developers of Eclipse (see youtube talks), who seeked simplicity and lightness
+- vscode is the browser of editors
+    - browser is probaly the most used desktop app in the world, simple, lightweight, open; just tabs
+    - vscode is literally a browser (electron is node + browser) and design-wise is like browser: alomost everything is a tab
+    - vsode is the continuation of the idea of a browser, a step forward advancing the browser into an editor
 - the problem is nodejs, clojurescript being more complecated than clojrue (it's by design unavoidable - as cljs compiles to js)
 - so on the one hand: you want electron (because browser tabs) and web (ui) tech, as it's graphics friendly and simple and super powerful
 - on the other hand, you want jvm, because its clojure, and because nodejs is undesirable, and becuase multithreading is sane and comes out of the box with core.async
