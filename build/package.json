@@ -1,0 +1,51 @@
+{
+	"name": "deathstar.ltee",
+	"description": "Death Star Game: laptop event edition (deathstar.ltee)",
+	"version": "0.1.0",
+	"license": "GPL2",
+	"publisher": "https://github.com/DeathStarGame/deathstar.ltee",
+	"repository": "https://github.com/DeathStarGame/deathstar.ltee",
+	"engines": {
+		"vscode": "^1.30.0"
+	},
+	"activationEvents": [
+		"onLanguage:clojure",
+		"onCommand:deathstar.open"
+	],
+	"main": "./resources/out/deathstar-extension/main.js",
+	"scripts": {
+		"postinstall": "node ./node_modules/vscode/bin/install"
+	},
+	"dependencies": {
+		"bencode": "2.0.1",
+		"nrepl-client": "0.3.0",
+		"react": "16.13.0",
+		"react-dom": "16.13.0",
+		"vscode": "1.1.36"
+	},
+	"devDependencies": {
+		"shadow-cljs": "2.10.21"
+	},
+	"contributes": {
+		"commands": [
+			{
+				"command": "deathstar.open",
+				"title": "deathstar.open"
+			},
+			{
+				"command": "deathstar.ping",
+				"title": "deathstar.ping"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "deathstar.open",
+				"key": "ctrl+alt+g ctrl+alt+o"
+			},
+			{
+				"command": "deathstar.ping",
+				"key": "ctrl+alt+g ctrl+alt+p"
+			}
+		]
+	}
+}

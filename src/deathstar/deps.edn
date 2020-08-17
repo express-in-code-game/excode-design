@@ -1,0 +1,16 @@
+{:paths ["src"]
+ :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
+             "clojars" {:url "https://clojars.org/repo/"}}
+ :deps {org.clojure/clojure         {:mvn/version "1.10.1"}
+        org.clojure/clojurescript {:mvn/version "1.10.758"}
+        org.clojure/spec.alpha {:mvn/version "0.2.187"}
+                              ;;  org.clojure/core.async {:mvn/version "1.1.587"}
+        andare {:mvn/version "1.1.587"}
+        reagent {:mvn/version "0.10.0"}
+        com.cognitect/transit-cljs {:mvn/version "0.8.256"}
+
+        github.com.cljctools/vscode {:local/root "../../../cljctools/vscode"}
+        github.com.cljctools/paredit {:local/root "../../../cljctools/paredit"}
+        github.com.cljctools/cljs-cache {:local/root "../../../cljctools/cljs-cache/shadow"}
+       ;  github.com.cljctools/cljs-cache {:local/root "../../../cljctools/cljs-cache/cljs"}
+        github.com.cljctools/cljs-self-hosting {:local/root "../../../cljctools/cljs-self-hosting"}}}
