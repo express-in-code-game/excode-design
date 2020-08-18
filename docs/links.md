@@ -57,3 +57,29 @@ Error: [https://github.com/DeathStarGame/deathstar.ltee.deathstar.ltee]: Propose
 - simple, but deadly - as it's unclear what causes it
 - takeaway: don't log left and right vscode stuff
 
+
+#### nodejs worker_threads
+
+- https://nodejs.org/api/worker_threads.html
+- https://blog.soshace.com/advanced-node-js-a-hands-on-guide-to-event-loop-child-process-and-worker-threads-in-node-js/
+- https://nodesource.com/blog/worker-threads-nodejs/
+- https://blog.logrocket.com/node-js-multithreading-what-are-worker-threads-and-why-do-they-matter-48ab102f8b10/
+
+
+#### java sockets
+
+- https://stackoverflow.com/questions/8406914/benefits-of-netty-over-basic-serversocket-server
+- https://stackoverflow.com/questions/5385407/whats-the-difference-between-jetty-and-netty
+- libs
+    - https://github.com/TooTallNate/Java-WebSocket
+    - https://github.com/socketio
+        - https://github.com/socketio/engine.io-server-java 
+        - https://github.com/socketio/socket.io-client-java
+
+
+#### nrepl middleware
+
+- how default middleware is added
+    - https://github.com/nrepl/nrepl/blob/master/src/clojure/nrepl/server.clj#L85
+- how cider adds its middleware to nrepl's default
+    - https://github.com/clojure-emacs/cider-nrepl/blob/master/src/cider/nrepl.clj#L527

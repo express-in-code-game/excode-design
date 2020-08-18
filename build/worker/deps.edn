@@ -1,0 +1,2 @@
+{:paths []
+ :deps {github.com.DeathStarGame/deathstar.ltee.worker {:local/root "../../src/worker"}}}
