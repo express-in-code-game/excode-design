@@ -156,3 +156,37 @@
     - the other parts of the mechanism would be part of the extension runtime, doing necessary switching and compiling cljs to js, sending to tabs
 - game specific, execpt maybe for nrepl-protocol server
 - done this way, any extension would be able to connect 
+
+
+
+#### deathstar.ltee components
+
+- what apps deathstar builds
+    - extension itself
+    - generic tabapp
+        - has self hosted cljs
+        - visually empty, but has reagent ui (one settings cog) with Death Star extension specific ops
+        - communicates with extension via channels ( has process(s) running )
+        - exposes API for a sceanrio's app
+        - once scenario code is loaded at runtime, it's tabapp's code is sent to generic tabapp and is evaled there, which starts scenario process, which uses generic tab's api
+        - player gets a REPL into the tabapp
+    - generic worker
+        - runs in isolation sceanrio's generation api and other logic (that does not belong to tabapp)
+        - communicates with extensions via channels
+    - server
+        - does player websocket connections
+        - stores games and possibly game state
+    - libs
+        - abstraction that implements nrepl (at its core at least), so player could eval into tabapp
+    - deathstar ui tabapp
+        - Death Star interface app
+- how tabapp becomes a scenario
+    - ~~Death Star keeps state of a running scenario (later will be persisted on disk/db)~~
+        - nah, it is done on the server
+    - extension starts scenario worker and tabapp, sends scenario code to both, cide is evaled, processes are started
+- generation
+    - scenario geenrates both data (that is used to run the solution space and repsurce space ui) and code - to output files for the user
+- deathstar uses sceanrio's api to generate or apply generation
+    - Death Star uses scenario's worker api to generate data/code and keeps it in memory - if tab crashes, it will be recreated with same generated data
+
+    
