@@ -176,6 +176,7 @@
     - server
         - does player websocket connections
         - stores games and possibly game state
+        - is a child_process node, that itself may spawn worker threads
     - libs
         - abstraction that implements nrepl (at its core at least), so player could eval into tabapp
     - deathstar ui tabapp
@@ -188,5 +189,9 @@
     - scenario geenrates both data (that is used to run the solution space and repsurce space ui) and code - to output files for the user
 - deathstar uses sceanrio's api to generate or apply generation
     - Death Star uses scenario's worker api to generate data/code and keeps it in memory - if tab crashes, it will be recreated with same generated data
+
+- server vs exntension: who evals scenario and starts wokers, generates data, persist games?
+    - if possible: start vscode headless instance to get vscode.api within the server (for file access and such)?
+
 
     
