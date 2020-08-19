@@ -194,4 +194,28 @@
     - if possible: start vscode headless instance to get vscode.api within the server (for file access and such)?
 
 
+### server conundrum: nodejs or jdk, again
+
+- since the system requires a standlaone server, the question arises: why node? or why jdk?
+- why node
+    - distribution: you only need to install vscode, where vscode runs, game can run
+    - but it's kind of bs: as this game is definately for laptops/desktops, so running a jvm is not an issue
+    - one language - cljs
+- why jvm
+    - it has tooling (for example, nrepl with cider can be used, with custom middleware for the game)
+- JDK vs JRE
+    - unknown, there is a possiblity that JRE does not cut it
+    - either way, it's a jpackage question
+- how to distrbute jvm
+    - if possible: jpackage a JDK (or JRE if it suffices, depends on tools)
+    - if possible: release it on github ? ~400mb? doc says yes : https://docs.github.com/en/github/managing-large-files/distributing-large-binaries
+    - user launches vscode (and they don't need the server if they won't be hosting)
+    - if they want to host, that press a button and extension downloads the binary and spawns a jvm child_process
+    - so it's the extension that would download the server on demand (and store it somewhre deathstar related, like ~/deathstar)
+- why is it the same as node
+    - server is server, and communication will be over http or websockets
+    - and it needs to store games and lauch db and such
+    - you still need to do extension-server communictaion, and that negates the runtime question: it does not matter jvm or nodejs
+    - bottom line: nodejs is not simpler, faster to implement; it's the same; then, the only questions are tooling and distribution
+
     
