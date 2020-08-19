@@ -260,3 +260,5 @@
     - when scenario starts, prtcly open the text ediotr tab for that file and connect to nrepl (if possible)
 - multiplayer: design done right
     - games should be not for 2, but for 1 or more by design (to avoid pitfails): from the start, there can be 1 or many players, period
+- extension ->socket-> worker ->socket-> server
+    - like that
