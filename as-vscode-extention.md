@@ -217,5 +217,10 @@
     - and it needs to store games and lauch db and such
     - you still need to do extension-server communictaion, and that negates the runtime question: it does not matter jvm or nodejs
     - bottom line: nodejs is not simpler, faster to implement; it's the same; then, the only questions are tooling and distribution
+- why docker at first is fine and benefitial
+    - no need to mess with jpackage at first, installing docker to hsot is perfectly fine at first (standalone will be added later)
+    - lauch code will change a bit, but http/socket communication will stay
+    - it's either jpackaged biinary on github.releases or docker image on docker hub
+    - docker is fine to start with
 
     
