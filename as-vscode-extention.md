@@ -223,4 +223,13 @@
     - it's either jpackaged biinary on github.releases or docker image on docker hub
     - docker is fine to start with
 
+#### beyond jvm just for server: vscode + jvm for the win
+
+- if only host runs jvm, there is no way to leverage tooling such as nrepl
+- so the first-step solution (before these abstraction can be run on nodejs for example) is to run both vscode and jvm and distribute operations accordingly
+- and it still possible to keep it unnoticable, as jvm can be jpackeged and background downloaded/updated by extension
+- memeory is not a concern, at all, only value is
+- vscode + jvm on each machine allows both to be host and leverage all the tooling available
+- yet, overtime abstraction may migrate to a different runtime
+
     
