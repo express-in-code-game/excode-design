@@ -159,7 +159,7 @@
 
 
 
-#### deathstar.ltee components
+#### thinking nodejs
 
 - what apps deathstar builds
     - extension itself
@@ -223,7 +223,7 @@
     - it's either jpackaged biinary on github.releases or docker image on docker hub
     - docker is fine to start with
 
-#### beyond jvm just for server: vscode + jvm for the win
+#### beyond jvm just for server: vscode + jvm
 
 - if only host runs jvm, there is no way to leverage tooling such as nrepl
 - so the first-step solution (before these abstraction can be run on nodejs for example) is to run both vscode and jvm and distribute operations accordingly
@@ -232,4 +232,31 @@
 - vscode + jvm on each machine allows both to be host and leverage all the tooling available
 - yet, overtime abstraction may migrate to a different runtime
 
-    
+
+#### vscode + jvm design
+
+
+- vscode extension
+- vscode tabapp to run scenario
+- jvm instance running in docker
+    - worker (for local ops)
+    - server
+- use sockets as they are channels
+    - 1 socket for extension:jvm-worker channel
+    - 1 socker for extension:server channel
+- sync state
+    - worker holds state of the game (tabapp, generation)
+    - this state is synced between server and players
+- evaluation
+    - clj ext connects to shadow nrepl
+    - intercept incomming evals (or results) to change the state etc.
+        - prgrammatically (usig shadow api or intercept) re-eval changes inside the tabapp to bring it to any state
+- tabapp
+    - has menu of ops: reset to game state, reset to initial state etc.
+- worker and server
+    - worker connects to server generically (via socket) even though they may be on the same jvm
+- automation
+    - game creates files in game dir (~/deathstar for example)
+    - when scenario starts, prtcly open the text ediotr tab for that file and connect to nrepl (if possible)
+- multiplayer: design done right
+    - games should be not for 2, but for 1 or more by design (to avoid pitfails): from the start, there can be 1 or many players, period
