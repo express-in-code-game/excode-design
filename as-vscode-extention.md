@@ -320,3 +320,5 @@
 - how to def: namespaces are free
     - on the worker, a player will get their namespace (so the can def as much as needed)
     - namespaces can be discarded and re-created
+- what tab is
+    - tab is a glorified renderer over channel
