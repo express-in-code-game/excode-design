@@ -378,3 +378,11 @@
     - however, iframes messages can be proxied to go to extension and from there game ui will be updated
     - with iframes there is more control over ui: certain elements can be absolute-positioned on top of iframes so it's non-limiting ui-wise
     - yes, consider proxing from iframes
+
+- render-tab: game ui and scenario share the dom
+    - game ui renders scenario into a section
+    - to be precise, it's the sceanrio that is in charge (via api/channels)
+    - all ops are on extension side, and prefreably runtime-less
+    - scenario uses extension api and also some rendering api within the tab
+    - but it's the extension that starts the scenario process (but scenario renders itself into a section by id)
+    - so extension is a process, render-tab is a process and sceanrio comes in as a process
