@@ -356,4 +356,12 @@
         - or: render-tab has extension logic, plus scenario is designed to render multiple player's states
             - scenario's rendering is aware that there will be multiple players
     - to keep in mind: scenario should be powerful, free, even if it means more logic
+
+- render-tab: using it for both game ui and scneario rendering
+    - hear me out
+    - render tab has it's own ui (lobby, actions etc.), namepsaces and tabs (for example, for each player's view)
+    - ui is that of the game, of the extension - one ui app
+    - the main view shows has iframe(s) that renders sceanrio's graphics for each player (or one for everybody)
+    - can iframe communicate with parent documnent ? messaging ? need to be checked
+    - the point: it can be single tab approach, which would be better use-wise (code on the left, ui on the right)
         
