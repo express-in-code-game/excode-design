@@ -262,3 +262,55 @@
     - games should be not for 2, but for 1 or more by design (to avoid pitfails): from the start, there can be 1 or many players, period
 - extension ->socket-> worker ->socket-> server
     - like that
+
+
+#### state: it's not about a repl into tab, it's about runtime-less language, data, state
+
+- competetive game
+    - the goal of the game are events, players playing and competing
+    - for any game to be competetive, game state should be syncronized and be independent of player's actions (at least consensus)
+- understanding vscode tab: you cannot sync state or advance it
+    - when vscode tab goes into background, it suspends even message passing
+    - say multiple players are playing, how would it look like
+        - say, every tab can eval code
+        - when it's opened, it's always starts at 0, initial state
+        - ok, you send data and apply it to state
+        - but players may be closing tabs or suspending them, so where is the source of truth? where does the game state run ?
+        - nodejs: not an option, as you cannot create a background tab and give player REPl into to it (only real tabs, but they are suspendable)
+        - jvm: there is no realistic way to run, say, a headless browser and use it's tabs as source of truth runtime - it's insane and not achievable
+        - so when a simulation runs (palyers code in action), somewhere a source of truth (state) must be formed
+        - and with tab-REPL approach it is only possible to rely on an open tab somewhere to run the whole simulation and get the state and then sync it; that's not suitable for competetive game
+- problems with REPL, tab, self hosting and tools
+    - in short: you cannot simply give a player a REPL into a js environemt (isolated tab,so they can crash it and reload)
+    - shadow-cljs is not usable programmatically and it's fair: it's not designed for it
+    - figwheel is not a solution either - simpler to use clojurescript compiler with async, new :bundle taregt and webpack
+    - building from sratch a cljs build tool (sol) would be cool, but it does not eventually solve the non-stable nature of vscode tabs
+- state, it's about state
+    - what is the solution then ? palyers still need a REPL , but game state should be advancable, recreatable, syncable and independent of ui 
+    - data, data, data: advancing (changing) state approach
+        - players eval code, but this code should be clojure common - runtime independent
+        - this code is about data, it has no sideeffects (only produces data that will be used for rendering sideeffects)
+        - this code changes state or prvides logic functions, processes, channels - things that are runtime independent
+        - players are runtime independent!
+        - what the eval, can be run on jvm, nodejs, in the browser or elswhere
+        - data, state, logic, processes, channels
+- so what is vscode tab then ? what is sceanrio then ?
+    - vscode tab is a renderer: a sideeffect, that should be disposable and should not affect the state of the game; and it is
+    - scenario with runtime-independent approach will consist of two parts
+        - cljs specific application that renders
+        - runtime-independent code for advacing state and generating data
+        - runtime-independent process (!!! yes, with core async) that provides game-logic api: who wins/loses depending on state and data
+- players evalution, networking and synchronyzation
+    - we have both runtimes (all three actually): vsocde extension runs a jvm worker, which hosts a server
+    - game state resides on the server and is synced also to every worker (so each player's jvm has game state)
+    - when scenario is loaded, it's generic code is used on jvm and render-app runs in vscode tab
+    - worker has nrepl running
+    - when palyer evals code in a file (cljc file, code that can be run on any runtime)
+        - it goes over nrepl (although it does not matter, but it is treated as clj - because tooling is simpler)
+        - it arrives to jvm and is stored there (as player's event, for replayablity)
+        - it also is evaled and applied to state (scenario's code is used for that), then this game state is synced with server and all other players
+        - worker gives back to nrepl a result of that evaluation (some game data, it is always data)
+        - player sees the result in the REPL
+        - so the only difference from the usual approach is that evaluation is runtime-less (but language comes as is, complete) and is within game's api and data 
+- worker/server (the Death Star game, these module will run on both) keep state (data) and advance/replay etc.
+- language, data, state
