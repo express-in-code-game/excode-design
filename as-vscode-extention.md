@@ -314,3 +314,9 @@
         - so the only difference from the usual approach is that evaluation is runtime-less (but language comes as is, complete) and is within game's api and data 
 - worker/server (the Death Star game, these module will run on both) keep state (data) and advance/replay etc.
 - language, data, state
+
+- sending code or state changes
+    - code first (see what's what), or state if needed
+- how to def: namespaces are free
+    - on the worker, a player will get their namespace (so the can def as much as needed)
+    - namespaces can be discarded and re-created
