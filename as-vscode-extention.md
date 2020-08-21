@@ -371,3 +371,10 @@
     - in the bottom-right quater in addition to your tab opens the second (3,4,5..) tab for other players
     - so the question: what is better - react tabs and iframes or vscode tabs
 
+- render-tab: iframes vs multiple vscode-tabs
+    - because extension contorls state (and tabs): it keeps data exchange open at all times
+    - but with iframes, game ui will be in charge of iframes, which is wrong: it's just a render-input mechanism, extension has the state
+    - sceanrio tabs can communicate with extension (which is what's needed), whereas iframes can only talk to parent doc
+    - however, iframes messages can be proxied to go to extension and from there game ui will be updated
+    - with iframes there is more control over ui: certain elements can be absolute-positioned on top of iframes so it's non-limiting ui-wise
+    - yes, consider proxing from iframes
