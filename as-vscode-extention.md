@@ -365,3 +365,9 @@
     - can iframe communicate with parent documnent ? messaging ? need to be checked
     - the point: it can be single tab approach, which would be better use-wise (code on the left, ui on the right)
         
+- render-tab: separete tab for game ui and ability to open multiple tabs for scneario states (for each player)
+    - for example, top-right quater has game ui (lobby and other, complete app)
+    - inside that app you can perform operation "open player2 (3,4,5..) game state"
+    - in the bottom-right quater in addition to your tab opens the second (3,4,5..) tab for other players
+    - so the question: what is better - react tabs and iframes or vscode tabs
+
