@@ -336,3 +336,9 @@
     - but: only state is what matters, and it will be isolated and synced 
 - evalution
     - evalution is an event, an input, an action (like a click or press of a button)
+
+
+- possiblity: syncing players' code file
+    - so on interval a player's file is read and sent to the others (no need to sync anything, jsut send)
+    - and if a player chooses, they can open an editor tab (literaly, a file on their disk), that is constatnly re-written (as it comes over network)
+    - it's an option, a thing to consider for observing the game - to allow observers to see player's code (in addition to graphics in the tab)
