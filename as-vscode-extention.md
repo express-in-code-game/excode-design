@@ -320,6 +320,12 @@
 - how to def: namespaces are free
     - on the worker, a player will get their namespace (so the can def as much as needed)
     - namespaces can be discarded and re-created
+    - before simulation, when code is submitted, the game will read player's file, send it and eval or eval it on worker and send resulting state to the server (yes)
+    - code is evaled locally (on the worker) to get the state (data) of the game 
+        - to start, fiest scenarios will have mirror maps/worlds where players' score matters
+        - so each player has it's own state, and then the score is compared
+    - then that state is synced with the server and other's
+    - players experimentation state is also synced with others continuosly - so everyone sees what others are up to
 - what tab is
     - tab is a glorified renderer over channel
 - discarding/creting copies of palyer's namespace in clojure
