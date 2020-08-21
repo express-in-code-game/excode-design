@@ -322,3 +322,9 @@
     - namespaces can be discarded and re-created
 - what tab is
     - tab is a glorified renderer over channel
+- discarding/creting copies of palyer's namespace in clojure
+    - so player get's a generic nrepl into jvm (boom, boom, boom!! oh, pain is gone..)
+    - into their namespace
+    - if possible, there should be created copies/snapshots of it (not necessery, just an idea)
+    - so player could start a-new
+    - but: only state is what matters, and it will be isolated and synced 
