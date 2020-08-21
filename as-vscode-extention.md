@@ -342,3 +342,18 @@
     - so on interval a player's file is read and sent to the others (no need to sync anything, jsut send)
     - and if a player chooses, they can open an editor tab (literaly, a file on their disk), that is constatnly re-written (as it comes over network)
     - it's an option, a thing to consider for observing the game - to allow observers to see player's code (in addition to graphics in the tab)
+
+- how to have independent switchable game states (for each player) in one render-tab ?
+    - approaches
+        - namespaces
+            - each player's state is synced and arrives and is applied to it's namespace in that render-tab
+        - or: that state is kept on the worker/extension and player can press an button ( extension op, no tab)  and tab is re-created with that player's state
+            - for example, there can be a scenario tab and a lobby tab, sceanrio in top-right quarter, lobby bottom-right quater, code is in the left (whole side)
+            - lobby tab is part of the extension, it provies lobby ui and other game operations 
+            - and there could be an op "show me this player's state or get back to mine"
+        - or: render-tab has extenion logic and operations , scenario is run inside a section/iframe or something
+            - so it can be quickly re-drawn (as each player's state arrvies to the render-tab
+        - or: render-tab has extension logic, plus scenario is designed to render multiple player's states
+            - scenario's rendering is aware that there will be multiple players
+    - to keep in mind: scenario should be powerful, free, even if it means more logic
+        
