@@ -334,3 +334,5 @@
     - if possible, there should be created copies/snapshots of it (not necessery, just an idea)
     - so player could start a-new
     - but: only state is what matters, and it will be isolated and synced 
+- evalution
+    - evalution is an event, an input, an action (like a click or press of a button)
