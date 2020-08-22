@@ -132,3 +132,10 @@
       - players namespace and state (data, atom) is what is synced and exhanged
       - results of individual eval operations do not matter 
   
+
+#### local and shared (system) specs
+
+- there are local specs and one system specs
+- local specs may depend on system spec to use kewords like ::core.spec/some-system-wide-op and make their op and vl macros validate against shared ops/vals
+- local spec has it's channel keys, and using sytem spec insde local vl macro basically says "hey, want to know at compile time that this local channels handles this shared op"
+- processes import multiple specs: one (local), two (local, shared) or more

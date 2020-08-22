@@ -165,6 +165,7 @@
             ops|t (condp = (:op v)
                     :some-msg-from-tab (do nil))
             cmd|t (condp = (::host.spec/cmd-id v)
+                    
                     (spec/cmd-id "deathstar.open")
                     (host.api/show-info-msg host "deathstar.open")
 
