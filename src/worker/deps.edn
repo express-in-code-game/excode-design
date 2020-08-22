@@ -16,4 +16,5 @@
         github.com.DeathStarGame/deathstar.ltee.core {:local/root "../core"}
         github.com.DeathStarGame/deathstar.ltee.server {:local/root "../server"}
         github.com.cljctools/net.server {:local/root "../../../cljctools/net/server/pedestal"}
+        github.com.cljctools/nrepl {:local/root "../../../cljctools/nrepl/jvm"}
         github.com.cljctools/net.ws {:local/root "../../../cljctools/net/socket/gniazdo"}}}

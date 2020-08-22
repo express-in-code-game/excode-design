@@ -47,6 +47,7 @@ dock_default() {
                 --name $NAME \
                 -it \
                 -p $PORT:7788 \
+                -p 7799:7799 \
                 -p 8081:8080 \
                 -v "$(cd ../../../ && pwd)":$VOLUME_PATH1 \
                 -v "$(pwd)/.user":/root \
