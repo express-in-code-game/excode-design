@@ -412,3 +412,9 @@
     - this is why player's namespace and variables are needed only on the worker(or server), for rendering the resulting state is enough
     - every time state changes (when player experiments for example) it is sent to the renderer
     - but ns and variables exist only where the simulation needs to run and where code is submitted - on the worker (and server)
+
+
+#### inputs (operations) from scenario's ui (if any) should map to programmatic api unequivocally
+
+- any even from the api should map exactly to an opeation exposed programmatically
+- if a player can move something with mouse it should be available from the repl as well: (move {:somehting :x :y}) 
