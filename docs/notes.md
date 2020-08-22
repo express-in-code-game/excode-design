@@ -84,3 +84,11 @@
 
 - unless (regarding importing bar.spec in foo.api)
   - instead, op and vl functions can be passed as args as well
+
+
+#### conveying values from multiple channels in one runtime over socket onto multiple channels in another runtime
+
+- there should be a non-generic process that takes from local channels and puts over socket, adding ::channel-key-word| (which channel to use on the other side)
+- on the other side proc takes and puts to a channel using that ::channel-key-word
+- this will allow app to be flexible and no necesseriily map key-to-key (e.g. you can take from 2 chans here, but send to one ::some-chan| on the other side)
+- the problem is :out| channels: how do you keep using put-back channels over socket? or should you ? maybe it's jsut bad design to be in such situation to begin with
