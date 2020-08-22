@@ -24,3 +24,63 @@
   - what happens
     - when file is read as macros, it's evaled in clj during compilation and spec can be used during macroexpansion
     - when it's read as cljs file, it becomes part of runtime
+
+
+## implementation design
+
+#### exlpicit channel mappings in main
+
+- use fully qualified names for channels, and destcturing in the proc that uses them
+  - https://clojure.org/guides/destructuring#_namespaced_keywords
+- if channel should come from another namespace, it should be passed as simple keyword in main, mapped from fully-qualified to simple
+- in other words, proc knows its own channels and can destructure them. Other channel arguments are mapped explciitly in main and passsed as additional args
+
+```clojure
+
+(ns foo.api)
+
+(defn create-channels
+[]
+(let [send| (chan 10)
+      send|m (mult send|)
+      recv| (chan 10)
+      recv|m (mult recv|)]
+;; use fully qualified keywords
+{::send| send|
+::recv| recv|
+...
+))
+
+; other| is simple, will come from mapping
+(defn create-proc-ops
+[channels ctx opts]
+(let [{:keys [::send| ::recv| other|]}  channels]
+...
+))
+
+(ns app.main
+(:require 
+  [foo.api]
+  [bar.api]
+  [xyz.api]
+))
+
+; channels 
+
+(def channels 
+(let []
+(merge 
+(foo.api/create-channels)
+(bar.api/create-channels)
+(xyz.api/create-channels)
+))
+
+; map channel explcitely in main, keeping foo proc decoupled from bar.api ns (at least in terms of channels, may still neen bar.spec :as bar.sp  ,  bar.sp/op bar.sp/vl)
+(def proc-foo (foo.api/create-proc-ops 
+              (merge channels {:other| (::bar.api/send| channels ) })              
+)
+
+```
+
+- unless (regarding importing bar.spec in foo.api)
+  - instead, op and vl functions can be passed as args as well
