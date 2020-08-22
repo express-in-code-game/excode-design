@@ -20,17 +20,10 @@ server(){
 
 dev(){
     npm i
-    shadow -A:core:dev watch :deathstar-extension :deathstar-bootstrap # :tabapps-space
-    # shadow -A:core:dev watch :extension :bootstrap 
-}
-
-devall(){
-    npm i
     shadow -A:core:dev watch \
     :deathstar-extension \
     :deathstar-bootstrap \
-    :deathstar-tabapp-solution-space \
-    :deathstar-bootstrap-solution-space
+    :deathstar-gui
 }
 
 tree(){

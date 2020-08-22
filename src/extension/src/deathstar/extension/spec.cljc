@@ -37,7 +37,7 @@
 
 (def cmd-ids #{"deathstar.open"
                "deathstar.ping"
-               "deathstar.open-solution-space-tab"
+               "deathstar.gui.open"
                "deathstar.open-resource-space-tab"
                "deathstar.solution-tab-eval"})
 

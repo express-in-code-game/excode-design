@@ -1,7 +1,7 @@
 {:deps         true
  :nrepl {:host "0.0.0.0"
-         :port 2200}
- :http {:port 2201
+         :port 8899}
+ :http {:port 8000
         :host "0.0.0.0"}
  :builds {:deathstar-extension {;;       :target :node-library
                                 :target :node-script
@@ -26,7 +26,7 @@
                                 :devtools {:repl-init-ns deathstar.extension.main
                                            :repl-pprint true
                                            :autobuild true
-                                           :devtools-url "http://localhost:2201"
+                                           :devtools-url "http://localhost:8000"
                                            :after-load deathstar.extension.main/reload}}
 
           :deathstar-bootstrap {:target :bootstrap
@@ -36,24 +36,24 @@
                                 :entries [cljs.js deathstar.extension.main  cljctools.vscode.api clojure.core.async]
                                 :macros []}
 
-          :deathstar-tabapp-solution-space {:target :browser
-                                            :output-dir "resources/out/deathstar-tabapp-solution-space"
-                                            :asset-path "/out/deathstar-tabapp-solution-space"
-                                            :module-loader true
-                                            :modules {:main {:entries [deathstar.tabapp.solution-space.main]}}
-                                            :compiler-options {:infer-externs   false  #_:auto
-                                                               :closure-warnings {:global-this :off}
-                                                               :closure-defines  {"deathstar.tabapp-space._some_val_"         true}}
-                                            :devtools {:repl-init-ns deathstar.tabapp.solution-space.main
-                                                       :repl-pprint true
-                                                       :autobuild true
-                                                       :devtools-url "http://localhost:2201"
-                                                       :http-root  "resources"
-                                                       :http-port  2202}}
+          :deathstar-gui {:target :browser
+                          :output-dir "resources/out/deathstar-gui"
+                          :asset-path "/out/deathstar-gui"
+                          :module-loader true
+                          :modules {:main {:entries [deathstar.gui.main]}}
+                          :compiler-options {:infer-externs   false  #_:auto
+                                             :closure-warnings {:global-this :off}
+                                             :closure-defines  {"deathstar.gui_some_val_"         true}}
+                          :devtools {:repl-init-ns deathstar.gui.main
+                                     :repl-pprint true
+                                     :autobuild true
+                                     :devtools-url "http://localhost:8000"
+                                     :http-root  "resources"
+                                     :http-port  8002}}
 
-          :deathstar-bootstrap-solution-space {:target :bootstrap
-                                               :output-dir "resources/out/deathstar-bootstrap-solution-space"
-                                               :exclude #{cljs.js}
-                                               :compiler-options {:infer-externs   false  #_:auto}
-                                               :entries [cljs.js deathstar.tabapp.solution-space.main clojure.core.async]
-                                               :macros []}}}
+          :deathstar-bootstrap-gui {:target :bootstrap
+                                    :output-dir "resources/out/deathstar-gui"
+                                    :exclude #{cljs.js}
+                                    :compiler-options {:infer-externs   false  #_:auto}
+                                    :entries [cljs.js deathstar.tabapp.solution-space.main clojure.core.async]
+                                    :macros []}}}

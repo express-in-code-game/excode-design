@@ -1,7 +1,0 @@
-{:path/root "~/.deathstar"
- :path/instances "./instances"
- :path/instance "./instance0"
- :path/configs ["./configs"
-                "./repos/deathstar/build/configs"]
- :path/resources "./repos/deathstar/build/extension/resources"
- :path/default-config "./deathstar.default.edn"}

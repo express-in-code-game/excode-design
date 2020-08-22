@@ -10,20 +10,22 @@
    [reagent.core :as r]
    [reagent.dom :as rdom]
 
-   [deathstar.protocols :as p]
-   [deathstar.spec :as sp]))
+   [deathstar.core.protocols :as p]
+   [deathstar.core.spec :as core.spec]
+   [cljctools.vscode.spec :as host.spec]
+   [deathstar.gui.spec :as spec]))
 
 (defn create-channels
   []
   (let [ops| (chan 10)
         ops|m (mult ops|)]
-    {:ops| ops|
-     :ops|m ops|m}))
+    {::spec/ops| ops|
+     ::spec/ops|m ops|m}))
 
 (defn create-proc-ops
   [channels ctx]
-  (let [{:keys [ops|m conn-recv|m]} channels
-        conn-recv|t (tap conn-recv|m (chan 10))
+  (let [{:keys [::spec/ops|m]} channels
+        ; recv|t (tap recv|m (chan 10))
         ops|t (tap ops|m (chan 10))
         {:keys [state]} ctx]
     (.addEventListener js/document "keyup"
@@ -32,15 +34,20 @@
                            (and (= ev.keyCode 76) ev.ctrlKey) (swap! state assoc :data []))))
     (go
       (loop []
-        (when-let [[v port] (alts! [ops|t conn-recv|t])]
+        (when-let [[v port] (alts! [ops|t])]
           (condp = port
             ops|t (condp = (:op v)
-                    :solution-space/append (let [{:keys [data]} v]
-                                             (swap! state update :data conj data)))
-            conn-recv|t (condp = (:op v)
-                          :solution-space/eval (do
-                                                 (println "eval string:")
-                                                 (prn v)))))
+
+                    (core.spec/op
+                     ::core.spec/gui-ops|
+                     ::core.spec/update-gui-state)
+                    (let []
+                      (println ::core.spec/update-gui-state)
+                      (prn v))
+
+                    :some-op
+                    (let [{:keys [data]} v]
+                      (swap! state update :data conj data)))))
         (recur))
       (println "; proc-ops go-block exiting"))))
 

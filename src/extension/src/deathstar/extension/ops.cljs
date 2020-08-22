@@ -9,11 +9,15 @@
    [cljs.reader :refer [read-string]]
    [clojure.pprint :refer [pprint]]
 
-   [cljctools.vscode.spec :as host.spec]
-   [cljctools.vscode.api :as host.api]
-   [deathstar.extension.spec :as spec]
    [cljctools.self-hosted.compiler :as compiler.api]
    [cljctools.self-hosted.api :as self-hosted.api]
+
+   [cljctools.vscode.spec :as host.spec]
+   [cljctools.vscode.api :as host.api]
+
+   [cljctools.net.core.spec :as net.spec]
+   [deathstar.extension.spec :as spec]
+   [deathstar.core.spec :as core.spec]
    #_[pad.cljsjs1]
    #_[pad.selfhost1]))
 
@@ -47,20 +51,20 @@
 
 (defn create-channels
   []
-  (let [ops| (chan 10)
-        ops|m (mult ops|)
-        ops|x (mix ops|)
+  (let [extension-ops| (chan 10)
+        extension-ops|m (mult extension-ops|)
+        extension-ops|x (mix extension-ops|)
         cmd| (chan 10)
         cmd|m (mult cmd|)
         tab-state| (chan (sliding-buffer 10))
         tab-state|m (mult tab-state|)]
-    {::spec/ops| ops|
-     ::spec/ops|m ops|m
-     ::spec/ops|x ops|x
-     ::spec/cmd| cmd|
+    {::spec/cmd| cmd|
      ::spec/cmd|m cmd|m
      ::spec/tab-state| tab-state|
-     ::spec/tab-state|m tab-state|m}))
+     ::spec/tab-state|m tab-state|m
+
+     ::core.spec/extension-ops| extension-ops|
+     ::core.spec/extension-ops|m extension-ops|m}))
 
 
 (def ^:dynamic *extension-compiler* (compiler.api/create-compiler))
@@ -130,16 +134,19 @@
 
 (defn create-proc-ops
   [channels ctx]
-  (let [{:keys [::spec/ops| ::spec/ops|m ::host.spec/evt|m
-                ::spec/cmd| ::spec/cmd|m ::spec/tab-state|]} channels
+  (let [{:keys [::core.spec/extension-ops| ::core.spec/extension-ops|m
+                ::host.spec/evt|m :http|
+                ::spec/cmd| ::spec/cmd|m ::spec/tab-state|]
+         socket|m ::net.spec/recv|m} channels
         {:keys [host state]} ctx
-        ops|t (tap ops|m (chan 10))
+        extension-ops|t (tap extension-ops|m (chan 10))
         cmd|t (tap cmd|m (chan 10))
+        socket|t (tap socket|m (chan 10))
         relevant-evt? (fn [v]  ((host.spec/ops #{::host.spec/extension-activate ::host.spec/extension-deactivate}) (:op v)))
         evt|t (tap evt|m (chan 10 (comp (filter (every-pred relevant-evt?)))))]
     (go
       (loop []
-        (when-let [[v port] (alts! [ops|t evt|t cmd|t])]
+        (when-let [[v port] (alts! [extension-ops|t evt|t cmd|t])]
           (condp = port
             evt|t (condp = (:op v)
 
@@ -147,10 +154,10 @@
                      ::host.spec/evt|
                      ::host.spec/extension-activate)
                     (let []
-                      (js/console.log "deathstar activating")
-                      (host.api/show-info-msg host "deathstar actiavting")
+                      (println ::host.spec/extension-activate)
+                      (host.api/show-info-msg host "Death Star activating")
                       (host.api/register-commands host {:ids spec/cmd-ids
-                                                        :cmd| cmd|})
+                                                        ::host.spec/cmd| cmd|})
                       #_(<! (compiler.api/init
                              *extension-compiler*
                              {:path "/home/user/code/deathstar/build/extension/resources/out/deathstar-bootstrap"
@@ -162,33 +169,35 @@
                                                clojure.core.async}}))
                       #_(prn (self-hosted.api/test1))))
 
-            ops|t (condp = (:op v)
-                    :some-msg-from-tab (do nil))
+            extension-ops|t (condp = (:op v)
+                              ::spec/some-op (do nil))
+            socket|t (let []
+                       (println "data from socket" v))
             cmd|t (condp = (::host.spec/cmd-id v)
-                    
+
                     (spec/cmd-id "deathstar.open")
                     (host.api/show-info-msg host "deathstar.open")
 
                     (spec/cmd-id "deathstar.ping")
                     (host.api/show-info-msg host "deathstar.ping")
 
-                    (spec/cmd-id "deathstar.open-solution-space-tab")
+                    (spec/cmd-id "deathstar.gui.open")
                     (let [tab (host.api/create-tab
                                host
-                               {:id "solution-space-tab"
-                                :title "solution space"
-                                :script-path "resources/out/deathstar-tabapp-solution-space/main.js"
-                                :html-path "resources/solution-space.html"
-                                :script-replace "/out/tabapp.js"
-                                :tab-msg| ext-ops|
-                                :tab-state| tab-state|})]
-                      (swap! state assoc :solution-space-tab tab))
+                               {:id "gui-tab"
+                                :title "Death Star"
+                                :script-path "resources/out/deathstar-gui/main.js"
+                                :html-path "resources/gui.html"
+                                :script-replace "./out/deathstar-gui/main.js"
+                                :msg| extension-ops|
+                                :state| tab-state|})]
+                      (swap! state assoc ::spec/gui-tab tab))
 
                     (spec/cmd-id "deathstar.solution-tab-eval")
-                    (let [tab (get @state :solution-space-tab)]
+                    (let [tab (get @state ::spec/gui-tab)]
                       (host.api/send-tab
                        tab
-                       (spec/vl :solution-tab| {:op :solution-space/eval :data "hello"}))))))
+                       (core.spec/vl ::core.spec/gui-ops| {:op ::core.spec/update-gui-state :data "hello"}))))))
         (recur))
       (println "; proc-ops go-block exiting"))))
 

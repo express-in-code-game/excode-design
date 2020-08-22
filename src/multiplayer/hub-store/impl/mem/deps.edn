@@ -1,0 +1,2 @@
+{:paths ["src"]
+ :deps {github.com.DeathStarGame/deathstar.ltee.hub.store.meta {:local/root "../../meta"}}}

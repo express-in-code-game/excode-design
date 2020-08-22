@@ -12,9 +12,9 @@
 - https://clojurescript.org/guides/ns-forms
 - https://code.thheller.com/blog/shadow-cljs/2019/10/12/clojurescript-macros.html
 
-- the way it's done with deathstar.spec
-  - deathstar.spec.cljc is one file that is both macro ns and runtime ns
-  - it requires itself using reader conditional  #?(:cljs (:require-macros [deathstar.spec]))
+- the way it's done with deathstar.core.spec
+  - deathstar.core.spec.cljc is one file that is both macro ns and runtime ns
+  - it requires itself using reader conditional  #?(:cljs (:require-macros [deathstar.core.spec]))
   - why
     - because we need this whole ns at compile time (clojure time) and runtime (cljs)
   - how it works

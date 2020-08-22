@@ -40,8 +40,8 @@
 				"title": "deathstar.ping"
 			},
 			{
-				"command": "deathstar.open-solution-space-tab",
-				"title": "deathstar.open-solution-space-tab"
+				"command": "deathstar.gui.open",
+				"title": "deathstar.gui.open"
 			},
 			{
 				"command": "deathstar.solution-tab-eval",
@@ -58,7 +58,7 @@
 				"key": "ctrl+alt+g ctrl+alt+p"
 			},
 			{
-				"command": "deathstar.open-solution-space-tab",
+				"command": "deathstar.gui.open",
 				"key": "ctrl+alt+g ctrl+alt+s"
 			},
 			{

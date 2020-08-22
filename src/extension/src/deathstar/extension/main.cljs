@@ -10,52 +10,60 @@
    [clojure.pprint :refer [pprint]]
 
    [cljctools.vscode.api :as host.api]
-   [deathstar.extension.app :as app.api]
+   [deathstar.extension.ops :as ops.api]
+   [deathstar.extension.spec :as spec]
    [cljctools.net.socket.api :as ws.api]
+   [deathstar.extension.http-chan :as http-chan.api]
    #_[pad.cljsjs1]
    #_[pad.selfhost1]))
 
-(def host|| (host.api/create-channels))
+(def channels (merge
+               (host.api/create-channels)
+               (ops.api/create-channels)
+               (ws.api/create-channels)
+               (http-chan.api/create-channels)))
 
 (defn ^:export main []
   (println "deathstar.extension.main"))
 
 (def exports #js {:activate (fn [context]
                               (println "activating")
-                              (host.api/activate host|| context))
+                              (host.api/activate channels context))
                   :deactivate (fn []
                                 (println "deactivating")
-                                (host.api/deactivate host||))})
+                                (host.api/deactivate channels))})
 (when (exists? js/module)
   (set! js/module.exports exports))
 
-(def extension|| (app.api/create-channels))
 
 #_(do
     (let [{:keys [ext-ops|x]} extension||
-          {:keys [host-evt|m]} host||]
+          {:keys [host-evt|m]} channels]
       (admix ext-ops|x (tap host-evt|m (chan 10 (comp (filter (every-pred (fn [v]
                                                                                   (println "filtering")
                                                                                   (#{:host/extension-activate :host/extension-deactivate} (:op v)))))))))))
 
-(def state (atom {:solution-space-tab nil}))
+(def state (atom {::spec/gui-tab nil}))
 
-(def host (host.api/create-proc-host host|| {}))
+(def host (host.api/create-proc-host channels {}))
 
-(def ops (app.api/create-proc-ops (merge host|| extension||) {:host host
-                                                                    :state state}))
 
-(def log (app.api/create-proc-log (merge host|| extension||) {}))
+(def ops (ops.api/create-proc-ops
+          (merge
+           {:http| (::http-chan.api/http| channels)}
+           channels)
+          {:host host
+           :state state}))
 
-(def net-ws|| (ws.api/create-channels))
+(def log (ops.api/create-proc-log channels {}))
+
+(def http-chan (http-chan.api/create-proc-ops channels {} {::http-chan.api/url "http://localhost:8080/api"}))
+
+#_(def net-ws (ws.api/create-proc-ws channels {} {:url "ws://localhost:8081/ws"}))
 
 (comment
 
   (reduce (fn [ag x] (assoc ag x x)) {} #{1 2 3})
-
-
-
-  (def net-ws (ws.api/create-proc-ws net-ws|| {} {:url "ws://localhost:8081/ws"}))
 
   (ws.api/send-data net-ws {:a 1})
   (ws.api/connected? net-ws)

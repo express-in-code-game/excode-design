@@ -11,14 +11,22 @@
    [reagent.dom :as rdom]
 
    [cljctools.vscode.tab-conn :as tab-conn.api]
+   [cljctools.vscode.spec :as host.spec]
+   [deathstar.gui.spec :as spec]
    [deathstar.gui.ops :as ops.api]
    [deathstar.gui.render :as render.api]))
 
 (def channels (merge
+               {::main| (chan 10)}
                (tab-conn.api/create-channels)
                (ops.api/create-channels)))
 
-(def conn (tab-conn.api/create-proc-conn channels {}))
+(def conn (tab-conn.api/create-proc-conn
+           (merge
+            {::host.spec/recv|  (::spec/ops| channels)
+             ::host.spec/recv|m (::spec/ops|m channels)}
+            channels)
+           {}))
 
 (def state (render.api/create-state))
 
@@ -26,13 +34,30 @@
   []
   (swap! state update :counter inc))
 
-(def app (app.api/create-proc-ops channels {:state state}))
+(def ops (ops.api/create-proc-ops channels {:state state}))
+
+(defn create-proc-main
+  [channels ctx]
+  (let [{:keys [::main|]} channels]
+    (go
+      (loop []
+        (when-let [[v port] (alts! [main|])]
+          (condp = port
+            main|
+            (condp = (:op v)
+
+              ::start
+              (let []
+                (println ::main| ::start)
+                (render.api/render-ui channels {:state state})))))
+        (recur)))))
+
+(def proc-main (create-proc-main channels {}))
 
 (defn ^:export main
   []
-  (println "deathstar.gui.main")
-  (render.api/render-ui channels {:state state})
-  #_(proc-main channels {:state state}))
+  (println ::main)
+  (put! (::main| channels) {:op ::start}))
 
 (do (main))
 

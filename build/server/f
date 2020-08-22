@@ -1,0 +1,63 @@
+#!/bin/bash
+
+dev(){
+
+  # lein repl :start :host 0.0.0.0 :port 7788
+  # lein repl :headless :host 0.0.0.0 :port 7788
+  # lein repl :connect 0.0.0.0:7878
+  lein repl :headless --settings=~/.deathstar/configs/settings.edn
+
+}
+
+run_dev(){
+  lein run dev
+}
+
+run_uberjar(){
+  java -jar target/app.standalone.jar
+}
+
+uberjar(){
+  lein with-profiles +prod uberjar
+  # java -jar target/app.uber.jar 
+}
+
+native(){
+  lein native-image
+}
+
+dock() {
+
+    NREPL_LEIN_PORT=7788
+    NREPL_PORT=7799
+    SERVER_PORT=8080
+    NAME=deathstar.server
+
+    # WORKDIR_PATH=$VOLUME_PATH/deathstar/build/worker
+    VOLUME_PATH1=/ctx/code
+    VOLUME_PATH2=/root/.deathstar/configs
+    WORKDIR_PATH=$VOLUME_PATH1/deathstar/build/server
+
+    docker build \
+    --build-arg WORKDIR_PATH=$WORKDIR_PATH \
+    -t $NAME \
+    -f dev.Dockerfile .
+
+    docker run  --rm \
+                --cpus=4.0 \
+                --memory=4g \
+                --name $NAME \
+                -it \
+                -p $NREPL_LEIN_PORT:7788 \
+                -p $NREPL_PORT:7799 \
+                -p $SERVER_PORT:8080 \
+                -v "$(cd ../../../ && pwd)":$VOLUME_PATH1 \
+                -v "$(pwd)/.user":/root \
+                -v "$(cd ../ && pwd)/configs":$VOLUME_PATH2 \
+                 $NAME \
+                 bash
+
+}
+
+
+"$@"
