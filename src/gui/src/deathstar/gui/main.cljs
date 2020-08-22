@@ -1,4 +1,4 @@
-(ns deathstar.tab-scenario.main
+(ns deathstar.gui.main
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
                                      pub sub unsub mult tap untap mix admix unmix
@@ -11,13 +11,14 @@
    [reagent.dom :as rdom]
 
    [cljctools.vscode.tab-conn :as tab-conn.api]
-   [deathstar.tab-scenario.app :as app.api]
-   [deathstar.tab-scenario.render :as render.api]))
+   [deathstar.gui.ops :as ops.api]
+   [deathstar.gui.render :as render.api]))
 
-(def conn|| (tab-conn.api/create-channels))
-(def app|| (app.api/create-channels))
+(def channels (merge
+               (tab-conn.api/create-channels)
+               (ops.api/create-channels)))
 
-(def conn nil #_(tab-conn.api/create-proc-conn conn|| {}))
+(def conn (tab-conn.api/create-proc-conn channels {}))
 
 (def state (render.api/create-state))
 
@@ -25,12 +26,12 @@
   []
   (swap! state update :counter inc))
 
-(def app (app.api/create-proc-ops (merge conn|| app||) {:state state}))
+(def app (app.api/create-proc-ops channels {:state state}))
 
 (defn ^:export main
   []
-  (println "deathstar.tab-scenario.main")
-  (render.api/render-ui (merge conn|| app||) {:state state})
+  (println "deathstar.gui.main")
+  (render.api/render-ui channels {:state state})
   #_(proc-main channels {:state state}))
 
 (do (main))

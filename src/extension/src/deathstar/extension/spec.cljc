@@ -10,15 +10,13 @@
 (s/def ::out| any?)
 
 (def op-specs
-  {:solution-space/eval (s/keys :req-un [::op #_::out|])})
+  {})
 
 (def ch-specs
-  {:ext-ops| #{}
-   :solution-tab| #{:solution-space/eval}})
+  {::ops| #{}})
 
 (def op-keys (set (keys op-specs)))
 (def ch-keys (set (keys ch-specs)))
-
 
 (s/def ::op op-keys)
 
@@ -37,18 +35,18 @@
   (s/assert ::ch-exists  chkey)
   `~v)
 
-(def cmd-keys #{"deathstar.open"
-                "deathstar.ping"
-                "deathstar.open-solution-space-tab"
-                "deathstar.open-resource-space-tab"
-                "deathstar.solution-tab-eval"})
+(def cmd-ids #{"deathstar.open"
+               "deathstar.ping"
+               "deathstar.open-solution-space-tab"
+               "deathstar.open-resource-space-tab"
+               "deathstar.solution-tab-eval"})
 
-(s/def ::cmd-exists cmd-keys)
+(s/def ::cmd-id-exists cmd-ids)
 
-(defmacro cmd
-  [cmdkey]
-  (s/assert ::cmd-exists  cmdkey)
-  `~cmdkey)
+(defmacro cmd-id
+  [id]
+  (s/assert ::cmd-id-exists  id)
+  `~id)
 
 #_(defmacro assert-op
     [chkey opkey]

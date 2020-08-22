@@ -1,4 +1,4 @@
-(ns deathstar.tabapp.solution-space.app
+(ns deathstar.gui.ops
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
                                      pub sub unsub mult tap untap mix admix unmix
@@ -38,9 +38,9 @@
                     :solution-space/append (let [{:keys [data]} v]
                                              (swap! state update :data conj data)))
             conn-recv|t (condp = (:op v)
-                          (sp/op :solution-tab| :solution-space/eval) (do
-                                                                        (println "eval string:")
-                                                                        (prn v)))))
+                          :solution-space/eval (do
+                                                 (println "eval string:")
+                                                 (prn v)))))
         (recur))
       (println "; proc-ops go-block exiting"))))
 
