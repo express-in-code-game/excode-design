@@ -386,3 +386,29 @@
     - scenario uses extension api and also some rendering api within the tab
     - but it's the extension that starts the scenario process (but scenario renders itself into a section by id)
     - so extension is a process, render-tab is a process and sceanrio comes in as a process
+
+#### simulation as f(state,code,time), why there is no need for cljs self-hosting
+
+- all happens on the worker
+- player has a discardable/restorable namespace with its state
+- when player evals, they alter that namespace, creating variables and changing it's state (atom)
+- when core is submitted
+    - players file is read (before the simulation)
+    - a fresh copy of the ns is created, players code is evaled, state is reset! to game state at that time
+    - player exposes some api - fns or variables, it's a program, a ns, and fns depend on variables
+    - then players code os used to run their simulation on their worker and get their new state/score
+- simultaion
+    - simulation is a process
+    - and is part of the scenario
+    - it moves with a certain pace (controlled by timeouts,sleeps)
+    - it changes solution space's state
+    - it uses player's code where it supposed to
+    - say, it runs for 15 seconds, advancing state every second (15 steps)
+    - every time state changes, it is conveyed to the tab and merged/reset into state for rendering
+    - if error happens, it is also sent to the gui to and displayer for the player
+- using state for rendering, not evalutaion
+    - workers and server are source of truth
+    - and game simulation is runtime-less: can be run on jvm, node and in browser
+    - this is why player's namespace and variables are needed only on the worker(or server), for rendering the resulting state is enough
+    - every time state changes (when player experiments for example) it is sent to the renderer
+    - but ns and variables exist only where the simulation needs to run and where code is submitted - on the worker (and server)
