@@ -92,3 +92,43 @@
 - on the other side proc takes and puts to a channel using that ::channel-key-word
 - this will allow app to be flexible and no necesseriily map key-to-key (e.g. you can take from 2 chans here, but send to one ::some-chan| on the other side)
 - the problem is :out| channels: how do you keep using put-back channels over socket? or should you ? maybe it's jsut bad design to be in such situation to begin with
+
+
+#### problem with nrepl
+
+- what is needed
+  - to intercept ops (:eval mainly) when it arrives, and before it leaves (should be able to access :value before it is sent back)
+- what happens
+  - nrepl has middleware
+    - default https://github.com/nrepl/nrepl/blob/master/src/clojure/nrepl/server.clj#L85
+    - cider https://github.com/clojure-emacs/cider-nrepl/blob/master/src/cider/nrepl.clj#L525
+  - it you can add middleware to handle ops, and specify before/after
+  - problem with msg from "eval" middleware
+    - it does not have :value key
+      - https://github.com/nrepl/nrepl/blob/master/src/clojure/nrepl/middleware/interruptible_eval.clj#L118
+    - t/send sends it out directly ?
+  - this is  transports send-fn, which flushes and socket-sends ?
+    - https://github.com/nrepl/nrepl/blob/master/src/clojure/nrepl/transport.clj#L119
+- what is the approach
+  - fork nrepl
+  - access value here https://github.com/nrepl/nrepl/blob/master/src/clojure/nrepl/middleware/interruptible_eval.clj#L118
+  - put! it onto system's channels
+- no, one more time:
+  - first, nrepl middleware is an ugly wrap-pattern (high-order hell), 
+  - some midllewares can short-circuit (unlike pedestal for examplem which passes ctx though each step)
+  - so eval short-circuits
+  - :requires and :expects only check that other middlewares are in place (in the list)
+  - some middleware can call (handler msg), which is what's needed, but eval does not, shirt circuits instead
+  - should nrepl be forked ?
+    - no, if need be better so use (alter-var-root) and dynamically change it
+    - or create a replacement that is nrepl-protocol-compatible 
+  - is access to :value needed in the system
+    - no
+    - first, getting the eval code (not :value) is possible, so that makes it possible to replay evals
+    - second, when player evals, they eval in their own namespace and change their state
+    - so that namepsace and it's state (data) already represent player's state
+    - in other words
+      - what player sends to evals is needed (to replay)
+      - players namespace and state (data, atom) is what is synced and exhanged
+      - results of individual eval operations do not matter 
+  
