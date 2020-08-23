@@ -511,3 +511,12 @@
 - simple: you cannot intercept editor-nrepl communication, so there is no way to identify the connection on server side
 - if all players connect to server's nrepl, they will each get a session, but no way to identify players
 - with local node, it's possible
+
+#### wrong: right now, the player can be idetified by unique generated namespace via first eval op (in-ns 'deathstar.scenario.rovers1-e123edn)
+
+- in theory, possible to map such op to nrepl's session
+- when (in-ns) arrives, that ns is the id of the player
+- for example, suffix can be first 5-7 characters from players uuid (or symly gensym that is mapped to uuid)
+- it is still better than worker -> server-worker synchronization
+- and long-term this is more elegant design-wise
+- * possible that mult will provide api (a channel) to attach ceratin data (id) to nrepl ops
