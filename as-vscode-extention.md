@@ -478,4 +478,4 @@
 - all files are passed to gamestate, changed if needed and evaled - so that new namespaces for that version are created
 - then vars (in those generated namespaces) are passed to multiplayer simmulation as args
 - for example, generate new ns name by using base and gensym: (gensym "deathstar.scenario.rovers1.player") -> deathstar.scenario.rovers1.player67
-- after simulation completes, use ns-unmap or remove-ns
+- after simulation completes, sync state with user-side and use ns-unmap or remove-ns
