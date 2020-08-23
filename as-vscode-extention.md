@@ -418,3 +418,38 @@
 
 - any even from the api should map exactly to an opeation exposed programmatically
 - if a player can move something with mouse it should be available from the repl as well: (move {:somehting :x :y}) 
+
+
+#### runtimeless abstractions - user and hub, extension/worker/server - and why worker and server are single abstraction: server
+
+- the initial thinking was: woker is extension's subrpocess, that provides jvm runtime, and server is a separate abstraction for multiplayer
+- but, this is incorrect
+    - extension handles ceratain ops, but mainly user input and rendering
+    - worker is indeed started by extension is child_process
+    - but it's the worker that runs evalutaions, simulations and keeps state
+    - it's also the worker that reads fs (configs and sceanrio files), loads sceanrios - so worker hosts most system processes
+    - but processes are logically runitmeless and abstracion-wise there are only: user and hub
+    - user represents extension + gui + worker, where is hub is somehting that handles multiplayer
+    - but: every user can host a server, so where is the line between worker (user) and server(hub) ? there is none
+    - as with Docker Swarm, nodes are nodes, and can use consensus mechanism to elect source-of-truth nodes; but every node can be promoted/demoted
+    - now with Death Star: it's about multiplayer, being able to host, but at the same time play when offline; so what is multiplayer then ?
+    - well, multiplayer and gamestate are runtimeless abstractions (cljc namespaces) that expose channels, processes and api; they can run anywhere, it's just channels, processes, data
+    - and if you want to be able to play offline, you still need to connect to something and run simulations (play the game as it is)
+    - that something can be a separate abstraction, duplicating server-hosted multiplayer: but, with channels this is meaningless, as these abstractions are unaware whether value comes from socket of from local process - it's a value on channel; damn, CPS!
+    - so 
+        - there is no difference - no difference - between running a hub for multiple players and running it for single palyer - it's still the same logic (simulations, join/leave)
+        - 0,1 or more design
+        - plus, when offline, you would want to be able to run simulations against AI (bots), which is exactly the same multiplayer
+- connecting from extension
+    - any worker is hub, it's a standalone node of the system 
+    - and workers already have http server running because of socket connection
+    - so worker is a host:port, an endpoint
+    - and extension can choose which worker to connect to
+- workers
+    - worker is a server, a standalone node
+    - it's a server, and extension is a user(client)
+    - with deathstar.ltee it's a server
+- so what that means
+    - it means, exntension should be able to connect to the server using some idenetity (uuid from settings.edn for example)
+    - so you could open several editor winodws, select settings1,2..3.edn (present in ~/.deathstar/configs) and connect to the server using that
+    - you can even not start your own server, but to connect only; but to play (even offline) you always need a running server - no problem, extension will start/stop it as child_process
