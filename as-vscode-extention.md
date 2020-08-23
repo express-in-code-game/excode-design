@@ -479,3 +479,19 @@
 - then vars (in those generated namespaces) are passed to multiplayer simmulation as args
 - for example, generate new ns name by using base and gensym: (gensym "deathstar.scenario.rovers1.player") -> deathstar.scenario.rovers1.player67
 - after simulation completes, sync state with user-side and use ns-unmap or remove-ns
+
+#### request, response over socket: http is needed, gui as render-input only
+
+- you cannot do request-repospose over sockets (alas), only inside a runtime
+- implementing your own is out of the question - its insane to re=invent the wheel, http already exists
+- now, tab gui should not make requests - because extension may need to incercept as well ; and it's unclear if you can from vscode tab
+- but you shouldn't: gui should only render from given state and put! input events
+- those events go directly into extension over tab channel
+- extension gui-ops
+    - takes inputs
+    - make http requests (from node, so no cors, and you can block-wait for response)
+    - and swap! local state (atom)
+    - that atom has (add-watch), which on every change puts an :reset-state op to gui
+    - gui simply takes data and does reset! on a reagent atom 
+- this way input processing is also runtime-less ( will be run on node, but is non-specific)
+- so user-side and server-side communcate via http and socket stream - socket stream is used for gamestate updates
