@@ -495,3 +495,13 @@
     - gui simply takes data and does reset! on a reagent atom 
 - this way input processing is also runtime-less ( will be run on node, but is non-specific)
 - so user-side and server-side communcate via http and socket stream - socket stream is used for gamestate updates
+
+#### http as a channel for values
+
+- mapping spec-validated runtime-less values like {:op ::spec/foo :data {:a 1}} to rest makes no sense
+- and graphql is showing that you want to use http as a channel for queries(requests)
+- you want request/response support, but without rest (unless you specifically needed)
+- Death Star extension-server communication is a channels for values: some go as stream (over socket), some need req-resp capabilities
+- that is why
+    - use one endpoint /api and post values as you would put! onto a channel
+    - all requests go into  a proc(or maybe parallelsim will be added later) and is handled as usual : as op and value 
