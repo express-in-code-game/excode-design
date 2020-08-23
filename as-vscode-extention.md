@@ -453,3 +453,29 @@
     - it means, exntension should be able to connect to the server using some idenetity (uuid from settings.edn for example)
     - so you could open several editor winodws, select settings1,2..3.edn (present in ~/.deathstar/configs) and connect to the server using that
     - you can even not start your own server, but to connect only; but to play (even offline) you always need a running server - no problem, extension will start/stop it as child_process
+
+
+#### multiplayer(hub), gamestate and submitting code
+
+- extesion reads files and sends to the server (hub)
+- gamestate can either be a channel (an process(s)) of its own, or be hub's dependency
+- I think, it is better to run a more generic version of gamestate abstraction over gamestate channel, on par with the hub process
+- so hub processes forwards operaitions over to gamestate over channel
+- and hub has references(channels) of runnig simultations by uuid - so gamestate is generic system that runs code and sceanrios
+- * scenario loader will be standalone as well
+
+#### multiplayer simulation
+
+- simultaion is a processes, provided by sceanrio
+- with single-plaer simmulation each runs on its own and players score
+- with multi-palyer simulation it's different
+    - so it takes as args fns/data (api that players provide), for N players, not just one
+    - and it runs each players code at each step: (player1-fn ) (player2-fn) .. against their part of state
+    - so on each simulation step every palyer's respective code is applied and we get the resulting scenario state (for example, all new positions of all rovers)
+
+#### how gamestate will run submitted code (files)
+
+- all files are passed to gamestate, changed if needed and evaled - so that new namespaces for that version are created
+- then vars (in those generated namespaces) are passed to multiplayer simmulation as args
+- for example, generate new ns name by using base and gensym: (gensym "deathstar.scenario.rovers1.player") -> deathstar.scenario.rovers1.player67
+- after simulation completes, use ns-unmap or remove-ns
