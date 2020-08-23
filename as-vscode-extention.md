@@ -505,3 +505,9 @@
 - that is why
     - use one endpoint /api and post values as you would put! onto a channel
     - all requests go into  a proc(or maybe parallelsim will be added later) and is handled as usual : as op and value 
+
+#### back to worker: as the first step, every player needs a local worker to have their own nrepl connection
+
+- simple: you cannot intercept editor-nrepl communication, so there is no way to identify the connection on server side
+- if all players connect to server's nrepl, they will each get a session, but no way to identify players
+- with local node, it's possible
