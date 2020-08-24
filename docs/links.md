@@ -83,3 +83,7 @@ Error: [https://github.com/DeathStarGame/deathstar.ltee.deathstar.ltee]: Propose
     - https://github.com/nrepl/nrepl/blob/master/src/clojure/nrepl/server.clj#L85
 - how cider adds its middleware to nrepl's default
     - https://github.com/clojure-emacs/cider-nrepl/blob/master/src/cider/nrepl.clj#L527
+
+#### datomic
+
+- https://www.reddit.com/r/Clojure/comments/8dqes8/datomic_look_at_all_the_things_im_not_doing/

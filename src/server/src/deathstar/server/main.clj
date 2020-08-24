@@ -14,8 +14,8 @@
 
    [deathstar.server.ops :as ops.api]
    [deathstar.multiplayer.hub :as hub.api]
-   [deathstar.gamestate.api :as gamestate.api]
-   [deathstar.multiplayer.user :as user.api]
+   #_[deathstar.gamestate.api :as gamestate.api]
+   [deathstar.multiplayer.remote :as user.api]
    [deathstar.scenario.rovers1.player]))
 
 (def channels (merge
@@ -32,7 +32,7 @@
 
 (def hub (hub.api/create-proc-ops channels {}))
 
-(def gamestate (gamestate.api/create-proc-ops channels {}))
+#_(def gamestate (gamestate.api/create-proc-ops channels {}))
 
 (def cli-options
   [["-s" "--settings FILEPATH" "Path to settings file (.edn) "

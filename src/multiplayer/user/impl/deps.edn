@@ -1,3 +1,0 @@
-{:paths ["src"]
- :deps {github.com.DeathStarGame/deathstar.ltee.multiplayer.user.meta {:local/root "../meta"}
-        github.com.DeathStarGame/deathstar.ltee.multiplayer.hub.meta {:local/root "../../hub/meta"}}}
