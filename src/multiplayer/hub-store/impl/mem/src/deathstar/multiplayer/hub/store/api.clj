@@ -11,20 +11,21 @@
    [deathstar.multiplayer.hub.store.spec :as spec]))
 
 
-(defn create-state
-  [data]
-  (atom data))
+
 
 (defn create-default-state-data
   []
   {::multiplayer.spec/users {}
    ::multiplayer.spec/games {}})
 
+(defn create-state
+  []
+  (atom (create-default-state-data)))
 
 (defn create-proc-ops
   [channels ctx]
   (let [{:keys [::ops|]} channels
-        {:keys [store]} ctx
+        {:keys [state]} ctx
         ops| (tap ops| (chan 10))
         close|| (repeatedly 16 #(chan 1))
         release (fn []

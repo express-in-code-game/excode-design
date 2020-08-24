@@ -139,3 +139,20 @@
 - local specs may depend on system spec to use kewords like ::core.spec/some-system-wide-op and make their op and vl macros validate against shared ops/vals
 - local spec has it's channel keys, and using sytem spec insde local vl macro basically says "hey, want to know at compile time that this local channels handles this shared op"
 - processes import multiple specs: one (local), two (local, shared) or more
+
+#### understaning store, state, hub and opeartions
+
+- state is more abstract, store is something hub uses to read/write data
+- hub parallelsim
+  - hub creates specified (e.g. 16) go-blocks, that will in parallel take! from a single request/op channel
+  - processing ops within a process is much better - you define local scoepe (channels, ctx) once, have ::specced operations with macroexpansion, no unncessary fn names for each opearion (keywords are better)
+- store
+  - trying to implement store as ops like ::add-user ::remove-user etc. is wrong and reduntant - almost the same ops are already in hub process (which already handles ::user-connected ::list-users)
+  - what you want is to separate the store abstraction from implemtnation
+  - but: it is a mistake (redundant) to re-map same opearions in another process, invent you pseudo-query/txn language (just a form of rest)
+  - you want a store with a query language and use it directly in the hub - this way ops are handled properly in one place, with the same parallesim
+  - however, the problem is that you want the same hub - written in cljc with those queries - to work with in-memory db and with disk-db 
+  - hub will still import abstract.store.api ns, but it should have two implemntaions, that can be switched in deps.edn
+  - you want your hub to work as a generic abstractions, handling ops, making read/writes/decisions and conveying back responses (via out channels)
+  - if you take store (db) that is only disk or ony memeory (or if their api is different), you would endup needing to implement hub twice, which is out of the question
+  - yes, your own store is some kind of a solution, that will (via enourmous duplication) make hub generic, whereas store substitutable
