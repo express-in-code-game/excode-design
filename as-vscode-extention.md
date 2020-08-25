@@ -520,3 +520,19 @@
 - it is still better than worker -> server-worker synchronization
 - and long-term this is more elegant design-wise
 - * possible that mult will provide api (a channel) to attach ceratin data (id) to nrepl ops
+
+
+#### there is no gui: there is extension and renderer
+
+- state exists on extension, and it is specced using extension.spec, like list of settings files, connections etc.
+- that state's spec - is needed inside gui to access data keys (they will be fully qualified)
+- extension already imports gui's meta to put hypothetical gui ops, but this is aloso wrong
+- inputs comming from gui or ediotr commands - are the same inputs from user and are one set of operations
+- set of operations
+- set of operations, that is extension-only ops
+- back to gui needing extension state's spec: gui would need to import extension meta, and that would be mistake of mistakes
+- if two deps depend on each other, it's a deign flaw, indicating that they are one thing
+- so what is gui? gui is an extensions namepsace (render), that happens to compile into it's own artifact ; but it's only a renderer and inputs (values) stream
+- what that means
+    - extension has a spec with input|, that is processed alongside cmd| - both are user inputs, representing extension ops
+    - gui is a renderer
