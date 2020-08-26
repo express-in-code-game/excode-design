@@ -156,3 +156,74 @@
   - you want your hub to work as a generic abstractions, handling ops, making read/writes/decisions and conveying back responses (via out channels)
   - if you take store (db) that is only disk or ony memeory (or if their api is different), you would endup needing to implement hub twice, which is out of the question
   - yes, your own store is some kind of a solution, that will (via enourmous duplication) make hub generic, whereas store substitutable
+
+
+#### impl.api and chan.api: the approach to channels and values with having a programmatic impl-independent runtime-independent api
+
+- create-channels should be in a separate ns  (and dep) from implementaion (create-proc)
+- lets call it chan_api
+- example functions
+  - create-channels
+  - connect
+  - disconnect
+  - ...
+- chan_api only hus runtime-independent dependencies: meta (spec, protocols) and core.async
+- core.async is part of the language (luxury to have it as a lib), so it is not a dep, it's core
+- foo.chan_api requires example
+  - [ core.async ]
+  - [ foo.spec ]
+- and it can be imported in any runtime along with meta (chan_api may be part of meta)
+- lets say, foo.impl runs on nodejs, and bar runs on jvm
+  - bar.impl is abstract, it does not know or care that it runs or jvm
+  - but what it knows, is foo.spec and foo.chan_api
+  - it imports those as a dep (foo/meta)
+  - so bar.impl requires
+    - [ foo.chan_api ]
+    - [ foo.spec ]
+  - bar.impl has create-proc-ops, that gets channels as arguments
+    - some of those channels are foo's :   ::foo.spec/one| ::foo.spec/two|
+    - but: bar does not know or care, if foo is over socket or http or in the same runtime
+    - who does ? only bar.main, which creates channels and directs values from socket to that channel
+  - now: if bar.impl and foo.impl must run in the same runtime, and for whatever reason bar.impl needs foo.impl ref, bar.impl can (require [ foo.impl ]) explicitely
+  - so in 99% of the time, bar requires only channels
+    - [ foo.spec ]
+    - [ foo.chan_api ]
+  - and in 1% of the time (rare optimization case or whatever)
+    - [ foo.impl ]
+    - and foo isntance as passed as explicit arg to proc-ops (as it's not standard) and should be explicit
+- what foo.chan_api looks like
+
+```clojure
+
+foo.chan_api
+
+(defn connect 
+"Instead of instance, I take channels as first arg"
+[channels opts]
+(let [out| (chan 1)]
+(put! (::foo.spec/some-chan| channels) {::csp.sepc/op ::foo.spec/connect :xyz opts ::csp.spec/out| out| })
+out|
+)
+
+)
+
+bar.impl
+
+(go (loop []
+
+...
+(let [data (<! (foo.chan_api/connect {::foo.spec/some-data 123} )) ]
+
+)
+
+))
+
+
+
+```
+
+- this api can represent abstractions anywhwere, no clash of dependencies
+- so a jvm runtime can import foo/meta and use programmatic api, yet values are conveyed over channels
+- but code is a bit more concise, having functional api makes it more abstarct while 
+  - keeping async nature (it runtime-less, network-or-not independent)
+  - kepping meta (spec protocols chan_api) freely imporatble : meta can be importated by any dep, any runtime
