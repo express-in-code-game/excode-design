@@ -227,3 +227,14 @@ bar.impl
 - but code is a bit more concise, having functional api makes it more abstarct while 
   - keeping async nature (it runtime-less, network-or-not independent)
   - kepping meta (spec protocols chan_api) freely imporatble : meta can be importated by any dep, any runtime
+
+
+#### out| channel over network
+
+- lets take http example
+- bar.impl calls (<! (foo.chan_api/some-reqest channels data))
+- foo.chan_api adds out| channel
+- bar.main behind the scenes redirects values from foo's channels to http proc
+- http proc takes that value, does dissoc :out|, sends data-only value over network and immediately does (take! http-request (fn [resp-from-network] ( put! onto the original out| ))
+- on the other side, proc adds out| and immediately does (take! (fn [v] send-response-over-network))
+- so before leaving runtime, out| is dissoced, when response arrives it is put onto that out|
