@@ -238,3 +238,22 @@ bar.impl
 - http proc takes that value, does dissoc :out|, sends data-only value over network and immediately does (take! http-request (fn [resp-from-network] ( put! onto the original out| ))
 - on the other side, proc adds out| and immediately does (take! (fn [v] send-response-over-network))
 - so before leaving runtime, out| is dissoced, when response arrives it is put onto that out|
+
+#### closing channels: auto-close-on-first-take channel would be great
+
+- the operation initiator calling  should decide what out| is and when it should be closed
+- if its a system channel, it should not be closed at all, and you don't use <! blocking take
+- but if you (<! (foo.chan_api/some-op channels data out|)) you should also close the out|
+- what is preferable is this
+  - (<! (foo.chan_api/some-op channels data (one-time-autoclose-on-take-channel) ))
+  - so the proc cretes such a channel, and after first take completes, channel is disposed
+
+- channels will be garbage collected even if not closed ?
+  - https://stackoverflow.com/a/28889316/10589291
+
+#### yes, channels are just instances, if there are no puts/takes, they will be garbage collected
+
+- https://github.com/clojure/core.async/blob/master/src/main/clojure/clojure/core/async/impl/channels.clj
+- so closing indeed is to be used for meaning, but not for garbage colelction
+- closing will be used for close| or release|, or for merge etc.
+- when needed

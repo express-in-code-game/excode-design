@@ -107,24 +107,7 @@
   ;;
   )
 
-(defn create-channels
-  []
-  (let [extension-ops| (chan 10)
-        extension-ops|m (mult extension-ops|)
-        extension-ops|x (mix extension-ops|)
-        cmd| (chan 10)
-        cmd|m (mult cmd|)
-        tab-state| (chan (sliding-buffer 10))
-        tab-state|m (mult tab-state|)
-        input| (chan 10)]
-    {::extension.spec/cmd| cmd|
-     ::extension.spec/cmd|m cmd|m
-     ::extension.spec/tab-state| tab-state|
-     ::extension.spec/tab-state|m tab-state|m
-     ::extension.spec/input| input|
 
-     ::core.spec/extension-ops| extension-ops|
-     ::core.spec/extension-ops|m extension-ops|m}))
 
 
 (defn create-proc-ops

@@ -13,13 +13,6 @@
    [cljctools.proc.protocols :as proc.protocols]))
 
 
-(defn create-channels
-  []
-  (let [request| (chan 10)
-        request|m (mult request|)]
-    {::request| request|
-     ::request|m request|m}))
-
 (defn create-proc-ops
   [channels ctx opts]
   (let [{:keys [::request|m]} channels
