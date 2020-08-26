@@ -257,3 +257,55 @@ bar.impl
 - so closing indeed is to be used for meaning, but not for garbage colelction
 - closing will be used for close| or release|, or for merge etc.
 - when needed
+
+
+#### channel api (hub.chan, remote.chan): applying to remote->hub requests/operations
+
+- once again, what is channel api
+  - abstraction (namespace) consists of at least two deps
+    - project.foo/impl 
+      - contains
+        - project.foo.impl 
+        - project.foo.xyz.impl 
+        - ...
+      - imports
+        - project.foo.spec :as foo.spec
+        - project.foo.chan :as foo.chan
+      - uses
+        - ::foo.chan/ops| 
+        - (foo.chan/connect channels opts)
+        - ::foo.spec/host ::foo.spec/port ... 
+    - project.foo/meta
+      - contains 
+        - project.foo.spec
+        - project.foo.protocols
+        - project.foo.chan
+          - imports
+            - project.foo.spec :as foo.spec
+          - exports
+            - operations/values specs
+            - create-channels
+            - asynchronos funcitonal api for the implemtation process: (connect channels opts) (disconnect channels opts) ...
+- this allows to use the same functional asynchronous api both inside foo.impl and in any other part of the system, which talks to foo.impl
+- foo.chan makes code concise and explcit: 
+  - you can always do (<! (foo.chan/connect channels)) - one line, because connect will add out| if needed
+  - and functional api is explicit argumentwise
+- foo.chan absolute alloows you (in that rare case) use foo.api or foo.impl directly, synchornously, access an instance
+- but 99% percent of data flow in a project is asynchronous
+- even better: hub.chan allows remote.impl to talk to hub as if they are in the same runtime, without any code changes
+  - processes are mostly abstract,runtime-less
+  - go-blocks are designed for parallelsim (you can always (doseq [n (range 0 16)] (go (loop [] (<! same-channel for 16 procs for parallelsim ))
+  - this means, that when remote code calls (hub.chan/join-game channels opts) it is agnostic to where hub is, because hub is just channels
+  - what happens is, the remote's runtime (main)  will import hub.meta and own remote.meta and will call the same (hub.chan/create-channels as hub itself does)
+  - so on the server (clj), hub has called (hub.chan/create-channels) and on the remote (different runtime, cljs) main also called (hub.chan/create-channels)
+  - so both hub and remote have the same set of channels
+  - remote.impl (process) imports hub.chan and gets local cahnnels as agruments
+  - it uses (hub.chan/join-game) (hub.chan/leave-game) - the channel api provided by hub.meta
+  - since channels mirror actual hubs channels, remote's runtime (in the main) would pipeline values from local hubs channels to be converted to network requests and be put back on out| channels used by remote.impl (those out| are mostly created by hub.chan itself)
+  - so
+    - remote calls parking (<! (hub.api/join-game channels opts))
+    - the value was put! on local ::hub.chan/ops| 
+    - main has pipelined values from ::hub.chan/ops|  to be put on ::local/http| that makes request to hub
+    - before request, out| is dossoc, but used inside a callback  - when response arrives it is put on out|
+    - so remote used a hub's op over network, but abstractions are written as if they all work in one runtime via core.async abstraction
+
