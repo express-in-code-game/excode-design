@@ -1,5 +1,0 @@
-{:paths ["src"]
- :deps {github.com.cljctools/cljc {:local/root "../../../cljctools/cljc"}
-        github.com.DeathStarGame/deathstar.ltee.multiplayer.hub.meta {:local/root "../meta"}
-        github.com.DeathStarGame/deathstar.ltee.multiplayer.hub.store.mem {:local/root "../../hub-store/impl/mem"}
-        github.com.DeathStarGame/deathstar.ltee.gamestate.impl {:local/root "../../../gamestate/impl"}}}

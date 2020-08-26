@@ -7,9 +7,7 @@
                                      pipeline pipeline-async]]
    [clojure.set :refer [subset?]]
    [clojure.spec.alpha :as s]
-   [clojure.test.check.generators :as gen]
-
-   [deathstar.core.protocols :as p]))
+   [clojure.test.check.generators :as gen]))
 
 (s/def ::x int?)
 (s/def ::y int?)
@@ -49,11 +47,11 @@
   [channels ctx]
   (let []
     (go (loop []))
-    (reify
-      p/Scenario
-      (-foo [_])
-      p/Release
-      (-release [_]))))
+    #_(reify
+        p/Scenario
+        (-foo [_])
+        p/Release
+        (-release [_]))))
 
 (defn create-proc-simulation
   [channels ctx]
@@ -66,12 +64,12 @@
               ::move
               (swap-state state v)))
           (recur)))
-    (reify
-      p/Simulation
-      (-bar [_])
-      p/Release
-      (-release [_]))))
+    #_(reify
+        p/Simulation
+        (-bar [_])
+        p/Release
+        (-release [_]))))
 
-(defn release
-  [_]
-  (p/-release _))
+#_(defn release
+    [_]
+    (p/-release _))

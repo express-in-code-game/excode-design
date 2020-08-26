@@ -10,8 +10,8 @@
    [reagent.core :as r]
    [reagent.dom :as rdom]
 
-   [deathstar.extension.spec :as spec]
-   [deathstar.multiplayer.remote.spec :as remote.spec]
+   [deathstar.extension.spec :as extension.spec]
+   [deathstar.hub.remote.spec :as hub.remote.spec]
    
    ["antd/lib/layout" :default AntLayout]
    ["antd/lib/menu" :default AntMenu]
@@ -43,6 +43,7 @@
 (def ant-menu-item (r/adapt-react-class (.-Item AntMenu)))
 (def ant-icon (r/adapt-react-class AntIcon))
 (def ant-button (r/adapt-react-class AntButton))
+(def ant-button-group (r/adapt-react-class (.-Group AntButton)))
 (def ant-list (r/adapt-react-class AntList))
 (def ant-input (r/adapt-react-class AntInput))
 (def ant-input-password (r/adapt-react-class (.-Password AntInput)))
@@ -59,50 +60,17 @@
   [data]
   (r/atom data))
 
-(defn- render-ui
-  [channels ctx {:keys [id] :or {id "ui"}}]
-  (rdom/render [rc-main channels ctx]  (.getElementById js/document id)))
-
-(defn create-channels
-  []
-  (let [ops| (chan 10)
-        input| (chan (sliding-buffer 10))
-        input|m (mult input|)]
-    {::ops| ops|
-     ::input| input|
-     ::input|m input|m}))
-
-(defn create-proc-ops
-  [channels ctx]
-  (let [{:keys [::ops|]} channels
-        {:keys [state]} ctx
-        input|t (tap input|m (chan (sliding-buffer 10)))]
-    (go
-      (loop []
-        (when-let [[v port] (alts! [ops| input|t])]
-          (condp = port
-            ops| (condp = (:op v)
-
-                   ::render
-                   (render-ui channels ctx {:id (:id v)}))
-            input|t (condp = (:op v)
-
-                      ::some-op
-                      (do nil))))
-        (recur)))))
-
-(defn render
-  [channels dom-element-id]
-  (put! (::ops| channels) {:op ::render :id dom-element-id}))
-
+(defn render-ui
+  [channels state {:keys [id] :or {id "ui"}}]
+  (rdom/render [rc-main channels state]  (.getElementById js/document id)))
 
 (def rc-tab-connections-columns
   [{:title "Settings file"
     :key :settings
-    :dataIndex (str ::spec/settings-filepath)}
+    :dataIndex (str ::extension.spec/settings-filepath)}
    {:title "Status"
     :key :status
-    :dataIndex (str ::remote.spec/connection-status)}
+    :dataIndex (str ::hub.remote.spec/connection-status)}
    {:title "Actions"
     :key "action"
     :width "48px"
@@ -113,25 +81,21 @@
                 [ant-button
                  {;:icon "plus"
                   :type "primary"
-                  :on-click #(rf/dispatch
-                              [::evs/select-feature
-                               rec])}
+                  :on-click #(println ::connect-button-click)}
                  "connect"]
                 [ant-button
                  {;:icon "plus"
                   :type "primary"
 
-                  :on-click #(rf/dispatch
-                              [::evs/select-feature
-                               rec])}
+                  :on-click #(println ::disconnect-button-click)}
                  "disconnect"]]))}
    #_{:title ""
       :key "empty"}])
 
 (defn rc-tab-connections
-  [channels ctx]
-  (r/with-let [data (r/cursor (ctx :state) [:data])
-               counter (r/cursor (ctx :state) [:counter])]
+  [channels state]
+  (r/with-let [data (r/cursor state [:data])
+               counter (r/cursor state [:counter])]
     [ant-table {:show-header true
                 :size "small"
                 :row-key :name
@@ -146,28 +110,30 @@
                                  (println ks))}}]))
 
 (defn rc-tab-state
-  [channels ctx]
-  (r/with-let [data (r/cursor (ctx :state) [:data])
-               counter (r/cursor (ctx :state) [:counter])]
+  [channels state]
+  (r/with-let [data (r/cursor state [:data])
+               counter (r/cursor state [:counter])]
     [:<>
      [:pre {} (with-out-str (pprint @state))]]))
 
 (defn rc-main
-  [{:keys [input|] :as channels} ctx]
-  (r/with-let [data (r/cursor (ctx :state) [:data])
-               counter (r/cursor (ctx :state) [:counter])]
+  [{:keys [input|] :as channels} state]
+  (r/with-let [data (r/cursor state [:data])
+               counter (r/cursor state [:counter])]
     (if (empty? @state)
 
       [:div "loading..."]
 
-      [:<>
+      [:pre {} (with-out-str (pprint @state))]
+      
+      #_[:<>
        [ant-tabs {:defaultActiveKey :connections}
         [ant-tab-pane {:tab "Connections" :key :connections}
-         [rc-tab-connections channels ctx]]
+         [rc-tab-connections channels state]]
         [ant-tab-pane {:tab "Multiplayer" :key :multiplayer}
          [:div  ::multiplayer]]
         [ant-tab-pane {:tab "State" :key :state}
-         [rc-tab-state channels ctx]]]]
+         [rc-tab-state channels state]]]]
       #_[:<>
          #_[:div {} "rc-main"]
          #_[:button {:on-click (fn [e]
@@ -188,5 +154,4 @@
           (map-indexed (fn [i v]
                          ^{:key i} [:pre {} (with-out-str (pprint v))])
                        @data)]])))
-
 

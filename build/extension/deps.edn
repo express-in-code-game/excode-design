@@ -1,8 +1,8 @@
 {:paths ["src" "resources"]
  :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
              "clojars" {:url "https://clojars.org/repo/"}}
- :deps {github.com/DeathStarGame.deathstar.ltee.extension {:local/root "../../src/extension"}
-        github.com/DeathStarGame.deathstar.ltee.gui {:local/root "../../src/gui"}}
+ :deps {github.com/DeathStarGame.deathstar.ltee.extension {:local/root "../../src/extension/impl"}
+        github.com/DeathStarGame.deathstar.ltee.extension.gui {:local/root "../../src/extension/gui"}}
  :aliases {:dev {:extra-deps {thheller/shadow-cljs {:mvn/version "2.10.21"
                                                     :exclusions [nrepl
                                                                  cider/piggieback

@@ -3,7 +3,7 @@
          :port 8899}
  :http {:port 8000
         :host "0.0.0.0"}
- :builds {:deathstar-extension {;;       :target :node-library
+ :builds {:extension {;;       :target :node-library
                                 :target :node-script
                                 :main deathstar.extension.main/main
                                 :exports-var deathstar.extension.main/exports
@@ -29,30 +29,30 @@
                                            :devtools-url "http://localhost:8000"
                                            :after-load deathstar.extension.main/reload}}
 
-          :deathstar-bootstrap {:target :bootstrap
+          :extension-bootstrap {:target :bootstrap
                                 :output-dir "resources/out/deathstar-bootstrap"
                                 :exclude #{cljs.js}
                                 :compiler-options {:infer-externs   false  #_:auto}
                                 :entries [cljs.js deathstar.extension.main  cljctools.vscode.api clojure.core.async]
                                 :macros []}
 
-          :deathstar-gui {:target :browser
-                          :output-dir "resources/out/deathstar-gui"
-                          :asset-path "/out/deathstar-gui"
+          :extension-gui {:target :browser
+                          :output-dir "resources/out/deathstar-extension-gui"
+                          :asset-path "/out/deathstar-extension-gui"
                           :module-loader true
-                          :modules {:main {:entries [deathstar.gui.main]}}
+                          :modules {:main {:entries [deathstar.extension.gui.main]}}
                           :compiler-options {:infer-externs   false  #_:auto
                                              :closure-warnings {:global-this :off}
                                              :closure-defines  {"deathstar.gui_some_val_"         true}}
-                          :devtools {:repl-init-ns deathstar.gui.main
+                          :devtools {:repl-init-ns deathstar.extension.gui.main
                                      :repl-pprint true
                                      :autobuild true
                                      :devtools-url "http://localhost:8000"
                                      :http-root  "resources"
                                      :http-port  8002}}
 
-          :deathstar-bootstrap-gui {:target :bootstrap
-                                    :output-dir "resources/out/deathstar-gui"
+          :extension-gui-bootstrap {:target :bootstrap
+                                    :output-dir "resources/out/deathstar-extension-gui"
                                     :exclude #{cljs.js}
                                     :compiler-options {:infer-externs   false  #_:auto}
                                     :entries [cljs.js deathstar.tabapp.solution-space.main clojure.core.async]

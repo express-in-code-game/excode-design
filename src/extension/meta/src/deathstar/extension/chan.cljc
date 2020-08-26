@@ -1,137 +1,145 @@
-
-(ns deathstar.extension.chan-api
-  #?(:cljs (:require-macros [deathstar.extension.chan-api]))
+(ns deathstar.extension.chan
+  #?(:cljs (:require-macros [deathstar.extension.chan]))
   (:require
+   [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
+                                     pub sub unsub mult tap untap mix admix unmix
+                                     timeout to-chan  sliding-buffer dropping-buffer
+                                     pipeline pipeline-async]]
    [clojure.spec.alpha :as s]
-   [clojure.test.check.generators :as gen]
-
-   [deathstar.multiplayer.spec :as multiplayer.spec]
-   [deathstar.multiplayer.remote.spec :as remote.spec]))
+   [cljctools.csp.op.spec :as op.spec]
+   [deathstar.extension.spec :as extension.spec]))
 
 (do (clojure.spec.alpha/check-asserts true))
 
-(s/def ::update-gui-state (s/keys ::req []))
-
-(defn create-channels-http-chan
-  []
-  (let [request| (chan 10)
-        request|m (mult request|)]
-    {::request| request|
-     ::request|m request|m}))
+(defmulti ^{:private true} op* op.spec/op-spec-dispatch-fn)
+(s/def ::op (s/multi-spec op* op.spec/op-spec-retag-fn))
+(defmulti op op.spec/op-dispatch-fn)
 
 (defn create-channels
   []
-  (let [extension-ops| (chan 10)
-        extension-ops|m (mult extension-ops|)
-        extension-ops|x (mix extension-ops|)
-        cmd| (chan 10)
-        cmd|m (mult cmd|)
-        tab-state| (chan (sliding-buffer 10))
-        tab-state|m (mult tab-state|)
-        input| (chan 10)]
-    {::extension.spec/cmd| cmd|
-     ::extension.spec/cmd|m cmd|m
-     ::extension.spec/tab-state| tab-state|
-     ::extension.spec/tab-state|m tab-state|m
-     ::extension.spec/input| input|
+  (let [ops| (chan 10)
+        ops|m (mult ops|)
+        ops|x (mix ops|)]
+    {::ops| ops|
+     ::ops|m ops|m
+     ::ops|x ops|x}))
 
-     ::core.spec/extension-ops| extension-ops|
-     ::core.spec/extension-ops|m extension-ops|m}))
+(defmethod op*
+  {::op.spec/op-key ::update-settings-filepaths
+   ::op.spec/op-type ::op.spec/request} [_]
+  (s/keys :req [::op.spec/out|]
+
+(defmethod op
+  {::op.spec/op-key ::update-settings-filepaths
+   ::op.spec/op-type ::op.spec/request}
+  ([op-meta channels]
+   (op op-meta channels (chan 1)))
+  ([op-meta channels out|]
+   (put! (::ops| channels)
+         (merge op-meta
+                {::op.spec/out| out|}))
+   out|))
+
+
+(defmethod op*
+  {::op.spec/op-key ::update-settings-filepaths
+   ::op.spec/op-type :response} [_]
+  (s/keys :req [::extension.spec/settings-filepaths]))
+
+(defmethod op
+  {::op.spec/op-key ::update-settings-filepaths
+   ::op.spec/op-type ::op.spec/response}
+  [op-meta out| settings-filepaths]
+  (put! out|
+        (merge op-meta
+               {::extension.spec/settings-filepaths settings-filepaths})))
+
+(defmethod op*
+  {::op.spec/op-key ::apply-settings-file
+   ::op.spec/op-type ::op.spec/request} [_]
+  (s/keys :req [::extension.spec/filepath ::op.spec/out|]))
+
+(defmethod op
+  {::op.spec/op-key ::apply-settings-file
+   ::op.spec/op-type ::op.spec/request}
+  ([op-meta channels filepath]
+   (op op-meta channels filepath (chan 1)))
+  ([op-meta channels filepath out|]
+   (put! (::ops| channels) (merge op-meta
+                                  {::extension.spec/filepath filepath
+                                   ::op.spec/out| out|}))
+   out|))
+
+(defmethod op*
+  {::op.spec/op-key ::apply-settings-file
+   ::op.spec/op-type ::op.spec/response} [_]
+  (s/keys :req []
+          :opt []))
+
+(defmethod op
+  {::op.spec/op-key ::apply-settings-file
+   ::op.spec/op-type ::op.spec/response}
+  [op-meta out|]
+  (put! out| op-meta))
 
 (comment
 
+  (def ^:const meta-keys [:op :op-type])
 
-  (def ^:const OP :op)
-  (s/def ::out| any?)
+  (defmulti ^:private op*
+    (fn [value] (select-keys value meta-keys)))
 
-  (def op-specs
-    {::update-gui-state (s/keys ::req-un [::op])})
+  (defmethod op*
+    {:op ::update-settings-filepaths
+     :op-type :request}
+    [_]
+    (s/keys :req [::op.spec/out|]))
 
-  (def ch-specs
-    {::ops| #{}
-     ::input| #{} ; inputs come from gui are same as cmd| - same set of operations
-     })
+  (defmethod op*
+    {:op ::update-settings-filepaths
+     :op-type :response}
+    [_]
+    (s/keys :req [::extension.spec/settings-filepaths]))
 
-  (def op-keys (set (keys op-specs)))
-  (def ch-keys (set (keys ch-specs)))
+; https://clojuredocs.org/clojure.spec.alpha/multi-spec
+; generated-value will be {:op ::something ::extension.spec/some-data 123}
+; dispatch-tag will be :request or :resonse or :something or {:op ::some-op :op-type :request} ?
+; dispatch-tag returns the dispatching value of a multimehtod picked during generation? 
 
-  (s/def ::op op-keys)
+  (s/def ::op (s/multi-spec op* (fn [generated-value dispatch-tag])))
 
-  (s/def ::ch-exists ch-keys)
-  (s/def ::op-exists (fn [v] (op-keys (if (keyword? v) v (OP v)))))
-  (s/def ::ch-op-exists (s/cat :ch ::ch-exists :op ::op-exists))
+  ;https://clojure.org/reference/multimethods
+  ; Quote: Note that the first test of isa? is =, so exact matches work.
+  ; (isa? {::a 1} {::a 1}) => true
 
-  (defmacro op
-    [chkey opkey]
-    (s/assert ::ch-exists  chkey)
-    (s/assert ::op-exists  opkey)
-    `~opkey)
+  (condp = (select-keys value [:op :op-type])
 
-  (defmacro vl
-    [chkey v]
-    (s/assert ::ch-exists  chkey)
-    `~v)
+    {:op ::update-settings-filepaths
+     :op-type :request}
+    (do nil)
 
-  (def cmd-ids #{"deathstar.open"
-                 "deathstar.ping"
-                 "deathstar.gui.open"
-                 "deathstar.open-resource-space-tab"
-                 "deathstar.solution-tab-eval"})
+    {:op :update-settings-filepaths
+     :op-type :response}
+    (do nil))
 
-  (s/def ::cmd-ids cmd-ids)
 
-  (defmacro cmd-id
-    [id]
-    (s/assert ::cmd-ids id)
-    `~id)
+  (op {:op ::update-settings-filepaths
+       :op-type :request}
+      channels opts)
 
-  #_(defmacro assert-op
-      [chkey opkey]
-      `(do
-         (s/assert ::ch-exists  ~chkey)
-         (s/assert ::op-exists  ~opkey)
-         #_(when-not (opkeys ~opkey)
-             (throw (Exception. "no such op")))))
+  (defmulti op
+    (fn [value-meta & args] (select-keys value-meta meta-keys)))
 
-;; (defmulti op-type OP)
+  (defmethod op
+    {:op ::apply-settings-file
+     :op-type :request}
+    ([vmeta channels filepath]
+     (op vmeta channels filepath (chan 1)))
+    ([vmeta channels filepath out|]
+     (put! (::ops| channels) (merge vmeta
+                                    {::filepath filepath
+                                     :out| out|}))
+     out|))
 
-;; (defmethod op-type :app.main/mount
-;;   [vl]
-;;   (s/keys :req [::op ::out|]))
-
-;; (s/def ::op (s/multi-spec op-type OP))
-;; 
-
-  #_(s/def ::ch-op-exists (fn [{:keys [channel-key val-map op-key]}]
-                            ((channel-key channels) (or op-key (OP val-map)))))
-  #_(s/def ::val-map-valid (fn [{:keys [channel-key val-map]}]
-                             (s/valid? ((OP val-map) ops) val-map)))
-
-  #_(s/valid? (:project.app.main/mount ops) {:op :project.app.main/mount})
-  #_(gen/generate (s/gen (:project.app.main/mount ops)))
-
-  #_(defmacro op
-      [channel-key op-key]
-      `~op-key)
-
-  #_(s/fdef op
-      :args (s/and
-             (s/cat :channel-key ::channel-exists
-                    :op-key ::op-exists)
-             ::channel-op-exists)
-      :ret any?)
-
-  #_(defmacro vl
-      [channel-key val-map]
-      `~val-map)
-
-  #_(s/fdef vl
-      :args (s/and
-             (s/cat :channel-key ::channel-exists
-                    :val-map ::op-exists)
-             ::channel-op-exists
-             ::val-map-valid)
-      :ret any?)
-
-  ;;
+;;
   )

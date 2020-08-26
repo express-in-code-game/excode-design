@@ -14,25 +14,28 @@ shadow(){
 }
 
 server(){
-    shadow -A:core:dev server
+    shadow -A:dev server
     # yarn server
 }
 
 dev(){
+    # npm i
+    # shadow -A:dev watch \
+    # :extension \
+    # :extension-gui
+
     npm i
-    shadow -A:core:dev watch \
-    :deathstar-extension \
-    :deathstar-bootstrap \
-    :deathstar-gui
+    shadow -A:dev watch \
+    :extension
 }
 
 tree(){
-    clojure -A:core:dev:optimized -Stree
+    clojure -A:dev:optimized -Stree
 }
 
 compile(){
     npm i
-    shadow -A:core:dev compile  :deathstar-extension :deathstar-bootstrap
+    shadow -A:dev compile  :extension :extension-bootstrap
 }
 
 dock() {

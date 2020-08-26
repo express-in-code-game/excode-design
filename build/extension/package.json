@@ -17,6 +17,7 @@
 		"postinstall": "node ./node_modules/vscode/bin/install"
 	},
 	"dependencies": {
+		"antd": "4.6.1",
 		"bencode": "2.0.1",
 		"nrepl-client": "0.3.0",
 		"react": "16.13.0",
@@ -40,8 +41,8 @@
 				"title": "deathstar.ping"
 			},
 			{
-				"command": "deathstar.gui.open",
-				"title": "deathstar.gui.open"
+				"command": "deathstar.extension-gui.open",
+				"title": "deathstar.extension-gui.open"
 			},
 			{
 				"command": "deathstar.solution-tab-eval",
@@ -58,7 +59,7 @@
 				"key": "ctrl+alt+g ctrl+alt+p"
 			},
 			{
-				"command": "deathstar.gui.open",
+				"command": "deathstar.extension-gui.open",
 				"key": "ctrl+alt+g ctrl+alt+s"
 			},
 			{

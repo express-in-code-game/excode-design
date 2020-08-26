@@ -8,19 +8,23 @@
                               ;;  org.clojure/core.async {:mvn/version "1.1.587"}
         andare {:mvn/version "1.1.587"}
         reagent {:mvn/version "0.10.0"}
-        cljs-http {:mvn/version "0.1.46"}
+        cljs-http {:mvn/version "0.1.46" :exclusions [org.clojure/core.async
+                                                      com.cognitect/transit-cljs
+                                                      org.clojure/clojurescript
+                                                      org.clojure/clojure]}
 
         com.cognitect/transit-cljs {:mvn/version "0.8.264"}
 
-        github.com.DeathStarGame/deathstar.ltee.core {:local/root "../core"}
+        github.com.cljctools/cljc {:local/root "../../../../cljctools/cljc"}
+        github.com.cljctools/csp {:local/root "../../../../cljctools/csp"}
 
-        github.com.cljctools/proc {:local/root "../../../cljctools/proc"}
-        
-        github.com.cljctools/vscode {:local/root "../../../cljctools/vscode"}
-        github.com.cljctools/paredit {:local/root "../../../cljctools/paredit"}
-        github.com.cljctools/self-hosted.compiler {:local/root "../../../cljctools/self-hosted/compiler/shadow"}
+        github.com.cljctools/vscode {:local/root "../../../../cljctools/vscode/impl"}
+       ;;  github.com.cljctools/paredit {:local/root "../../../../cljctools/paredit"}
+       ;;  github.com.cljctools/self-hosted.compiler {:local/root "../../../../cljctools/self-hosted/compiler/shadow"}
        ;  github.com.cljctools/cljs-cache {:local/root "../../../cljctools/self-hosted/compiler/cljs"}
-        github.com.cljctools/net.socket {:local/root "../../../cljctools/net/socket/nodejs-ws"}
-        github.com.cljctools/self-hosted {:local/root "../../../cljctools/self-hosted/core"}
-
-        github.com.DeathStarGame/deathstar.ltee.multiplayer.gui.meta {:local/root "../gui/meta"}}}
+        github.com.cljctools/net.socket {:local/root "../../../../cljctools/net/socket/impl/nodejs-ws"}
+       ;;  github.com.cljctools/self-hosted {:local/root "../../../../cljctools/self-hosted/core"}
+        github.com.DeathStarGame/deathstar.ltee.extension.meta {:local/root "../meta"}
+        github.com.DeathStarGame/deathstar.ltee.hub.meta {:local/root "../../../src/hub/meta"}
+        github.com.DeathStarGame/deathstar.ltee.meta {:local/root "../../../src/meta"}
+        github.com.DeathStarGame/deathstar.ltee.hub.remote.meta {:local/root "../../../src/hub/remote/meta"}}}

@@ -9,55 +9,72 @@
    [cljs.reader :refer [read-string]]
    [clojure.pprint :refer [pprint]]
 
-   [cljctools.csp.spec ::as csp.spec]
-   [cljctools.vscode.api :as host.api]
-   [deathstar.extension.spec :as spec]
-   [deathstar.multiplayer.spec :as multiplayer.spec]
-   [cljctools.net.socket.api :as ws.api]
-   [deathstar.extension.http-chan :as http-chan.api]
-   [deathstar.multiplayer.remote.api :as remote.api]
-
-
-   [cljctools.csp.spec ::as csp.spec]
-
-   [cljctools.self-hosted.compiler :as compiler.api]
-   [cljctools.self-hosted.api :as self-hosted.api]
-
    [cljctools.vscode.spec :as host.spec]
-   [cljctools.vscode.api :as host.api]
+   [cljctools.vscode.chan :as host.chan]
+   [cljctools.vscode.impl :as host.impl]
 
-   [cljctools.net.core.spec :as net.spec]
+   [cljctools.net.socket.spec :as socket.spec]
+   [cljctools.net.socket.chan :as socket.chan]
+   [cljctools.net.socket.impl :as socket.impl]
+   
+   [cljctools.csp.op.spec :as op.spec]
+
+   [deathstar.extension.http-chan.impl :as http-chan.impl]
+   [deathstar.extension.http-chan.chan :as http-chan.chan]
+
+   [deathstar.hub.remote.spec :as hub.remote.spec]
+  ;;  [deathstar.hub.remote.chan :as hub.remote.chan]
+  ;;  [deathstar.hub.remote.impl :as hub.remote.impl]
+   
+   [deathstar.user.spec :as user.spec]
+   [deathstar.hub.chan :as hub.chan]
+
    [deathstar.extension.spec :as extension.spec]
-   [deathstar.core.spec :as core.spec]
+   [deathstar.extension.chan :as extension.chan]
+   
+   [deathstar.extension.gui.chan :as extension.gui.chan]
+
    #_[pad.cljsjs1]
    #_[pad.selfhost1]))
 
-(def state (atom {::spec/settings (apply merge
-                                         [#:deathstar.extension.spec{:nrepl-port 7071
-                                                                     :server-port 8080
-                                                                     :server-host "localhost"
-                                                                     :http-path "/api"}
-                                          #:deathstar.multiplayer.spec{:username "Player 1"}])
-                  ::settings-filepaths []
-                  ::remote.spec/status nil
-                  ::spec/gui-tab nil}))
+(def state (atom
+            (apply merge
+                   [#::extension.spec{:nrepl-port 7071
+                                      :server-port 8080
+                                      :server-host "localhost"
+                                      :http-path "/api"
+                                      :settings-filepaths []
+                                      :deathstar-dir "~/.deathstar"}
+                    #::user.spec{:username "Player 1"}
+                    #::hub.remote.spec{:status nil}
+                    #::{:gui-tab nil}
+                    ])))
 
-(def channels (merge
-               (host.api/create-channels)
-               (ops.api/create-channels)
-               (ws.api/create-channels)
-               (http-chan.api/create-channels)
-               (remote.api/create-channels)))
+(def channels (let [chs (merge
+                         (host.chan/create-channels)
+                         (extension.chan/create-channels)
+                         (extension.gui.chan/create-channels)
+                         (socket.chan/create-channels)
+                         (http-chan.chan/create-channels)
+                         #_(hub.remote.chan/create-channels))]
+                (merge chs
+                       {::extension.gui.chan/ops| (::host.chan/tab-send| chs)
+                        ::extension.gui.chan/ops|m (::host.chan/tab-send|m chs)})))
 
-#_(defn ^:export main [& args]
-    (println ::-main))
+(defn ^:export main [& args]
+  (println ::main))
 
 (def exports #js {:activate (fn [context]
                               (println ::activate)
-                              (host.api/activate channels context))
+                              (host.chan/op
+                               {::op.spec/op-key ::host.chan/extension-activate}
+                               channels
+                               context))
                   :deactivate (fn []
                                 (println ::deactivate)
-                                (host.api/deactivate channels context))})
+                                (host.chan/op
+                                 {::op.spec/op-key ::host.chan/extension-deactivate}
+                                 channels))})
 (when (exists? js/module)
   (set! js/module.exports exports))
 
@@ -66,133 +83,141 @@
     (.log js/console "Reloading...")
     (js-delete js/require.cache (js/require.resolve "./main")))
 
-(def api (let [api (atom {})
-               host (host.api/create-proc-host channels nil nil)
-               log (ops.api/create-proc-log channels state api)
-               http-chan (http-chan.api/create-proc-ops channels state api)
-               remote (remote.api/create-proc-ops (merge
-                                                   {}
-                                                   channels) state api)]
-           (reset! api
-                   {::host.api/host host
-                    ::http-chan.api/http-chan http-chan
-                    ::remote.api/remote remote})))
+(def host (host.impl/create-proc-ops channels {}))
 
-(def host (host.api/create-proc-host channels {}))
+(def http-chan (http-chan.impl/create-proc-ops channels {}))
 
+#_(def remote (hub.remote.impl/create-proc-ops channels state))
 
-#_(def ops (ops.api/create-proc-ops
-          (merge
-           {:http| (::http-chan.api/http| channels)}
-           channels)
-          state))
-
-#_(def log (ops.api/create-proc-log channels {}))
-
-(def http-chan (http-chan.api/create-proc-ops channels state))
-
-(def remote (remote.api/create-proc-ops (merge
-                                         {}
-                                         channels) state))
-
-(def net-ws (ws.api/create-proc-ws channels state))
+(def socket (socket.impl/create-proc-ops channels {}))
 
 (comment
 
-  (reduce (fn [ag x] (assoc ag x x)) {} #{1 2 3})
+  (socket.chan/op
+   {::op.spec/op-key ::socket.chan/connect}
+   channels
+   {::socket.spec/url "ws://localhost:8080/ws"})
 
-  (ws.api/send-data net-ws {:a 1})
-  (ws.api/connected? net-ws)
+  (socket.chan/op
+   {::op.spec/op-key ::socket.chan/disconnect}
+   channels)
 
   ;;
   )
 
-
-
-
 (defn create-proc-ops
-  [channels state apis]
-  (let [{:keys [::core.spec/extension-ops| ::core.spec/extension-ops|m
-                :http| ::extension.spec/input| ::extension.spec/evt|
-                ::extension.spec/cmd| ::extension.spec/cmd|m ::extension.spec/tab-state|]
-         socket|m ::net.spec/recv|m
-         host-evt|m ::host.spec/evt|m} channels
-        extension-ops|t (tap extension-ops|m (chan 10))
+  [channels state]
+  (let [{:keys [::extension.chan/ops|
+                ::extension.chan/ops|m
+                ::http-chan.chan/request|
+                ::host.chan/cmd|m
+                ::host.chan/tab-evt|m]
+         socket-recv|m ::socket.chan/recv|m
+         host-evt|m ::host.chan/evt|m} channels
+        ops|t (tap ops|m (chan 10))
         cmd|t (tap cmd|m (chan 10))
-        socket|t (tap socket|m (chan 10))
-        relevant-evt? (fn [v]  ((host.spec/ops #{::host.spec/extension-activate ::host.spec/extension-deactivate}) (::csp.spec/op v)))
+        socket-recv|t (tap socket-recv|m (chan 10))
+        relevant-evt? (fn [v]  (#{::host.chan/extension-activate ::host.chan/extension-deactivate} (::op.spec/op-key v)))
         host-evt|t (tap host-evt|m (chan 10 (comp (filter (every-pred relevant-evt?)))))]
     (go
       (loop []
-        (when-let [[v port] (alts! [extension-ops|t host-evt|t cmd|t])]
+        (when-let [[v port] (alts! [ops|t host-evt|t cmd|t socket-recv|t])]
           (condp = port
-            host-evt|t (condp = (::csp.spec/op v)
+            host-evt|t
+            (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
+              {::op.spec/op-key ::host.chan/extension-activate}
+              (let []
+                (println ::extension-activate)
+                (host.chan/op
+                 {::op.spec/op-key ::host.chan/show-info-msg}
+                 channels
+                 "Death Star activating")
+                (host.chan/op
+                 {::op.spec/op-key ::host.chan/register-commands}
+                 channels
+                 extension.spec/cmd-ids)))
 
-                         (host.spec/op
-                          ::host.spec/evt|
-                          ::host.spec/extension-activate)
-                         (let []
-                           (println ::host.spec/extension-activate)
-                           (host.api/show-info-msg host "Death Star activating")
-                           (host.api/register-commands host {::extension.spec/cmd-ids spec/cmd-ids
-                                                             ::host.spec/cmd| cmd|})))
+            ops|t
+            (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
 
-            extension-ops|t (condp = (::csp.spec/op v)
-                              ::extension.spec/some-op (do nil))
-            socket|t (let []
-                       (println "data from socket" v))
-            input| (condp = (::csp.spec/op v)
+              {::op.spec/op-key ::extension.chan/update-settings-filepaths
+               ::op.spec/op-type ::op.spec/request}
+              (let [{:keys [::extension.spec/deathstar-dir ::op.spec/out|]} @state
+                    {:as resp :keys [::host.spec/filenames]} (<! (host.chan/op
+                                                                  {::op.spec/op-key ::host.chan/read-dir
+                                                                   ::op.spec/op-type ::op.spec/request}
+                                                                  channels deathstar-dir))]
+                (swap! state assoc ::extension.spec/settings-filepaths filenames)
+                (extension.chan/op
+                 {::op.spec/op-key ::extension.chan/update-settings-filepaths
+                  ::op.spec/op-type ::op.spec/response}
+                 out| filenames))
 
-                     ::extension.spec/list-configs
-                     (let [{:keys [::extension.spec/settings ::extension.spec/deathstar-dir]} @ctx
-                           {:keys [out|]} v
-                           filenames (<! (host.api/readdir deathstar-dir))
-                           resp (merge v {::csp.spec/op-status ::csp.spec/complete
-                                          ::extension.spec/settings-filepaths filenames})]
-                       (put! out| resp))
+              {::op.spec/op-key ::extension.chan/apply-settings-file
+               ::op.spec/op-type ::op.spec/request}
+              (let [{:keys [::extension.spec/filepath ::op.spec/out|]} v
+                    {:as resp :keys [::host.spec/file-content]} (<! (host.chan/op
+                                                                     {::op.spec/op-key ::extension.chan/read-file
+                                                                      ::op.spec/op-type ::op.spec/request}
+                                                                     channels filepath))
+                    settings (read-string file-content)]
+                #_(swap! state merge (apply merge settings))
+                #_(<! (ws.api/disconnect net-ws))
+                #_(<! (remote.api/disconnect remote))
+                #_(<! (ws.api/connect net-ws))
+                #_(<! (remote.api/connect remote))
+                (extension.chan/op
+                 {::op.spec/op-key ::extension.chan/apply-settings-file
+                  ::op.spec/op-type ::op.spec/response}
+                 out| settings)))
 
-                     ::extension.spec/apply-config
-                     (let [{:keys [::extension.spec/settings ::extension.spec/deathstar-dir]} @ctx
-                           {:keys [filepath out|]} v
-                           settings (<! (host.api/readfile filepath))
-                           resp (merge v {::csp.spec/op-status ::csp.spec/complete
-                                          ::extension.spec/settings settings})]
-                       (println ::apply-config)
-                       (swap! ctx assoc ::spec/settings (apply merge settings))
-                       (<! (ws.api/disconnect net-ws))
-                       (<! (remote.api/disconnect remote))
-                       (<! (ws.api/connect net-ws))
-                       (<! (remote.api/connect remote))
-                       (put! out| resp)))
+            socket-recv|t
+            (let []
+              (println "data from socket" v))
 
-            cmd|t (condp = (::host.spec/cmd-id v)
+            cmd|t
+            (condp = (::host.spec/cmd-id v)
 
-                    (spec/cmd-id "deathstar.open")
-                    (host.api/show-info-msg host "deathstar.open")
+              (extension.spec/assert-cmd-id "deathstar.open")
+              (host.chan/op
+               {::op.spec/op-key ::host.chan/show-info-msg}
+               channels
+               "deathstar.open")
 
-                    (spec/cmd-id "deathstar.ping")
-                    (host.api/show-info-msg host "deathstar.ping")
+              (extension.spec/assert-cmd-id "deathstar.ping")
+              (host.chan/op
+               {::op.spec/op-key ::host.chan/show-info-msg}
+               channels
+               "deathstar.ping")
 
-                    (spec/cmd-id "deathstar.gui.open")
-                    (let [tab (host.api/create-tab
-                               host
-                               {::host.spec/tab-id "gui-tab"
-                                ::host.spec/tab-title "Death Star"
-                                ::host.spec/tab-script-path "resources/out/deathstar-gui/main.js"
-                                ::host.spec/tab-html-path "resources/gui.html"
-                                ::host.spec/tab-script-replace "./out/deathstar-gui/main.js"
-                                ::host.spec/tab-msg| extension-ops|
-                                ::host.spec/tab-state| tab-state|})]
-                      (swap! state assoc ::extension.spec/gui-tab tab))
+              (extension.spec/assert-cmd-id "deathstar.extension-gui.open")
+              (let [tab-create-opts {::host.spec/tab-id "gui-tab"
+                                     ::host.spec/tab-title "Death Star"
+                                     ::host.spec/tab-script-filepath "resources/out/deathstar-extension-gui/main.js"
+                                     ::host.spec/tab-html-filepath "resources/extension-gui.html"
+                                     ::host.spec/tab-script-replace "./out/deathstar-extension-gui/main.js"}]
+                (host.chan/op
+                 {::op.spec/op-key ::host.chan/tab-create}
+                 channels
+                 tab-create-opts)
+                (swap! state assoc ::extension.spec/gui-tab tab-create-opts))
 
-                    (spec/cmd-id "deathstar.solution-tab-eval")
-                    (let [tab (get @state ::extension.spec/gui-tab)]
-                      (host.api/send-tab
-                       tab
-                       (core.spec/vl ::core.spec/gui-ops| {::csp.spec/op ::core.spec/update-gui-state
-                                                           ::extension.spec/state nil}))))))
+              (extension.spec/assert-cmd-id "deathstar.solution-tab-eval")
+              (let [tab (get @state ::extension.spec/gui-tab)]
+                (extension.gui.chan/op
+                 {::op.spec/op-key ::extension.gui.chan/update-state}
+                 channels
+                 @state
+                 (select-keys tab [::host.spec/tab-id]))
+                #_(host.chan/op
+                   {::op.spec/op-key ::host.chan/tab-send}
+                   channels
+                   {::some-value-value-to-send nil})))))
         (recur))
       (println "; proc-ops go-block exiting"))))
+
+
+(def ops (create-proc-ops channels state))
 
 
 #_(defn create-proc-log

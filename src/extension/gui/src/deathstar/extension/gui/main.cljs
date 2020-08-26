@@ -8,51 +8,33 @@
    [cljs.reader :refer [read-string]]
    [clojure.pprint :refer [pprint]]
 
-   [cljctools.vscode.tab-conn :as tab-conn.api]
-   [cljctools.vscode.spec :as host.spec]
-   [deathstar.gui.ops :as ops.api]
-   [deathstar.gui.render :as render.api]
+   [cljctools.vscode.tab-conn.impl :as tab-conn.impl]
+   [cljctools.vscode.tab-conn.chan :as tab-conn.chan]
 
-   [deathstar.extension.spec :as spec]))
+   [cljctools.csp.op.spec :as op.spec]
 
-(declare )
-
-(def channels (merge
-               {::main| (chan 10)}
-               (tab-conn.api/create-channels)
-               (ops.api/create-channels)))
-
-(def conn (tab-conn.api/create-proc-conn
-           (merge
-            {::host.spec/recv|  (::spec/ops| channels)
-             ::host.spec/recv|m (::spec/ops|m channels)}
-            channels)
-           {}))
-
-(def state (render.api/create-state {}))
-
-(def ops (ops.api/create-proc-ops channels state))
+   [deathstar.extension.spec :as extension.spec]
+   [deathstar.extension.chan :as extension.chan]
+   
+   [deathstar.extension.gui.chan :as extension.gui.chan]
+   [deathstar.extension.gui.render :as extension.gui.render]))
 
 
-#_(defn create-state
-    [data]
-    (atom data))
+(def channels (let [chs (merge
+                         (extension.chan/create-channels)
+                         (extension.gui.chan/create-channels)
+                         (tab-conn.chan/create-channels))]
+                (merge chs {::tab-conn.chan/recv|  (::extension.gui.chan/ops| chs)
+                            ::tab-conn.chan/recv|m (::extension.gui.chan/ops|m chs)})))
 
-#_(defn create-default-state-data
-    []
-    {:data []
-     :counter 0})
+(def state (extension.gui.render/create-state {}))
 
-(defn create-channels
-  []
-  (let [ops| (chan 10)
-        ops|m (mult ops|)]
-    {::spec/ops| ops|
-     ::spec/ops|m ops|m}))
+(def tab-conn (tab-conn.impl/create-proc-conn channels state))
+
 
 (defn create-proc-ops
   [channels state]
-  (let [{:keys [::spec/ops|m]} channels
+  (let [{:keys [::extension.gui.chan/ops|m]} channels
         ; recv|t (tap recv|m (chan 10))
         ops|t (tap ops|m (chan 10))]
     (.addEventListener js/document "keyup"
@@ -63,41 +45,28 @@
       (loop []
         (when-let [[v port] (alts! [ops|t])]
           (condp = port
-            ops|t (condp = (:op v)
+            ops|t
+            (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
 
-                    (spec/op
-                     ::spec/ops|
-                     ::spec/update-state)
-                    (let [{:keys [data]}]
-                      (println ::spec/update-state)
-                      (reset! state data)))))
+              {::op.spec/op-key ::extension.gui.chan/init}
+              (let []
+                (extension.gui.render/render-ui channels state {}))
+
+              {::op.spec/op-key ::extension.gui.chan/update-state}
+              (let [{state* ::extension.spec/state} v]
+                (reset! state state*)))))
         (recur))
       (println (format "go-block exit %s" ::create-proc-ops)))))
 
 
-
-(defn create-proc-main
-  [channels state]
-  (let [{:keys [::main|]} channels]
-    (go
-      (loop []
-        (when-let [[v port] (alts! [main|])]
-          (condp = port
-            main|
-            (condp = (:op v)
-
-              ::start
-              (let []
-                (println ::main| ::start)
-                (render.api/render-ui channels {:state state})))))
-        (recur)))))
-
-(def proc-main (create-proc-main channels {}))
+(def proc-ops (create-proc-ops channels state))
 
 (defn ^:export main
   []
   (println ::main)
-  (put! (::main| channels) {:op ::start}))
+  (extension.gui.chan/op
+   {::op.spec/op-key ::extension.gui.chan/init}
+   channels))
 
 (do (main))
 
