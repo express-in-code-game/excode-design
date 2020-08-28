@@ -19,14 +19,14 @@ server(){
 }
 
 dev(){
-    # npm i
-    # shadow -A:dev watch \
-    # :extension \
-    # :extension-gui
-
     npm i
     shadow -A:dev watch \
-    :extension
+    :extension \
+    :extension-gui
+
+    # npm i
+    # shadow -A:dev watch \
+    # :extension
 }
 
 tree(){

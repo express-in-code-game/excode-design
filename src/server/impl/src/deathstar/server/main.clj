@@ -25,7 +25,6 @@
 
    [deathstar.scenario.rovers1.player]))
 
-(def state (atom {}))
 
 (def channels (merge
                (server.chan/create-channels)
@@ -33,14 +32,38 @@
                (nrepl.chan/create-channels)
                (hub.chan/create-channels)))
 
-(def net-server (net.server.impl/create-proc-ops channels
-                                                 {::net.server.spec/with-websocket-endpoint? true}))
+(def http-chan-interceptor
+  {:name ::http-chan
+   :enter
+   (fn [ctx]
+     (go
+       (let [request-value (get-in ctx [:request :edn-params])
+             out| (chan 1)
+             _ (do
+                 (println ::request-value (type request-value))
+                 (println ::request-value request-value))
+             _ (put! (::hub.chan/ops| channels) (assoc request-value ::op.spec/out| out|))
+             response-value (<! out|)]
+         #_(put! (::hub.chan/response| channels) response-value)
+   
+         (println ::response-value response-value)
+         (assoc ctx :response {:body response-value :status 200}))))})
+
+(def net-server (net.server.impl/create-proc-ops
+                 channels
+                 {::net.server.spec/with-websocket-endpoint? true
+                  ::net.server.spec/routes
+                  #{["/http-chan" :post (conj net.server.impl/common-interceptors http-chan-interceptor) :route-name ::http-chan]
+                    ["/" :get (fn [_] {:body (clojure-version) :status 200}) :route-name :root]
+                    ["/echo" :get #(hash-map :body (pr-str %) :status 200) :route-name :echo]}}))
 
 (def nrepl-server (nrepl.impl/create-proc-ops channels
                                               {::nrepl.spec/host "0.0.0.0"
                                                ::nrepl.spec/port 7799}))
 
-(def hub (hub.impl/create-proc-ops channels {}))
+(def hub-state (hub.impl/create-state))
+
+(def hub (hub.impl/create-proc-ops channels hub-state {}))
 
 #_(def gamestate (gamestate.api/create-proc-ops channels {}))
 

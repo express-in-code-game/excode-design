@@ -11,8 +11,8 @@
    [reagent.dom :as rdom]
 
    [deathstar.extension.spec :as extension.spec]
-   [deathstar.hub.remote.spec :as hub.remote.spec]
-   
+   [deathstar.hub.tap.remote.spec :as tap.remote.spec]
+
    ["antd/lib/layout" :default AntLayout]
    ["antd/lib/menu" :default AntMenu]
    ["antd/lib/icon" :default AntIcon]
@@ -29,16 +29,19 @@
 
 
    ["antd/lib/divider" :default AntDivider]
-   ["@ant-design/icons/SmileOutlined" :default AntSmileOutlined]))
+   ["@ant-design/icons/SmileOutlined" :default AntIconSmileOutlined]
+   ["@ant-design/icons/LoadingOutlined" :default AntIconLoadingOutlined]
+   ["@ant-design/icons/SyncOutlined" :default AntIconSyncOutlined]))
+
+
 
 (def ant-row (r/adapt-react-class AntRow))
 (def ant-col (r/adapt-react-class AntCol))
 (def ant-divider (r/adapt-react-class AntDivider))
-
 (def ant-layout (r/adapt-react-class AntLayout))
 (def ant-layout-content (r/adapt-react-class (.-Content AntLayout)))
 (def ant-layout-header (r/adapt-react-class (.-Header AntLayout)))
-(def ant-smile-outlined (r/adapt-react-class AntSmileOutlined))
+
 (def ant-menu (r/adapt-react-class AntMenu))
 (def ant-menu-item (r/adapt-react-class (.-Item AntMenu)))
 (def ant-icon (r/adapt-react-class AntIcon))
@@ -53,6 +56,11 @@
 (def ant-form-item (r/adapt-react-class (.-Item AntForm)))
 (def ant-tabs (r/adapt-react-class AntTabs))
 (def ant-tab-pane (r/adapt-react-class (.-TabPane AntTabs)))
+
+(def ant-icon-smile-outlined (r/adapt-react-class AntIconSmileOutlined))
+(def ant-icon-loading-outlined (r/adapt-react-class AntIconLoadingOutlined))
+(def ant-icon-sync-outlined (r/adapt-react-class AntIconSyncOutlined))
+
 
 (declare rc-main)
 
@@ -70,7 +78,7 @@
     :dataIndex (str ::extension.spec/settings-filepath)}
    {:title "Status"
     :key :status
-    :dataIndex (str ::hub.remote.spec/connection-status)}
+    :dataIndex (str ::tap.remote.spec/connection-status)}
    {:title "Actions"
     :key "action"
     :width "48px"
@@ -124,16 +132,21 @@
 
       [:div "loading..."]
 
-      [:pre {} (with-out-str (pprint @state))]
-      
+      [:<>
+       [:pre {} (with-out-str (pprint @state))]
+       [ant-button {:icon (r/as-element [ant-icon-sync-outlined])
+                    :size "small"
+                    :title "button"
+                    :on-click (fn [] ::button-click)}]]
+
       #_[:<>
-       [ant-tabs {:defaultActiveKey :connections}
-        [ant-tab-pane {:tab "Connections" :key :connections}
-         [rc-tab-connections channels state]]
-        [ant-tab-pane {:tab "Multiplayer" :key :multiplayer}
-         [:div  ::multiplayer]]
-        [ant-tab-pane {:tab "State" :key :state}
-         [rc-tab-state channels state]]]]
+         [ant-tabs {:defaultActiveKey :connections}
+          [ant-tab-pane {:tab "Connections" :key :connections}
+           [rc-tab-connections channels state]]
+          [ant-tab-pane {:tab "Multiplayer" :key :multiplayer}
+           [:div  ::multiplayer]]
+          [ant-tab-pane {:tab "State" :key :state}
+           [rc-tab-state channels state]]]]
       #_[:<>
          #_[:div {} "rc-main"]
          #_[:button {:on-click (fn [e]

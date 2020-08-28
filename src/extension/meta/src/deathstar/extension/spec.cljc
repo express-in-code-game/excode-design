@@ -5,7 +5,7 @@
    [clojure.test.check.generators :as gen]
 
    [deathstar.user.spec :as user.spec]
-   [deathstar.hub.remote.spec :as hub.remote.spec]))
+   [deathstar.hub.tap.remote.spec :as tap.remote.spec]))
 
 (do (clojure.spec.alpha/check-asserts true))
 
@@ -25,8 +25,7 @@
                                        :kind vector? :distinct true :into [] :count nil))
 
 (s/def ::state (s/keys ::req [::settings
-                              ::settings-filepaths
-                              ::hub.remote.spec/status]))
+                              ::settings-filepaths]))
 
 (def cmd-ids #{"deathstar.open"
                "deathstar.ping"

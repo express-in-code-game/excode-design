@@ -21,7 +21,7 @@
   (atom (create-default-state-data)))
 
 (defn create-proc-ops
-  [channels state]
+  [channels state opts]
   (let [{:keys [::hub.chan/ops|m]} channels
         ops|t (tap ops|m (chan 10))
         close|| (repeatedly 16 #(chan 1))
@@ -39,26 +39,37 @@
                 (do
                   (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
 
-                    {::op.spec/op-key ::hub.chan/user-join}
-                    (let [{:keys [::user.spec/uuid]} v]
+                    {::op.spec/op-key ::hub.chan/user-join
+                     ::op.spec/op-type ::op.spec/request}
+                    (let [{:keys [::user.spec/uuid ::op.spec/out|]} v
+                          user-data (select-keys v [::user.spec/uuid])]
                       (println ::user-join)
                       (swap! state update ::user.spec/users
-                             assoc uuid v))
+                             assoc uuid user-data)
+                      (hub.chan/op
+                       {::op.spec/op-key ::hub.chan/user-join
+                        ::op.spec/op-type ::op.spec/response}
+                       channels out| user-data))
 
-                    {::op.spec/op-key ::hub.chan/user-leave}
-                    (let [{:keys [::user.spec/uuid]} v]
+                    {::op.spec/op-key ::hub.chan/user-leave
+                     ::op.spec/op-type ::op.spec/request}
+                    (let [{:keys [::user.spec/uuid ::op.spec/out|]} v]
                       (println ::user-leave)
-                      (swap! state update ::user.spec/users dissoc uuid))
+                      (swap! state update ::user.spec/users dissoc uuid)
+                      (hub.chan/op
+                       {::op.spec/op-key ::hub.chan/user-leave
+                        ::op.spec/op-type ::op.spec/response}
+                       channels out| (select-keys v [::user.spec/uuid])))
 
 
                     {::op.spec/op-key ::hub.chan/list-users
                      ::op.spec/op-type ::op.spec/request}
-                    (let [{:keys [out|]} v]
+                    (let [{:keys [::op.spec/out|]} v]
                       (println ::list-users)
                       (hub.chan/op
                        {::op.spec/op-key ::hub.chan/list-users
                         ::op.spec/op-type ::op.spec/response}
-                       out| (get state ::user.spec/users)))
+                       channels out| (get @state ::user.spec/users)))
 
                     {::op.spec/op-key ::hub.chan/list-games
                      ::op.spec/op-type ::op.spec/request}
@@ -67,7 +78,7 @@
                       (hub.chan/op
                        {::op.spec/op-key ::hub.chan/list-users
                         ::op.spec/op-type ::op.spec/response}
-                       out| (get state ::game.spec/games)))
+                       out| (get @state ::game.spec/games)))
 
                     {::op.spec/op-key ::hub.chan/game-create
                      ::op.spec/op-type ::op.spec/request}
@@ -118,7 +129,11 @@
                       (hub.chan/op
                        {::op.spec/op-key ::hub.chan/game-leave
                         ::op.spec/op-type ::op.spec/response}
-                       out| (::game.spec/uuid v))))
+                       out| (::game.spec/uuid v)))
+                    (do
+                      (println ::no-matching-clause)
+                      (println (type v))
+                      (println v)))
                   (recur)))))))
     #_(reify
         p/Release

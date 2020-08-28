@@ -9,6 +9,8 @@
    [cljs.reader :refer [read-string]]
    [clojure.pprint :refer [pprint]]
 
+   [cljctools.cljc.core :as cljc]
+
    [cljctools.vscode.spec :as host.spec]
    [cljctools.vscode.chan :as host.chan]
    [cljctools.vscode.impl :as host.impl]
@@ -16,22 +18,23 @@
    [cljctools.net.socket.spec :as socket.spec]
    [cljctools.net.socket.chan :as socket.chan]
    [cljctools.net.socket.impl :as socket.impl]
-   
+
    [cljctools.csp.op.spec :as op.spec]
 
    [deathstar.extension.http-chan.impl :as http-chan.impl]
    [deathstar.extension.http-chan.chan :as http-chan.chan]
 
-   [deathstar.hub.remote.spec :as hub.remote.spec]
+   [deathstar.hub.tap.remote.spec :as tap.remote.spec]
+   [deathstar.hub.tap.remote.impl :as tap.remote.impl]
   ;;  [deathstar.hub.remote.chan :as hub.remote.chan]
   ;;  [deathstar.hub.remote.impl :as hub.remote.impl]
-   
+
    [deathstar.user.spec :as user.spec]
    [deathstar.hub.chan :as hub.chan]
 
    [deathstar.extension.spec :as extension.spec]
    [deathstar.extension.chan :as extension.chan]
-   
+
    [deathstar.extension.gui.chan :as extension.gui.chan]
 
    #_[pad.cljsjs1]
@@ -42,21 +45,26 @@
                    [#::extension.spec{:nrepl-port 7071
                                       :server-port 8080
                                       :server-host "localhost"
-                                      :http-path "/api"
+                                      :http-path "/http-chan"
                                       :settings-filepaths []
                                       :deathstar-dir "~/.deathstar"}
                     #::user.spec{:username "Player 1"}
-                    #::hub.remote.spec{:status nil}
                     #::{:gui-tab nil}
                     ])))
 
-(def channels (let [chs (merge
-                         (host.chan/create-channels)
-                         (extension.chan/create-channels)
-                         (extension.gui.chan/create-channels)
-                         (socket.chan/create-channels)
-                         (http-chan.chan/create-channels)
-                         #_(hub.remote.chan/create-channels))]
+(def state-remote (tap.remote.impl/create-state))
+
+(add-watch state-remote ::watcher
+           (fn [key atom old-state new-state]
+             (println (with-out-str (pprint new-state)))))
+
+(def channels (as-> nil chs
+                (merge
+                 (host.chan/create-channels)
+                 (extension.chan/create-channels)
+                 (extension.gui.chan/create-channels)
+                 (socket.chan/create-channels)
+                 (hub.chan/create-channels))
                 (merge chs
                        {::extension.gui.chan/ops| (::host.chan/tab-send| chs)
                         ::extension.gui.chan/ops|m (::host.chan/tab-send|m chs)})))
@@ -85,11 +93,14 @@
 
 (def host (host.impl/create-proc-ops channels {}))
 
-(def http-chan (http-chan.impl/create-proc-ops channels {}))
-
-#_(def remote (hub.remote.impl/create-proc-ops channels state))
-
 (def socket (socket.impl/create-proc-ops channels {}))
+
+(def http-chan-for-hub (http-chan.impl/create-proc-ops
+                        (merge (http-chan.chan/create-channels)
+                               {::http-chan.chan/request| (::hub.chan/ops| channels)
+                                ::http-chan.chan/request|m (::hub.chan/ops|m channels)
+                                ::http-chan.chan/response| (::hub.chan/response| channels)})
+                        state))
 
 (comment
 
@@ -104,6 +115,25 @@
 
   ;;
   )
+
+(def tap-remote (tap.remote.impl/create-proc-ops channels state-remote))
+
+(comment
+
+  (hub.chan/op
+   {::op.spec/op-key ::hub.chan/user-join
+    ::op.spec/op-type ::op.spec/request}
+   channels
+   {::user.spec/uuid (cljc/rand-uuid)})
+
+  (hub.chan/op
+   {::op.spec/op-key ::hub.chan/list-users
+    ::op.spec/op-type ::op.spec/request}
+   channels)
+
+  ;;
+  )
+
 
 (defn create-proc-ops
   [channels state]
@@ -193,9 +223,10 @@
               (extension.spec/assert-cmd-id "deathstar.extension-gui.open")
               (let [tab-create-opts {::host.spec/tab-id "gui-tab"
                                      ::host.spec/tab-title "Death Star"
-                                     ::host.spec/tab-script-filepath "resources/out/deathstar-extension-gui/main.js"
-                                     ::host.spec/tab-html-filepath "resources/extension-gui.html"
-                                     ::host.spec/tab-script-replace "./out/deathstar-extension-gui/main.js"}]
+                                     ::host.spec/tab-html-replacements
+                                     {"./out/deathstar-extension-gui/main.js" "resources/out/deathstar-extension-gui/main.js"
+                                      "./css/style.css" "resources/antd.min-4.6.1.css"}
+                                     ::host.spec/tab-html-filepath "resources/extension-gui.html"}]
                 (host.chan/op
                  {::op.spec/op-key ::host.chan/tab-create}
                  channels

@@ -11,7 +11,7 @@
 
 (def ^:private state (api/create-state (api/generate-state-data)))
 
-(add-watch state :watcher
+(add-watch state ::watcher
            (fn [key atom old-state new-state]
              (let [pos (:pos new-state)]
                (println (format "new position is %s" pos)))))

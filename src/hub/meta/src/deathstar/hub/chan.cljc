@@ -19,30 +19,73 @@
 (defn create-channels
   []
   (let [ops| (chan 10)
-        ops|m (mult ops|)]
+        ops|m (mult ops|)
+        response| (chan (sliding-buffer 10))
+        response|m (mult response|)]
     {::ops| ops|
-     ::ops|m ops|m}))
+     ::ops|m ops|m
+     ::response| response|
+     ::response|m response|m}))
 
 (defmethod op*
-  {::op.spec/op-key ::user-join} [_]
-  (s/keys :req [::user.spec/uuid ::user.spec/username]
-          :opt []))
+  {::op.spec/op-key ::user-join
+   ::op.spec/op-type ::op.spec/request} [_]
+  (s/keys :req [::user.spec/uuid]))
 
 (defmethod op
-  {::op.spec/op-key ::user-join} [_]
-  [op-meta channels user-data]
-  (put! (::ops| channels (merge op-meta user-data))))
+  {::op.spec/op-key ::user-join
+   ::op.spec/op-type ::op.spec/request}
+  ([op-meta channels opts]
+   (op op-meta channels opts  (chan 1)))
+  ([op-meta channels opts out|]
+   (put! (::ops| channels) (merge op-meta
+                                  opts
+                                  {::op.spec/out| out|}))
+   out|))
 
 (defmethod op*
-  {::op.spec/op-key ::user-leave} [_]
-  (s/keys :req [::user.spec/uuid]
-          :opt []))
+  {::op.spec/op-key ::user-join
+   ::op.spec/op-type ::op.spec/response} [_]
+  (s/keys :req [::user.spec/uuid]))
 
 (defmethod op
-  {::op.spec/op-key ::user-leave} [_]
-  [op-meta channels uuid]
-  (put! (::ops| channels (merge op-meta {::user.spec/uuid uuid}))))
+  {::op.spec/op-key ::user-join
+   ::op.spec/op-type ::op.spec/response}
+  [op-meta channels out| opts]
+  (let [value (merge op-meta
+                     opts)]
+    (put! (::response| channels) value)
+    (put! out| value)))
 
+(defmethod op*
+  {::op.spec/op-key ::user-leave
+   ::op.spec/op-type ::op.spec/request} [_]
+  (s/keys :req [::user.spec/uuid]))
+
+(defmethod op
+  {::op.spec/op-key ::user-leave
+   ::op.spec/op-type ::op.spec/request}
+  ([op-meta channels opts]
+   (op op-meta channels opts  (chan 1)))
+  ([op-meta channels opts out|]
+   (put! (::ops| channels) (merge op-meta
+                                  opts
+                                  {::op.spec/out| out|}))
+   out|))
+
+(defmethod op*
+  {::op.spec/op-key ::user-leave
+   ::op.spec/op-type ::op.spec/response} [_]
+  (s/keys :req [::user.spec/uuid]))
+
+(defmethod op
+  {::op.spec/op-key ::user-leave
+   ::op.spec/op-type ::op.spec/response}
+  [op-meta channels out| uuid]
+  (let [value (merge op-meta
+                     {::user.spec/uuid uuid})]
+    (put! (::response| channels) value)
+    (put! out| value)))
 
 (defmethod op*
   {::op.spec/op-key ::list-users
@@ -52,9 +95,9 @@
 (defmethod op
   {::op.spec/op-key ::list-users
    ::op.spec/op-type ::op.spec/request}
-  ([op-meta channels ]
-   (op op-meta channels  (chan 1)))
-  ([op-meta channels  out|]
+  ([op-meta channels]
+   (op op-meta channels (chan 1)))
+  ([op-meta channels out|]
    (put! (::ops| channels) (merge op-meta
                                   {::op.spec/out| out|}))
    out|))
@@ -62,14 +105,16 @@
 (defmethod op*
   {::op.spec/op-key ::list-users
    ::op.spec/op-type ::op.spec/response} [_]
-  (s/keys :req [::vscode.spec/filenames]))
+  (s/keys :req [::user.spec/users]))
 
 (defmethod op
   {::op.spec/op-key ::list-users
    ::op.spec/op-type ::op.spec/response}
-  [op-meta out| users]
-  (put! out| (merge op-meta
-                    {::user.spec/users users})))
+  [op-meta channels out| users]
+  (let [value (merge op-meta
+                     {::user.spec/users users})]
+    (put! (::response| channels) value)
+    (put! out| value)))
 
 
 (defmethod op*
@@ -90,14 +135,16 @@
 (defmethod op*
   {::op.spec/op-key ::list-games
    ::op.spec/op-type ::op.spec/response} [_]
-  (s/keys :req [::vscode.spec/filenames]))
+  (s/keys :req [::game.spec/games]))
 
 (defmethod op
   {::op.spec/op-key ::list-games
    ::op.spec/op-type ::op.spec/response}
-  [op-meta out| games]
-  (put! out| (merge op-meta
-                    {::game.spec/games games})))
+  [op-meta channels out| games]
+  (let [value (merge op-meta
+                     {::game.spec/games games})]
+    (put! (::response| channels) value)
+    (put! out| value)))
 
 
 (defmethod op*
@@ -124,9 +171,11 @@
 (defmethod op
   {::op.spec/op-key ::game-create
    ::op.spec/op-type ::op.spec/response}
-  [op-meta out| uuid]
-  (put! out| (merge op-meta
-                    {::game.spec/uuid uuid})))
+  [op-meta channels out| uuid]
+  (let [value (merge op-meta
+                     {::game.spec/uuid uuid})]
+    (put! (::response| channels) value)
+    (put! out| value)))
 
 
 (defmethod op*
@@ -153,9 +202,11 @@
 (defmethod op
   {::op.spec/op-key ::game-remove
    ::op.spec/op-type ::op.spec/response}
-  [op-meta out| uuid]
-  (put! out| (merge op-meta
-                    {::game.spec/uuid uuid})))
+  [op-meta channels out| uuid]
+  (let [value (merge op-meta
+                     {::game.spec/uuid uuid})]
+    (put! (::response| channels) value)
+    (put! out| value)))
 
 
 (defmethod op*
@@ -182,9 +233,11 @@
 (defmethod op
   {::op.spec/op-key ::game-join
    ::op.spec/op-type ::op.spec/response}
-  [op-meta out| uuid]
-  (put! out| (merge op-meta
-                    {::game.spec/uuid uuid})))
+  [op-meta channels out| uuid]
+  (let [value (merge op-meta
+                     {::game.spec/uuid uuid})]
+    (put! (::response| channels) value)
+    (put! out| value)))
 
 
 (defmethod op*
@@ -211,9 +264,11 @@
 (defmethod op
   {::op.spec/op-key ::game-leave
    ::op.spec/op-type ::op.spec/response}
-  [op-meta out| uuid]
-  (put! out| (merge op-meta
-                    {::game.spec/uuid uuid})))
+  [op-meta channels out| uuid]
+  (let [value (merge op-meta
+                     {::game.spec/uuid uuid})]
+    (put! (::response| channels) value)
+    (put! out| value)))
 
 
 (defmethod op*
@@ -240,6 +295,8 @@
 (defmethod op
   {::op.spec/op-key ::game-start
    ::op.spec/op-type ::op.spec/response}
-  [op-meta out| uuid]
-  (put! out| (merge op-meta
-                    {::game.spec/uuid uuid})))
+  [op-meta channels out| uuid]
+  (let [value (merge op-meta
+                     {::game.spec/uuid uuid})]
+    (put! (::response| channels) value)
+    (put! out| value)))

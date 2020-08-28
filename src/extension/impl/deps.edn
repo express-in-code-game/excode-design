@@ -8,10 +8,6 @@
                               ;;  org.clojure/core.async {:mvn/version "1.1.587"}
         andare {:mvn/version "1.1.587"}
         reagent {:mvn/version "0.10.0"}
-        cljs-http {:mvn/version "0.1.46" :exclusions [org.clojure/core.async
-                                                      com.cognitect/transit-cljs
-                                                      org.clojure/clojurescript
-                                                      org.clojure/clojure]}
 
         com.cognitect/transit-cljs {:mvn/version "0.8.264"}
 
@@ -27,4 +23,4 @@
         github.com.DeathStarGame/deathstar.ltee.extension.meta {:local/root "../meta"}
         github.com.DeathStarGame/deathstar.ltee.hub.meta {:local/root "../../../src/hub/meta"}
         github.com.DeathStarGame/deathstar.ltee.meta {:local/root "../../../src/meta"}
-        github.com.DeathStarGame/deathstar.ltee.hub.remote.meta {:local/root "../../../src/hub/remote/meta"}}}
+        github.com.DeathStarGame/deathstar.ltee.hub.tap {:local/root "../../../src/hub/tap"}}}

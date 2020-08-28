@@ -13,4 +13,4 @@
 
         github.com.cljctools/vscode {:local/root "../../../../cljctools/vscode/impl"}
         github.com.DeathStarGame/deathstar.ltee.extension.meta {:local/root "../meta"}
-        github.com.DeathStarGame/deathstar.ltee.hub.remote.meta {:local/root "../../hub/remote/meta"}}}
+        github.com.DeathStarGame/deathstar.ltee.hub.meta {:local/root "../../hub/meta"}}}

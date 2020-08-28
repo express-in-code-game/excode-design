@@ -12,6 +12,10 @@
 (defn create-channels
   []
   (let [request| (chan 10)
-        request|m (mult request|)]
+        request|m (mult request|)
+        response| (chan 10)
+        response|m (mult response|)]
     {::request| request|
-     ::request|m request|m}))
+     ::request|m request|m
+     ::response| response|
+     ::response|m response|m}))

@@ -27,7 +27,7 @@
 (defmethod op*
   {::op.spec/op-key ::update-settings-filepaths
    ::op.spec/op-type ::op.spec/request} [_]
-  (s/keys :req [::op.spec/out|]
+  (s/keys :req [::op.spec/out|]))
 
 (defmethod op
   {::op.spec/op-key ::update-settings-filepaths
