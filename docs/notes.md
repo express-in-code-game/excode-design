@@ -309,3 +309,39 @@ bar.impl
     - before request, out| is dossoc, but used inside a callback  - when response arrives it is put on out|
     - so remote used a hub's op over network, but abstractions are written as if they all work in one runtime via core.async abstraction
 
+#### channel api taps (e.g. hub.tab.remote ): tap into chan-api channel traffic to form a derived state, without altering operations
+
+- hub performs operaions by tapping into channels created by hub.chan api
+- it forms state and  - it forms responses to those operations
+- on the user side, hub abstraction requires a remote state (for rendering and other purposes)
+- first, there is a wrong approach of making a remote a sepearte abstracion from hub, with it's own operations
+  - problem is, that remotes ops are exactly hub ops, so it one-two one duplication, only state is differernt (hub has all games, remote will have user's games etc.)
+- what is needed is to decouple forming that state from using hub.chan api directly
+- so there is no remote: there is hub.impl and hub.chan api for it, hub.chan api is async and runtime independent
+- but where to form that remote-specific state ? it's different from hubs
+- what we want
+  - to start remotes in any runtime like this
+    - (def channels1 (hub.chan/create-channels))
+    - (def channels2 (hub.chan/create-channels))
+    - (def remote-state1 (hub.tap.remote/create-proc-ops channels1))
+    - (def remote-state2 (hub.tap.remote/create-proc-ops channels2))
+  - perform operations using  hub.chan api directly, unchanged or specific
+    - (hub.chan/op {:some-op} channels1)
+    - (hub.chan/op {:some-op} channels2)
+  - redirect trafic from channels1 and channels2 to be put onto socket or local hub's channels
+    - so that the same hub processes channels1 and channels2 values, but their requests/responses are different (each represents a user)
+  - and
+    - make it possible for remote-state1 and remote-state2 , given hub.chan api's cahnnels, to intercept those operations and responses 
+    - and form some local state specific for hub.tap.remote abstraction (process)
+    - e.g. their can be hub.tap.remote1 hub.tap.remote2 etc.
+- with this approach
+  - abstraction has a channel api, that both can be used by abstraction itself or elswehre (by a different process)
+  - and yet, there can be a derived (from tapping into trafic) state, formed anywhere by passing abstraction's channels
+  - example of hub and remote
+    - extenstion is remote, it will use hub.chan/op  api to join-game, leave-game, list-users etc.
+    - it will redirect values from hub.chan channels into socket/http-request (on the server side, the go into hub process and back)
+    - it will instantiate independent, completely decoupled remote-state (hub.tap.remote/create-state) and (hub.tap.remote/create-proc-ops channels remote-state)
+    - the hub.tap.remote process will intercept the traffic on hub's channels and form (swap) the state
+    - and extension can add-watch to that state or use it any other way
+
+
