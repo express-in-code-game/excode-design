@@ -1,6 +1,8 @@
 
 # Death Star: search for Spok
 
+- [links to discussion and implementation](https://github.com/DeathStarGame/docs#links)
+
 ## rethinking deathstar.ltee as vscode extension
 
 #### understanding desktop

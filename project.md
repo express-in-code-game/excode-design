@@ -99,6 +99,21 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 - mailing list
     - https://groups.google.com/g/deathstargame
     - deathstargame@googlegroups.com
+- discussion
+    - reddit
+        - https://www.reddit.com/r/Clojure/comments/hujrnk/pitch_lets_make_a_noncommercial_expressincode/
+    - clojure mailing list
+        - https://groups.google.com/g/clojure/c/3jT7HXR435g
+- current progress
+    - The thought process and evolution of game design (what is what, why and how)
+        - https://github.com/DeathStarGame/docs/blob/master/as-vscode-extention.md
+    - The findings and  breakthroughs that are more implementation related:
+        - https://github.com/DeathStarGame/deathstar.ltee/blob/master/docs/notes.md
+    - Death Star laptop event edition current source
+        - https://github.com/DeathStarGame/deathstar.ltee/tree/master/src
+    - github.com/cljctools (needed to create the game)
+        - rationale https://github.com/cljctools/readme#rationale
+        - source https://github.com/cljctools/cljctools
 
 <br/>
 
