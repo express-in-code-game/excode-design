@@ -104,7 +104,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
         - https://www.reddit.com/r/Clojure/comments/hujrnk/pitch_lets_make_a_noncommercial_expressincode/
     - clojure mailing list
         - https://groups.google.com/g/clojure/c/3jT7HXR435g
-- current progress
+- current progress - Death Star laptop event edition github.com/DeathStarGame/deathstar.ltee
     - The thought process and evolution of game design (what is what, why and how)
         - https://github.com/DeathStarGame/docs/blob/master/as-vscode-extention.md
     - The findings and  breakthroughs that are more implementation related:
@@ -128,3 +128,5 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
         - https://github.com/CodinGame
     - https://screeps.com/
         - https://github.com/screeps
+    - CyberCode Online
+        - https://www.reddit.com/r/typescript/comments/ik0fxh/cybercode_online_a_mmorpg_webgame_that_looks_like/

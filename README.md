@@ -128,3 +128,5 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
         - https://github.com/CodinGame
     - https://screeps.com/
         - https://github.com/screeps
+    - CyberCode Online
+        - https://www.reddit.com/r/typescript/comments/ik0fxh/cybercode_online_a_mmorpg_webgame_that_looks_like/
