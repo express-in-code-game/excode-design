@@ -1,5 +1,0 @@
-[#:deathstar.extension.spec{:nrepl-port 7071
-                            :server-port 8080
-                            :server-host "localhost"
-                            :http-path "/api"}
- #:deathstar.multiplayer.spec{:username "Player"}]
