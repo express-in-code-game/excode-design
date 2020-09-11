@@ -74,20 +74,24 @@
 
 (def exports #js {:activate (fn [context]
                               (println ::activate)
-                              (host.impl/register-commands* {::host.spec/cmd-ids extension.spec/cmd-ids
-                                                             ::host.impl/vscode host.impl/vscode
-                                                             ::host.impl/context context
-                                                             ::on-cmd (fn [cmd-id #_args]
-                                                                        (prn ::cmd cmd-id)
-                                                                        (host.chan/op
-                                                                         {::op.spec/op-key ::host.chan/cmd}
-                                                                         (::host.chan/cmd| channels)
-                                                                         cmd-id))})
-                              (host.chan/op
-                               {::op.spec/op-key ::host.chan/extension-activate
-                                ::op.spec/op-type ::op.spec/request}
-                               channels
-                               context)
+                              (js/Promise.
+                               (fn [resolve _]
+                                 (go
+                                   (<! (host.chan/op
+                                        {::op.spec/op-key ::host.chan/extension-activate
+                                         ::op.spec/op-type ::op.spec/request}
+                                        channels
+                                        context))
+                                   (host.impl/register-commands* {::host.spec/cmd-ids extension.spec/cmd-ids
+                                                                  ::host.impl/vscode host.impl/vscode
+                                                                  ::host.impl/context host.impl/*context*
+                                                                  ::on-cmd (fn [cmd-id #_args]
+                                                                             (prn ::cmd cmd-id)
+                                                                             (host.chan/op
+                                                                              {::op.spec/op-key ::host.chan/cmd}
+                                                                              (::host.chan/cmd| channels)
+                                                                              cmd-id))})
+                                   (resolve))))
                               #_(js/Promise.
                                  (fn [resolve _]
                                    (go
