@@ -43,7 +43,7 @@
 
 (defmethod op*
   {::op.spec/op-key ::update-settings-filepaths
-   ::op.spec/op-type :response} [_]
+   ::op.spec/op-type ::op.spec/response} [_]
   (s/keys :req [::extension.spec/settings-filepaths]))
 
 (defmethod op

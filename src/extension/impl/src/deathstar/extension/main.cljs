@@ -231,10 +231,10 @@
                  {::op.spec/op-key ::host.chan/tab-create}
                  channels
                  tab-create-opts)
-                (swap! state assoc ::extension.spec/gui-tab tab-create-opts))
+                (swap! state assoc ::gui-tab tab-create-opts))
 
               (extension.spec/assert-cmd-id "deathstar.solution-tab-eval")
-              (let [tab (get @state ::extension.spec/gui-tab)]
+              (let [tab (get @state ::gui-tab)]
                 (extension.gui.chan/op
                  {::op.spec/op-key ::extension.gui.chan/update-state}
                  channels

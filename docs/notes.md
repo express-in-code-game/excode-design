@@ -2,10 +2,6 @@
 - build a vscode extension
 - use deathstar and cljctools namespaces
 
-## experiments
-
-- go w/o shadow-cljs? possible ? w/ cljs build only ?
-
 ## (:require-macros [])
 
 - https://cljs.github.io/api/cljs.core/defmacro
@@ -25,10 +21,7 @@
     - when file is read as macros, it's evaled in clj during compilation and spec can be used during macroexpansion
     - when it's read as cljs file, it becomes part of runtime
 
-
-## implementation design
-
-#### exlpicit channel mappings in main
+## exlpicit channel mappings in main
 
 - use fully qualified names for channels, and destcturing in the proc that uses them
   - https://clojure.org/guides/destructuring#_namespaced_keywords
@@ -86,7 +79,7 @@
   - instead, op and vl functions can be passed as args as well
 
 
-#### conveying values from multiple channels in one runtime over socket onto multiple channels in another runtime
+## conveying values from multiple channels in one runtime over socket onto multiple channels in another runtime
 
 - there should be a non-generic process that takes from local channels and puts over socket, adding ::channel-key-word| (which channel to use on the other side)
 - on the other side proc takes and puts to a channel using that ::channel-key-word
@@ -94,7 +87,7 @@
 - the problem is :out| channels: how do you keep using put-back channels over socket? or should you ? maybe it's jsut bad design to be in such situation to begin with
 
 
-#### problem with nrepl
+## problem with nrepl
 
 - what is needed
   - to intercept ops (:eval mainly) when it arrives, and before it leaves (should be able to access :value before it is sent back)
@@ -133,14 +126,14 @@
       - results of individual eval operations do not matter 
   
 
-#### local and shared (system) specs
+## local and shared (system) specs
 
 - there are local specs and one system specs
 - local specs may depend on system spec to use kewords like ::core.spec/some-system-wide-op and make their op and vl macros validate against shared ops/vals
 - local spec has it's channel keys, and using sytem spec insde local vl macro basically says "hey, want to know at compile time that this local channels handles this shared op"
 - processes import multiple specs: one (local), two (local, shared) or more
 
-#### understaning store, state, hub and opeartions
+## understaning store, state, hub and opeartions
 
 - state is more abstract, store is something hub uses to read/write data
 - hub parallelsim
@@ -158,7 +151,7 @@
   - yes, your own store is some kind of a solution, that will (via enourmous duplication) make hub generic, whereas store substitutable
 
 
-#### impl.api and chan.api: the approach to channels and values with having a programmatic impl-independent runtime-independent api
+## impl.api and chan.api: the approach to channels and values with having a programmatic impl-independent runtime-independent api
 
 - create-channels should be in a separate ns  (and dep) from implementaion (create-proc)
 - lets call it chan_api
@@ -229,7 +222,7 @@ bar.impl
   - kepping meta (spec protocols chan_api) freely imporatble : meta can be importated by any dep, any runtime
 
 
-#### out| channel over network
+## out| channel over network
 
 - lets take http example
 - bar.impl calls (<! (foo.chan_api/some-reqest channels data))
@@ -239,7 +232,7 @@ bar.impl
 - on the other side, proc adds out| and immediately does (take! (fn [v] send-response-over-network))
 - so before leaving runtime, out| is dissoced, when response arrives it is put onto that out|
 
-#### closing channels: auto-close-on-first-take channel would be great
+## closing channels: auto-close-on-first-take channel would be great
 
 - the operation initiator calling  should decide what out| is and when it should be closed
 - if its a system channel, it should not be closed at all, and you don't use <! blocking take
@@ -251,7 +244,7 @@ bar.impl
 - channels will be garbage collected even if not closed ?
   - https://stackoverflow.com/a/28889316/10589291
 
-#### yes, channels are just instances, if there are no puts/takes, they will be garbage collected
+## yes, channels are just instances, if there are no puts/takes, they will be garbage collected
 
 - https://github.com/clojure/core.async/blob/master/src/main/clojure/clojure/core/async/impl/channels.clj
 - so closing indeed is to be used for meaning, but not for garbage colelction
@@ -259,7 +252,7 @@ bar.impl
 - when needed
 
 
-#### channel api (hub.chan, remote.chan): applying to remote->hub requests/operations
+## channel api (hub.chan, remote.chan): applying to remote->hub requests/operations
 
 - once again, what is channel api
   - abstraction (namespace) consists of at least two deps
@@ -309,7 +302,7 @@ bar.impl
     - before request, out| is dossoc, but used inside a callback  - when response arrives it is put on out|
     - so remote used a hub's op over network, but abstractions are written as if they all work in one runtime via core.async abstraction
 
-#### channel api taps (e.g. hub.tab.remote ): tap into chan-api channel traffic to form a derived state, without altering operations
+## channel api taps (e.g. hub.tab.remote ): tap into chan-api channel traffic to form a derived state, without altering operations
 
 - hub performs operaions by tapping into channels created by hub.chan api
 - it forms state and  - it forms responses to those operations
