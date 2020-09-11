@@ -74,20 +74,34 @@
 
 (def exports #js {:activate (fn [context]
                               (println ::activate)
-                              (js/Promise.
-                               (fn [resolve _]
-                                 (go
-                                   (<! (host.chan/op
-                                        {::op.spec/op-key ::host.chan/extension-activate
-                                         ::op.spec/op-type ::op.spec/request}
-                                        channels
-                                        context))
-                                   (<! (host.chan/op
-                                        {::op.spec/op-key ::host.chan/register-commands
-                                         ::op.spec/op-type ::op.spec/request}
-                                        channels
-                                        extension.spec/cmd-ids))
-                                   (resolve)))))
+                              (host.impl/register-commands* {::host.spec/cmd-ids extension.spec/cmd-ids
+                                                             ::host.impl/vscode host.impl/vscode
+                                                             ::host.impl/context context
+                                                             ::on-cmd (fn [cmd-id #_args]
+                                                                        (prn ::cmd cmd-id)
+                                                                        (host.chan/op
+                                                                         {::op.spec/op-key ::host.chan/cmd}
+                                                                         (::host.chan/cmd| channels)
+                                                                         cmd-id))})
+                              (host.chan/op
+                               {::op.spec/op-key ::host.chan/extension-activate
+                                ::op.spec/op-type ::op.spec/request}
+                               channels
+                               context)
+                              #_(js/Promise.
+                                 (fn [resolve _]
+                                   (go
+                                     (<! (host.chan/op
+                                          {::op.spec/op-key ::host.chan/extension-activate
+                                           ::op.spec/op-type ::op.spec/request}
+                                          channels
+                                          context))
+                                     (<! (host.chan/op
+                                          {::op.spec/op-key ::host.chan/register-commands
+                                           ::op.spec/op-type ::op.spec/request}
+                                          channels
+                                          extension.spec/cmd-ids))
+                                     (resolve)))))
                   :deactivate (fn []
                                 (println ::deactivate)
                                 (host.chan/op
