@@ -173,7 +173,11 @@
                 (host.chan/op
                  {::op.spec/op-key ::host.chan/show-info-msg}
                  channels
-                 "Death Star activating")))
+                 "Death Star activating")
+                (host.chan/op
+                 {::op.spec/op-key ::host.chan/cmd}
+                 (::host.chan/cmd| channels)
+                 "deathstar.open")))
 
             ops|t
             (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])

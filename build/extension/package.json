@@ -9,6 +9,7 @@
 		"vscode": "^1.30.0"
 	},
 	"activationEvents": [
+		"*",
 		"onWebviewPanel:gui-tab",
 		"onCommand:deathstar.open"
 	],
