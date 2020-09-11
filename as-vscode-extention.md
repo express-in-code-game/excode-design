@@ -1,17 +1,17 @@
 
 # Death Star: search for Spok
 
+rethinking Death Star laptop event edition as vscode extension
+
 - [links to discussion and implementation](https://github.com/DeathStarGame/docs#links)
 
-## rethinking deathstar.ltee as vscode extension
-
-#### understanding desktop
+## understanding desktop
 
 - latest advancement was realizing, that having a desktop app (ui), that can lauch server and nrepl as subprocesses, was the way to go
 - it superseded the docker + browser system, because Death Star: laptop event edition should be a desktop app, in the spirit of simplicity and decentralization
 - via plugins, deathstar.ltee can later acquire features of a volunteer cluster, but keeping the simple nature first
 
-#### jvm or not jvm
+## jvm or not jvm
 
 - since it's desktop by nature, jvm seemed a better choice, given you can do ui with it
 - jvm is simpler than node, because clj can be evaled direclty
@@ -42,7 +42,7 @@
 - so cljs everywhere would be preferable, can it be done ? it seems it can
 
 
-#### deathstar.ltee as vscode extension
+## deathstar.ltee as vscode extension
 
 - vscode tabs are already subprocesses (browser tabs essentially), which can be great for Death Star: a tab can be a resource or solution space
 - Death Star main tab can be like home page
@@ -65,7 +65,7 @@
     - all key abstractions are already in place: graphics, window resizing and other behavior, tabs, other extensions, editor etc.
     - when thinking about doing Death Star ltee on jvm, all those came to mind as the first thing to do; but with vscode, you start working on the value of the game immediately
 
-#### nrepl
+## nrepl
 
 - to not rush to any conlusions, it's unclear exactly how to do, but cljs-everywhre is doable
 - cljs compiler and state need to be understood, and how to create new compiler sessions etc.
@@ -75,7 +75,7 @@
 - boom, beatch
 
 
-#### or: vscode + background jvm process
+## or: vscode + background jvm process
 
 - vscode starts and extension works as it does
 - but it starts a background jvm for whatever can only be done in clojure
@@ -93,7 +93,7 @@
         - if it's Dockerfile (or docker image), docker will be required
 
 
-#### repls and tabs
+## repls and tabs
 
 - an example state of the editor when playing the game
     - left side has explorer open (game repo), and a {current-game-hash}.cljs file tab
@@ -109,7 +109,7 @@
 - so player if free to get fresh tabs/repls, change reosurce and soltuion space (for example, when changing a file, each space has it's own generated file/ns)
 
 
-#### understanding nrepl, clj repl, cljs repl and shadow-cljs: Death Star tabs are like shadow-cljs builds
+## understanding nrepl, clj repl, cljs repl and shadow-cljs: Death Star tabs are like shadow-cljs builds
 
 - steps of evaluating cljs code via extension (shadow-cljs example)
     - run multiple builds on shadow's jvm: :build1 :build2 :build3
@@ -147,7 +147,7 @@
     - so it's similar shadow, execpt in self-hosted env we have analyzer cache that is used for initial compiler states
 
 
-#### how to approach creating a multiple-tabs-nrepl environment for the game ?
+## how to approach creating a multiple-tabs-nrepl environment for the game ?
 
 - jvm is not the issue: it's a different kind of functionality needed for the game, shadow-cljs does not cut it
 - first, it should be built game specific, and from that a generic abstraction (tool) may appear
@@ -161,7 +161,7 @@
 
 
 
-#### thinking nodejs
+## thinking nodejs
 
 - what apps deathstar builds
     - extension itself
@@ -196,7 +196,7 @@
     - if possible: start vscode headless instance to get vscode.api within the server (for file access and such)?
 
 
-### server conundrum: nodejs or jdk, again
+## server conundrum: nodejs or jdk, again
 
 - since the system requires a standlaone server, the question arises: why node? or why jdk?
 - why node
@@ -225,7 +225,7 @@
     - it's either jpackaged biinary on github.releases or docker image on docker hub
     - docker is fine to start with
 
-#### beyond jvm just for server: vscode + jvm
+## beyond jvm just for server: vscode + jvm
 
 - if only host runs jvm, there is no way to leverage tooling such as nrepl
 - so the first-step solution (before these abstraction can be run on nodejs for example) is to run both vscode and jvm and distribute operations accordingly
@@ -235,7 +235,7 @@
 - yet, overtime abstraction may migrate to a different runtime
 
 
-#### vscode + jvm design
+## vscode + jvm design
 
 
 - vscode extension
@@ -266,7 +266,7 @@
     - like that
 
 
-#### state: it's not about a repl into tab, it's about runtime-less language, data, state
+## state: it's not about a repl into tab, it's about runtime-less language, data, state
 
 - competetive game
     - the goal of the game are events, players playing and competing
@@ -389,7 +389,7 @@
     - but it's the extension that starts the scenario process (but scenario renders itself into a section by id)
     - so extension is a process, render-tab is a process and sceanrio comes in as a process
 
-#### simulation as f(state,code,time), why there is no need for cljs self-hosting
+## simulation as f(state,code,time), why there is no need for cljs self-hosting
 
 - all happens on the worker
 - player has a discardable/restorable namespace with its state
@@ -416,13 +416,13 @@
     - but ns and variables exist only where the simulation needs to run and where code is submitted - on the worker (and server)
 
 
-#### inputs (operations) from scenario's ui (if any) should map to programmatic api unequivocally
+## inputs (operations) from scenario's ui (if any) should map to programmatic api unequivocally
 
 - any even from the api should map exactly to an opeation exposed programmatically
 - if a player can move something with mouse it should be available from the repl as well: (move {:somehting :x :y}) 
 
 
-#### runtimeless abstractions - user and hub, extension/worker/server - and why worker and server are single abstraction: server
+## runtimeless abstractions - user and hub, extension/worker/server - and why worker and server are single abstraction: server
 
 - the initial thinking was: woker is extension's subrpocess, that provides jvm runtime, and server is a separate abstraction for multiplayer
 - but, this is incorrect
@@ -457,7 +457,7 @@
     - you can even not start your own server, but to connect only; but to play (even offline) you always need a running server - no problem, extension will start/stop it as child_process
 
 
-#### multiplayer(hub), gamestate and submitting code
+## multiplayer(hub), gamestate and submitting code
 
 - extesion reads files and sends to the server (hub)
 - gamestate can either be a channel (an process(s)) of its own, or be hub's dependency
@@ -466,7 +466,7 @@
 - and hub has references(channels) of runnig simultations by uuid - so gamestate is generic system that runs code and sceanrios
 - * scenario loader will be standalone as well
 
-#### multiplayer simulation
+## multiplayer simulation
 
 - simultaion is a processes, provided by sceanrio
 - with single-plaer simmulation each runs on its own and players score
@@ -475,14 +475,14 @@
     - and it runs each players code at each step: (player1-fn ) (player2-fn) .. against their part of state
     - so on each simulation step every palyer's respective code is applied and we get the resulting scenario state (for example, all new positions of all rovers)
 
-#### how gamestate will run submitted code (files)
+## how gamestate will run submitted code (files)
 
 - all files are passed to gamestate, changed if needed and evaled - so that new namespaces for that version are created
 - then vars (in those generated namespaces) are passed to multiplayer simmulation as args
 - for example, generate new ns name by using base and gensym: (gensym "deathstar.scenario.rovers1.player") -> deathstar.scenario.rovers1.player67
 - after simulation completes, sync state with user-side and use ns-unmap or remove-ns
 
-#### request, response over socket: http is needed, gui as render-input only
+## request, response over socket: http is needed, gui as render-input only
 
 - you cannot do request-repospose over sockets (alas), only inside a runtime
 - implementing your own is out of the question - its insane to re=invent the wheel, http already exists
@@ -498,7 +498,7 @@
 - this way input processing is also runtime-less ( will be run on node, but is non-specific)
 - so user-side and server-side communcate via http and socket stream - socket stream is used for gamestate updates
 
-#### http as a channel for values
+## http as a channel for values
 
 - mapping spec-validated runtime-less values like {:op ::spec/foo :data {:a 1}} to rest makes no sense
 - and graphql is showing that you want to use http as a channel for queries(requests)
@@ -514,7 +514,7 @@
 - if all players connect to server's nrepl, they will each get a session, but no way to identify players
 - with local node, it's possible
 
-#### wrong: right now, the player can be idetified by unique generated namespace via first eval op (in-ns 'deathstar.scenario.rovers1-e123edn)
+## wrong: right now, the player can be idetified by unique generated namespace via first eval op (in-ns 'deathstar.scenario.rovers1-e123edn)
 
 - in theory, possible to map such op to nrepl's session
 - when (in-ns) arrives, that ns is the id of the player
@@ -524,7 +524,7 @@
 - * possible that mult will provide api (a channel) to attach ceratin data (id) to nrepl ops
 
 
-#### there is no gui: there is extension and renderer
+## there is no gui: there is extension and renderer
 
 - state exists on extension, and it is specced using extension.spec, like list of settings files, connections etc.
 - that state's spec - is needed inside gui to access data keys (they will be fully qualified)
