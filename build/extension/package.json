@@ -9,7 +9,7 @@
 		"vscode": "^1.30.0"
 	},
 	"activationEvents": [
-		"onLanguage:clojure",
+		"onWebviewPanel:gui-tab",
 		"onCommand:deathstar.open"
 	],
 	"main": "./resources/out/deathstar-extension/main.js",
@@ -39,14 +39,6 @@
 			{
 				"command": "deathstar.ping",
 				"title": "deathstar.ping"
-			},
-			{
-				"command": "deathstar.extension-gui.open",
-				"title": "deathstar.extension-gui.open"
-			},
-			{
-				"command": "deathstar.solution-tab-eval",
-				"title": "deathstar.solution-tab-eval"
 			}
 		],
 		"keybindings": [
@@ -57,14 +49,6 @@
 			{
 				"command": "deathstar.ping",
 				"key": "ctrl+alt+g ctrl+alt+p"
-			},
-			{
-				"command": "deathstar.extension-gui.open",
-				"key": "ctrl+alt+g ctrl+alt+s"
-			},
-			{
-				"command": "deathstar.solution-tab-eval",
-				"key": "ctrl+alt+g ctrl+alt+e"
 			}
 		]
 	}

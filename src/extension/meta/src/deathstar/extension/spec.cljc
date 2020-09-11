@@ -28,10 +28,7 @@
                               ::settings-filepaths]))
 
 (def cmd-ids #{"deathstar.open"
-               "deathstar.ping"
-               "deathstar.extension-gui.open"
-               "deathstar.open-resource-space-tab"
-               "deathstar.solution-tab-eval"})
+               "deathstar.ping"})
 
 (defmacro assert-cmd-id
   [cmd-id]

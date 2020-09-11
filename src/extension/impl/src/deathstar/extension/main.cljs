@@ -74,10 +74,20 @@
 
 (def exports #js {:activate (fn [context]
                               (println ::activate)
-                              (host.chan/op
-                               {::op.spec/op-key ::host.chan/extension-activate}
-                               channels
-                               context))
+                              (js/Promise.
+                               (fn [resolve _]
+                                 (go
+                                   (<! (host.chan/op
+                                        {::op.spec/op-key ::host.chan/extension-activate
+                                         ::op.spec/op-type ::op.spec/request}
+                                        channels
+                                        context))
+                                   (<! (host.chan/op
+                                        {::op.spec/op-key ::host.chan/register-commands
+                                         ::op.spec/op-type ::op.spec/request}
+                                        channels
+                                        extension.spec/cmd-ids))
+                                   (resolve)))))
                   :deactivate (fn []
                                 (println ::deactivate)
                                 (host.chan/op
@@ -155,17 +165,15 @@
           (condp = port
             host-evt|t
             (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
-              {::op.spec/op-key ::host.chan/extension-activate}
+
+              {::op.spec/op-key ::host.chan/extension-activate
+               ::op.spec/op-type ::op.spec/request}
               (let []
                 (println ::extension-activate)
                 (host.chan/op
                  {::op.spec/op-key ::host.chan/show-info-msg}
                  channels
-                 "Death Star activating")
-                (host.chan/op
-                 {::op.spec/op-key ::host.chan/register-commands}
-                 channels
-                 extension.spec/cmd-ids)))
+                 "Death Star activating")))
 
             ops|t
             (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
@@ -209,18 +217,6 @@
             (condp = (::host.spec/cmd-id v)
 
               (extension.spec/assert-cmd-id "deathstar.open")
-              (host.chan/op
-               {::op.spec/op-key ::host.chan/show-info-msg}
-               channels
-               "deathstar.open")
-
-              (extension.spec/assert-cmd-id "deathstar.ping")
-              (host.chan/op
-               {::op.spec/op-key ::host.chan/show-info-msg}
-               channels
-               "deathstar.ping")
-
-              (extension.spec/assert-cmd-id "deathstar.extension-gui.open")
               (let [tab-create-opts {::host.spec/tab-id "gui-tab"
                                      ::host.spec/tab-title "Death Star"
                                      ::host.spec/tab-html-replacements
@@ -231,9 +227,13 @@
                  {::op.spec/op-key ::host.chan/tab-create}
                  channels
                  tab-create-opts)
+                (host.chan/op
+                 {::op.spec/op-key ::host.chan/show-info-msg}
+                 channels
+                 "deathstar.open")
                 (swap! state assoc ::gui-tab tab-create-opts))
 
-              (extension.spec/assert-cmd-id "deathstar.solution-tab-eval")
+              (extension.spec/assert-cmd-id "deathstar.ping")
               (let [tab (get @state ::gui-tab)]
                 (extension.gui.chan/op
                  {::op.spec/op-key ::extension.gui.chan/update-state}
@@ -243,7 +243,11 @@
                 #_(host.chan/op
                    {::op.spec/op-key ::host.chan/tab-send}
                    channels
-                   {::some-value-value-to-send nil})))))
+                   {::some-value-value-to-send nil}))
+              (host.chan/op
+               {::op.spec/op-key ::host.chan/show-info-msg}
+               channels
+               "deathstar.ping"))))
         (recur))
       (println "; proc-ops go-block exiting"))))
 
