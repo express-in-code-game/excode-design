@@ -122,15 +122,15 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 #### notes on game tournaments, events
 
-- https://github.com/sergeiudris/deathstar.docs/blob/master/cloud-native-system/design.md#user-experience
+- [./cloud-native-system/design.md#user-experience](./cloud-native-system/design.md#user-experience)
 
 #### figuring out what the game should be
 
-- https://github.com/sergeiudris/deathstar.docs/blob/master/search-for-the-game.md#building-is-about-developing-a-language
+- [./search-for-the-game.md#building-is-about-developing-a-language](./search-for-the-game.md#building-is-about-developing-a-language)
 
 #### idea of a volunteer automated cluster
 
-- https://github.com/sergeiudris/deathstar.docs/blob/master/origin-cluster/origin-cluster.md
+- [./origin-cluster/origin-cluster.md](./origin-cluster/origin-cluster.md)
 
 #### existing games that use languages
 
