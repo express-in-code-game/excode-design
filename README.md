@@ -96,37 +96,49 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 ## links
 
-- mailing list
-    - https://groups.google.com/g/deathstargame
-    - deathstargame@googlegroups.com
-- discussion
-    - reddit
-        - https://www.reddit.com/r/Clojure/comments/hujrnk/pitch_lets_make_a_noncommercial_expressincode/
-    - clojure mailing list
-        - https://groups.google.com/g/clojure/c/3jT7HXR435g
-- current progress - Death Star laptop event edition github.com/DeathStarGame/deathstar.ltee
-    - The thought process and evolution of game design (what is what, why and how)
-        - https://github.com/DeathStarGame/docs/blob/master/as-vscode-extention.md
-    - The findings and  breakthroughs that are more implementation related:
-        - https://github.com/DeathStarGame/deathstar.ltee/blob/master/docs/notes.md
-    - Death Star laptop event edition current source
-        - https://github.com/DeathStarGame/deathstar.ltee/tree/master/src
-    - github.com/cljctools (needed to create the game)
-        - rationale https://github.com/cljctools/readme#rationale
-        - source https://github.com/cljctools/cljctools
+#### current progress - Death Star laptop event edition 
 
-<br/>
+- implementation repo
+    - https://github.com/DeathStarGame/deathstar.ltee
+- The thought process and evolution of game design (what is what, why and how)
+    - https://github.com/DeathStarGame/docs/blob/master/as-vscode-extention.md
+- The findings and  breakthroughs that are more implementation related:
+    - https://github.com/DeathStarGame/deathstar.ltee/blob/master/docs/notes.md
+- Death Star laptop event edition current source
+    - https://github.com/DeathStarGame/deathstar.ltee/tree/master/src
+- github.com/cljctools (needed to create the game)
+    - rationale https://github.com/cljctools/readme#rationale
+    - source https://github.com/cljctools/cljctools
 
-- [thought process behind the game](./search-for-the-game.md#building-is-about-developing-a-language)
-- [idea of a volunteer automated cluster](./origin-cluster/origin-cluster.md)
-- [some notes on events](./cloud-native-system/design.md#user-experience)
+#### mailing list
 
-<br/>
+- https://groups.google.com/g/deathstargame
+- deathstargame@googlegroups.com
 
-- existing games that use languages
-    - https://www.codingame.com/ide/puzzle/onboarding
-        - https://github.com/CodinGame
-    - https://screeps.com/
-        - https://github.com/screeps
-    - CyberCode Online
-        - https://www.reddit.com/r/typescript/comments/ik0fxh/cybercode_online_a_mmorpg_webgame_that_looks_like/
+#### discussion
+
+- reddit
+    - https://www.reddit.com/r/Clojure/comments/hujrnk/pitch_lets_make_a_noncommercial_expressincode/
+- clojure mailing list
+    - https://groups.google.com/g/clojure/c/3jT7HXR435g
+
+#### notes on game tournaments, events
+
+- https://github.com/sergeiudris/deathstar.docs/blob/master/cloud-native-system/design.md#user-experience
+
+#### figuring out what the game should be
+
+- https://github.com/sergeiudris/deathstar.docs/blob/master/search-for-the-game.md#building-is-about-developing-a-language
+
+#### idea of a volunteer automated cluster
+
+- https://github.com/sergeiudris/deathstar.docs/blob/master/origin-cluster/origin-cluster.md
+
+#### existing games that use languages
+
+- https://www.codingame.com/ide/puzzle/onboarding
+    - https://github.com/CodinGame
+- https://screeps.com/
+    - https://github.com/screeps
+- CyberCode Online
+    - https://www.reddit.com/r/typescript/comments/ik0fxh/cybercode_online_a_mmorpg_webgame_that_looks_like/
