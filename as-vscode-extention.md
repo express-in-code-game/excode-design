@@ -547,3 +547,10 @@ rethinking Death Star laptop event edition as vscode extension
 - each editor window can open one profile first (multiple after)
     - first, on extension activation, find deathstar.edn and apply
     - later upgrade: if multiple are opened, the user should be able to select profile from a menu
+
+## starting the server: from extension or on its own? should there be server config in deathstar.edn?
+
+- first step - building the edition with server starting on its own
+- focus on the game and events
+- as the next step, server will be able to be started from extension (either using cli and child_processes or preferably docker http api)
+- so deathstar.edn contains only data about server to connect to, no server launch options
