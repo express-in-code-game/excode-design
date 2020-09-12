@@ -13,9 +13,9 @@
    [cljctools.net.server.chan :as net.server.chan]
    [cljctools.net.server.impl :as net.server.impl]
 
-   [cljctools.nrepl.spec :as nrepl.spec]
-   [cljctools.nrepl.chan :as nrepl.chan]
-   [cljctools.nrepl.impl :as nrepl.impl]
+   [cljctools.nrepl.server.spec :as nrepl.server.spec]
+   [cljctools.nrepl.server.chan :as nrepl.server.chan]
+   [cljctools.nrepl.server.impl :as nrepl.server.impl]
 
    [deathstar.hub.chan :as hub.chan]
    [deathstar.hub.impl :as hub.impl]
@@ -29,7 +29,7 @@
 (def channels (merge
                (server.chan/create-channels)
                (net.server.chan/create-channels)
-               (nrepl.chan/create-channels)
+               (nrepl.server.chan/create-channels)
                (hub.chan/create-channels)))
 
 (def http-chan-interceptor
@@ -57,9 +57,9 @@
                     ["/" :get (fn [_] {:body (clojure-version) :status 200}) :route-name :root]
                     ["/echo" :get #(hash-map :body (pr-str %) :status 200) :route-name :echo]}}))
 
-(def nrepl-server (nrepl.impl/create-proc-ops channels
-                                              {::nrepl.spec/host "0.0.0.0"
-                                               ::nrepl.spec/port 7799}))
+(def nrepl-server (nrepl.server.impl/create-proc-ops channels
+                                              {::nrepl.server.spec/host "0.0.0.0"
+                                               ::nrepl.server.spec/port 7799}))
 
 (def hub-state (hub.impl/create-state))
 
@@ -68,10 +68,16 @@
 #_(def gamestate (gamestate.api/create-proc-ops channels {}))
 
 (def cli-options
-  [["-s" "--settings FILEPATH" "Path to settings file (.edn) "
-    :id :settings
+  [["-s" "--config FILEPATH" "Path to config file "
+    :id ::config
     :parse-fn str
-    :default "~/.deathstar/settings.edn"]])
+    :default "~/foo.edn"]])
+
+(defn read-file
+  [filepath]
+  (let [home-dir (System/getProperty "user.home")
+        filepath* (str/replace filepath #"~" home-dir)]
+    (slurp filepath*)))
 
 (defn create-proc-ops
   [channels ctx]
@@ -85,31 +91,28 @@
             (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
 
               {::op.spec/op-key ::server.chan/init}
-              (let [{:keys [::server.spec/options]} v
-                    home-dir (System/getProperty "user.home")
-                    fpath (str/replace (:settings options) #"~" home-dir)
-                    settings (slurp fpath)]
+              (let [{:keys [::options]} v]
                 (println ::init)
-                #_(println settings)
+                #_(println (read-file (::config options)))
                 ; read config etc
                 (net.server.chan/op
                  {::op.spec/op-key ::net.server.chan/start-server}
                  channels)
-                (nrepl.chan/op
-                 {::op.spec/op-key ::nrepl.chan/start-server}
+                (nrepl.server.chan/op
+                 {::op.spec/op-key ::nrepl.server.chan/start-server}
                  channels)))))
         (recur)))))
 
 (def proc-main (create-proc-ops channels {}))
 
 (defn -main [& args]
-  (let [data (parse-opts args cli-options)]
+  (let [cli-options* (parse-opts args cli-options)]
     (println ::-main)
-    (println (:options data))
+    (println (:options cli-options*))
     (server.chan/op
      {::op.spec/op-key ::server.chan/init}
      channels
-     (:options data))))
+     {::options (:options cli-options*)})))
 
 (comment
 

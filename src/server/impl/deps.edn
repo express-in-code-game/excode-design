@@ -21,4 +21,4 @@
 
         github.com.DeathStarGame/deathstar.ltee.scenario.rovers1 {:local/root "../../scenario/rovers1"}
         github.com.cljctools/net.server {:local/root "../../../../cljctools/net/server/impl/pedestal"}
-        github.com.cljctools/nrepl {:local/root "../../../../cljctools/nrepl/impl/jvm"}}}
+        github.com.cljctools/nrepl.server {:local/root "../../../../cljctools/nrepl/server/impl/jvm"}}}

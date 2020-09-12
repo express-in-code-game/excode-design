@@ -29,7 +29,7 @@
 
 (defmethod op
   {::op.spec/op-key ::init}
-  [op-meta channels options]
+  [op-meta channels opts]
   (put! (::ops| channels) (merge
                            op-meta
-                           {::server.spec/options options})))
+                           opts)))

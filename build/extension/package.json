@@ -8,7 +8,9 @@
 	"engines": {
 		"vscode": "^1.32.0"
 	},
-	"keywords": ["multi-root ready"],
+	"keywords": [
+		"multi-root ready"
+	],
 	"activationEvents": [
 		"workspaceContains:**/deathstar.edn",
 		"onWebviewPanel:gui-tab",

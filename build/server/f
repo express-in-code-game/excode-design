@@ -5,7 +5,7 @@ dev(){
   # lein repl :start :host 0.0.0.0 :port 7788
   # lein repl :headless :host 0.0.0.0 :port 7788
   # lein repl :connect 0.0.0.0:7878
-  lein repl :headless --settings=~/.deathstar/configs/settings.edn
+  lein repl :headless --config=deathstar-server.edn
 
 }
 
@@ -31,12 +31,11 @@ dock() {
     NREPL_LEIN_PORT=7788
     NREPL_PORT=7799
     SERVER_PORT=8080
-    NAME=deathstar.server
+    NAME=deathstar.ltee.server
 
     # WORKDIR_PATH=$VOLUME_PATH/deathstar/build/worker
     VOLUME_PATH1=/ctx/code
-    VOLUME_PATH2=/root/.deathstar/configs
-    WORKDIR_PATH=$VOLUME_PATH1/deathstar/build/server
+    WORKDIR_PATH=$VOLUME_PATH1/deathstar.ltee/build/server
 
     docker build \
     --build-arg WORKDIR_PATH=$WORKDIR_PATH \
@@ -53,7 +52,6 @@ dock() {
                 -p $SERVER_PORT:8080 \
                 -v "$(cd ../../../ && pwd)":$VOLUME_PATH1 \
                 -v "$(pwd)/.user":/root \
-                -v "$(cd ../ && pwd)/configs":$VOLUME_PATH2 \
                  $NAME \
                  bash
 

@@ -32,6 +32,8 @@
    [deathstar.user.spec :as user.spec]
    [deathstar.hub.chan :as hub.chan]
 
+   [deathstar.server.spec :as server.spec]
+
    [deathstar.extension.spec :as extension.spec]
    [deathstar.extension.chan :as extension.chan]
 
@@ -42,15 +44,7 @@
 
 (def state (atom
             (apply merge
-                   [#::extension.spec{:nrepl-port 7071
-                                      :server-port 8080
-                                      :server-host "localhost"
-                                      :http-path "/http-chan"
-                                      :settings-filepaths []
-                                      :deathstar-dir "~/.deathstar"}
-                    #::user.spec{:username "Player 1"}
-                    #::{:gui-tab nil}
-                    ])))
+                   [#::{:gui-tab nil}])))
 
 (def ^:dynamic *workspaceFolder* nil)
 
