@@ -6,10 +6,11 @@
 	"publisher": "https://github.com/DeathStarGame/deathstar.ltee",
 	"repository": "https://github.com/DeathStarGame/deathstar.ltee",
 	"engines": {
-		"vscode": "^1.30.0"
+		"vscode": "^1.32.0"
 	},
+	"keywords": ["multi-root ready"],
 	"activationEvents": [
-		"*",
+		"workspaceContains:**/deathstar.edn",
 		"onWebviewPanel:gui-tab",
 		"onCommand:deathstar.open"
 	],

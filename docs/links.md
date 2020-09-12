@@ -87,3 +87,11 @@ Error: [https://github.com/DeathStarGame/deathstar.ltee.deathstar.ltee]: Propose
 #### datomic
 
 - https://www.reddit.com/r/Clojure/comments/8dqes8/datomic_look_at_all_the_things_im_not_doing/
+
+#### vscode extension samples
+
+- https://github.com/Microsoft/vscode-extension-samples
+
+#### vscode multi-root workspace api
+
+- https://github.com/microsoft/vscode/wiki/Adopting-Multi-Root-Workspace-APIs
