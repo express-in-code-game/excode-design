@@ -52,6 +52,8 @@
                     #::{:gui-tab nil}
                     ])))
 
+(def ^:dynamic *workspaceFolder* nil)
+
 (def state-remote (tap.remote.impl/create-state))
 
 (add-watch state-remote ::watcher
@@ -186,16 +188,28 @@
 
               {::op.spec/op-key ::host.chan/extension-activate
                ::op.spec/op-type ::op.spec/request}
-              (let []
-                (println ::extension-activate)
-                (host.chan/op
-                 {::op.spec/op-key ::host.chan/show-info-msg}
-                 channels
-                 "Death Star activating")
-                (host.chan/op
-                 {::op.spec/op-key ::host.chan/cmd}
-                 (::host.chan/cmd| channels)
-                 "deathstar.open")))
+              (let [workspaceFolder (<! (host.impl/select-workspaceFolder {}))
+                    deathstar-edn (as-> nil x
+                                    (<! (host.impl/read-workspaceFolder-file
+                                         workspaceFolder
+                                         "deathstar.edn"))
+                                    (when x
+                                      (->> x
+                                           (.toString)
+                                           (read-string)
+                                           (apply merge))))]
+                (when deathstar-edn
+                  (do (set! *workspaceFolder* workspaceFolder))
+                  (println ::extension-activate)
+                  (println deathstar-edn)
+                  (host.chan/op
+                   {::op.spec/op-key ::host.chan/show-info-msg}
+                   channels
+                   "Death Star activating")
+                  (host.chan/op
+                   {::op.spec/op-key ::host.chan/cmd}
+                   (::host.chan/cmd| channels)
+                   "deathstar.open"))))
 
             ops|t
             (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
@@ -239,21 +253,26 @@
             (condp = (::host.spec/cmd-id v)
 
               (extension.spec/assert-cmd-id "deathstar.open")
-              (let [tab-create-opts {::host.spec/tab-id "gui-tab"
-                                     ::host.spec/tab-title "Death Star"
-                                     ::host.spec/tab-html-replacements
-                                     {"./out/deathstar-extension-gui/main.js" "resources/out/deathstar-extension-gui/main.js"
-                                      "./css/style.css" "resources/antd.min-4.6.1.css"}
-                                     ::host.spec/tab-html-filepath "resources/extension-gui.html"}]
-                (host.chan/op
-                 {::op.spec/op-key ::host.chan/tab-create}
-                 channels
-                 tab-create-opts)
+              (if (get @state ::gui-tab)
                 (host.chan/op
                  {::op.spec/op-key ::host.chan/show-info-msg}
                  channels
-                 "deathstar.open")
-                (swap! state assoc ::gui-tab tab-create-opts))
+                 "deathstar is already open")
+                (let [tab-create-opts {::host.spec/tab-id "gui-tab"
+                                       ::host.spec/tab-title "Death Star"
+                                       ::host.spec/tab-html-replacements
+                                       {"./out/deathstar-extension-gui/main.js" "resources/out/deathstar-extension-gui/main.js"
+                                        "./css/style.css" "resources/antd.min-4.6.1.css"}
+                                       ::host.spec/tab-html-filepath "resources/extension-gui.html"}]
+                  (host.chan/op
+                   {::op.spec/op-key ::host.chan/tab-create}
+                   channels
+                   tab-create-opts)
+                  (host.chan/op
+                   {::op.spec/op-key ::host.chan/show-info-msg}
+                   channels
+                   "deathstar opening")
+                  (swap! state assoc ::gui-tab tab-create-opts)))
 
               (extension.spec/assert-cmd-id "deathstar.ping")
               (let [tab (get @state ::gui-tab)]
