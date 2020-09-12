@@ -84,15 +84,16 @@
                                          ::op.spec/op-type ::op.spec/request}
                                         channels
                                         context))
-                                   (host.impl/register-commands {::host.spec/cmd-ids extension.spec/cmd-ids
-                                                                  ::host.impl/vscode host.impl/vscode
-                                                                  ::host.impl/context host.impl/*context*
-                                                                  ::on-cmd (fn [cmd-id #_args]
-                                                                             (prn ::cmd cmd-id)
-                                                                             (host.chan/op
-                                                                              {::op.spec/op-key ::host.chan/cmd}
-                                                                              (::host.chan/cmd| channels)
-                                                                              cmd-id))})
+                                   (host.impl/register-commands
+                                    {::host.spec/cmd-ids extension.spec/cmd-ids
+                                     ::host.impl/vscode host.impl/vscode
+                                     ::host.impl/context host.impl/*context*
+                                     ::host.impl/on-cmd (fn [cmd-id #_args]
+                                                          (prn ::cmd cmd-id)
+                                                          (host.chan/op
+                                                           {::op.spec/op-key ::host.chan/cmd}
+                                                           (::host.chan/cmd| channels)
+                                                           cmd-id))})
                                    (resolve))))
                               #_(js/Promise.
                                  (fn [resolve _]
@@ -177,11 +178,14 @@
         ops|t (tap ops|m (chan 10))
         cmd|t (tap cmd|m (chan 10))
         socket-recv|t (tap socket-recv|m (chan 10))
-        relevant-evt? (fn [v]  (#{::host.chan/extension-activate ::host.chan/extension-deactivate} (::op.spec/op-key v)))
-        host-evt|t (tap host-evt|m (chan 10 (comp (filter (every-pred relevant-evt?)))))]
+        relevant-host-evt? (fn [v]  (#{::host.chan/extension-activate ::host.chan/extension-deactivate} (::op.spec/op-key v)))
+        host-evt|t (tap host-evt|m (chan 10 (comp (filter (every-pred relevant-host-evt?)))))
+        relevant-tab-evt? (fn [v]  (#{::host.chan/tab-disposed} (::op.spec/op-key v)))
+        tab-evt|t (tap tab-evt|m (chan 10 (comp (filter (every-pred relevant-tab-evt?)))))]
     (go
       (loop []
         (when-let [[v port] (alts! [ops|t host-evt|t cmd|t socket-recv|t])]
+          (do (println ::value v))
           (condp = port
             host-evt|t
             (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
@@ -198,6 +202,12 @@
                                            (.toString)
                                            (read-string)
                                            (apply merge))))]
+                (when-not deathstar-edn
+                  (host.chan/op
+                   {::op.spec/op-key ::host.chan/show-info-msg}
+                   channels
+                   "workspace contains no deathstar.edn"))
+                
                 (when deathstar-edn
                   (do (set! *workspaceFolder* workspaceFolder))
                   (println ::extension-activate)
@@ -249,15 +259,26 @@
             (let []
               (println "data from socket" v))
 
+
+            tab-evt|t
+            {::op.spec/op-key ::host.chan/tab-disposed}
+            (let []
+              (println ::tab-disposed)
+              (swap! state dissoc ::gui-tab))
+
             cmd|t
             (condp = (::host.spec/cmd-id v)
 
               (extension.spec/assert-cmd-id "deathstar.open")
-              (if (get @state ::gui-tab)
+              (cond
+
+                (get @state ::gui-tab)
                 (host.chan/op
                  {::op.spec/op-key ::host.chan/show-info-msg}
                  channels
                  "deathstar is already open")
+
+                (not (get @state ::gui-tab))
                 (let [tab-create-opts {::host.spec/tab-id "gui-tab"
                                        ::host.spec/tab-title "Death Star"
                                        ::host.spec/tab-html-replacements
