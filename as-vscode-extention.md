@@ -554,3 +554,10 @@ rethinking Death Star laptop event edition as vscode extension
 - focus on the game and events
 - as the next step, server will be able to be started from extension (either using cli and child_processes or preferably docker http api)
 - so deathstar.edn contains only data about server to connect to, no server launch options
+
+## hub operaions (e.g. list-users) should seemlessly use both http and socket channels (which are just pipes)
+
+- when http-chan is used for request, the response is piped to hub.chan/ops| on the userside
+- same should be for socket events (updates): hub will broadcast to all users fresh user-list using {::hub.chan/user-list :response} operation
+- it will go over the socket, but value will end up in the same channel as if it was requested via http-chan
+- bottom line: http and socket are just piping for abstract operaions, so "how" the value arrives is unimportant, it is all the same for proc-ops
