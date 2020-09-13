@@ -561,3 +561,13 @@ rethinking Death Star laptop event edition as vscode extension
 - same should be for socket events (updates): hub will broadcast to all users fresh user-list using {::hub.chan/user-list :response} operation
 - it will go over the socket, but value will end up in the same channel as if it was requested via http-chan
 - bottom line: http and socket are just piping for abstract operaions, so "how" the value arrives is unimportant, it is all the same for proc-ops
+
+## scenario's gui inputs are code to evaled within the same nrepl session that player uses from the file
+
+- any operation in scenario ui (hover to get info, select ...) is direclty using gam api (same that player uses from repl)
+- e.g. hovering is something like (find-entity ..) etc.
+- gui pipes those inputs (code to eval) to extension and it should send them over nrepl socket as if they were evaled from file, literally
+- options
+    - somehow access the nrepl connection/client that clojure extension uses
+    - establish a second connection (somehow get from extension the session of the main nrepl connection)
+    - ..
