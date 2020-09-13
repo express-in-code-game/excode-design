@@ -1,7 +1,7 @@
 [#:deathstar.user.spec{:username "Player 1"}
- #:deathstar.extension.spec{:servers {:bob  #:deathstar.server.spec{:nrepl-port 7071
+ #:deathstar.extension.spec{:servers {:Bob  #:deathstar.server.spec{:nrepl-port 7071
                                                                     :port 8080
                                                                     :host "localhost"
                                                                     :http-chan-path "/http-chan"}}
 
-                            :connect-to-server :bob}]
+                            :connect-to-server :Bob}]

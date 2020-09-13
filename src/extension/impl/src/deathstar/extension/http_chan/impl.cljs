@@ -19,21 +19,17 @@
 (def http (node/require "http"))
 
 (defn create-proc-ops
-  [channels state]
+  [channels opts]
   (let [{:keys [::http-chan.chan/request|m
                 ::http-chan.chan/response|]} channels
-        url-fn (fn []
-                 (let [{:keys [::extension.spec/server-port
-                               ::extension.spec/server-host
-                               ::extension.spec/http-path]}  @state]
-                   (str "http://" server-host ":" server-port http-path)))
+        {:keys [::connect-opts-fn]}  opts
         http-opts-fn (fn []
-                       (let [{:keys [::extension.spec/server-port
-                                     ::extension.spec/server-host
-                                     ::extension.spec/http-path]}  @state]
-                         #js {:host server-host
-                              :port server-port
-                              :path http-path
+                       (let [{:keys [::port
+                                     ::host
+                                     ::path]}  (connect-opts-fn)]
+                         #js {:host host
+                              :port port
+                              :path path
                               :method "POST"
                               :headers #js {"Content-Type" "application/edn"}}))
         request|t (tap request|m (chan 10))]
@@ -42,7 +38,6 @@
         (when-let [[v port] (alts! [request|t])]
           (condp = port
             request|t (let [{:keys [::op.spec/out|]} v]
-                        (println (url-fn))
                         (println (dissoc v ::op.spec/out|))
                         (doto
                          (http.request (http-opts-fn))

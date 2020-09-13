@@ -5,6 +5,7 @@
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
    [goog.string :refer [format]]
+   [goog.string.format]
    [clojure.string :as string]
    [cljs.reader :refer [read-string]]
    [clojure.pprint :refer [pprint]]
@@ -47,6 +48,20 @@
                    [#::{:gui-tab nil}])))
 
 (def ^:dynamic *workspaceFolder* nil)
+
+(defn state->server-config
+  [state]
+  (let [{:keys [::extension.spec/servers
+                ::extension.spec/connect-to-server]} state]
+    (get servers connect-to-server)))
+
+(defn state->socket-url
+  [state]
+  (let [server-config (state->server-config state)
+        {:keys [::server.spec/host
+                ::server.spec/port]} server-config]
+    (format "ws://%s:%s/ws" host port)))
+
 
 (def state-remote (tap.remote.impl/create-state))
 
@@ -125,7 +140,13 @@
                                {::http-chan.chan/request| (::hub.chan/ops| channels)
                                 ::http-chan.chan/request|m (::hub.chan/ops|m channels)
                                 ::http-chan.chan/response| (::hub.chan/response| channels)})
-                        state))
+                        {::http-chan.impl/connect-opts-fn (fn []
+                                                            (let [{:keys [::server.spec/host
+                                                                          ::server.spec/port
+                                                                          ::server.spec/http-chan-path]} (state->server-config @state)]
+                                                              {::http-chan.impl/host host
+                                                               ::http-chan.impl/port port
+                                                               ::http-chan.impl/path http-chan-path}))}))
 
 (comment
 
@@ -160,6 +181,7 @@
   )
 
 
+
 (defn create-proc-ops
   [channels state]
   (let [{:keys [::extension.chan/ops|
@@ -168,17 +190,20 @@
                 ::host.chan/cmd|m
                 ::host.chan/tab-evt|m]
          socket-recv|m ::socket.chan/recv|m
+         socket-evt|m ::socket.chan/evt|m
          host-evt|m ::host.chan/evt|m} channels
         ops|t (tap ops|m (chan 10))
         cmd|t (tap cmd|m (chan 10))
         socket-recv|t (tap socket-recv|m (chan 10))
+        relevant-socket-evt? (fn [v]  (#{::socket.chan/connected ::socket.chan/closed} (::op.spec/op-key v)))
+        socket-evt|t (tap socket-evt|m (chan 10 (comp (filter (every-pred relevant-socket-evt?)))))
         relevant-host-evt? (fn [v]  (#{::host.chan/extension-activate ::host.chan/extension-deactivate} (::op.spec/op-key v)))
         host-evt|t (tap host-evt|m (chan 10 (comp (filter (every-pred relevant-host-evt?)))))
         relevant-tab-evt? (fn [v]  (#{::host.chan/tab-disposed} (::op.spec/op-key v)))
         tab-evt|t (tap tab-evt|m (chan 10 (comp (filter (every-pred relevant-tab-evt?)))))]
     (go
       (loop []
-        (when-let [[v port] (alts! [ops|t host-evt|t cmd|t socket-recv|t])]
+        (when-let [[v port] (alts! [ops|t host-evt|t cmd|t socket-recv|t socket-evt|t])]
           (do (println ::value v))
           (condp = port
             host-evt|t
@@ -201,19 +226,45 @@
                    {::op.spec/op-key ::host.chan/show-info-msg}
                    channels
                    "workspace contains no deathstar.edn"))
-                
+
                 (when deathstar-edn
                   (do (set! *workspaceFolder* workspaceFolder))
                   (println ::extension-activate)
                   (println deathstar-edn)
-                  (host.chan/op
-                   {::op.spec/op-key ::host.chan/show-info-msg}
-                   channels
-                   "Death Star activating")
-                  (host.chan/op
-                   {::op.spec/op-key ::host.chan/cmd}
-                   (::host.chan/cmd| channels)
-                   "deathstar.open"))))
+                  (swap! state merge deathstar-edn)
+                  (let []
+                    (host.chan/op
+                     {::op.spec/op-key ::host.chan/show-info-msg}
+                     channels
+                     "Death Star activating")
+                    (socket.chan/op
+                     {::op.spec/op-key ::socket.chan/connect}
+                     channels
+                     {::socket.spec/url (state->socket-url @state)})
+                    (host.chan/op
+                     {::op.spec/op-key ::host.chan/cmd}
+                     (::host.chan/cmd| channels)
+                     "deathstar.open")))))
+
+            socket-evt|t
+            (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
+
+              {::op.spec/op-key ::socket.chan/connected}
+              (let []
+                (println ::socket-connected)
+                (hub.chan/op
+                 {::op.spec/op-key ::hub.chan/user-join
+                  ::op.spec/op-type ::op.spec/request}
+                 channels
+                 {::user.spec/uuid (cljc/rand-uuid)})
+                (hub.chan/op
+                 {::op.spec/op-key ::hub.chan/list-users
+                  ::op.spec/op-type ::op.spec/request}
+                 channels))
+
+              {::op.spec/op-key ::socket.chan/closed}
+              (let []
+                (println ::socket-closed)))
 
             ops|t
             (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
