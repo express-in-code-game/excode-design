@@ -571,3 +571,7 @@ rethinking Death Star laptop event edition as vscode extension
     - somehow access the nrepl connection/client that clojure extension uses
     - establish a second connection (somehow get from extension the session of the main nrepl connection)
     - ..
+- WRONG
+    - hover is just hover, no ops needed (data is already on ui)
+    - first version of deathstar.ltee will not use any inputs outside of nrepl evals, ui is for rendering/representing data that is part of game state
+    - game states are streamed to scenario's gui over socket in full
