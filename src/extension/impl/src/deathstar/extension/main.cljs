@@ -78,7 +78,9 @@
                  (hub.chan/create-channels))
                 (merge chs
                        {::extension.gui.chan/ops| (::host.chan/tab-send| chs)
-                        ::extension.gui.chan/ops|m (::host.chan/tab-send|m chs)})))
+                        ::extension.gui.chan/ops|m (::host.chan/tab-send|m chs)
+                        ::socket.chan/recv| (::hub.chan/response| channels)
+                        ::socket.chan/recv|m (::hub.chan/response|m channels)})))
 
 (defn ^:export main [& args]
   (println ::main))
@@ -140,13 +142,13 @@
                                {::http-chan.chan/request| (::hub.chan/ops| channels)
                                 ::http-chan.chan/request|m (::hub.chan/ops|m channels)
                                 ::http-chan.chan/response| (::hub.chan/response| channels)})
-                        {::http-chan.impl/connect-opts-fn (fn []
-                                                            (let [{:keys [::server.spec/host
-                                                                          ::server.spec/port
-                                                                          ::server.spec/http-chan-path]} (state->server-config @state)]
-                                                              {::http-chan.impl/host host
-                                                               ::http-chan.impl/port port
-                                                               ::http-chan.impl/path http-chan-path}))}))
+                        {::http-chan.impl/connect-opts (fn []
+                                                         (let [{:keys [::server.spec/host
+                                                                       ::server.spec/port
+                                                                       ::server.spec/http-chan-path]} (state->server-config @state)]
+                                                           {::http-chan.impl/host host
+                                                            ::http-chan.impl/port port
+                                                            ::http-chan.impl/path http-chan-path}))}))
 
 (comment
 
@@ -189,12 +191,10 @@
                 ::http-chan.chan/request|
                 ::host.chan/cmd|m
                 ::host.chan/tab-evt|m]
-         socket-recv|m ::socket.chan/recv|m
          socket-evt|m ::socket.chan/evt|m
          host-evt|m ::host.chan/evt|m} channels
         ops|t (tap ops|m (chan 10))
         cmd|t (tap cmd|m (chan 10))
-        socket-recv|t (tap socket-recv|m (chan 10))
         relevant-socket-evt? (fn [v]  (#{::socket.chan/connected ::socket.chan/closed} (::op.spec/op-key v)))
         socket-evt|t (tap socket-evt|m (chan 10 (comp (filter (every-pred relevant-socket-evt?)))))
         relevant-host-evt? (fn [v]  (#{::host.chan/extension-activate ::host.chan/extension-deactivate} (::op.spec/op-key v)))
@@ -203,7 +203,7 @@
         tab-evt|t (tap tab-evt|m (chan 10 (comp (filter (every-pred relevant-tab-evt?)))))]
     (go
       (loop []
-        (when-let [[v port] (alts! [ops|t host-evt|t cmd|t socket-recv|t socket-evt|t])]
+        (when-let [[v port] (alts! [ops|t host-evt|t cmd|t socket-evt|t])]
           (do (println ::value v))
           (condp = port
             host-evt|t
@@ -299,11 +299,6 @@
                  {::op.spec/op-key ::extension.chan/apply-settings-file
                   ::op.spec/op-type ::op.spec/response}
                  out| settings)))
-
-            socket-recv|t
-            (let []
-              (println "data from socket" v))
-
 
             tab-evt|t
             {::op.spec/op-key ::host.chan/tab-disposed}

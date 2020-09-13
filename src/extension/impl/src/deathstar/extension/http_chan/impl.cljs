@@ -20,13 +20,12 @@
 
 (defn create-proc-ops
   [channels opts]
-  (let [{:keys [::http-chan.chan/request|m
-                ::http-chan.chan/response|]} channels
-        {:keys [::connect-opts-fn]}  opts
+  (let [{:keys [::http-chan.chan/request|m]} channels
+        {:keys [::connect-opts]}  opts
         http-opts-fn (fn []
                        (let [{:keys [::port
                                      ::host
-                                     ::path]}  (connect-opts-fn)]
+                                     ::path]}  (connect-opts)]
                          #js {:host host
                               :port port
                               :path path
@@ -42,24 +41,22 @@
                         (doto
                          (http.request (http-opts-fn))
                           (.write (pr-str (dissoc v ::op.spec/out|)))
-                          (.on "response" (fn [res]
-                                            (.on res "data"
+                          (.on "response" (fn [response]
+                                            (.on response "data"
                                                  (fn [chunk]
                                                    (println (type chunk))
                                                    (println (.toString chunk))
                                                    (let [value (-> chunk
                                                                    (.toString)
                                                                    (read-string))]
-                                                     (put! response| value)
                                                      (put! out| value))))))
                           (.end))
                         #_(take! (http.client/post
                                   (url-fn)
                                   {#_:transit-params :edn-params (dissoc v ::op.spec/out|)})
-                                 (fn [resp]
-                                   (println resp)
-                                   (put! response| resp)
-                                   (put! out| resp))))))
+                                 (fn [response]
+                                   (println response)
+                                   (put! out| response))))))
         (recur))
       (println (format "go block exiting %s" ::proc-ops)))))
 

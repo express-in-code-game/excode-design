@@ -19,13 +19,9 @@
 (defn create-channels
   []
   (let [ops| (chan 10)
-        ops|m (mult ops|)
-        response| (chan (sliding-buffer 10))
-        response|m (mult response|)]
+        ops|m (mult ops|)]
     {::ops| ops|
-     ::ops|m ops|m
-     ::response| response|
-     ::response|m response|m}))
+     ::ops|m ops|m}))
 
 (defmethod op*
   {::op.spec/op-key ::user-join
@@ -54,7 +50,6 @@
   [op-meta channels out| opts]
   (let [value (merge op-meta
                      opts)]
-    (put! (::response| channels) value)
     (put! out| value)))
 
 (defmethod op*
@@ -84,7 +79,6 @@
   [op-meta channels out| uuid]
   (let [value (merge op-meta
                      {::user.spec/uuid uuid})]
-    (put! (::response| channels) value)
     (put! out| value)))
 
 (defmethod op*
@@ -113,7 +107,6 @@
   [op-meta channels out| users]
   (let [value (merge op-meta
                      {::user.spec/users users})]
-    (put! (::response| channels) value)
     (put! out| value)))
 
 
@@ -143,7 +136,6 @@
   [op-meta channels out| games]
   (let [value (merge op-meta
                      {::game.spec/games games})]
-    (put! (::response| channels) value)
     (put! out| value)))
 
 
@@ -174,7 +166,6 @@
   [op-meta channels out| uuid]
   (let [value (merge op-meta
                      {::game.spec/uuid uuid})]
-    (put! (::response| channels) value)
     (put! out| value)))
 
 
@@ -205,7 +196,6 @@
   [op-meta channels out| uuid]
   (let [value (merge op-meta
                      {::game.spec/uuid uuid})]
-    (put! (::response| channels) value)
     (put! out| value)))
 
 
@@ -236,7 +226,6 @@
   [op-meta channels out| uuid]
   (let [value (merge op-meta
                      {::game.spec/uuid uuid})]
-    (put! (::response| channels) value)
     (put! out| value)))
 
 
@@ -267,7 +256,6 @@
   [op-meta channels out| uuid]
   (let [value (merge op-meta
                      {::game.spec/uuid uuid})]
-    (put! (::response| channels) value)
     (put! out| value)))
 
 
@@ -298,5 +286,4 @@
   [op-meta channels out| uuid]
   (let [value (merge op-meta
                      {::game.spec/uuid uuid})]
-    (put! (::response| channels) value)
     (put! out| value)))
