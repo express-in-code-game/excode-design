@@ -607,3 +607,20 @@ rethinking Death Star laptop event edition as vscode extension
     - from hub's perspective, it's a persistent out|
     - so it is not part of hub.chan api, it's an argument ro :user-connected
     - tap.remote has no chan api, so it will an arg to proc-ops
+
+## hub and userside abstractions: extension(runtime) should be abstracted into a channel
+
+- hub can emit operation/request :create-files on game start (and it expects a confirmation/fail from the userside)
+- so stream of hub events is not one-sided: confirmations are needed
+- as game runs on the hub, every say 30sec hub will request :read-files from user, and expects a response
+- so hub and userside are runtime-less abstraction, forming the game system; :read-files should be an operation, and actual fs.read a sideeffect
+- mistake is to think about the user-side as extension ops; userside is part of hub abstracation,  including fs operations
+- userside proc should run on extension (which is just a minimal runtime with channel piping) 
+- and when user-side needs to wait for, for example, actual fs.read, it would use extension(host) represented as channel
+    - (<! (host.chan/op {:read-files ..}))
+    - (put! out| file-content) -> this goes back to hub
+- this way user-side is synchronous when needed, and hub can be aware of user-side ops that succeed/fail
+- that is imporant for disconnects 
+    - if user disconnects and then connects back, not sending the file content, hub can be aware that some users files are missing
+    - it either can repeat the request(or, userside will resend without the 2 request) or it can change the score for that user to 0 for that simulation run
+    - point is, hub and userside act as a system
