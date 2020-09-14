@@ -575,3 +575,18 @@ rethinking Death Star laptop event edition as vscode extension
     - hover is just hover, no ops needed (data is already on ui)
     - first version of deathstar.ltee will not use any inputs outside of nrepl evals, ui is for rendering/representing data that is part of game state
     - game states are streamed to scenario's gui over socket in full
+
+## hub and users: hub knows only its own operations, if hub needs to send a value to user(s), it is always one of hub's operation
+
+- the question is this: should remote(user) be an abstraction with its own channel api? no
+- hub is an abstacration, that has 100% operations
+- users are represented as channels, and each user(remote) uses its copy of hub.chan api
+- and hub.tap.remote is the additional process that taps into requests/reponses and forms remote's state
+- so hub.tap.remote should not - by design - have any api (except for possibly querying state - which is atom)
+- if hub would use some remote.chan api, and remote would use hub.chan api - it's bad design, as two abstractions using each other is most likely one abstraction
+- so hub has operations
+- if so, than every remote(user) is abstracted as simple channel, into which hub puts values created by its own channel api - hub.chan
+- for example
+    - on user-join hub would broadcast new user-list to every remote
+    - it would iterate over map/coll of {user chan} and do (hub.chan/op {:user-list :response} user-list user-channel|)
+    - or within a game, hub would similarly broadcast only to users within the game
