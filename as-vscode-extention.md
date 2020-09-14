@@ -624,3 +624,13 @@ rethinking Death Star laptop event edition as vscode extension
     - if user disconnects and then connects back, not sending the file content, hub can be aware that some users files are missing
     - it either can repeat the request(or, userside will resend without the 2 request) or it can change the score for that user to 0 for that simulation run
     - point is, hub and userside act as a system
+
+## hub is the system, userside is state sink and input stream like renderer is for userside
+
+- abstract runtime away as a process with a chan api (fs, show-info, render)
+- hub perfroms those ops over user channel
+- hubs forms user state and sends updates (to merge) into  a simple process on the userside for rendering etc.
+- should there be a userside abstraction with chan api ? 
+    - probably not
+    - should not couple user-state formation process (get value and merge, one op) and remote runtime as api
+    
