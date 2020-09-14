@@ -8,7 +8,7 @@
    [clojure.tools.cli :refer [parse-opts]]
 
    [cljctools.csp.op.spec :as op.spec]
-   
+
    [cljctools.net.server.spec :as net.server.spec]
    [cljctools.net.server.chan :as net.server.chan]
    [cljctools.net.server.impl :as net.server.impl]
@@ -23,7 +23,10 @@
    [deathstar.server.spec :as server.spec]
    [deathstar.server.chan :as server.chan]
 
-   [deathstar.scenario.rovers1.player]))
+   [deathstar.scenario.rovers1.player]
+
+   [deathstar.test.hub1]
+   [cljctools.pad.async1]))
 
 
 (def channels (merge

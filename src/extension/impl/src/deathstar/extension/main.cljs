@@ -40,8 +40,8 @@
 
    [deathstar.extension.gui.chan :as extension.gui.chan]
 
-   #_[pad.cljsjs1]
-   #_[pad.selfhost1]))
+   #_[cljctools.pad.cljsjs1]
+   [cljctools.pad.async1]))
 
 (def state (atom
             (apply merge
@@ -140,8 +140,7 @@
 (def http-chan-for-hub (http-chan.impl/create-proc-ops
                         (merge (http-chan.chan/create-channels)
                                {::http-chan.chan/request| (::hub.chan/ops| channels)
-                                ::http-chan.chan/request|m (::hub.chan/ops|m channels)
-                                ::http-chan.chan/response| (::hub.chan/response| channels)})
+                                ::http-chan.chan/request|m (::hub.chan/ops|m channels)})
                         {::http-chan.impl/connect-opts (fn []
                                                          (let [{:keys [::server.spec/host
                                                                        ::server.spec/port

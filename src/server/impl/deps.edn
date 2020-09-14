@@ -13,11 +13,14 @@
 
         github.com.cljctools/cljc {:local/root "../../../../cljctools/cljc"}
         github.com.cljctools/csp {:local/root "../../../../cljctools/csp"}
+        github.com.cljctools/pad {:local/root "../../../../cljctools/pad"}
 
         github.com.DeathStarGame/deathstar.ltee.server.meta {:local/root "../meta"}
         github.com.DeathStarGame/deathstar.ltee.hub {:local/root "../../hub/impl"}
         github.com.DeathStarGame/deathstar.ltee.meta {:local/root "../../../src/meta"}
         github.com.DeathStarGame/deathstar.ltee.hub.tap {:local/root "../../hub/tap"}
+
+        github.com.DeathStarGame/deathstar.ltee.test.hub {:local/root "../../../test/hub"}
 
         github.com.DeathStarGame/deathstar.ltee.scenario.rovers1 {:local/root "../../scenario/rovers1"}
         github.com.cljctools/net.server {:local/root "../../../../cljctools/net/server/impl/pedestal"}
