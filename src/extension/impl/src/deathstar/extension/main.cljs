@@ -1,7 +1,7 @@
 (ns deathstar.extension.main
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
-                                     pub sub unsub mult tap untap mix admix unmix
+                                     pub sub unsub mult tap untap mix admix unmix pipe
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
    [goog.string :refer [format]]
@@ -75,12 +75,13 @@
                  (extension.chan/create-channels)
                  (extension.gui.chan/create-channels)
                  (socket.chan/create-channels)
-                 (hub.chan/create-channels))
-                (merge chs
-                       {::extension.gui.chan/ops| (::host.chan/tab-send| chs)
-                        ::extension.gui.chan/ops|m (::host.chan/tab-send|m chs)
-                        ::socket.chan/recv| (::hub.chan/response| channels)
-                        ::socket.chan/recv|m (::hub.chan/response|m channels)})))
+                 (http-chan.chan/create-channels)
+                 (hub.chan/create-channels))))
+
+(pipe (::extension.gui.chan/ops| channels) (::host.chan/tab-send| channels))
+(pipe (::socket.chan/recv| channels) (::hub.chan/response| channels))
+
+(pipe (tap (::hub.chan/ops| channels) explicit-itercept-of-out|)  (::http-chan.chan/request| channels))
 
 (defn ^:export main [& args]
   (println ::main))
@@ -138,9 +139,7 @@
 (def socket (socket.impl/create-proc-ops channels {}))
 
 (def http-chan-for-hub (http-chan.impl/create-proc-ops
-                        (merge (http-chan.chan/create-channels)
-                               {::http-chan.chan/request| (::hub.chan/ops| channels)
-                                ::http-chan.chan/request|m (::hub.chan/ops|m channels)})
+                        channels
                         {::http-chan.impl/connect-opts (fn []
                                                          (let [{:keys [::server.spec/host
                                                                        ::server.spec/port
@@ -186,13 +185,11 @@
 (defn create-proc-ops
   [channels state]
   (let [{:keys [::extension.chan/ops|
-                ::extension.chan/ops|m
                 ::http-chan.chan/request|
                 ::host.chan/cmd|m
                 ::host.chan/tab-evt|m]
          socket-evt|m ::socket.chan/evt|m
          host-evt|m ::host.chan/evt|m} channels
-        ops|t (tap ops|m (chan 10))
         cmd|t (tap cmd|m (chan 10))
         relevant-socket-evt? (fn [v]  (#{::socket.chan/connected ::socket.chan/closed} (::op.spec/op-key v)))
         socket-evt|t (tap socket-evt|m (chan 10 (comp (filter (every-pred relevant-socket-evt?)))))
@@ -202,7 +199,7 @@
         tab-evt|t (tap tab-evt|m (chan 10 (comp (filter (every-pred relevant-tab-evt?)))))]
     (go
       (loop []
-        (when-let [[v port] (alts! [ops|t host-evt|t cmd|t socket-evt|t])]
+        (when-let [[v port] (alts! [ops| host-evt|t cmd|t socket-evt|t])]
           (do (println ::value v))
           (condp = port
             host-evt|t
@@ -265,7 +262,7 @@
               (let []
                 (println ::socket-closed)))
 
-            ops|t
+            ops|
             (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
 
               {::op.spec/op-key ::extension.chan/update-settings-filepaths

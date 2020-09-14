@@ -1,7 +1,7 @@
 (ns deathstar.extension.http-chan.impl
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
-                                     pub sub unsub mult tap untap mix admix unmix
+                                     pub sub unsub mult tap untap mix admix unmix pipe
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
    [goog.string :refer [format]]
@@ -20,7 +20,7 @@
 
 (defn create-proc-ops
   [channels opts]
-  (let [{:keys [::http-chan.chan/request|m]} channels
+  (let [{:keys [::http-chan.chan/request|]} channels
         {:keys [::connect-opts]}  opts
         http-opts-fn (fn []
                        (let [{:keys [::port
@@ -30,33 +30,32 @@
                               :port port
                               :path path
                               :method "POST"
-                              :headers #js {"Content-Type" "application/edn"}}))
-        request|t (tap request|m (chan 10))]
+                              :headers #js {"Content-Type" "application/edn"}}))]
     (go
       (loop []
-        (when-let [[v port] (alts! [request|t])]
+        (when-let [[v port] (alts! [request|])]
           (condp = port
-            request|t (let [{:keys [::op.spec/out|]} v]
-                        (println (dissoc v ::op.spec/out|))
-                        (doto
-                         (http.request (http-opts-fn))
-                          (.write (pr-str (dissoc v ::op.spec/out|)))
-                          (.on "response" (fn [response]
-                                            (.on response "data"
-                                                 (fn [chunk]
-                                                   (println (type chunk))
-                                                   (println (.toString chunk))
-                                                   (let [value (-> chunk
-                                                                   (.toString)
-                                                                   (read-string))]
-                                                     (put! out| value))))))
-                          (.end))
-                        #_(take! (http.client/post
-                                  (url-fn)
-                                  {#_:transit-params :edn-params (dissoc v ::op.spec/out|)})
-                                 (fn [response]
-                                   (println response)
-                                   (put! out| response))))))
+            request| (let [{:keys [::op.spec/out|]} v]
+                       (println (dissoc v ::op.spec/out|))
+                       (doto
+                        (http.request (http-opts-fn))
+                         (.write (pr-str (dissoc v ::op.spec/out|)))
+                         (.on "response" (fn [response]
+                                           (.on response "data"
+                                                (fn [chunk]
+                                                  (println (type chunk))
+                                                  (println (.toString chunk))
+                                                  (let [value (-> chunk
+                                                                  (.toString)
+                                                                  (read-string))]
+                                                    (put! out| value))))))
+                         (.end))
+                       #_(take! (http.client/post
+                                 (url-fn)
+                                 {#_:transit-params :edn-params (dissoc v ::op.spec/out|)})
+                                (fn [response]
+                                  (println response)
+                                  (put! out| response))))))
         (recur))
       (println (format "go block exiting %s" ::proc-ops)))))
 

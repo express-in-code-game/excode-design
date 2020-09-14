@@ -2,7 +2,7 @@
   #?(:cljs (:require-macros [deathstar.hub.tap.remote.impl]))
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
-                                     pub sub unsub mult tap untap mix admix unmix
+                                     pub sub unsub mult tap untap mix admix unmix pipe
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
    [clojure.spec.alpha :as s]
@@ -32,17 +32,16 @@
   ([state op-key loading?]
    (swap! state update op-key assoc ::tap.remote.spec/loading?  loading?)))
 
+
 (defn create-proc-ops
   [channels state]
-  (let [{:keys [::hub.chan/ops|m
-                ::hub.chan/response|m]} channels
-        ops|t (tap ops|m (chan 10))
-        response|t (tap response|m (chan 10))]
+  (let [{:keys [::hub.chan/ops|]} channels
+        #_ops|t #_(tap ops|m (chan 10))]
     (go (loop []
-          (when-let [[v port] (alts! [ops|t response|t])]
+          (when-let [[v port] (alts! [ops|])]
             (condp = port
 
-              ops|t
+              ops|
               (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
 
                 {::op.spec/op-key ::hub.chan/user-join
@@ -71,11 +70,7 @@
                  ::op.spec/op-type ::op.spec/request}
                 (let [{:keys [out|]} v]
                   (println ::list-games)
-                  (toggle-loading state ::hub.chan/list-games)
-                  (hub.chan/op
-                   {::op.spec/op-key ::hub.chan/list-games
-                    ::op.spec/op-type ::op.spec/response}
-                   out| (get state ::game.spec/games)))
+                  (toggle-loading state ::hub.chan/list-games))
 
                 {::op.spec/op-key ::hub.chan/game-create
                  ::op.spec/op-type ::op.spec/request}
@@ -86,55 +81,32 @@
                         game (merge
                               (select-keys v [::user.spec/uuid ::game.spec/uuid])
                               {::game.spec/uuid uuid})]
-                    (swap! state update ::game.spec/games assoc uuid game)
-                    (hub.chan/op
-                     {::op.spec/op-key ::hub.chan/game-create
-                      ::op.spec/op-type ::op.spec/response}
-                     out| uuid)))
+                    (swap! state update ::game.spec/games assoc uuid game)))
 
                 {::op.spec/op-key ::hub.chan/game-remove
                  ::op.spec/op-type ::op.spec/request}
                 (let [{:keys [out|]} v]
                   (println ::game-remove)
                   (toggle-loading state ::hub.chan/game-remove)
-                  (swap! state update ::game.spec/games dissoc (::game.spec/uuid v))
-                  (hub.chan/op
-                   {::op.spec/op-key ::hub.chan/game-remove
-                    ::op.spec/op-type ::op.spec/response}
-                   out| (::game.spec/uuid v)))
+                  (swap! state update ::game.spec/games dissoc (::game.spec/uuid v)))
 
                 {::op.spec/op-key ::hub.chan/game-start
                  ::op.spec/op-type ::op.spec/request}
                 (let [{:keys [out|]} v]
                   (println ::game-start)
-                  (toggle-loading state ::hub.chan/game-start)
-                  (hub.chan/op
-                   {::op.spec/op-key ::hub.chan/game-start
-                    ::op.spec/op-type ::op.spec/response}
-                   out| (::game.spec/uuid v)))
+                  (toggle-loading state ::hub.chan/game-start))
 
                 {::op.spec/op-key ::hub.chan/game-join
                  ::op.spec/op-type ::op.spec/request}
                 (let [{:keys [out|]} v]
                   (println ::game-join)
-                  (toggle-loading state ::hub.chan/game-join)
-                  (hub.chan/op
-                   {::op.spec/op-key ::hub.chan/game-join
-                    ::op.spec/op-type ::op.spec/response}
-                   out| (::game.spec/uuid v)))
+                  (toggle-loading state ::hub.chan/game-join))
 
                 {::op.spec/op-key ::hub.chan/game-leave
                  ::op.spec/op-type ::op.spec/request}
                 (let [{:keys [out|]} v]
                   (println ::hub.chan/game-leave)
-                  (toggle-loading state ::hub.chan/game-leave)
-                  (hub.chan/op
-                   {::op.spec/op-key ::hub.chan/game-leave
-                    ::op.spec/op-type ::op.spec/response}
-                   out| (::game.spec/uuid v))))
-
-              response|t
-              (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
+                  (toggle-loading state ::hub.chan/game-leave))
 
                 {::op.spec/op-key ::hub.chan/user-join
                  ::op.spec/op-type ::op.spec/response}
@@ -192,6 +164,11 @@
                  ::op.spec/op-type ::op.spec/request}
                 (let [{:keys [out|]} v]
                   (println ::hub.chan/game-leave)
-                  (toggle-loading state ::hub.chan/game-leave)))))
+                  (toggle-loading state ::hub.chan/game-leave))
+
+                (do
+                  (println ::no-matching-clause)
+                  (println (type v))
+                  (println v)))))
           (recur)))))
 

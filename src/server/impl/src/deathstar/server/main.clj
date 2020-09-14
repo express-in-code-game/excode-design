@@ -1,7 +1,7 @@
 (ns deathstar.server.main
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
-                                     pub sub unsub mult tap untap mix admix unmix
+                                     pub sub unsub mult tap untap mix admix unmix pipe
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
    [clojure.string :as str]
@@ -84,13 +84,12 @@
 
 (defn create-proc-ops
   [channels ctx]
-  (let [{:keys [::server.chan/ops|m]} channels
-        ops|t (tap ops|m (chan 10))]
+  (let [{:keys [::server.chan/ops|]} channels]
     (go
       (loop []
-        (when-let [[v port] (alts! [ops|t])]
+        (when-let [[v port] (alts! [ops|])]
           (condp = port
-            ops|t
+            ops|
             (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
 
               {::op.spec/op-key ::server.chan/init}

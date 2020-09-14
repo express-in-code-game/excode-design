@@ -1,7 +1,7 @@
 (ns deathstar.hub.impl
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
-                                     pub sub unsub mult tap untap mix admix unmix
+                                     pub sub unsub mult tap untap mix admix unmix pipe
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
    [cljctools.cljc.core :as cljc.core]
@@ -22,20 +22,19 @@
 
 (defn create-proc-ops
   [channels state opts]
-  (let [{:keys [::hub.chan/ops|m]} channels
-        ops|t (tap ops|m (chan 10))
+  (let [{:keys [::hub.chan/ops|]} channels
         close|| (repeatedly 16 #(chan 1))
         release (fn []
                   (doseq [close| close||]
                     (close! close|)))]
     (doseq [close| close||]
       (go (loop []
-            (when-let [[v port] (alts! [ops|t close|])]
+            (when-let [[v port] (alts! [ops| close|])]
               (condp = port
                 close|
                 (do nil)
-                
-                ops|t
+
+                ops|
                 (do
                   (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
 
@@ -130,6 +129,7 @@
                        {::op.spec/op-key ::hub.chan/game-leave
                         ::op.spec/op-type ::op.spec/response}
                        out| (::game.spec/uuid v)))
+                    
                     (do
                       (println ::no-matching-clause)
                       (println (type v))

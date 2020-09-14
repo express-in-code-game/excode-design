@@ -337,4 +337,12 @@ bar.impl
     - the hub.tap.remote process will intercept the traffic on hub's channels and form (swap) the state
     - and extension can add-watch to that state or use it any other way
 
+## static mults "just in case" are incorrect, should be removed from  deathstar, cljctools, mult; instead use dynamic pipes, mults etc. in mains
+
+- using static `mult`s do not solve/provide any wiring/piping abilities to the system
+- instead of using `merge` to substitute channels in main, dynamic `pipe` should be used after clean initial definition of channels
+- case of logging, events
+  - explicitely create mult + taps in main, or pipe + map
+- case of host-evt| 
+  - same: mult + tap
 

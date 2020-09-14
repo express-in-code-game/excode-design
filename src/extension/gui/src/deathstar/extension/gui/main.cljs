@@ -1,7 +1,7 @@
 (ns deathstar.extension.gui.main
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
-                                     pub sub unsub mult tap untap mix admix unmix
+                                     pub sub unsub mult tap untap mix admix unmix pipe
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
    [goog.string :refer [format]]
@@ -23,9 +23,9 @@
 (def channels (let [chs (merge
                          (extension.chan/create-channels)
                          (extension.gui.chan/create-channels)
-                         (tab-conn.chan/create-channels))]
-                (merge chs {::tab-conn.chan/recv|  (::extension.gui.chan/ops| chs)
-                            ::tab-conn.chan/recv|m (::extension.gui.chan/ops|m chs)})))
+                         (tab-conn.chan/create-channels))]))
+
+(pipe (::tab-conn.chan/recv| channels) (::extension.gui.chan/ops| channels))
 
 (def state (extension.gui.render/create-state {}))
 
@@ -34,18 +34,18 @@
 
 (defn create-proc-ops
   [channels state]
-  (let [{:keys [::extension.gui.chan/ops|m]} channels
+  (let [{:keys [::extension.gui.chan/ops|]} channels
         ; recv|t (tap recv|m (chan 10))
-        ops|t (tap ops|m (chan 10))]
+        ]
     (.addEventListener js/document "keyup"
                        (fn [ev]
                          (cond
                            (and (= ev.keyCode 76) ev.ctrlKey) (println ::ctrl+l) #_(swap! state assoc :data []))))
     (go
       (loop []
-        (when-let [[v port] (alts! [ops|t])]
+        (when-let [[v port] (alts! [ops|])]
           (condp = port
-            ops|t
+            ops|
             (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
 
               {::op.spec/op-key ::extension.gui.chan/init}
