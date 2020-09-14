@@ -590,3 +590,16 @@ rethinking Death Star laptop event edition as vscode extension
     - on user-join hub would broadcast new user-list to every remote
     - it would iterate over map/coll of {user chan} and do (hub.chan/op {:user-list :response} user-list user-channel|)
     - or within a game, hub would similarly broadcast only to users within the game
+
+## user as channel, :user-connect, :user-join and why hub.tap.remote should have a recv| = user| = hub-stream|
+
+- user first connects to hub (as anonymous connection) - this is :user-connected operation  in hub.chan
+    - this is exactly what happens when socket connects and send| for that user is provided
+- than user sends :user-join event with :uuid and other use-data, hub upgrades that user from anonymous to one with identity
+- why hub does that? so that abstraction was independent from socket server specificity, 
+- when runtimes are different and connection happens over socket, send| is provided by socket server
+- but within the same runtime, where does that send| come from? and if over socket, what represents that send| on the user side?
+- since there is no remote asbtraction - it's just channel - it can be provided as simple arg to :user-connected op
+- but since it will be used to form state on the remote, it needs to be part of hub.tap.remote (possilby as argument since it has no channel api)
+- this way, on the user side in main, it can be rewired like {::hub.tap.remote/recv| ::socket.chan/recv|} - send all values from socket to the tap process to form state
+- and within the same runtime, every remote would provide its own :recv channel to hub on :user-connected, leting hub use that as user channel
