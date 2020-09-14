@@ -603,3 +603,7 @@ rethinking Death Star laptop event edition as vscode extension
 - but since it will be used to form state on the remote, it needs to be part of hub.tap.remote (possilby as argument since it has no channel api)
 - this way, on the user side in main, it can be rewired like {::hub.tap.remote/recv| ::socket.chan/recv|} - send all values from socket to the tap process to form state
 - and within the same runtime, every remote would provide its own :recv channel to hub on :user-connected, leting hub use that as user channel
+- what is user channel / recv| / remote-channel? 
+    - from hub's perspective, it's a persistent out|
+    - so it is not part of hub.chan api, it's an argument ro :user-connected
+    - tap.remote has no chan api, so it will an arg to proc-ops
