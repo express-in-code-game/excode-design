@@ -62,11 +62,37 @@
 (def ant-icon-sync-outlined (r/adapt-react-class AntIconSyncOutlined))
 
 
-(declare rc-main)
-
 (defn create-state
   [data]
   (r/atom data))
+
+(defn create-proc-ops
+  [channels state]
+  (let [{:keys [::extension.gui.chan/ops|]} channels
+        ; recv|t (tap recv|m (chan 10))
+        ]
+    (.addEventListener js/document "keyup"
+                       (fn [ev]
+                         (cond
+                           (and (= ev.keyCode 76) ev.ctrlKey) (println ::ctrl+l) #_(swap! state assoc :data []))))
+    (go
+      (loop []
+        (when-let [[v port] (alts! [ops|])]
+          (condp = port
+            ops|
+            (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
+
+              {::op.spec/op-key ::extension.gui.chan/init}
+              (let []
+                (extension.gui.render/render-ui channels state {}))
+
+              {::op.spec/op-key ::extension.gui.chan/update-state}
+              (let [{state* ::extension.spec/state} v]
+                (reset! state state*)))))
+        (recur))
+      (println (format "go-block exit %s" ::create-proc-ops)))))
+
+(declare rc-main)
 
 (defn render-ui
   [channels state {:keys [id] :or {id "ui"}}]

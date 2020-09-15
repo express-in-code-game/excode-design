@@ -32,34 +32,34 @@
 (def tab-conn (tab-conn.impl/create-proc-conn channels state))
 
 
-(defn create-proc-ops
-  [channels state]
-  (let [{:keys [::extension.gui.chan/ops|]} channels
+#_(defn create-proc-ops
+    [channels state]
+    (let [{:keys [::extension.gui.chan/ops|]} channels
         ; recv|t (tap recv|m (chan 10))
-        ]
-    (.addEventListener js/document "keyup"
-                       (fn [ev]
-                         (cond
-                           (and (= ev.keyCode 76) ev.ctrlKey) (println ::ctrl+l) #_(swap! state assoc :data []))))
-    (go
-      (loop []
-        (when-let [[v port] (alts! [ops|])]
-          (condp = port
-            ops|
-            (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
+          ]
+      (.addEventListener js/document "keyup"
+                         (fn [ev]
+                           (cond
+                             (and (= ev.keyCode 76) ev.ctrlKey) (println ::ctrl+l) #_(swap! state assoc :data []))))
+      (go
+        (loop []
+          (when-let [[v port] (alts! [ops|])]
+            (condp = port
+              ops|
+              (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
 
-              {::op.spec/op-key ::extension.gui.chan/init}
-              (let []
-                (extension.gui.render/render-ui channels state {}))
+                {::op.spec/op-key ::extension.gui.chan/init}
+                (let []
+                  (extension.gui.render/render-ui channels state {}))
 
-              {::op.spec/op-key ::extension.gui.chan/update-state}
-              (let [{state* ::extension.spec/state} v]
-                (reset! state state*)))))
-        (recur))
-      (println (format "go-block exit %s" ::create-proc-ops)))))
+                {::op.spec/op-key ::extension.gui.chan/update-state}
+                (let [{state* ::extension.spec/state} v]
+                  (reset! state state*)))))
+          (recur))
+        (println (format "go-block exit %s" ::create-proc-ops)))))
 
 
-(def proc-ops (create-proc-ops channels state))
+(def proc-ops (deathstar.hub.remote.renderer.impl/create-proc-ops channels state))
 
 (defn ^:export main
   []

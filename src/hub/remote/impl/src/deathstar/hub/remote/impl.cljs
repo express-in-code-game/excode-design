@@ -1,188 +1,27 @@
-(ns deathstar.extension.main
+(ns deathstar.hub.remote.impl
+  #?(:cljs (:require-macros [deathstar.hub.remote.impl]))
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
                                      pub sub unsub mult tap untap mix admix unmix pipe
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
-   [goog.string :refer [format]]
-   [goog.string.format]
-   [clojure.string :as string]
-   [cljs.reader :refer [read-string]]
-   [clojure.pprint :refer [pprint]]
-
-   [cljctools.cljc.core :as cljc]
-
-   [cljctools.vscode.spec :as host.spec]
-   [cljctools.vscode.chan :as host.chan]
-   [cljctools.vscode.impl :as host.impl]
-
-   [cljctools.net.socket.spec :as socket.spec]
-   [cljctools.net.socket.chan :as socket.chan]
-   [cljctools.net.socket.impl :as socket.impl]
-
+   [clojure.spec.alpha :as s]
+   [cljctools.cljc.core :as cljc.core]
    [cljctools.csp.op.spec :as op.spec]
-
-   [deathstar.extension.http-chan.impl :as http-chan.impl]
-   [deathstar.extension.http-chan.chan :as http-chan.chan]
-
-   [deathstar.hub.tap.remote.spec :as tap.remote.spec]
-   [deathstar.hub.tap.remote.impl :as tap.remote.impl]
-  ;;  [deathstar.hub.remote.chan :as hub.remote.chan]
-  ;;  [deathstar.hub.remote.impl :as hub.remote.impl]
-
    [deathstar.user.spec :as user.spec]
+   [deathstar.game.spec :as game.spec]
    [deathstar.hub.chan :as hub.chan]
-
-   [deathstar.server.spec :as server.spec]
-
-   [deathstar.extension.spec :as extension.spec]
-   [deathstar.extension.chan :as extension.chan]
-
-   [deathstar.extension.gui.chan :as extension.gui.chan]
-
-   #_[cljctools.pad.cljsjs1]
-   [cljctools.pad.async1]))
-
-(def state (atom
-            (apply merge
-                   [#::{:gui-tab nil}])))
-
-(def ^:dynamic *workspaceFolder* nil)
-
-(defn state->server-config
-  [state]
-  (let [{:keys [::extension.spec/servers
-                ::extension.spec/connect-to-server]} state]
-    (get servers connect-to-server)))
-
-(defn state->socket-url
-  [state]
-  (let [server-config (state->server-config state)
-        {:keys [::server.spec/host
-                ::server.spec/port]} server-config]
-    (format "ws://%s:%s/ws" host port)))
+   [deathstar.hub.spec :as hub.spec]
+   [deathstar.hub.remote.spec :as tap.remote.spec]))
 
 
-(def state-remote (tap.remote.impl/create-state))
+(defn create-state
+  []
+  (atom {::user.spec/user nil
+         ::user.spec/users {}
+         ::game.spec/games {}}))
 
-(add-watch state-remote ::watcher
-           (fn [key atom old-state new-state]
-             (println (with-out-str (pprint new-state)))))
-
-(def channels (as-> nil chs
-                (merge
-                 (host.chan/create-channels)
-                 (extension.chan/create-channels)
-                 (extension.gui.chan/create-channels)
-                 (socket.chan/create-channels)
-                 (http-chan.chan/create-channels)
-                 (hub.chan/create-channels))))
-
-(pipe (::extension.gui.chan/ops| channels) (::host.chan/tab-send| channels))
-(pipe (::socket.chan/recv| channels) (::hub.chan/response| channels))
-
-(pipe (tap (::hub.chan/ops| channels) explicit-itercept-of-out|)  (::http-chan.chan/request| channels))
-
-(defn ^:export main [& args]
-  (println ::main))
-
-(def exports #js {:activate (fn [context]
-                              (println ::activate)
-                              (js/Promise.
-                               (fn [resolve _]
-                                 (go
-                                   (<! (host.chan/op
-                                        {::op.spec/op-key ::host.chan/extension-activate
-                                         ::op.spec/op-type ::op.spec/request}
-                                        channels
-                                        context))
-                                   (host.impl/register-commands
-                                    {::host.spec/cmd-ids extension.spec/cmd-ids
-                                     ::host.impl/vscode host.impl/vscode
-                                     ::host.impl/context host.impl/*context*
-                                     ::host.impl/on-cmd (fn [cmd-id #_args]
-                                                          (prn ::cmd cmd-id)
-                                                          (host.chan/op
-                                                           {::op.spec/op-key ::host.chan/cmd}
-                                                           (::host.chan/cmd| channels)
-                                                           cmd-id))})
-                                   (resolve))))
-                              #_(js/Promise.
-                                 (fn [resolve _]
-                                   (go
-                                     (<! (host.chan/op
-                                          {::op.spec/op-key ::host.chan/extension-activate
-                                           ::op.spec/op-type ::op.spec/request}
-                                          channels
-                                          context))
-                                     (<! (host.chan/op
-                                          {::op.spec/op-key ::host.chan/register-commands
-                                           ::op.spec/op-type ::op.spec/request}
-                                          channels
-                                          extension.spec/cmd-ids))
-                                     (resolve)))))
-                  :deactivate (fn []
-                                (println ::deactivate)
-                                (host.chan/op
-                                 {::op.spec/op-key ::host.chan/extension-deactivate}
-                                 channels))})
-(when (exists? js/module)
-  (set! js/module.exports exports))
-
-#_(defn reload
-    []
-    (.log js/console "Reloading...")
-    (js-delete js/require.cache (js/require.resolve "./main")))
-
-(def host (host.impl/create-proc-ops channels {}))
-
-(def socket (socket.impl/create-proc-ops channels {}))
-
-(def http-chan-for-hub (http-chan.impl/create-proc-ops
-                        channels
-                        {::http-chan.impl/connect-opts (fn []
-                                                         (let [{:keys [::server.spec/host
-                                                                       ::server.spec/port
-                                                                       ::server.spec/http-chan-path]} (state->server-config @state)]
-                                                           {::http-chan.impl/host host
-                                                            ::http-chan.impl/port port
-                                                            ::http-chan.impl/path http-chan-path}))}))
-
-(comment
-
-  (socket.chan/op
-   {::op.spec/op-key ::socket.chan/connect}
-   channels
-   {::socket.spec/url "ws://localhost:8080/ws"})
-
-  (socket.chan/op
-   {::op.spec/op-key ::socket.chan/disconnect}
-   channels)
-
-  ;;
-  )
-
-(def tap-remote (tap.remote.impl/create-proc-ops channels state-remote))
-
-(comment
-
-  (hub.chan/op
-   {::op.spec/op-key ::hub.chan/user-join
-    ::op.spec/op-type ::op.spec/request}
-   channels
-   {::user.spec/uuid (cljc/rand-uuid)})
-
-  (hub.chan/op
-   {::op.spec/op-key ::hub.chan/list-users
-    ::op.spec/op-type ::op.spec/request}
-   channels)
-
-  ;;
-  )
-
-
-
-#_(defn create-proc-ops
+(defn create-proc-ops
   [channels state]
   (let [{:keys [::extension.chan/ops|
                 ::http-chan.chan/request|
@@ -350,15 +189,25 @@
       (println "; proc-ops go-block exiting"))))
 
 
-(def ops (create-proc-ops channels state))
+#_(defn toggle-loading
+    ([state op-key]
+     (toggle-loading state op-key (not (get-in @state [op-key ::tap.remote.spec/loading?]))))
+    ([state op-key loading?]
+     (swap! state update op-key assoc ::tap.remote.spec/loading?  loading?)))
 
+(defn proc-loading
+  [ops| state]
+  (go
+    (loop []
+      (when-let [[v port] (alts! [ops|])]
+        (let [{:keys [::op.spec/op-key ::op.spec/op-type]} v]
+          (condp = op-type
 
-#_(defn create-proc-log
-    [channels ctx]
-    (let []
-      (go (loop []
-            (<! (chan 1))
-            (recur))
-          (println "; proc-log go-block exiting"))))
+            ::op.spec/request
+            (swap! state update op-key assoc ::loading?  true)
 
+            ::op.spec/response
+            (swap! state update op-key assoc ::loading?  false)
 
+            (do nil))))
+      (recur))))
