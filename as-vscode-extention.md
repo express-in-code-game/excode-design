@@ -633,4 +633,6 @@ rethinking Death Star laptop event edition as vscode extension
 - should there be a userside abstraction with chan api ? 
     - probably not
     - should not couple user-state formation process (get value and merge, one op) and remote runtime as api
-    
+- use socket only
+    - hub can make requests to the user-side, the only way to do so is socket with operation ids
+    - and if such meachanism - request/response over socket - is needed for the system, it would be simpler to use it instead of both socket and http
