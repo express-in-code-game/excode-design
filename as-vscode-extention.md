@@ -705,3 +705,14 @@ rethinking Death Star laptop event edition as vscode extension
 - why not electron?
     - if "one app", than server needs to be embedded (for multithreading)
     - nodejs threads? how important is jvms multitheading?
+
+## what was missing in understanding: it should be jvm, but with js renderer for gui
+
+- it should be jvm desktop app with embedded db
+- but instaed of javafx etc., web browser tabs (like in electron) should be used for rendering/input stream
+- rendering/input stream as thin layer, all logic on jvm, obviously (same as vscode extension + render tab)
+- build-sie it's simple: launch shadowcljs to build page(s), watching will rebuild them, so multiple runtimes are unoticible and it feels like one app 
+- questions
+    - reasearch what is the way to do it
+    - how will tab (js render page) communicate with the app?
+    - how to do it so that whole gui (like in electron) is js-based ?
