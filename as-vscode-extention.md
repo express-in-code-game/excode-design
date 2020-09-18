@@ -663,21 +663,26 @@ rethinking Death Star laptop event edition as vscode extension
     - we could make user-side as jpackaged app with its own editor and options to use external editor
     - ...
 
-#### importance of react for rendering
+## importance of react for rendering
 
 - cannot be underestimated: react, antd and other tools are not a minor thing, they cannot be replaced with javafx
 - rendering of game app ui and scenarios should be done with react or an equal/better alternative, which there are none
 
-#### implementing nrepl on node: this is waht stands in between vscode extension and complete offline-playable game
+## implementing nrepl on node: this is waht stands in between vscode extension and complete offline-playable game
 
 - if there is a possibility of loauching an nrepl on node, than it would be possilbe to have the complete game in vscode(electron)
 - what does server do in that case? sysching state and events db? maybe only sysching state, so events can be hosted against AI
 - but that is again the server: just lauched locally! so it's not about server not doing somehting, it's about game app being capable of running the server
 - should every palyer have their own repl or connect to server? be it local or remote?
 
-#### jpakceged java app with embeded webengine for rendering gui in react
+## jpakceged java app with embeded webengine for rendering gui in react
 
 - it's like electron, but on jvm
 - then again, nrepl needs work (it's not programmable enough, might require forking, and it's simpler to implement it properly, runtime-less, for node/jvm)
 - it does not have an editor: some *have to implement an embedded editor for the game* and have an optional external editor
 - external database is still not cross-paltform launchable without docker, so this "one jvm app for local and server" dies if there is no proper jvm-embedded db
+
+## again again again: it is always a server, lcoal or remote, explicit or implicit, always 0, 1 or more
+
+- regardless of runtimes etc., we always connect to the server - local or remote
+- we can play offline by lauching (implicitley) a server, connecting to it and running/playing scenarios as 1 player
