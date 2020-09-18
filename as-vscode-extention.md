@@ -686,3 +686,14 @@ rethinking Death Star laptop event edition as vscode extension
 
 - regardless of runtimes etc., we always connect to the server - local or remote
 - we can play offline by lauching (implicitley) a server, connecting to it and running/playing scenarios as 1 player
+
+## one app dilemma: it's either vscode + hosted nrepl + nodejs server, or jpackaged app + make-embedded editor
+
+- if vscode
+    - need to make a hostable nrepl
+    - need to run server on nodejs
+    - embedded db fo nodejs
+- if jvm
+    - jpackage
+    - make your own editor
+    - embedded db for jvm
