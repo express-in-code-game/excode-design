@@ -697,3 +697,8 @@ rethinking Death Star laptop event edition as vscode extension
     - jpackage
     - make your own editor
     - embedded db for jvm
+
+## jvm app with webengine rendering: electron-like, but on jvm
+
+- that would allow to use npm libs for all gui and making an embeded editor for the game
+- it's jvm, but rendering done with browser tabs; possible ?
