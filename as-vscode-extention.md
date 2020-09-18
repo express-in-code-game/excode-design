@@ -716,3 +716,9 @@ rethinking Death Star laptop event edition as vscode extension
     - reasearch what is the way to do it
     - how will tab (js render page) communicate with the app?
     - how to do it so that whole gui (like in electron) is js-based ?
+
+## external editor first for jvm one-app
+
+- first, use external editor (e.g. vsocde)
+- once the game works as with extenral editor, it would be possible to add embedded editor
+- this would allow for design to stay decoupled and file-driven
