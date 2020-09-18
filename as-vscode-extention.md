@@ -636,3 +636,31 @@ rethinking Death Star laptop event edition as vscode extension
 - use socket only
     - hub can make requests to the user-side, the only way to do so is socket with operation ids
     - and if such meachanism - request/response over socket - is needed for the system, it would be simpler to use it instead of both socket and http
+
+## rethinking is needed: users should be able to intstall game as one thing and run/play scenarios offline
+
+- after installing Starcraft, it's clear how important it is to be able to run/play the game offline, independently
+- and game should be *a* thing, intall-launch-try a scenario
+- the game needs an editor, so if game is not an extension to an editor, it hsould have its own *and* option to use external
+    - both editors use files, so there is no hard dependency on your own editor, it's a choice, but a palyer can play from the get-go, and pros can opt for a diff editor later
+- game running locally and user experience
+    - it's crucial
+    - if a player cannot even isntall/run/test a scenario locally (offline), without a server, it's lessens the experieince many folds
+    - so yes, there is docker, and player can launch their, but this needs to be thought over - first, waht should be, then how
+- VScode extension and understanding that gui is a single tab/renderer
+    - see previous notes, but even within VSCode, game is supposed to use a single tab for gui
+    - so the vscode <-> server-in-clj is dictated by "react is needed for rendering, nrepl is needed for the game"
+- current next step: requests over socket
+    - as of now, to make hub on the server read files, it requires(and that's cool for this architecture) to be able to make requests against user-side (vscode runtime) (see previous above)
+    - but: it is a big decision, to build the server this way, instead of buiding a game as a local palyable app and then sycning state
+    - game-app-that-is-playbale-offline-and-can-connect-sync-state-with-server  vs userside-is-a-renderer-inputs-streams
+    - let's think over to understand
+- current design and options
+    - server is server, it stays, the question is how much it does and what abstractions/logic run where, what user-side does and what server does
+        - is user-side a state sink/input stream, with server doing socket requests
+        - or is user-side capable of downloading scenarios, running the game offline and server is for db/state sync
+    - we could implement nrepl on node, than would it allow VSCode side to be compelte, apart from server
+    - we could make user-side as jpackaged app with its own editor and options to use external editor
+    - ...
+
+#### 
