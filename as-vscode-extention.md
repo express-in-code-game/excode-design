@@ -701,4 +701,7 @@ rethinking Death Star laptop event edition as vscode extension
 ## jvm app with webengine rendering: electron-like, but on jvm
 
 - that would allow to use npm libs for all gui and making an embeded editor for the game
-- it's jvm, but rendering done with browser tabs; possible ?
+- it's jvm, but rendering done with browser tabs; possible ? why not electron?
+- why not electron?
+    - if "one app", than server needs to be embedded (for multithreading)
+    - nodejs threads? how important is jvms multitheading?
