@@ -1,6 +1,9 @@
 # Death Star Game journey
 
-video episodes/documentary of the Death Star Game project journey
+video episodes/documentary/production vlog of the Death Star Game project journey
+
+- like Hobbit has production vlog
+    - https://www.youtube.com/results?search_query=hobbit+profuciton+blog
 
 ## format is a fun emotional entertaining journey documentary
 
