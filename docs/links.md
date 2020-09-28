@@ -9,7 +9,8 @@
 - https://itsfoss.com/open-source-video-editors/
 - blender as video editor
     - https://www.reddit.com/r/freesoftware/comments/3wml9o/shotcut_vs_openshot/
-        - https://www.youtube.com/watch?v=yjTn8GsRk48
+        - https://www.youtube.com/watch?v=yjTn8GsRk48 from 2014
+        - https://www.youtube.com/watch?v=qDOGFxMJoxw from 2019
 
 ## davinci resolve
 
