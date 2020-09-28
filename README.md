@@ -1,13 +1,16 @@
 # Death Star Game journey
 
-video episodes/documentary/production vlog of the Death Star Game project journey
+- video episodes/documentary/production vlog of the Death Star Game project journey
 
-- like Hobbit has production vlog
-    - https://www.youtube.com/results?search_query=hobbit+profuciton+blog
+- inpisred by wathcing "Long Way Up" with Ewan McGregor
+    - https://www.google.com/search?q=long+way+up
+    - and Hobbit has production vlog
+        - https://www.youtube.com/results?search_query=hobbit+profuciton+blog
+    - and Top Gear/Grand Tour, especially specials
 
 ## format is a fun emotional entertaining journey documentary
 
-- inpisred by wathcing "Long Way Up" with Ewan McGregor
+
 - projects lack coverage accessible/understandable by unaware viewer as well, emotions, personalities, the sense of the journey that is definately there during creation/development
 - plus, we, as undertakers of the journey, would benefit from speaking out in public, bringing the process to public eye, yet doing it within a watchable format (hopelfully enjoyable)
 - for years the question was: how to bring to public eye the process behind the project, in an entertaining manner?
