@@ -11,3 +11,11 @@
 
 - for reactions/comments
 - or even: to point with hands at things on screen
+
+## focus on project's journey, not on self, no bla-bla drag
+
+- simple: use video editiing to create entertaining light-shedding video about the project's journey
+- narration, comments similar to documentaries, serve the purpose
+- but without boring pseudo-politeness: speaking out to and over the edge, show real emotions
+- at the same time doing it dynamically and consicely, without occupying time for self-imporatance reasons
+- pace it out to keep the project in the center, with self-humor, humility, openess, no bla-bla drag
