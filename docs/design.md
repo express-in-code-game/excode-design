@@ -19,3 +19,12 @@
 - but without boring pseudo-politeness: speaking out to and over the edge, show real emotions
 - at the same time doing it dynamically and consicely, without occupying time for self-imporatance reasons
 - pace it out to keep the project in the center, with self-humor, humility, openess, no bla-bla drag
+
+## simple, cut-for-meaning, no visualization noise
+
+- point is meaning, cutting of content into a linear video
+- yes, some effects, like smooth cut may be benefitial
+- but no need for fancy texts, transitions etc.
+- the video should be dynamic, cut-to-convey-the-point
+- like with ugly websites that focus on visual complexity, butchering the meaning
+- videos should be like google.com, github or youtube - you get the value without unhealthy interface noise
