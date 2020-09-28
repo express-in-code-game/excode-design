@@ -43,3 +43,13 @@
 - https://www.reddit.com/r/blender/comments/5i71vz/who_uses_blender_for_video_editing/
 - talk on the future of Blender's video sequence editor
     - https://www.youtube.com/watch?v=sO7Fx7__iZY
+
+#### blender is a no-option
+
+- custom nowhere else used ui in a low level language cannot allow virant development of video editor
+- the complexity of target functionality of such software is enough in itself, not upgrading to modern ui means tight coupling
+- just think about it: software exists for years, and they never implemented the next version using better technologies
+- so it does what it does, but this edition is a legacy/classic
+- video editor requires a fresh approach overall, users should be able to use prpogramming language and version control along with ui
+- but as it currently (2020) stands, all video editors are completely GUI based, and that should be embraced
+- given that, a better/simpler editor that is popular and widely used should be picked, so that there are examples/guides on how to edit videos
