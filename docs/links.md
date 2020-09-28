@@ -18,4 +18,6 @@
     - https://github.com/OpenShot
 - kdenlive
     - https://github.com/KDE/kdenlive
+- shotcut
+    - https://github.com/mltframework/shotcut
 
