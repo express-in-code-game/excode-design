@@ -7,6 +7,7 @@
 - https://www.reddit.com/r/youtubers/comments/a3htwe/question_what_is_the_best_video_editor/
 - https://www.reddit.com/r/Filmmakers/wiki/basicguidetopcvideoeditingsoftware
 - https://itsfoss.com/open-source-video-editors/
+- https://www.reddit.com/r/Filmmakers/comments/2xs2w0/is_it_realistically_possible_to_put_a_movie/
 
 ## VSE
 
