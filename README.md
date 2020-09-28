@@ -38,6 +38,11 @@
     - ... etc.
 - so anyhting can be recorded on sreen, cut into a video, narrated and presented as a video without any graphical work (only optionally, on later stages as a cherry on the cake)
 
+## links
+
+- YouTube channel
+    - https://youtube.com/channel/UC4lYyonkvUGXNFcukJenKkA
+
 ## links to episodes on youtube
 
 - 
