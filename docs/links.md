@@ -43,6 +43,12 @@
 - https://www.reddit.com/r/blender/comments/5i71vz/who_uses_blender_for_video_editing/
 - talk on the future of Blender's video sequence editor
     - https://www.youtube.com/watch?v=sO7Fx7__iZY
+- Beginner Video Editing Tutorial Using Blender 2.8
+    - author channel
+        - https://www.youtube.com/channel/UCMQxX0wfJzgaDa_LLg4So7A
+    - https://www.youtube.com/watch?v=bvr54FtfYl4
+    - example film done with blender vse
+        - https://www.youtube.com/watch?v=F319FkKEImA
 
 #### blender is a no-option
 
