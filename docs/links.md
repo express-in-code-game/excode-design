@@ -11,6 +11,8 @@
 ## davinci resolve
 
 - https://www.blackmagicdesign.com/products/davinciresolve/
+- video guides
+    - https://www.blackmagicdesign.com/products/davinciresolve/training
 
 ## video editors on github
 
