@@ -41,3 +41,5 @@
     - https://www.youtube.com/watch?v=yjTn8GsRk48 from 2014
     - https://www.youtube.com/watch?v=qDOGFxMJoxw from 2019
 - https://www.reddit.com/r/blender/comments/5i71vz/who_uses_blender_for_video_editing/
+- talk on the future of Blender's video sequence editor
+    - https://www.youtube.com/watch?v=sO7Fx7__iZY
