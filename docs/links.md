@@ -14,12 +14,15 @@
 - video guides
     - https://www.blackmagicdesign.com/products/davinciresolve/training
 
-## video editors on github
+## openshot
 
-- openshot
-    - https://github.com/OpenShot
-- kdenlive
-    - https://github.com/KDE/kdenlive
-- shotcut
-    - https://github.com/mltframework/shotcut
+- https://github.com/OpenShot
+
+## kdenlive
+
+- https://github.com/KDE/kdenlive
+
+## shotcut
+
+- https://github.com/mltframework/shotcut
 
