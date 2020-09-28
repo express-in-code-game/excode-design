@@ -8,9 +8,14 @@
 - https://www.reddit.com/r/Filmmakers/wiki/basicguidetopcvideoeditingsoftware
 - https://itsfoss.com/open-source-video-editors/
 
+## davinci resolve
+
+- https://www.blackmagicdesign.com/products/davinciresolve/
+
 ## video editors on github
 
 - openshot
     - https://github.com/OpenShot
 - kdenlive
     - https://github.com/KDE/kdenlive
+
