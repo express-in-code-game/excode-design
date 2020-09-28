@@ -7,10 +7,10 @@
 - https://www.reddit.com/r/youtubers/comments/a3htwe/question_what_is_the_best_video_editor/
 - https://www.reddit.com/r/Filmmakers/wiki/basicguidetopcvideoeditingsoftware
 - https://itsfoss.com/open-source-video-editors/
-- blender as video editor
-    - https://www.reddit.com/r/freesoftware/comments/3wml9o/shotcut_vs_openshot/
-        - https://www.youtube.com/watch?v=yjTn8GsRk48 from 2014
-        - https://www.youtube.com/watch?v=qDOGFxMJoxw from 2019
+
+## VSE
+
+- VSE stands for "video sequence editor"
 
 ## davinci resolve
 
@@ -33,3 +33,10 @@
 ## olive
 
 - https://github.com/olive-editor/olive
+
+## blender as video editor
+
+- https://www.reddit.com/r/freesoftware/comments/3wml9o/shotcut_vs_openshot/
+    - https://www.youtube.com/watch?v=yjTn8GsRk48 from 2014
+    - https://www.youtube.com/watch?v=qDOGFxMJoxw from 2019
+- https://www.reddit.com/r/blender/comments/5i71vz/who_uses_blender_for_video_editing/
