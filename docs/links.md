@@ -7,3 +7,10 @@
 - https://www.reddit.com/r/youtubers/comments/a3htwe/question_what_is_the_best_video_editor/
 - https://www.reddit.com/r/Filmmakers/wiki/basicguidetopcvideoeditingsoftware
 - https://itsfoss.com/open-source-video-editors/
+
+## video editors on github
+
+- openshot
+    - https://github.com/OpenShot
+- kdenlive
+    - https://github.com/KDE/kdenlive
