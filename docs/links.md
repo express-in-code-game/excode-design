@@ -26,3 +26,6 @@
 
 - https://github.com/mltframework/shotcut
 
+## olive
+
+- https://github.com/olive-editor/olive
