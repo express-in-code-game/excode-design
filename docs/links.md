@@ -18,6 +18,12 @@
 - https://www.blackmagicdesign.com/products/davinciresolve/
 - video guides
     - https://www.blackmagicdesign.com/products/davinciresolve/training
+- tiny resolution on 4k display
+    - https://www.google.com/search?q=davinci+resolve+tiny+resolution+4k+display
+    - the problem is encountered by many, including a lot of windows users
+        - https://forum.blackmagicdesign.com/viewtopic.php?t=83845
+        - https://forum.blackmagicdesign.com/viewtopic.php?t=95123
+    - so it's not jvm/ubutnu specific (since davinci gui is alegedly Qt based)
 
 ## openshot
 
