@@ -113,3 +113,8 @@
       - experimental support for embedded
         - https://rancher.com/docs/k3s/latest/en/installation/ha-embedded/
         - https://github.com/canonical/dqlite
+
+
+#### how torrent client works without port-forwarding
+
+- https://superuser.com/questions/91994/how-does-seeding-in-utorrent-work-if-i-dont-forward-any-ports
