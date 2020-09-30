@@ -65,3 +65,11 @@
 - video editor requires a fresh approach overall, users should be able to use prpogramming language and version control along with ui
 - but as it currently (2020) stands, all video editors are completely GUI based, and that should be embraced
 - given that, a better/simpler editor that is popular and widely used should be picked, so that there are examples/guides on how to edit videos
+
+## obs multi cording (recording sources into separate files)
+
+- OBS seems to not have multicording support
+    - https://obsproject.com/forum/threads/can-obs-record-multiple-video-tracks.52690/
+    - https://obsproject.com/forum/threads/suggestoion-multiple-video-tracks.86125/
+- using two OBS instances with -multi option
+    - https://www.reddit.com/r/letsplay/comments/65crny/how_does_youtubers_record_gameplay_and_camera/
