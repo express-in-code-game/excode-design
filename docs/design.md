@@ -34,3 +34,10 @@
 - or get separate microphone/camera
 - or use noise cancelling to remove fan noise from laptop
 - if done via phone, audio needs to be improved and turned suitable for voice over
+
+## use available tools: record/cut videos with available devices, upgrades will follow
+
+- use existing devices to record whatever, cut a video
+- better microphones etc. later if needed
+- point is: well cut video, meaning does not require complex soft or superb devices
+- using available tools will produce better videos
