@@ -73,3 +73,6 @@
     - https://obsproject.com/forum/threads/suggestoion-multiple-video-tracks.86125/
 - using two OBS instances with -multi option
     - https://www.reddit.com/r/letsplay/comments/65crny/how_does_youtubers_record_gameplay_and_camera/
+- using 3840x1080 canvas
+    - https://www.reddit.com/r/letsplay/comments/7xjmmo/should_you_record_your_facecam_in_obs_or_record/
+        - https://www.youtube.com/watch?v=JLxw8TUAOdo
