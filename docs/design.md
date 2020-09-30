@@ -28,3 +28,9 @@
 - the video should be dynamic, cut-to-convey-the-point
 - like with ugly websites that focus on visual complexity, butchering the meaning
 - videos should be like google.com, github or youtube - you get the value without unhealthy interface noise
+
+## recording video on laptop, cam and voice over on the phone
+
+- or get separate microphone/camera
+- or use noise cancelling to remove fan noise from laptop
+- if done via phone, audio needs to be improved and turned suitable for voice over
