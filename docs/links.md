@@ -40,6 +40,8 @@
 ## olive
 
 - https://github.com/olive-editor/olive
+- guides
+    - https://www.youtube.com/watch?v=oZ-WR_CueKQ
 
 ## blender as video editor
 
