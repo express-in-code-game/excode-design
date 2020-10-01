@@ -45,6 +45,8 @@
 - https://www.reddit.com/r/olive/
     - https://www.reddit.com/r/olive/top/?t=all
     - https://www.reddit.com/r/olive/comments/hny3pi/ive_been_using_olive_for_2_month_to_make_videos/
+- post from creators, 2020 Sep
+    - https://www.patreon.com/posts/40542621
 
 
 ## blender as video editor
