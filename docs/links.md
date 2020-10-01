@@ -42,6 +42,10 @@
 - https://github.com/olive-editor/olive
 - guides
     - https://www.youtube.com/watch?v=oZ-WR_CueKQ
+- https://www.reddit.com/r/olive/
+    - https://www.reddit.com/r/olive/top/?t=all
+    - https://www.reddit.com/r/olive/comments/hny3pi/ive_been_using_olive_for_2_month_to_make_videos/
+
 
 ## blender as video editor
 
