@@ -95,3 +95,31 @@ Error: [https://github.com/DeathStarGame/deathstar.ltee.deathstar.ltee]: Propose
 #### vscode multi-root workspace api
 
 - https://github.com/microsoft/vscode/wiki/Adopting-Multi-Root-Workspace-APIs
+
+
+#### embedded databases
+
+- https://en.wikipedia.org/wiki/Embedded_database
+
+#### electron and jvm
+
+- graal exploring how they can integrate GraalVM with Electron 
+    - https://github.com/oracle/graal/issues/326#issuecomment-475324066
+- Java Chromium Embedded Framework (JCEF) 
+    - https://github.com/chromiumembedded/java-cef
+    - https://medium.com/@daniel.bischoff/integrating-chromium-as-a-web-renderer-in-a-java-application-with-jcef-72f67a677db6
+- https://stackoverflow.com/questions/9235079/use-embedded-web-browser-e-g-chrome-as-gui-toolkit-for-java-desktop-applicati
+- https://www.teamdev.com/jxbrowser
+- https://www.java.com/en/download/faq/java_webstart.xml
+
+
+#### javafx tiny ui elements with 4k display resolution
+
+- originally encountered here https://github.com/DeathStarGame/weekend-2020-07-23
+- mistakenly thought it's ubuntu/jvm specific
+- but encountered the same problem after installing davinci resolve 16
+    - https://www.google.com/search?q=davinci+resolve+tiny+resolution+4k+display
+    - the problem is encountered by many, including a lot of windows users
+        - https://forum.blackmagicdesign.com/viewtopic.php?t=83845
+        - https://forum.blackmagicdesign.com/viewtopic.php?t=95123
+- so it's not jvm/ubutnu specific (since davinci gui is alegedly Qt based)
