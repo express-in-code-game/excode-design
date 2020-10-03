@@ -722,3 +722,16 @@ rethinking Death Star laptop event edition as vscode extension
 - first, use external editor (e.g. vsocde)
 - once the game works as with extenral editor, it would be possible to add embedded editor
 - this would allow for design to stay decoupled and file-driven
+
+## when to launch server: always, server is integral part of user app
+
+- since the objective is one-app, user should always be able to play scenarios offline (locally)
+- that means, that server must always be luanched as part of the app and we could select scenarios and play offline
+- deisgn-wise it could be abstracted as user always having a list of servers to choose from, the first and deafult always being `local`
+- one the game is installed and launched, user can see (in file or in gui) a list fo servers constisting of `local` option only
+- then the user can add more endpoints (servers)
+- yes, we access the server only via socket/http, but it's always launched, otherwise the one-app is incomplete
+- OTOH, if we don't want to occupy those resources (http server, nrepl server, database), we could wait for user to actually want to play offline
+    - so we defer local server launch until user opts for playing locally
+    - so that if we want to play online-only (on a remote server), less resources are used
+- but: we don't care about memeory, only CPU
