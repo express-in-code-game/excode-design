@@ -735,3 +735,14 @@ rethinking Death Star laptop event edition as vscode extension
     - so we defer local server launch until user opts for playing locally
     - so that if we want to play online-only (on a remote server), less resources are used
 - but: we don't care about memeory, only CPU
+
+## distribution: uberjars and beyond
+
+- the goal is proper user experience with installable/ auto-updateable app, like electron provides (and probably Qt etc.)
+- to note, as it already works out-of-the-box, uberjars can be launched via double click, so users can download the binary and launch by simply clicking
+- it's not a solution, but a clear already existing/working distribution mechanism
+    - install java (jvm)
+    - double click the downloaded artifact (uberjar)
+- but that's not *the* solution, as the app needs to be updated
+    - as the basic, GUI can inform user that new version is available
+    - we can click and download a new binary and can inform "stop the app, launch the new binary"
