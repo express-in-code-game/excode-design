@@ -783,3 +783,29 @@ rethinking Death Star laptop event edition as vscode extension
 - yes, the border between browser page app and native app is being erased on mobile devices, but still, web ui tools are most advaced and maintained and evolving
 - if we go the javafx route only, it means that "make your own scenario" is not done with web tools and is niche
 - funcdamentally, ideally, a sceario gui is exactly a program to be run in a browser page enviroment, using react and familiar web
+
+
+## jvm desktop app vs electron + docker/jvm dilemma, if we require user to have jvm, why not docker? 
+
+- step by step, logical:
+- we want and need desktop app, because file system; so editor
+- we want react/reagent and web page for user app gui and scenarios guis
+- we may have to - be it jvm or electron - launch subprocesses for server and db
+    - if jvm, we can embed everything into single jvm, but what do we gain? minefield of corner-cutting
+- there is no sane way to have chromium's engine at our disposal on jvm in autumn 2020 and foreseeable future, so can we even rely on javafx Webengine being a legitimate web page environment?
+- if we opt for electron, we have to - as in no other way - use subprocesses, be it with child_process or else
+    - if we distribute server as uberjar with electron app/vscode extension, we require users (ourselves) to have jvm intalled
+        - "hey, intstall the game app and be sure you have java"
+        - when user starts the app, it will (when local selver will be needed by player) spawn a child_process with jvm from that uberjar
+        - this a dangerous child_process cross-system territory: if user app crashes and comes back, how do we find that proc we spawn? did we even?
+    - if we jave to require user to have jvm - one prerequisite besides installing app or extension - why should not we require docker?
+        - child_process is a way,yes, but with docker api it is much more sane to find a container by name for example
+        - if we exit unexpectedly and come back, we can ask docker (via http api) "hey, is deathstar.server container running?" and go from there
+        - sure, we can healthcheck the server itself, even with child_process, but say it reponds inadequtely, how do we find the proc and kill/start a new server? 
+        - with docker, we have api for that
+- and database: yes, we can look for some db embedable into jvm, sure, but is it a sane approach? relying on the fact, that fingers-crossed, we won't need another subprocess
+- and we again, must rely on child_process to manage the database, and hope we don't need to ask user to install somehting else besides jvm
+- but if we do ask user to install docker only and game and/or editor, people may just be turned away as it may be considered a bad design
+- the positive thing about from the get-go desingning around child_process or docker, is that we can defer lauching anything besides the user app/editor: maybe we only want to connect to remote server, no need for local
+- with single jvm, yes, it's the same actually, but we have to invent our apis and hope for db to be embedabble and deal with abandoned gui tools and unclear-if-will-work Webengine
+- bottom line question: if we require user to have jvm, why not docker? 
