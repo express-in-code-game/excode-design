@@ -772,3 +772,14 @@ rethinking Death Star laptop event edition as vscode extension
 - yes, we maintain game hsitory in db anyway, for querying, but it's not files
 - if we don't do files at all, and give user text-area per game and then discard, it will evetually lead to "we need a button to save...", so we'll be back on ugly-fs again
 - if we want to store game files in a repo and not implement our github, the user app (ui) should have access to file system, which makes it an editor and a desktop app
+
+## we want reagent, we want the ui done with web tools, give user (us) the web page for gui
+
+- it's not just about "can we have react(reagent) for javafx", because nobody knows javafx
+- the game wants to embrace the most used programming medium - the browser page - with all it's tooling
+- it's not just about a scneario, it's about moving forward with the game having the reach of web ui tooling, that is the leading paradigm by far
+- why? probably, because internet and browser->server interaction requiring protocols, and browser api being 3 languages - html, css, js - and not some ugly OOP framework
+- but mostly because internet, browser being the most used app after the OS itself, users wanting to freely navigate data in the world, in a lightweight manner
+- yes, the border between browser page app and native app is being erased on mobile devices, but still, web ui tools are most advaced and maintained and evolving
+- if we go the javafx route only, it means that "make your own scenario" is not done with web tools and is niche
+- funcdamentally, ideally, a sceario gui is exactly a program to be run in a browser page enviroment, using react and familiar web
