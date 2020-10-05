@@ -746,3 +746,11 @@ rethinking Death Star laptop event edition as vscode extension
 - but that's not *the* solution, as the app needs to be updated
     - as the basic, GUI can inform user that new version is available
     - we can click and download a new binary and can inform "stop the app, launch the new binary"
+
+## desktop app as a composition of apps(services/processes)
+
+- explore the possibility of app being comprised of apps, some may run constantly in the background
+- it would act like docker, exposigin some kind of api, so that leading processes can access the system and start/stop other apps
+- but code-wise, apps would be designed unaware of how the run
+- obviously, such code can be part of the app itself and processes can be core.asycn processes, so this can be achieved programmatically
+- but from distribution stadnpoint and ability to have background processes, there may be existing soltuions/approaches that would be better 
