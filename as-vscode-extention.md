@@ -809,3 +809,10 @@ rethinking Death Star laptop event edition as vscode extension
 - the positive thing about from the get-go desingning around child_process or docker, is that we can defer lauching anything besides the user app/editor: maybe we only want to connect to remote server, no need for local
 - with single jvm, yes, it's the same actually, but we have to invent our apis and hope for db to be embedabble and deal with abandoned gui tools and unclear-if-will-work Webengine
 - bottom line question: if we require user to have jvm, why not docker? 
+
+
+## explicit server data: stored in repo in .server dir and excluded in .gitignore
+
+- when the game is launched, we open - like with editor - a directory, a player's repo, and that's an "instance"
+- server data may be stored in a `.server` dir or similar and be excluded in gitignore
+- so the system does not create implicit directories somewhere for data, rather the player's namespace is the root
