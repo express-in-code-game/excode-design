@@ -754,3 +754,10 @@ rethinking Death Star laptop event edition as vscode extension
 - but code-wise, apps would be designed unaware of how the run
 - obviously, such code can be part of the app itself and processes can be core.asycn processes, so this can be achieved programmatically
 - but from distribution stadnpoint and ability to have background processes, there may be existing soltuions/approaches that would be better 
+
+## mistake: premature optimization, first step should clearly be single jvm with server app started/stopped in main/ops
+
+- simple: the first edition of the game (features and everything should be built)
+- preserve namespaces, abstractions, decoupling using channels, but within a single jvm
+- as it is the optimal way of delivering the working app
+- next will be next
