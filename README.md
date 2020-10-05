@@ -1,12 +1,15 @@
 # Death Star Game journey
 
 - video episodes/documentary/production vlog of the Death Star Game project journey
-
 - inpisred by wathcing "Long Way Up" with Ewan McGregor
     - https://www.google.com/search?q=long+way+up
     - and Hobbit has production vlog
         - https://www.youtube.com/results?search_query=hobbit+profuciton+blog
     - and Top Gear/Grand Tour, especially specials
+
+## YouTube channel
+
+- https://youtube.com/channel/UC4lYyonkvUGXNFcukJenKkA
 
 ## format is a fun emotional entertaining journey documentary
 
@@ -37,14 +40,3 @@
     - what it means to make as extension or as one-app
     - ... etc.
 - so anyhting can be recorded on sreen, cut into a video, narrated and presented as a video without any graphical work (only optionally, on later stages as a cherry on the cake)
-
-## links
-
-- YouTube channel
-    - https://youtube.com/channel/UC4lYyonkvUGXNFcukJenKkA
-
-## links to episodes on youtube
-
-- 
-- 
-- 
