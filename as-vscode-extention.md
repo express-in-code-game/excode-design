@@ -816,3 +816,24 @@ rethinking Death Star laptop event edition as vscode extension
 - when the game is launched, we open - like with editor - a directory, a player's repo, and that's an "instance"
 - server data may be stored in a `.server` dir or similar and be excluded in gitignore
 - so the system does not create implicit directories somewhere for data, rather the player's namespace is the root
+
+## don't start the server from gui from the beginning, but incrementally
+
+- start it explicitly in docker, same as in dev, in GUI select servers from dropdown
+- the way of jvm app means essentially rebuilding an editor, but the goal is to make the game
+- editor exists - VSCode - but the missing piece is that server needs to be on jvm, so how do we start it from GUI? we don't
+- user installs VSCode and deathstar extension and the can select a server to connect to: local or remote
+- local? local server needs to be started in docker manually, it's up to the user
+- but this is an ugly user experience..
+- but evloution: when the game works with manual server in docker, the "start server" can find its way into GUI
+    - first, a programmatic launch via docker http api can be added, so to start user will have to have docker, but extension will do the rest
+    - then, docker requirement can be dropped if server would be distributed as jvm and launched as child_process, requiring user to now only have jvm
+    - next, server can evolve into a native binary, that will be downloaded the first time user needs a local server, so user machine will have no requirements
+- during this time, the user app - editor extension - stays consistent
+- but nah, scenarios
+    - every user will want the server, the very first time they install editor+extension
+    - because, we would naturally want to check out scenarios and play/repl into them
+    - game will say "select a server", we would select local, game will say "local server is not running"
+    - users will look up docs and see: to start a local server, install docker and do "docker run github.com.DeathStarGame/deathstar.ltee:0.1"
+    - natural question at this moment: well, should not that be a press of a button? both docker installation and starting the server?
+    - so reaction will be: this is a bad design, misinformation - "can't even play a scneario without some heavy manual setup" 
