@@ -761,3 +761,14 @@ rethinking Death Star laptop event edition as vscode extension
 - preserve namespaces, abstractions, decoupling using channels, but within a single jvm
 - as it is the optimal way of delivering the working app
 - next will be next
+
+## why user app (gui) should be dekstop at all, not a browser app?
+
+- because file system
+- users need to be able to edit code files and opt to maintain their game hsitory on a repo
+- if game is in the browser
+    - we either discard such file hsitory and only keep game hsiitory (so user cannot see the files they've edited the prevoiuos games)
+    - or we have to implement our own browser->server pseudo filesystem, which is wrong in every possible sense
+- yes, we maintain game hsitory in db anyway, for querying, but it's not files
+- if we don't do files at all, and give user text-area per game and then discard, it will evetually lead to "we need a button to save...", so we'll be back on ugly-fs again
+- if we want to store game files in a repo and not implement our github, the user app (ui) should have access to file system, which makes it an editor and a desktop app
