@@ -837,3 +837,13 @@ rethinking Death Star laptop event edition as vscode extension
     - users will look up docs and see: to start a local server, install docker and do "docker run github.com.DeathStarGame/deathstar.ltee:0.1"
     - natural question at this moment: well, should not that be a press of a button? both docker installation and starting the server?
     - so reaction will be: this is a bad design, misinformation - "can't even play a scneario without some heavy manual setup" 
+
+## game is an editor extension, always, either we build one or use existing
+
+- the fundamental design characteristic of Death Star is that we open a directory on disk with files, create code files for games
+- it's a repo, a folder on operatin system, just like any other src ocde repo, but this one has game files
+- playing Death Star is editing files on disk in that repo, so we always open a dir and see file tree - we are in an editor
+- and editor comes first, game gui and features are an extension
+- yes, we can say game comes first and editor is an extension, but this would be a design mistake, as there is language and files first and we play a compepteive game around that
+- Death Star game idea is an *extension* of programming, turning editing code into a money-free e-sports scene with unlimited scenarios for an open source game system
+- it's an editor first, always
