@@ -847,3 +847,23 @@ rethinking Death Star laptop event edition as vscode extension
 - yes, we can say game comes first and editor is an extension, but this would be a design mistake, as there is language and files first and we play a compepteive game around that
 - Death Star game idea is an *extension* of programming, turning editing code into a money-free e-sports scene with unlimited scenarios for an open source game system
 - it's an editor first, always
+
+
+## focus on the what, being able to play scenarios and events, for pros, embrace great tools, compose system of elements (vscode extension + server in docker), go from many to one
+
+- docker and vscode extension allow and inform a decoupled design, thinking
+- the single jvm app may not be incorrect after all, but: the mistake is to start with it
+- the game - Death Star - as a system, will benefit from healthy formation, like a galaxy and planets from space stuff
+- no need to rebuild working tooling, game features should be built with best existing tools
+- first: we start with vscode extension and server in docker
+    - we focus on the what : being able to play scenarios and events
+    - the server may migrate from docker to uberjar to binary
+    - but not to start with: we want to be able to play the game by laucnhing vscode + extension and sever manually, and add automation as the next step
+- next possibility
+    - down the road user can be provided with a small installer binary/script: it would literally install vsocde, extension, docker and dockerload the server 
+    - the system will still be comprised of elements, and a decoupled explicit installer would do the setup on every system
+- next possibility
+    - at this point, the game is playable and scenarios are creatable
+    - it may no be the smoothest user experience, but we foucs on events and features, scenarios, making the game for pros, not idiotic simpilicty
+    - however, at this point the components are known and a new design - for a single jvm or aother - can be developed
+- don't build well-made tools, build the game - scenarios and events 
