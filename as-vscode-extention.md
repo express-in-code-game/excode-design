@@ -913,3 +913,7 @@ rethinking Death Star laptop event edition as vscode extension
 - what are the tooling implications though?
     - simple: system can me made work (with files and everything - EVERYTHING), just without the REPL
     - and this is toatally fine and superb, as it can be cleanly added/developed later
+
+## yes, server and browser tab, best design and user experience
+
+- see above and project talk # 4 on project's youtube channel
