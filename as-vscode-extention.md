@@ -911,3 +911,5 @@ rethinking Death Star laptop event edition as vscode extension
 - user-side actually stays an edge - renderer, collects inputs, receives state and all done via proper identity
 - user experienece: is the best, as participants don't need to do anything but login
 - what are the tooling implications though?
+    - simple: system can me made work (with files and everything - EVERYTHING), just without the REPL
+    - and this is toatally fine and superb, as it can be cleanly added/developed later
