@@ -900,3 +900,14 @@ rethinking Death Star laptop event edition as vscode extension
         - and this is invaluable: this appraoch of let's make the actual game, for two player to play, it gave the most results, because of that we finally understood the game design
 - we want to build the playable game, but will bag of workarounds instead of identity/database actually speed up? they definately free thinking up and allow to design the system, that's for sure
 - can we do both: think palyer-to-player, simply, but build properly? kind of appraoch building thouroughly, but step out (by imaging the system without generic layers) and design free-mindedly? 
+
+## bold: store user files on the server? consider providing browser GUI?
+
+- let's be bold and even consider this
+- we can store all game files, from all users on the server, with proper identity layer
+- this way, there is no need for server->user requests! NO NEED FOR SERVER->USER REQUESTS !!!
+- user will have all the GUI provided to them in the browser
+- and server will be the only part of the system reading from file system, and all the data - files and db - will be part of the system (server)
+- user-side actually stays an edge - renderer, collects inputs, receives state and all done via proper identity
+- user experienece: is the best, as participants don't need to do anything but login
+- what are the tooling implications though?
