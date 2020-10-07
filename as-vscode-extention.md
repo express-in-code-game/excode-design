@@ -867,3 +867,18 @@ rethinking Death Star laptop event edition as vscode extension
     - it may no be the smoothest user experience, but we foucs on events and features, scenarios, making the game for pros, not idiotic simpilicty
     - however, at this point the components are known and a new design - for a single jvm or aother - can be developed
 - don't build well-made tools, build the game - scenarios and events 
+
+## vscode extension + server is perfect
+
+- we don't want to build an editor, we want the game, scenarios and tournaments
+- server is always a standalone app (subprocess or not)
+- even in dev it's desirable to be able to separately restart user app vs server
+- if server is standalone, the runtime of user app is unimporatant, except for we want web renderer (react/reagent)
+- so electron/nodejs is perfectly fine and fit for desktop gui user app
+- we defineately want and need and editor, because we want to focus on scnearios and tournaments, not re-building an editor
+- so we have a luxury of the best editor out there that happens to have all the desired qualities - web gui with react, clojure-compatible runtime of nodejs/browser
+- and further down the road, we are free to automate downloading/laucnhing server and isnalling what's needed right in the game's gui
+
+## leverage deps tool to install scenarios
+
+- for downloading/storing scenarios see how to leverage deps
