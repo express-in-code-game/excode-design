@@ -882,3 +882,21 @@ rethinking Death Star laptop event edition as vscode extension
 ## leverage deps tool to install scenarios
 
 - for downloading/storing scenarios see how to leverage deps
+
+## since extension (user app) is a remote renderer/input collection/state sink, and server is the system, identity is needed
+
+- just uisng a uuid and ephemeral connection may end up swaying system development into patches and tricks that would not be simpler/faster
+- say, we launch the server, no we want to download scenarios or remove a player, how do we know who is the host/responsible?
+- of course, we can do some token shown to he host on server launch, but again, that takes as much mind effort as going fot the correct solution
+- at the same time, diving into identity without being able to play scenarios.. no good either
+- however, these are two distinct paths
+    - maunally inveting every such small workarounds to make it work "faster" (doubtful)
+    - building the server as the system with proper identity layer (obviusoly, use an existing solution as ory) and database choice
+        - if done properly - by choosing existing tools and assembling a system - it can actually speed up the system and simplify GUI
+        - why? because if we have proper users and can login/out, we don't need to mock data layer or mock extension, we go for it properly
+        - danger is: focusing too much on non-game specific stuff, instead of playing scenarios
+        - for example, until we've dropped all this identity/db stuff and jumped into making the game, we couldn't truely progress
+        - the real progress happened when we thought of the game as a simple no-db, no-identity system so that 2 palyer can just connect and play
+        - and this is invaluable: this appraoch of let's make the actual game, for two player to play, it gave the most results, because of that we finally understood the game design
+- we want to build the playable game, but will bag of workarounds instead of identity/database actually speed up? they definately free thinking up and allow to design the system, that's for sure
+- can we do both: think palyer-to-player, simply, but build properly? kind of appraoch building thouroughly, but step out (by imaging the system without generic layers) and design free-mindedly? 
