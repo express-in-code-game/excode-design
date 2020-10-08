@@ -917,3 +917,8 @@ rethinking Death Star laptop event edition as vscode extension
 ## yes, server and browser tab, best design and user experience
 
 - see above and project talk # 4 on project's youtube channel
+
+---
+
+This document is complete.
+Continuation of project design notes is in [./design-notes.md](./design-notes.md)
