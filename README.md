@@ -99,11 +99,9 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 #### current progress - Death Star laptop event edition 
 
 - design notes (what is what, why and how)
-    - https://github.com/DeathStarGame/docs/blob/master/design-notes.md
+    - [./deathstar.ltee/design-notes.md](./deathstar.ltee/design-notes.md)
 - implementation repo
     - https://github.com/DeathStarGame/deathstar.ltee
-- implementation notes
-    - https://github.com/DeathStarGame/deathstar.ltee/blob/master/docs/notes.md
 - github.com/cljctools (needed to create the game)
     - rationale https://github.com/cljctools/readme#rationale
     - source https://github.com/cljctools/cljctools
