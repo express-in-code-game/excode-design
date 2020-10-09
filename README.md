@@ -1,17 +1,17 @@
 # deathstar.ltee
 Death Star Game: laptop event edition (ltee)
 
+## project docs
+
+- https://github.com/DeathStarGame/docs
+
 ## design notes
 
-- https://github.com/DeathStarGame/docs/blob/master/as-vscode-extention.md
+- https://github.com/DeathStarGame/docs/blob/master/design-notes.md
 
 ## implmentation notes
 
 - [./docs/notes.md](./docs/notes.md)
-
-## project docs
-
-- https://github.com/DeathStarGame/docs
 
 ## snapshots
 
