@@ -12,8 +12,8 @@ This document is a linear continuation of:
 - no wheel reinvention whenever possible (should be most cases)
 - ui is standard, mostly mutiplayer stuff, where users can create/join/observe games
 - part of the screen will be for editor (editing clojure code), part will show scenario gui
-- system (server) will handle game data, hisotry and user's game files (code), preferably in graph manner to be queried, but files maybe git or some other STANDARD
-- games are processes that will run on server (and scenario simulations): when neede, user's code from gui is sent to server, game simulation is run, new state is broadcasted to everyone
+- system (server) will handle game data, hisotry and user's game files (code), preferably in graph manner to be queried, but files maybe git or some other standard way to do it
+- games are processes that will run on server (and scenario simulations): when needed, user's code from gui is sent to server, game simulation is run, new state is broadcasted to everyone
 - identity: done as a layer, should be standard
 - in general: the system should be done applying best practices, standards and protocols
 - it is a standard system operating on user data, the special part is submitting code and running game sceanrios
