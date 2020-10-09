@@ -94,6 +94,11 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
     - and existing e-sports games are closed source, most dark and click driven, most moneytized
     - hidden, hidden, private, hidden... so I don't think such game exists yet, otherwise we would have noticed it
 
+
+## what the system will lool like
+
+- [./deathstar.ltee/design-notes.md#what-the-system-will-lool-like](./deathstar.ltee/design-notes.md#what-the-system-will-lool-like)
+
 ## links
 
 #### Death Star laptop event edition (currently in focus)

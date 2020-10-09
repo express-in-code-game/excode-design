@@ -6,7 +6,7 @@ This document is a linear continuation of:
 - [../origin-cluster/origin-cluster.md](../origin-cluster/origin-cluster.md)
 - [./as-vscode-extension.md](./as-vscode-extension.md)
 
-## what will the system look like
+## what the system will lool like
 
 - the system will run in docker, with a browser ui
 - no wheel reinvention whenever possible (should be most cases)
