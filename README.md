@@ -96,7 +96,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 ## links
 
-#### current progress - Death Star laptop event edition 
+#### Death Star laptop event edition (currently in focus)
 
 - design notes (what is what, why and how)
     - [./deathstar.ltee/design-notes.md](./deathstar.ltee/design-notes.md)
