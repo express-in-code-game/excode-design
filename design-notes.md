@@ -6,4 +6,6 @@ This document is a linear continuation of:
 - [./origin-cluster/origin-cluster.md](./origin-cluster/origin-cluster.md)
 - [./as-vscode-extension.md](./as-vscode-extension.md)
 
-## 
+## switch account feature like in youtube
+
+- to be able to open multiple tabs and easily select identity
