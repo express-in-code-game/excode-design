@@ -3,7 +3,7 @@
 
 - the game, multiplayer, ever non-commercial money-free project
 
-## first things first: project and money
+## project is ever non-commercial
 
 - Death Star game is *ever any-money-concerns-free project*, openly created and contributed
 - no funds, no pots, purely volunteer creating process, no strings attached or hidden
@@ -20,72 +20,54 @@ As Jesus says:
 
 source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
-## project in a nutshell
+## what's the point of the project ?
 
-- what's the point of the project ?
-    - create a game and play events(tournaments)
-- aren't there enough games already ?
-    - ok, there were chess and go and stuff
-    - then internet came about
-    - then it all grew, and now we have a few scenes for different games to play, nice
-    - but they are all click-focused and quite stale, only maps change
-    - not enough events, no/few automated ways to create events and invite people, only 1v1s
-    - 90% of twitch streams are crap, because games are mostly uncomfortable or boring to play, so channels become stale
-    - there is a culture of 'you can only play if click fast enough'
-    - still, great games like Age of Empires, Starcraft have impressive scenes and are/will be fun to watch
-    - but we can do better by contributing to the world of games a new kind of games
-- what kind of games ?
-    - players use a programming language to build/create a composition/solution within a scenario
-    - scenarios are created by people and are installable via a link (from github for example), best scenarios will become standard for tournaments
-    - a scenario is like a game in itself with it's own idea and objectives
-    - a scneario will typically have a resource space (what elements, APIs can be used) and a solution space (where the composion will be tested)
-    - both spaces are randomly generated, but there will be no randomness afterwards, so that there will be no RNG-complaints
-    - for example
-        - a scenario where players should build drones to explore a planet
-        - a resource space will contain elements/parts/devices to build from, solution space will be unique location on the planet
-        - players define (in code) what there drones will be and program their behaviors
-        - the system(drones or multiple, it's up to player what to build) will explore the map(planet) according to the program
-        - the system that explores/achieves the most winss
-        - no in-game RNG, players are in absolutely equal positions, yet competing
-    - games should be configurable to be run in fixed time, for example 10-15 minutes, or maybe longer
-    - players can evaluate code interactively in the REPL to explore resource and solution space
-    - players can use an editor of their own choice
-    - point is
-        - players have a real language to express logic, not just clicks and hotkeys
-        - scenarios should be designed not for fast-typer-wins, but for clearer-thinker-wins
-- what about events(tournaments) ?
-    - should be possible to host an event from your pc (schedule it via social networks)
-    - players would add your IP/domain to their game client, connect and play
-    - should be possible to select a tournamnet format and what scenarios will be used in which rounds
-    - should be possible to export tournament configuration as a file (code or data), so that it can be shared via github
-    - ideally, there should be a way to export data from self-hosted events to have global data stats (but that's not a priority)
-    - later would be awesome to create a new type of volunteer cluster (cloud), so that computers can be volunterily added and system could run decentralized
-- what programming language will this prject use ?
-    - clojure and/or clojurescript
-    - these are unmatched in terms of REPL, reach and features
-    - language will be used as is, unmodified
-- what will game's code editor look like ?
-    - players will edit files using an editor of their choice
-    - this way there is no wrapping or coupling
-- this document is not very good presentation-wise. There are already lots and lots of games based on this idea, plus some more specialized (analogous to e-sports you might say) events, like ICFP and similar ones. How exactly is this different?
-    - very true, it's a poor presentation; the point is to share and idea and find people who have the same problem/goals already
-    - please, link me to such games if possible! I've been following e-sports for about 10 years and could not find any..
-    - for example 
-        - this is https://liquipedia.net/starcraft2/Main_Page , probably the best resource for tournaments, and all the games there are usual suspects
-        - or obviously https://www.twitch.tv/directory,  is there a category for such a game(s)?
-    - and main point: it should not be a napkin-game, or 'look-ma-what-i-have-done'; it should be better than Blizzard does things, because it should be open source
-    - and better than Microsoft, that just released Age of Empires 2: Definitive Edition and are investing into tournaments and game updates to catch up with Blizzard
-    - I'm not mentioning Dota, LoL , CS:GO and stuff like that
-    - those are scenes, those are games; they gather 100 000 viewer streams on twitch
-    - this game should do all that, but be open source and less stale
-    - and not like Heroes of Might and Magic 3 scene on twitch, where some dudes got the source code, maintain a server and although do it for free, it is again, happening under the carpet, and again, all tournaments are organized via forums and happen rarely
-    - and existing e-sports games are closed source, most dark and click driven, most moneytized
-    - hidden, hidden, private, hidden... so I don't think such game exists yet, otherwise we would have noticed it
+- create a game and play events(tournaments)
 
+## aren't there enough games already ?
 
-## what the system will lool like
+- ok, there were chess and go and stuff
+- then internet came about
+- then it all grew, and now we have a few scenes for different games to play, nice
+- but they are all click-focused and quite stale, only maps change
+- not enough events, no or few automated ways to create events and invite people, only 1v1s
+- there is a culture of 'you can only play if click fast enough'
+- still, great games like Age of Empires, Starcraft have impressive scenes and are/will be fun to watch
+- but we can do better by contributing to the world of games a new kind of games
 
-- [./deathstar.ltee/design-notes.md#what-the-system-will-lool-like](./deathstar.ltee/design-notes.md#what-the-system-will-lool-like)
+## what kind of games ?
+
+- players use a programming language to build/create a composition/solution within a scenario (program behaviour of entities on the map)
+- scenarios are created by people and are installable via a link (from github for example), best scenarios will become standard for tournaments
+- a scenario is like a game in itself with it's own idea and objectives
+- for example
+    - a scenario where players should build drones to explore a planet
+    - a resource space will contain elements/parts/devices to build from, solution space will be unique location on the planet
+    - players define (in code) what there drones will be and program their behaviors
+    - the rovers will explore the map(planet) according to their program
+    - the player that explores/achieves the most wins
+    - no in-game RNG (only on generation), players are in absolutely equal positions, yet competing
+- games should be configurable to be run in fixed time, for example 10-15 minutes, but it's up to scenario
+- players can evaluate code interactively in the REPL to explore resource and solution space
+- players have a real language to express logic, not just clicks and hotkeys
+- scenarios should be designed not for fast-typer-wins, but for clearer-thinker-wins
+
+## what about events(tournaments) ?
+
+- users can host an event(tournamnet) from their laptop (run the system in docker) 
+- but the goal is the global system on a volunteer/decentralized cluster
+- it should not be a napkin-game, or 'look-ma-what-i-have-done'; it should be better than SC2/AoE2/LoL/CS/... do things
+- those are scenes, those are games; they gather 100 000 viewer streams on twitch
+- this game should be worthy of a similar or better scene
+
+## what programming language will this game use ?
+
+- clojure, because https://github.com/cljctools/readme#why-cljctools-and-why-use-clojure
+
+### what the system will look like?
+
+- it will run in docker, users open GUI in browser, signup/login and can play a game or torunaments
+- more [./deathstar.ltee/design-notes.md#what-the-system-will-lool-like](./deathstar.ltee/design-notes.md#what-the-system-will-lool-like)
 
 ## links
 
@@ -112,6 +94,8 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 - reddit
     - https://www.reddit.com/r/Clojure/comments/hujrnk/pitch_lets_make_a_noncommercial_expressincode/
+    - https://www.reddit.com/r/programming/comments/j8ez9g/currently_starting_a_new_project_ever/
+    - https://www.reddit.com/r/Clojure/comments/j82vbd/currently_starting_a_new_project_ever/
 - clojure mailing list
     - https://groups.google.com/g/clojure/c/3jT7HXR435g
 
