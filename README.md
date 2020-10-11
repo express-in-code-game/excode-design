@@ -1,6 +1,8 @@
 
 # Death Star Game
 
+- the game, multiplayer, ever non-commercial money-free space and e-sports
+
 ## first things first: project and money
 
 [Q] "you're an indiot! why not monetize the project?"       
@@ -35,7 +37,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 - what's the point of the project ?
     - create a game and play events(tournaments)
-    - game should have a scene, should be on twitch and stuff
+    - game should have an e-sports scene, should be on twitch and stuff, but as money-free space, like competing with friends for bragging rights
 - aren't there enough games already ?
     - ok, there were chess and go and stuff
     - then internet came about
