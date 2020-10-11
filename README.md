@@ -22,11 +22,12 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 ## what we are building
 
-- a game system that can be hosted on a laptop and/or a cluster and/or as a global decentralized app
+- a game system
 - users compete in tournaments
 - players use programming language to complete scenarios' objectives
 - scenarios like extensions, can be installed via a link, each being a game of its own with its own ui
 - better scenarios overtime will become the standard for e-sports scene and tournaments
+- can be hosted on a laptop and/or a cluster and/or as a global decentralized app
 
 ## links
 
