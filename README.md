@@ -1,27 +1,14 @@
 
 # Death Star Game
 
-- the game, multiplayer, ever non-commercial money-free space and e-sports
+- the game, multiplayer, ever non-commercial money-free project
 
 ## first things first: project and money
 
-[Q] "you're an indiot! why not monetize the project?"       
-[A] bitch please: Death Star is money free zone, children's playground
-
-- these questions cause confusion, need to be addressed
-    - should project be eventually moneytized ?
-    - should those who create the game and scenarios be paid, should anybody 'make a living' from it ?
-    - should there be an organization behind, some fund or pot or whatever (for donations and fundraising and stuff) ?
-    - should events(tournaments) have prize pools ? If not, what should the system be ?
-- the answer is **no**
-- because 
-    - this project will be sort of a children's palyground - children come and play and build stuff, no reason needed except for wanting to
-    - it's not good for the value(quality) of the project
-    - the point is to play games/events, enjoy competetion, be inspired by the project, commercialization will devalue the product(game and the scene)
-    - companies eventually lose the ability to innovate and eventually gravitate to revenue/stability goals, which kills the freedom, simplicity and individual creativity so desperately needed for games and playing
-    - the project should be completely any-money-concerns free space, no strings attached or hidden, openly created and contributed, for anyone to play
-    - tournament system should be like other systems(groups, brackets, seasons etc.), except with points only, no prize money: playing games does not require any extra motivation, except for some bragging rights
-    - it is also important to keep the development process (game and scenarios) creative and pressure-free, which will lead to better product
+- Death Star game is *ever any-money-concerns-free project*, openly created and contributed
+- no funds, no pots, purely volunteer creating process, no strings attached or hidden
+- it's a playground, an inspiration-driven development
+- we are bulding a spacious, epic, designed for e-sports, yet elegant and simple game for people to be inspired
 
 As Jesus says:
 
@@ -37,7 +24,6 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 - what's the point of the project ?
     - create a game and play events(tournaments)
-    - game should have an e-sports scene, should be on twitch and stuff, but as money-free space, like competing with friends for bragging rights
 - aren't there enough games already ?
     - ok, there were chess and go and stuff
     - then internet came about
@@ -45,8 +31,8 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
     - but they are all click-focused and quite stale, only maps change
     - not enough events, no/few automated ways to create events and invite people, only 1v1s
     - 90% of twitch streams are crap, because games are mostly uncomfortable or boring to play, so channels become stale
-    - there is a culture of 'you can only play if click fast enough, before you body breaks down from poisonous crap-foods events advertise'
-    - still, great games like Age of Empires, Starcraft have impressive scenes and are fun to watch
+    - there is a culture of 'you can only play if click fast enough'
+    - still, great games like Age of Empires, Starcraft have impressive scenes and are/will be fun to watch
     - but we can do better by contributing to the world of games a new kind of games
 - what kind of games ?
     - players use a programming language to build/create a composition/solution within a scenario
