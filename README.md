@@ -59,7 +59,8 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 ## Q&A
 
 #### what the system will look like?
-
+ 
+- *correction: it should be designed and built as a distributed decentralized app of web 3.0 (ipfs libp2p ..)*
 - the system will run in docker, with a browser ui
 - no wheel reinvention whenever possible (should be most cases)
 - ui is standard, mostly mutiplayer stuff, where users can create/join/observe games
