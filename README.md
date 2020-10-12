@@ -85,6 +85,27 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
   - those who lose, can observe remaining games
   - the tourney continues, someone wins and earns their bragging rights, can talk trash until the next tourney
 
+#### the big picture behind using programming language for the game
+
+- building is developing a language, sciences have evolving set of words(terms) and meaning expressed with that vocabulary
+- it's sort of a libabry of functions, where some become deprecated  and new are added 
+- and it is done mostly via an informal language (e.g. english), which allows us to record information and understand each other
+- a formal, programming language, is aloso first and foremost for humans to talk to each other, describe our intentions(programs) and convey to others
+- so it's for exhcange between beings first, the fact the computer can execute written programs is a desired sideeffect
+- that's why the design of the programming language is so important: it is an abstractions used to express human thoughts, same as an informal language is
+- so no matter how much automation and technology evolves, we will always use a programming language (formal or informal), to write programs/instructions
+    - as an example, imagine thousands of years in the future giving a super-droid instrunctions verbaly, in an informal language, - "do this, create this, like that.." and nailing it, succeding
+    - AI and deppleanring will be so evolved, machines will require any form of speech and it will suffice
+    - but, if someone asks you "hey, share what you did with me", you can either give a recording of what you've said or ask a mahcine to generate some formal program from that
+    - if it's recording, other people may not understand all what you say or interpret it differently from machine, there will be ambiguity
+    - if it's somehting generated, it is exacly a formal language
+    - but no matter what, it will be "hey, we need a protocol/formal languge/standards to express this and that, otherwise unclear"
+- so programming languages will exist while any computation exists, no matter how automated
+- and programming language should be elegant and inspiring, sane, like LISp
+- along with that, we're using more and more droids and will be programming them
+- the game is exactly that: people programming entities, droids, ships ... - scenario is up to the creator
+- so that's fun and may even be inspirational, but fun and competetion/tournaments/streams first, Death Star is to e-sports, watch and enjoy 
+
 #### what programming language will this game use ?
 
 - clojure, because https://github.com/cljctools/readme#why-cljctools-and-why-use-clojure
