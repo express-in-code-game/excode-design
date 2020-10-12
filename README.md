@@ -27,7 +27,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 - players use programming language to complete scenarios' objectives
 - scenarios like extensions, can be installed via a link, each being a game of its own with its own ui
 - better scenarios overtime will become the standard for e-sports scene and tournaments
-- as a global decentralized distributed app
+- as a global decentralized distributed app of web 3.0 (ipfs libp2p ..)
 
 ## links
 
