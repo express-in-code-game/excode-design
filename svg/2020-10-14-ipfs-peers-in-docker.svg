@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="297mm"
+   height="210mm"
+   viewBox="0 0 297 210"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
+   sodipodi:docname="drawing.svg">
+  <defs
+     id="defs2">
+    <rect
+       x="224.42013"
+       y="15.831894"
+       width="56.423143"
+       height="47.161296"
+       id="rect5002" />
+    <rect
+       x="130.79769"
+       y="29.674476"
+       width="25.905742"
+       height="3.8539547"
+       id="rect4937" />
+    <rect
+       x="120.08447"
+       y="106.45919"
+       width="51.579147"
+       height="12.840278"
+       id="rect4917" />
+    <rect
+       x="85.086999"
+       y="105.00958"
+       width="27.882942"
+       height="12.807935"
+       id="rect4911" />
+    <rect
+       x="9.8236206"
+       y="105.24807"
+       width="14.252614"
+       height="16.285297"
+       id="rect4793" />
+    <rect
+       x="9.834648"
+       y="88.582368"
+       width="76.011118"
+       height="12.586937"
+       id="rect4752" />
+    <rect
+       x="9.8236208"
+       y="105.24807"
+       width="14.252614"
+       height="16.285297"
+       id="rect4793-5" />
+    <rect
+       x="9.8236208"
+       y="105.24807"
+       width="14.252614"
+       height="16.285297"
+       id="rect4806" />
+    <rect
+       x="9.8236208"
+       y="105.24807"
+       width="14.252614"
+       height="16.285297"
+       id="rect4793-9" />
+    <rect
+       x="9.8236208"
+       y="105.24807"
+       width="14.252614"
+       height="16.285297"
+       id="rect4806-1" />
+    <rect
+       x="130.79768"
+       y="29.674477"
+       width="25.905743"
+       height="3.8539548"
+       id="rect4937-0" />
+    <rect
+       x="130.79768"
+       y="29.674477"
+       width="25.905743"
+       height="3.8539548"
+       id="rect4950" />
+    <rect
+       x="130.79768"
+       y="29.674477"
+       width="25.905743"
+       height="3.8539548"
+       id="rect4937-2" />
+    <rect
+       x="130.79768"
+       y="29.674477"
+       width="25.905743"
+       height="3.8539548"
+       id="rect4950-6" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="189.75902"
+     inkscape:cy="460.04679"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     inkscape:snap-global="false"
+     inkscape:window-width="1868"
+     inkscape:window-height="1025"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:none;stroke-width:0.264583"
+       id="rect2770"
+       width="70.288368"
+       height="54.241013"
+       x="24.191723"
+       y="34.704865" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 23.200088,18.188847 0.04277,39.978076 57.199075,-0.578546 -0.43007,-41.458871 z"
+       id="path4740" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 80.441931,57.588377 65.837503,77.596039 11.794015,77.986206 23.242858,58.166923"
+       id="path4742" />
+    <text
+       xml:space="preserve"
+       id="text4750"
+       style="font-style:normal;font-weight:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect4752);fill:#000000;fill-opacity:1;stroke:none;"
+       transform="translate(11.19879,-1.1740701)"><tspan
+         x="9.8339844"
+         y="93.576038"><tspan
+           style="shape-inside:url(#rect4752)">docker</tspan></tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 13.189856,86.606919 71.564568,85.387161 72.1615,94.945776 11.395714,95.27887 Z"
+       id="path4758" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:0.716518;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4762"
+       width="20.595045"
+       height="19.344776"
+       x="7.4557304"
+       y="101.98468" />
+    <text
+       xml:space="preserve"
+       id="text4791"
+       style="font-style:normal;font-weight:normal;font-size:3.52778px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect4793);fill:#000000;fill-opacity:1;stroke:none;"><tspan
+         x="9.8242188"
+         y="108.36931"><tspan
+           style="font-size:3.52778px">IPFS </tspan></tspan><tspan
+         x="9.8242188"
+         y="112.77903"><tspan
+           style="font-size:3.52778px">peer </tspan></tspan><tspan
+         x="9.8242188"
+         y="117.18876"><tspan
+           style="font-size:3.52778px">node</tspan></tspan></text>
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:0.716518;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4762-6"
+       width="20.595045"
+       height="19.344776"
+       x="33.32666"
+       y="102.09905" />
+    <text
+       xml:space="preserve"
+       id="text4791-2"
+       style="font-style:normal;font-weight:normal;font-size:3.52778px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect4793-5);fill:#000000;fill-opacity:1;stroke:none;"
+       transform="translate(25.870929,0.11437285)"><tspan
+         x="9.8242188"
+         y="108.36931"><tspan
+           style="font-size:3.52778px">IPFS </tspan></tspan><tspan
+         x="9.8242188"
+         y="112.77903"><tspan
+           style="font-size:3.52778px">peer </tspan></tspan><tspan
+         x="9.8242188"
+         y="117.18876"><tspan
+           style="font-size:3.52778px">node</tspan></tspan></text>
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:0.716518;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4762-2"
+       width="20.595045"
+       height="19.344776"
+       x="59.198002"
+       y="102.25172" />
+    <text
+       xml:space="preserve"
+       id="text4791-7"
+       style="font-style:normal;font-weight:normal;font-size:3.52778px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect4793-9);fill:#000000;fill-opacity:1;stroke:none;"
+       transform="translate(51.742275,0.26704899)"><tspan
+         x="9.8242188"
+         y="108.36931"><tspan
+           style="font-size:3.52778px">IPFS </tspan></tspan><tspan
+         x="9.8242188"
+         y="112.77903"><tspan
+           style="font-size:3.52778px">peer </tspan></tspan><tspan
+         x="9.8242188"
+         y="117.18876"><tspan
+           style="font-size:3.52778px">node</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       id="text4909"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect4911);fill:#000000;fill-opacity:1;stroke:none;"><tspan
+         x="85.087891"
+         y="114.37351"><tspan>...</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       id="text4915"
+       style="font-style:normal;font-weight:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect4917);fill:#000000;fill-opacity:1;stroke:none;"
+       transform="translate(-6.7232192,3.2975562)"><tspan
+         x="120.08398"
+         y="111.45299"><tspan
+           style="shape-inside:url(#rect4917)">&lt;- users (peers)</tspan></tspan></text>
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.564999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4923"
+       width="96.643578"
+       height="55.261635"
+       x="118.81175"
+       y="13.317247" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 120.55764,21.397146 87.47281,-0.647731"
+       id="path4927" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 146.44041,14.726503 v 4.032088"
+       id="path4931" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 187.7414,14.448926 v 3.40294"
+       id="path4933" />
+    <text
+       xml:space="preserve"
+       id="text4935"
+       style="font-style:normal;font-weight:normal;font-size:2.82222px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect4937);fill:#000000;fill-opacity:1;stroke:none;"
+       transform="translate(-7.6346392,-14.083789)"><tspan
+         x="130.79688"
+         y="32.170831"><tspan
+           style="font-size:2.82222px">localhost:3000</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       id="text4935-6"
+       style="font-style:normal;font-weight:normal;font-size:2.82222px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect4937-0);fill:#000000;fill-opacity:1;stroke:none;"
+       transform="translate(25.725679,-13.988355)"><tspan
+         x="130.79688"
+         y="32.170831"><tspan
+           style="font-size:2.82222px">localhost:3001
+</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       id="text4935-1"
+       style="font-style:normal;font-weight:normal;font-size:2.82222px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect4937-2);fill:#000000;fill-opacity:1;stroke:none;"
+       transform="translate(58.296319,-13.746964)"><tspan
+         x="130.79688"
+         y="32.170831"><tspan
+           style="font-size:2.82222px">localhost:3002
+</tspan></tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 110.67262,33.834001 72.086985,78.198381"
+       id="path4986" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 116.49487,44.758549 79.64676,81.213504"
+       id="path4988" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 118.25249,60.057852 87.622072,84.315463"
+       id="path4990" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 72.951641,71.970597 -0.662218,5.433489 4.053301,-1.725635"
+       id="path4992" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 80.698815,75.730393 -1.673762,4.661744 5.115414,-0.786185"
+       id="path4994" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 87.345281,80.487807 -1.284206,3.470188 4.862546,0.925101"
+       id="path4998" />
+    <text
+       xml:space="preserve"
+       id="text5000"
+       style="font-style:normal;font-weight:normal;font-size:3.52778px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect5002);fill:#000000;fill-opacity:1;stroke:none;"><tspan
+         x="224.41992"
+         y="18.95329"><tspan
+           style="shape-inside:url(#rect5002)">a tab per player
+</tspan></tspan><tspan
+         x="224.41992"
+         y="23.363015"><tspan
+           style="shape-inside:url(#rect5002)">different hostnames,
+</tspan></tspan><tspan
+         x="224.41992"
+         y="27.77274"><tspan
+           style="shape-inside:url(#rect5002)">separate identities (auth </tspan></tspan><tspan
+         x="224.41992"
+         y="32.182465"><tspan
+           style="shape-inside:url(#rect5002)">sessions)</tspan></tspan></text>
+  </g>
+</svg>
