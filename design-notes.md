@@ -45,4 +45,5 @@
     - in an efficient manner (every 5-10sec for example), players actions/state are transacted into db and other 7 peers get's a query update (because each peer subscribed for a query)
     - running the simulation cycle happens the same: player's state (code) is submitted, db changes, peers get data and *every* peer runs a simulation as a sideeffect for gui
     - one of the peers simultaion result is transacted to db as the new game state, all peers get the query update
-- so IPFS peers and decentralized distirbuted graph db  
+- identity
+    - vid DID (decentralized identity)
