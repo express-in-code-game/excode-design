@@ -1,8 +1,0 @@
-[#:deathstar.user.spec{:uuid #uuid "ac9fb9f7-cce6-46e9-aa4b-9bae74c156a1"
-                       :username "Player 1"}
- #:deathstar.extension.spec{:servers {:Bob  #:deathstar.server.spec{:nrepl-port 7071
-                                                                    :port 8080
-                                                                    :host "localhost"
-                                                                    :http-chan-path "/http-chan"}}
-
-                            :connect-to-server :Bob}]
