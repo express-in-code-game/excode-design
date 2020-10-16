@@ -32,7 +32,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 #### implementation
 
-- https://github.com/DeathStarGame/deathstar
+- https://github.com/DeathStarGame/deathstar.ltee
 - https://github.com/cljctools (needed to create the game)
     - rationale https://github.com/cljctools/readme#rationale
     - source https://github.com/cljctools/cljctools
