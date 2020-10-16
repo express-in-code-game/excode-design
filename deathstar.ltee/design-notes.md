@@ -19,3 +19,8 @@ This document is a linear continuation of:
 ## thinking how to use graphql, async ops with status, app logic
 
 <img height="512px" src="./svg/2020-10-16-graphql.svg"></img>
+
+## explore existing self-hostable systems with sane design, re-purpose for the game
+
+- consider systems out there that have all the intangibles - graph data layer, identity, ops, logic in a decoupled apps,reverse-proxy, simplicity...
+- fork, replace apps and logic with game app(s) and processes, replace gui etc.
