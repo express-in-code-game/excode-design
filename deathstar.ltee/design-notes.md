@@ -9,3 +9,9 @@ This document is a linear continuation of:
 ## switch account feature like in youtube
 
 - to be able to open multiple tabs and easily select identity
+
+
+## explore the idea of building without sockets for simplicity
+
+- submit user code and get updates via http requests
+- if that is limiting, definitely go for socket or sse
