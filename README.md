@@ -67,7 +67,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 - [./origin-cluster/origin-cluster.md](./origin-cluster/origin-cluster.md)
 
-## Q&A
+## rationale
 
 #### aren't there enough games already ?
 
