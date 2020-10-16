@@ -27,7 +27,6 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 - players use programming language to complete scenarios' objectives
 - scenarios like extensions, can be installed via a link, each being a game of its own with its own ui
 - better scenarios overtime will become the standard for e-sports scene and tournaments
-- as a global decentralized distributed app of web 3.0 (ipfs libp2p ..)
 
 ## links
 
@@ -141,7 +140,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
   - those who lose, can observe remaining games
   - the tourney continues, someone wins and earns their bragging rights, can talk trash until the next tourney
 
-#### the big picture behind using programming language for the game
+#### the bigger picture behind using programming language for the game
 
 - building is developing a language, sciences have evolving set of words(terms) and meaning expressed with that vocabulary
 - it's sort of a libabry of functions, where some become deprecated  and new are added 
