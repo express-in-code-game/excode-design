@@ -15,3 +15,7 @@ This document is a linear continuation of:
 
 - submit user code and get updates via http requests
 - if that is limiting, definitely go for socket or sse
+
+## thinking how to use graphql, async ops with status, app logic
+
+<img height="512px" src="./svg/2020-10-16-graphql.svg"></img>
