@@ -164,3 +164,14 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 #### what programming language will this game use ?
 
 - clojure, because https://github.com/cljctools/readme#why-cljctools-and-why-use-clojure
+
+## else
+
+#### existing games that use languages
+
+- https://www.codingame.com/ide/puzzle/onboarding
+    - https://github.com/CodinGame
+- https://screeps.com/
+    - https://github.com/screeps
+- CyberCode Online
+    - https://www.reddit.com/r/typescript/comments/ik0fxh/cybercode_online_a_mmorpg_webgame_that_looks_like/
