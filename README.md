@@ -30,8 +30,10 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 ## links
 
-#### implementation
+#### current progress
 
+- Death Star : laptop event edition is being created currently
+- design notes [./deathstar.ltee/design-notes.md](./deathstar.ltee/design-notes.md)
 - https://github.com/DeathStarGame/deathstar.ltee
 - https://github.com/cljctools (needed to create the game)
     - rationale https://github.com/cljctools/readme#rationale
