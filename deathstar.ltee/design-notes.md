@@ -24,3 +24,9 @@ This document is a linear continuation of:
 
 - consider systems out there that have all the intangibles - graph data layer, identity, ops, logic in a decoupled apps,reverse-proxy, simplicity...
 - fork, replace apps and logic with game app(s) and processes, replace gui etc.
+
+## app should be an extension of the system
+
+- system should be runnable on it's own, with identity, reverse proxy, database
+- apps and their ui should (even dynamically) come into the system and access data layer etc.
+- apps and ui are logic, while identity, netwroking, data layer are part of the system
