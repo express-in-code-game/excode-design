@@ -22,7 +22,6 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 ## project pitch
 
-- *here should be a youtube link to a pitch video*
 - what's the point of the project ?
     - build a game and play events(tournaments)
     - thinking over micro/mechanics: players use programming language to complete scenarios' objectives
