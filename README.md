@@ -20,7 +20,7 @@ As Jesus says:
 
 source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
-## project pitch
+## project in a nutshell
 
 - what's the point of the project ?
     - build a game and play events(tournaments)
