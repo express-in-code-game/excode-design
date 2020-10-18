@@ -30,3 +30,12 @@ This document is a linear continuation of:
 - system should be runnable on it's own, with identity, reverse proxy, database
 - apps and their ui should (even dynamically) come into the system and access data layer etc.
 - apps and ui are logic, while identity, netwroking, data layer are part of the system
+
+
+## apps are esentailly processes (intances), so they never talk via http, only via queue/peer abstactions
+
+- if app needs to perform operation on another app, it does so by abstract request/push to *central* thingy: "hey, system, so this", not to each other
+
+## identity: provider auth contradicts the design of deathstar.ltee, so identity is always self
+
+- providers require to register apps, which would make the system not actually self-hosted
