@@ -39,3 +39,9 @@ This document is a linear continuation of:
 ## identity: provider auth contradicts the design of deathstar.ltee, so identity is always self
 
 - providers require to register apps, which would make the system not actually self-hosted
+
+## indentity: possible to implement auth using DID (decentralized identifiers) as they seem to be the next gen and global
+
+- is ti correct to assume,that with DID a user can login into different servers (with fresh dbs) and still maintain identity? because it's a private key file?
+- can(are there tools/info) a browser UI use DIDs to auth into the system?
+- where will users store DID? on some IPFS provider? "login with IPFS" ? or in browser storage ? on disk?
