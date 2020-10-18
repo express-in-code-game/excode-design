@@ -1,0 +1,104 @@
+#!/bin/bash
+
+dgraph(){
+  docker-compose --compatibility \
+  -f dc-dgraph.yml \
+  "$@"
+}
+
+traefik(){
+  docker-compose --compatibility \
+  -f dc-traefik.yml \
+  "$@"
+}
+
+dev(){
+  docker-compose --compatibility \
+  -f dc-dev.yml \
+  "$@"
+}
+
+devup(){
+  traefik up -d
+  dgraph up -d
+  dev up -d --build "$@"
+}
+
+devdown(){
+  traefik down
+  dgraph down
+  dev down "$@"
+}
+
+build(){
+  # https://docs.docker.com/compose/reference/build/
+  $1 build $2 "${@:3}"
+}
+
+run(){
+  # https://docs.docker.com/compose/reference/run/
+  $1 run --service-ports $2 "${@:3}"
+}
+
+runbash(){
+  # https://docs.docker.com/compose/reference/run/
+  run $1 $2 bash -c "bash;"
+}
+
+buildrun(){
+  build $1 $2
+  run $1 $2 "${@:3}"
+}
+
+mount(){
+  build $1 $2 "${@:3}"
+  runbash $1 $2
+}
+
+into(){
+  $1 exec $2 bash -c "bash;"
+}
+
+base(){
+  docker-compose --compatibility \
+  -f dc-base.yml \
+  build \
+  "$@"
+}
+
+prod(){
+  docker-compose --compatibility \
+  -f dc-prod.yml \
+  "$@"
+}
+
+release(){
+  base
+  prod build
+}
+
+
+dock(){
+  docker-compose --compatibility \
+  -f dc-dock.yml \
+  "$@"
+}
+
+
+scale_example(){
+  dc up -d --build --scale whoami=2
+}
+
+loadbalance_example(){
+  curl -H Host:whoami.docker.localhost http://127.0.0.1
+}
+
+symlinks(){
+  ln -s ../../../src containers/src
+}
+
+remove_volumes(){
+  docker volume rm deathstar.dgraph
+}
+
+"$@"

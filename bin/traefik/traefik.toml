@@ -1,0 +1,24 @@
+[providers]
+  providersThrottleDuration = "2s"
+[providers.docker]
+  endpoint = "unix:///var/run/docker.sock"
+  useBindPortIP = false
+  exposedByDefault = false
+  network = ""
+  defaultRule = "Host(`{{ normalize .Name }}`)"
+  constraints = ""
+[serversTransport]
+  insecureSkipVerify = false
+  maxIdleConnsPerHost = 2
+[serversTransport.forwardingTimeouts]
+  dialTimeout = "30s"
+  responseHeaderTimeout = "0s"
+  idleConnTimeout = "90s"
+
+[api]
+  # Dashboard
+  #
+  # Optional
+  # Default: true
+  #
+  dashboard = true

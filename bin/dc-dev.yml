@@ -1,0 +1,70 @@
+version: "3.8"
+
+networks:
+  network1:
+    name: ${NETWORK1}
+
+services:
+
+  app:
+    image: deathstar.app.dev
+    volumes:
+      - ./app/.user:/root
+      - ./app:/ctx/bin/app
+      - ../src:/ctx/src
+    build:
+      context: ./app
+      dockerfile: ./dev.Dockerfile
+      args:
+        workdir: /ctx/bin/app
+    command: tail -f /dev/null
+    # command: bash f dev
+    ports:
+      - 7788:7788
+      - 8080:8080
+    networks:
+      - network1
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
+  ui:
+    image: deathstar.ui
+    expose:
+      - 80
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
+  ui-dev:
+    image: deathstar.ui.dev
+    volumes:
+      - ./ui/.user:/root
+      - ./ui:/ctx/bin/ui
+      - ../src:/ctx/src
+    build:
+      context: ./ui
+      dockerfile: ./dev.Dockerfile
+      args:
+        workdir: /ctx/bin/ui
+    command: tail -f /dev/null
+    # command: bash f dev
+    ports:
+      - 8899:8899
+      - 9630:9630
+      - 9500:9500
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M

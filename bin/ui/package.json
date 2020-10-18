@@ -1,0 +1,36 @@
+{
+  "name": "cloud.ui",
+  "version": "0.1.0",
+  "description": "FIXME: Write a one-line description of your library/project.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "author": "https://github.com/accompanyinggames",
+  "license": "EPL-2.0",
+  "scripts": {
+    "dev": "npx shadow-cljs -A:dev watch app;",
+    "devcards": "shadow-cljs  -A:dev watch devcards",
+    "all": "shadow-cljs  -A:dev watch app devcards",
+    "info": "shadow-cljs info",
+    "prod": "shadow-cljs -A:prod release app;",
+    "repl": "shadow-cljs cljs-repl app",
+    "stop": "shadow-cljs stop",
+    "server": "shadow-cljs  -A:dev server;",
+    "compile-tests": "shadow-cljs -A:dev compile test;",
+    "test": "karma start --single-run",
+    "theme": "lessc --js --clean-css=\"--s1 --advanced --compatibility=ie8\" resources/public/css/antd-themed.less resources/public/css/antd-themed.css",
+    "clean": "rm -rf target; rm -rf resources/public/js"
+  },
+  "dependencies": {
+    "antd": "4.2.3",
+    "create-react-class": "15.6.3",
+    "less": "3.10.3",
+    "less-plugin-clean-css": "1.5.1",
+    "react": "16.13.1",
+    "react-dom": "16.13.1"
+  },
+  "devDependencies": {
+    "shadow-cljs": "2.8.94"
+  }
+}

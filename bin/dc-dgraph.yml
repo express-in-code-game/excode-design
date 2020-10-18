@@ -1,0 +1,50 @@
+version: "3.8"
+
+volumes:
+  volume1:
+    name: ${VOLUME1}
+
+networks:
+  network1:
+    name: ${NETWORK1}
+
+services:
+  zero:
+    image: dgraph/dgraph:v20.07.1
+    volumes:
+      - type: volume
+        source: volume1
+        target: /dgraph
+        volume:
+          nocopy: true
+    ports:
+      - 5080:5080
+      - 6080:6080
+    networks:
+      - network1
+    # restart: on-failure
+    command: dgraph zero --my=zero:5080
+
+  alpha:
+    image: dgraph/dgraph:v20.07.1
+    volumes:
+      - type: volume
+        source: volume1
+        target: /dgraph
+        volume:
+          nocopy: true
+    ports:
+      - 8080:8080
+      - 9080:9080
+    networks:
+      - network1
+    # restart: on-failure
+    command: dgraph alpha --my=alpha:7080 --lru_mb=2048 --zero=zero:5080
+
+  ratel:
+    image: dgraph/dgraph:v20.07.1
+    ports:
+      - 8000:8000
+    networks:
+      - network1
+    command: dgraph-ratel
