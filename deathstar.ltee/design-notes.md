@@ -45,3 +45,4 @@ This document is a linear continuation of:
 - is ti correct to assume,that with DID a user can login into different servers (with fresh dbs) and still maintain identity? because it's a private key file?
 - can(are there tools/info) a browser UI use DIDs to auth into the system?
 - where will users store DID? on some IPFS provider? "login with IPFS" ? or in browser storage ? on disk?
+- is it possible: no tokens, no sessions, no passwords stored and crap - every request/message has a DID as identifier?  
