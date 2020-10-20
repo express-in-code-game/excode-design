@@ -46,3 +46,10 @@ This document is a linear continuation of:
 - can(are there tools/info) a browser UI use DIDs to auth into the system?
 - where will users store DID? on some IPFS provider? "login with IPFS" ? or in browser storage ? on disk?
 - is it possible: no tokens, no sessions, no passwords stored and crap - every request/message has a DID as identifier?  
+
+## multiple apps, multiple uis, gateway and queue, apps talk via gateway
+
+- identity ui (seprate, redirects)
+- multiplayer ui (separate app behind it)
+- graphiql ui (to do arbitrary queries agains data/history)
+- history/stats/wiki type thingy ui (as a separate app)
