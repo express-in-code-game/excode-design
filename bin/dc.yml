@@ -24,8 +24,45 @@ services:
           cpus: '4'
           memory: 4096M
 
-  ui:
-    image: deathstar.ui
+  ui-multiplayer:
+    image: deathstar.ui-multiplayer
+    expose:
+      - 80
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
+  ui-stats:
+    image: deathstar.ui-stats
+    expose:
+      - 80
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
+  ui-graphiql:
+    image: deathstar.ui-graphiql
+    expose:
+      - 80
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+        
+
+  ui-identity:
+    image: deathstar.ui-identity
     expose:
       - 80
     stdin_open: true
