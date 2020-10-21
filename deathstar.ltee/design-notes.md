@@ -53,3 +53,14 @@ This document is a linear continuation of:
 - multiplayer ui (separate app behind it)
 - graphiql ui (to do arbitrary queries agains data/history)
 - history/stats/wiki type thingy ui (as a separate app)
+
+## IPFS/libp2p is for users/peers netwroking, while browser and docker apps still need a single bidirectional async/sync protocol to talk within a system
+
+- even in web3.0 decentralized global app, a user (peer) will run an instance of a system - a docker deployment
+- system instance on a user machine is always comprised of apps (services/containers)
+- a user will open localhost:port to access game ui, which will talk to the instance (system) running on the same machine
+- and that instance - apps, db, gui serving containers .. - will talk to IPFS peer node and through it reach other peers and form a global cluster/mesh of the game
+- and that's where libp2p plays its role, to exchange data between peers
+- but: the inter-process (microservice) communication on a singel manchine, between containers and browser ui - it requires a protocol approach different from libp2p
+- it's a generic question of comprising a system of processes (microservices), and it should be a generic bidirectional protocol, agnostic(same) to apps and browser
+- in simple words: browser ui apps and docker apps (db, queues, apps,gateway, uis) should all talk async/sync bidirectional protocol (e.g. RSocket) 
