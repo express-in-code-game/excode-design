@@ -212,3 +212,50 @@ The packaging tool will depend upon platform-specific tools.
 - https://dzone.com/articles/desktop-uis-will-stay-alive-thanks-to-web-technolo
     - https://github.com/cuba-labs/java-electron-tutorial/blob/master/README.md
         - https://github.com/vaadin/
+
+## ipfs
+
+- https://ipfs.io/
+- https://github.com/ipfs/ipfs
+- Why we must distribute the web - Juan Benet
+    - https://www.youtube.com/watch?v=skMTdSEaCtA
+- and other links
+
+## quest for system design 2020-10
+
+- dgraph ory traefik..
+- gateway vs queue vs meshes
+    - https://arcentry.com/blog/api-gateway-vs-service-mesh-vs-message-queue/
+    - https://medium.com/code-smells/your-api-gateway-should-actually-be-a-message-queue-bd856e573ed0
+- rsocket
+
+## rsocket
+
+- https://www.google.com/search?q=request+response+over+socket+from+browser+into+microservices+queue
+- Give REST a Rest with RSocket | Robert Roeser | 2018-10
+    - https://www.infoq.com/articles/give-rest-a-rest-rsocket/
+- Differences between gRPC and RSocket | Robert Roeser | 2019-09
+    - https://medium.com/netifi/differences-between-grpc-and-rsocket-e736c954e60
+- https://rsocket.io/
+    - https://rsocket.io/docs/Motivations#interaction-models
+- Building a High-Performance Networking Protocol for Microservices | Robert Roeser | 2019-12
+    - https://www.youtube.com/watch?v=WaQZCit5-O4
+- Multi-Service Reactive Streams Using Spring, Reactor, and RSocket 2018-10
+    - https://www.youtube.com/watch?v=e-N4BchYXws
+- Reactive Microservices using RSocket - Ryland Degnan 2018-12
+    - https://www.youtube.com/watch?v=_rqQtkIeNIQ
+- Multiplayer Pac-Man with RSocket - Oleh Dokuka 2019-07
+    - https://www.youtube.com/watch?v=ORhUXpO5Ijk
+
+## ~~IAP (internet application protocol)~~
+
+- https://www.google.com/search?q=http+protocol+alternatives+for+microservices
+- http://tutorials.jenkov.com/iap/index.html
+- https://www.infoq.com/articles/IAP-Fast-HTTP-Alternative/
+    - http://tutorials.jenkov.com/iap/why-http2-and-websockets-are-not-enough.html
+
+## ~~stomp~~
+
+- https://www.rabbitmq.com/web-stomp.html
+- https://stomp.github.io/stomp-specification-1.2.html
+- https://stackoverflow.com/questions/40988030/what-is-the-difference-between-websocket-and-stomp-protocols
