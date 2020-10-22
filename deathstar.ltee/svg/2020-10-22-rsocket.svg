@@ -19,8 +19,8 @@
     <rect
        x="212.82545"
        y="35.173764"
-       width="32.146958"
-       height="16.436489"
+       width="47.165519"
+       height="15.471405"
        id="rect1075" />
     <rect
        x="88.510568"
@@ -37,8 +37,8 @@
     <rect
        x="191.94797"
        y="132.21626"
-       width="39.100289"
-       height="22.925784"
+       width="49.923106"
+       height="16.592015"
        id="rect1045" />
     <rect
        x="30.153648"
@@ -55,8 +55,8 @@
     <rect
        x="179.12246"
        y="73.044003"
-       width="37.87721"
-       height="18.927601"
+       width="48.679228"
+       height="10.702603"
        id="rect869" />
     <rect
        x="76.390755"
@@ -223,15 +223,15 @@
     <text
        xml:space="preserve"
        id="text867"
-       style="font-style:normal;font-weight:normal;font-size:2.82222px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect869);fill:#000000;fill-opacity:1;stroke:none;"
+       style="font-style:normal;font-weight:normal;font-size:3.52778px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect869);fill:#000000;fill-opacity:1;stroke:none;"
        transform="translate(-3.9059309,-1.024716)"><tspan
          x="179.12305"
-         y="75.541925"><tspan
-           style="font-size:2.82222px">able to get page via http,
+         y="76.16618"><tspan
+           style="shape-inside:url(#rect869)">able to get page via http,
 </tspan></tspan><tspan
          x="179.12305"
-         y="79.069704"><tspan
-           style="font-size:2.82222px">then it's all rsocket
+         y="80.575909"><tspan
+           style="shape-inside:url(#rect869)">then it's all rsocket
 </tspan></tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -340,17 +340,17 @@
     <text
        xml:space="preserve"
        id="text1043"
-       style="font-style:normal;font-weight:normal;font-size:2.82222px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1045);fill:#000000;fill-opacity:1;stroke:none;"
-       transform="translate(48.002987,8.2784876)"><tspan
+       style="font-style:normal;font-weight:normal;font-size:3.52778px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1045);fill:#000000;fill-opacity:1;stroke:none;"
+       transform="translate(30.443441,9.8146675)"><tspan
          x="191.94727"
-         y="134.7138"><tspan
-           style="shape-inside:url(#rect1045)">talk to queue api,  but </tspan></tspan><tspan
+         y="135.33806"><tspan
+           style="shape-inside:url(#rect1045)">talk to queue api,  but using </tspan></tspan><tspan
          x="191.94727"
-         y="138.24157"><tspan
-           style="shape-inside:url(#rect1045)">using same rsocket </tspan></tspan><tspan
+         y="139.74778"><tspan
+           style="shape-inside:url(#rect1045)">same rsocket connection </tspan></tspan><tspan
          x="191.94727"
-         y="141.76934"><tspan
-           style="shape-inside:url(#rect1045)">connection and discovery</tspan></tspan></text>
+         y="144.15751"><tspan
+           style="shape-inside:url(#rect1045)">and discovery</tspan></tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.26458299;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:0.26458299,1.58749792;stroke-dashoffset:0"
        d="m 118.84303,155.59519 -4.43777,-40.13348"
@@ -368,8 +368,8 @@
        d="M 181.82285,64.907204 150.91301,87.730715"
        id="path1055" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:0.26458299;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:0.26458299,1.58749792;stroke-dashoffset:0"
-       d="m 240.04325,136.74593 29.07372,-0.17704"
+       style="fill:none;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.264583, 1.5875;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 222.4837,138.28211 29.07372,-0.17704"
        id="path1057" />
     <text
        xml:space="preserve"
@@ -402,23 +402,21 @@
        style="font-style:normal;font-weight:normal;font-size:2.82222px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1069);fill:#000000;fill-opacity:1;stroke:none;"
        transform="translate(7.5876879,1.1669878)"><tspan
          x="88.509766"
-         y="104.96575"><tspan
-           style="shape-inside:url(#rect1069)">traefik?</tspan></tspan></text>
+         y="105.59001"><tspan
+           style="font-size:3.52778px">traefik</tspan><tspan
+           style="shape-inside:url(#rect1069)">?</tspan></tspan></text>
     <text
        xml:space="preserve"
        id="text1073"
-       style="font-style:normal;font-weight:normal;font-size:2.82222px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1075);fill:#000000;fill-opacity:1;stroke:none;"><tspan
+       style="font-style:normal;font-weight:normal;font-size:3.52778px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1075);fill:#000000;fill-opacity:1;stroke:none;"><tspan
          x="212.82617"
-         y="37.670831"><tspan
-           style="font-size:2.82222px">browser app is an </tspan></tspan><tspan
+         y="38.295087"><tspan
+           style="shape-inside:url(#rect1075)">browser app is an equal </tspan></tspan><tspan
          x="212.82617"
-         y="41.198606"><tspan
-           style="font-size:2.82222px">equal process/app </tspan></tspan><tspan
+         y="42.704812"><tspan
+           style="shape-inside:url(#rect1075)">process/app over rsocket, </tspan></tspan><tspan
          x="212.82617"
-         y="44.726381"><tspan
-           style="font-size:2.82222px">over rsocket, the </tspan></tspan><tspan
-         x="212.82617"
-         y="48.254156"><tspan
-           style="font-size:2.82222px">same microservice </tspan></tspan></text>
+         y="47.114537"><tspan
+           style="shape-inside:url(#rect1075)">the same microservice </tspan></tspan></text>
   </g>
 </svg>
