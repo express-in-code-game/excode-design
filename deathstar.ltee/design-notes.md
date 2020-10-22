@@ -67,6 +67,6 @@ This document is a linear continuation of:
 
 ## imagining stuff: rsocket and netifi+traefik-like router 
 
-<img height="512px" src="./svg/2020-10-22-rsocket.svg"></img>
+<img height="648px" src="./svg/2020-10-22-rsocket.svg"></img>
 
 
