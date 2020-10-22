@@ -64,3 +64,9 @@ This document is a linear continuation of:
 - but: the inter-process (microservice) communication on a singel manchine, between containers and browser ui - it requires a protocol approach different from libp2p
 - it's a generic question of comprising a system of processes (microservices), and it should be a generic bidirectional protocol, agnostic(same) to apps and browser
 - in simple words: browser ui apps and docker apps (db, queues, apps,gateway, uis) should all talk async/sync bidirectional protocol (e.g. RSocket) 
+
+## imagining stuff: rsocket and netifi+traefik-like router 
+
+<img height="512px" src="./svg/2020-10-22-rsocket.svg"></img>
+
+
