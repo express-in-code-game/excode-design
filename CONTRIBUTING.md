@@ -5,16 +5,6 @@
 - fork docs, deathstar.ltee and create pull requests to improve those repos
 - create game scenarios - in your standalone repo(s) or in https://github.com/DeathStarGame/deathstar.ltee/src/scenarios
 
-## contributors' individual lab repos
-
-- https://github.com/sergeiudris
-    - https://github.com/sergeiudris/deathstar.lab
-    - archived
-        - https://github.com/sergeiudris/search-for-the-game
-        - https://github.com/sergeiudris/starnet
-        - https://github.com/sergeiudris/weekend-2020-07-23
-- ...
-
 ## git
 
 - https://github.com/cljctools/mult/blob/35d93ea4af3f2c586d29fa2ae8f5ce74d6096e41/docs/contributing.md
@@ -24,3 +14,13 @@
 - a guy tries for 30min to formulate why contributors' individual lab repos
     - free solo: multiple people in one project, contributors' individual lab repos | Sergei Udris | 2020 10 23
         - https://www.youtube.com/watch?v=tK1CgWKvocs
+
+## contributors' individual lab repos
+
+- https://github.com/sergeiudris
+    - https://github.com/sergeiudris/deathstar.lab
+    - archived
+        - https://github.com/sergeiudris/search-for-the-game
+        - https://github.com/sergeiudris/starnet
+        - https://github.com/sergeiudris/weekend-2020-07-23
+- ...
