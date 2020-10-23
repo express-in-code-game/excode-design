@@ -126,18 +126,19 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 #### current progress
 
 - Death Star : laptop event edition is being created currently
-- design notes [./deathstar.ltee/design-notes.md](./deathstar.ltee/design-notes.md)
 - https://github.com/DeathStarGame/deathstar.ltee
 - https://github.com/cljctools (needed to create the game)
     - rationale https://github.com/cljctools/readme#rationale
     - source https://github.com/cljctools/cljctools
+- contributors' individual labs (most current progress)
+    - [./CONTRIBUTING.md](./CONTRIBUTING.md)
 
 #### mailing list
 
 - https://groups.google.com/g/deathstargame
 - deathstargame@googlegroups.com
 
-#### Youtube channel
+#### YouTube channel
 
 - https://www.youtube.com/channel/UC4lYyonkvUGXNFcukJenKkA
 
@@ -152,15 +153,15 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 #### notes on game tournaments, events
 
-- [./cloud-native-system/design.md#user-experience](./cloud-native-system/design.md#user-experience)
+- https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/cloud-native-system/design.md#user-experience
 
 #### figuring out what the game should be
 
-- [./search-for-the-game.md#building-is-about-developing-a-language](./search-for-the-game.md#building-is-about-developing-a-language)
+- https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language
 
 #### idea of a volunteer automated cluster
 
-- [./origin-cluster/origin-cluster.md](./origin-cluster/origin-cluster.md)
+- https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/origin-cluster/origin-cluster.md
 
 #### existing games that use languages
 
