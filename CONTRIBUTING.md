@@ -2,10 +2,8 @@
 
 - create your own repos to reseach/experiment on game design, docs, tools - it's an individuals space to take notes, try tools etc.
     - for example `github.com/username/deathstar.lab`
-- create game sceanrios - in a standalone repo(s) 
 - fork docs, deathstar.ltee and create pull requests to improve those repos
-- contributors' individual repos
-    - [./labs.md](./labs.md)
+- create game scenarios - in your standalone repo(s) or in https://github.com/DeathStarGame/deathstar.ltee/src/scenarios
 
 ## contributors' individual labs
 
@@ -16,3 +14,7 @@
         - https://github.com/sergeiudris/starnet
         - https://github.com/sergeiudris/weekend-2020-07-23
 - ...
+
+## git
+
+- https://github.com/cljctools/mult/blob/35d93ea4af3f2c586d29fa2ae8f5ce74d6096e41/docs/contributing.md
