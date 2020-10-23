@@ -19,7 +19,7 @@
 
 - https://github.com/cljctools/mult/blob/35d93ea4af3f2c586d29fa2ae8f5ce74d6096e41/docs/contributing.md
 
-## why contributors' individual repos
+## why contributors' individual lab repos
 
 - a guy tries for 30min to formulate why contributors' individual lab repos
     - free solo: multiple people in one project, contributors' individual lab repos | Sergei Udris | 2020 10 23
