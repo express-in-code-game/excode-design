@@ -1,6 +1,6 @@
 # contributing
 
-- create your own repos to reseach/experiment on game design, docs, tools - it's an individuals space to take notes, try tools etc.
+- create your own repo(s) to reseach/experiment on game design, docs, tools - it's an individuals space to take notes, try tools etc.
     - for example `github.com/username/deathstar.lab`
 - fork docs, deathstar.ltee and create pull requests to improve those repos
 - create game scenarios - in your standalone repo(s) or in https://github.com/DeathStarGame/deathstar.ltee/src/scenarios
