@@ -13,6 +13,8 @@
 
 - free solo: multiple people in one project, contributors' individual lab repos | Sergei Udris | 2020 10 23
     - https://www.youtube.com/watch?v=b-wuAp5w5vA
+- free solo: YouTube channels: project's and contributors' | DeathStarGame | Sergei Udris | 2020 10 24
+    - https://www.youtube.com/watch?v=103vlLT4ANc&
 
 ## contributors' individual lab repos
 
