@@ -60,6 +60,10 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
     - should be possible to select a tournament format and what scenarios will be used in which rounds
     - later would be awesome to create a new type of volunteer cluster (cloud), so that computers can be volunterily added and system could run decentralized
         - a global decentralized app on web 3.0 IPFS ..
+    - when the system is global
+        - there will be official non-commercial tornament system (seasons, points, seasonal grand finals etc.), so we can enjoy high qulaity pure competetion on a global scale
+        - torunaments within the official system will be featured first and taged accordingly
+        - elsewise users will be able to create their own tournaments
 - there are already lots and lots of games based on this idea, plus some more specialized (analogous to e-sports you might say) events, like ICFP and similar ones. How exactly is this different?
     - please, link me to such games if possible! I've been following e-sports for about 10 years and could not find any..
     - for example 
