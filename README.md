@@ -78,7 +78,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
     - and existing e-sports games are closed source, most dark and click driven, most moneytized
     - hidden, hidden, private, hidden... so I don't think such game exists yet, otherwise we would have noticed it
 - why use programming language as a gameplay?
-    - [original idea](./search-for-the-game.md#building-is-about-developing-a-language)
+    - [original idea](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language)
     - building is developing a language, sciences have evolving set of words(terms) and meaning expressed with that vocabulary
     - it's sort of a libabry of functions, where some become deprecated  and new are added 
     - and it is done mostly via an informal language (e.g. english), which allows us to record information and understand each other
