@@ -24,4 +24,10 @@
         - https://github.com/sergeiudris/search-for-the-game
         - https://github.com/sergeiudris/starnet
         - https://github.com/sergeiudris/weekend-2020-07-23
+        - https://github.com/sergeiudris/deathstar.ltee
+        - https://github.com/sergeiudris/play-scenarios-in-browser
+    - YouTube project playlist(s)
+        - https://www.youtube.com/playlist?list=PLB3Zd-VQLPGuZkUljCyjiWJ4w9ECGanpJ
+- ...
+- ...
 - ...
