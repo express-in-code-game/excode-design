@@ -39,6 +39,9 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
     - there is a culture of 'you can only play if click fast enough, before you body breaks down from poisonous crap-foods events advertise'
     - still, great games like Age of Empires, Starcraft have impressive scenes and are fun to watch
     - but we can do better by contributing to the world of games a new kind of games
+- rant: [games, sports and e-sports in 2020](https://github.com/sergeiudris/deathstar.lab/blob/90457a562f3a86e993264ee4b4e06fedeeae8def/docs/posts/2020-10-27-idea-and-design.md#games-sports-and-e-sports-in-2020)
+- rant: [amazing communities, cruel games, regionalization in e-sports despite Internet working with the speed of light, literally](https://github.com/sergeiudris/deathstar.lab/blob/90457a562f3a86e993264ee4b4e06fedeeae8def/docs/posts/2020-10-27-idea-and-design.md#enjoying-watching-e-sports-on-twitchtv)
+- rant: [e-sports games are about control and not about composing/buidling](https://github.com/sergeiudris/deathstar.lab/blob/90457a562f3a86e993264ee4b4e06fedeeae8def/docs/posts/2020-10-27-idea-and-design.md#e-sports-games-are-about-control-and-not-about-composingbuidling)
 - what kind of games ?
     - players use a programming language to build/create a composition/solution within a scenario
     - scenarios are created by people and are installable via a link (from github for example), best scenarios will become standard for tournaments
@@ -55,6 +58,28 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
     - players can evaluate code interactively in the REPL to explore resource and solution space
     - players have a real language to express logic, not just clicks and hotkeys
     - scenarios should be designed not for fast-typer-wins, but for clearer-thinker-wins
+- why use programming language as a gameplay?
+    - complicated: [thinking turn-based game like HoMM3, realizing how limiting just one game world is, arriving at programming](https://github.com/sergeiudris/deathstar.lab/blob/90457a562f3a86e993264ee4b4e06fedeeae8def/docs/posts/2020-10-27-idea-and-design.md#considering-new-homm3-like-game-but-about-buildingcomposing-of-elements-and-github-like-system-around-it)
+    - [original notes on why use language as the gameplay](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language)
+    - [game scenario ideas](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios)
+    - building is developing a language, sciences have evolving set of words(terms) and meaning expressed with that vocabulary
+    - it's sort of a libabry of functions, where some become deprecated  and new are added 
+    - and it is done mostly via an informal language (e.g. english), which allows us to record information and understand each other
+    - a formal, programming language, is aloso first and foremost for humans to talk to each other, describe our intentions(programs) and convey to others
+    - so it's for exhcange between beings first, the fact the computer can execute written programs is a desired sideeffect
+    - that's why the design of the programming language is so important: it is an abstractions used to express human thoughts, same as an informal language is
+    - so no matter how much automation and technology evolves, we will always use a programming language (formal or informal), to write programs/instructions
+        - as an example, imagine thousands of years in the future giving a super-droid instrunctions verbaly, in an informal language, - "do this, create this, like that.." and nailing it, succeding
+        - AI and deppleanring will be so evolved, machines will require any form of speech and it will suffice
+        - but, if someone asks you "hey, share what you did with me", you can either give a recording of what you've said or ask a mahcine to generate some formal program from that
+        - if it's recording, other people may not understand all what you say or interpret it differently from machine, there will be ambiguity
+        - if it's somehting generated, it is exacly a formal language
+        - but no matter what, it will be "hey, we need a protocol/formal languge/standards to express this and that, otherwise unclear"
+    - so programming languages will exist while any computation exists, no matter how automated
+    - and programming language should be elegant and inspiring, sane, like LISp
+    - along with that, we're using more and more droids and will be programming them
+    - the game is exactly that: people programming entities, droids, ships ... - scenario is up to the creator
+    - so that's fun and may even be inspirational, but fun and competetion/tournaments/streams first, Death Star is to e-sports, watch and enjoy 
 - what about events(tournaments) ?
     - should be possible to host a server, tournament on your laptop
     - should be possible to select a tournament format and what scenarios will be used in which rounds
@@ -77,26 +102,6 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
     - and not like Heroes of Might and Magic 3 scene on twitch, where some dudes got the source code, maintain a server and although do it for free, it is again, happening under the carpet, and again, all tournaments are organized via forums and happen rarely
     - and existing e-sports games are closed source, most dark and click driven, most moneytized
     - hidden, hidden, private, hidden... so I don't think such game exists yet, otherwise we would have noticed it
-- why use programming language as a gameplay?
-    - [original idea](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language)
-    - building is developing a language, sciences have evolving set of words(terms) and meaning expressed with that vocabulary
-    - it's sort of a libabry of functions, where some become deprecated  and new are added 
-    - and it is done mostly via an informal language (e.g. english), which allows us to record information and understand each other
-    - a formal, programming language, is aloso first and foremost for humans to talk to each other, describe our intentions(programs) and convey to others
-    - so it's for exhcange between beings first, the fact the computer can execute written programs is a desired sideeffect
-    - that's why the design of the programming language is so important: it is an abstractions used to express human thoughts, same as an informal language is
-    - so no matter how much automation and technology evolves, we will always use a programming language (formal or informal), to write programs/instructions
-        - as an example, imagine thousands of years in the future giving a super-droid instrunctions verbaly, in an informal language, - "do this, create this, like that.." and nailing it, succeding
-        - AI and deppleanring will be so evolved, machines will require any form of speech and it will suffice
-        - but, if someone asks you "hey, share what you did with me", you can either give a recording of what you've said or ask a mahcine to generate some formal program from that
-        - if it's recording, other people may not understand all what you say or interpret it differently from machine, there will be ambiguity
-        - if it's somehting generated, it is exacly a formal language
-        - but no matter what, it will be "hey, we need a protocol/formal languge/standards to express this and that, otherwise unclear"
-    - so programming languages will exist while any computation exists, no matter how automated
-    - and programming language should be elegant and inspiring, sane, like LISp
-    - along with that, we're using more and more droids and will be programming them
-    - the game is exactly that: people programming entities, droids, ships ... - scenario is up to the creator
-    - so that's fun and may even be inspirational, but fun and competetion/tournaments/streams first, Death Star is to e-sports, watch and enjoy 
 - what programming lanugage will the game use?
     - clojure, because https://github.com/cljctools/readme#why-cljctools-and-why-use-clojure
 - what will the system look like?
