@@ -133,7 +133,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 #### design
 
-- https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design.md
+- https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md
 
 #### source
 
