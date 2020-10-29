@@ -18,18 +18,7 @@
 
 ## contributors' individual lab repos
 
-- https://github.com/sergeiudris
-    - https://github.com/sergeiudris/deathstar.lab
-    - archived
-        - https://github.com/sergeiudris/search-for-the-game
-        - https://github.com/sergeiudris/starnet
-        - https://github.com/sergeiudris/weekend-2020-07-23
-        - https://github.com/sergeiudris/deathstar.ltee
-        - https://github.com/sergeiudris/play-scenarios-in-browser
-    - YouTube project playlist(s)
-        - https://www.youtube.com/playlist?list=PLB3Zd-VQLPGuZkUljCyjiWJ4w9ECGanpJ
-    - posts
-        - https://github.com/sergeiudris/deathstar.lab/blob/4ebb0cfdef97ca52f6ee5101022ad42cc8e000c2/posts/2020-10-27-idea-of-a-new-esport-game.md
+- https://github.com/sergeiudris/deathstar.lab
 - ...
 - ...
 - ...
