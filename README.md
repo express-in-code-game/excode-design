@@ -39,9 +39,9 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
     - there is a culture of 'you can only play if click fast enough, before you body breaks down from poisonous crap-foods events advertise'
     - still, great games like Age of Empires, Starcraft have impressive scenes and are fun to watch
     - but we can do better by contributing to the world of games a new kind of games
-- rant: [games, sports and e-sports in 2020](https://github.com/sergeiudris/deathstar.lab/blob/4ebb0cfdef97ca52f6ee5101022ad42cc8e000c2/posts/2020-10-27-idea-of-a-new-esport-game.md#rant-games-sports-and-e-sports-in-2020)
-- rant: [amazing communities, cruel games, regionalization in e-sports despite Internet working with the speed of light, literally](https://github.com/sergeiudris/deathstar.lab/blob/4ebb0cfdef97ca52f6ee5101022ad42cc8e000c2/posts/2020-10-27-idea-of-a-new-esport-game.md#rant-enjoying-watching-e-sports-on-twitchtv)
-- rant: [e-sports games are about control and not about composing/buidling](https://github.com/sergeiudris/deathstar.lab/blob/4ebb0cfdef97ca52f6ee5101022ad42cc8e000c2/posts/2020-10-27-idea-of-a-new-esport-game.md#rant-e-sports-games-are-about-control-and-not-about-composingbuidling)
+- rant: [games, sports and e-sports in 2020](https://github.com/sergeiudris/blog/blob/ce9244d4fe9bfd920e0f4423b2201014200a4831/posts/2020-10-27-rant-on-esports-and-idea-of-a-new-esport-game.md#rant-games-sports-and-e-sports-in-2020)
+- rant: [amazing communities, cruel games, regionalization in e-sports despite Internet working with the speed of light, literally](https://github.com/sergeiudris/blog/blob/ce9244d4fe9bfd920e0f4423b2201014200a4831/posts/2020-10-27-rant-on-esports-and-idea-of-a-new-esport-game.md#rant-enjoying-watching-e-sports-on-twitchtv)
+- rant: [e-sports games are about control and not about composing/buidling](https://github.com/sergeiudris/blog/blob/ce9244d4fe9bfd920e0f4423b2201014200a4831/posts/2020-10-27-rant-on-esports-and-idea-of-a-new-esport-game.md#rant-e-sports-games-are-about-control-and-not-about-composingbuidling)
 - what kind of games ?
     - players use a programming language to build/create a composition/solution within a scenario
     - scenarios are created by people and are installable via a link (from github for example), best scenarios will become standard for tournaments
@@ -59,7 +59,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
     - players have a real language to express logic, not just clicks and hotkeys
     - scenarios should be designed not for fast-typer-wins, but for clearer-thinker-wins
 - why use programming language as a gameplay?
-    - complicated: [thinking turn-based game like HoMM3, realizing how limiting just one game world is, arriving at programming](https://github.com/sergeiudris/deathstar.lab/blob/4ebb0cfdef97ca52f6ee5101022ad42cc8e000c2/posts/2020-10-27-idea-of-a-new-esport-game.md#considering-new-homm3-like-game-but-about-buildingcomposing-of-elements-and-github-like-system-around-it)
+    - complicated: [thinking turn-based game like HoMM3, realizing how limiting just one game world is, arriving at programming](https://github.com/sergeiudris/blog/blob/ce9244d4fe9bfd920e0f4423b2201014200a4831/posts/2020-10-27-rant-on-esports-and-idea-of-a-new-esport-game.md#considering-new-homm3-like-game-but-about-buildingcomposing-of-elements-and-github-like-system-around-it)
     - [original notes on why use language as the gameplay](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language)
     - [game scenario ideas](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios)
     - building is developing a language, sciences have evolving set of words(terms) and meaning expressed with that vocabulary
