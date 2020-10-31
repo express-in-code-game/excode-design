@@ -135,9 +135,19 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 - https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md
 
-#### source
+## related projects
 
-- https://github.com/DeathStarGame/deathstar
+- https://github.com/cljctools
+- https://github.com/ipfs
+
+## previous repos
+
+- https://github.com/sergeiudris/starnet
+- https://github.com/sergeiudris/search-for-the-game
+- https://github.com/sergeiudris/weekend-2020-07-23
+- https://github.com/sergeiudris/deathstar.ltee
+- https://github.com/sergeiudris/play-scenarios-in-browser
+- https://github.com/sergeiudris/youtube-channel
 
 #### notes on game tournaments, events
 
