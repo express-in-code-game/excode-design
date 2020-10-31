@@ -27,7 +27,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 - [YouTube channel](https://www.youtube.com/channel/UC4lYyonkvUGXNFcukJenKkA)
 - [mailing list](#mailing-list)
 - [discussion](#discussion)
-- [design](#design)
+- [design](https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md)
 - [related projects](#related-projects)
 - [previous repos](#previous-repos)
 - [other links](#other-links)
@@ -117,7 +117,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 - what programming lanugage will the game use?
     - clojure, because https://github.com/cljctools/readme#why-cljctools-and-why-use-clojure
 - what will the system look like?
-    - see [design](#design)
+    - [design](https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md)
 
 ## mailing list
 
@@ -132,10 +132,6 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
     - https://www.reddit.com/r/Clojure/comments/j82vbd/currently_starting_a_new_project_ever/
 - clojure mailing list
     - https://groups.google.com/g/clojure/c/3jT7HXR435g
-
-## design
-
-- https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md
 
 ## related projects
 
