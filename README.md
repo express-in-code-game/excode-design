@@ -131,7 +131,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 - clojure mailing list
     - https://groups.google.com/g/clojure/c/3jT7HXR435g
 
-#### design
+## design
 
 - https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md
 
@@ -157,7 +157,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
 - https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language
 - project name
-    - https://github.com/DeathStarGame/docs/tree/95d6314d88f78ecaa2c4fe42f139b33f6033c4d8/project-name.md
+    - https://github.com/DeathStarGame/DeathStarGame/tree/95d6314d88f78ecaa2c4fe42f139b33f6033c4d8/project-name.md
 
 #### idea of a volunteer automated cluster
 
