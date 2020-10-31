@@ -20,6 +20,18 @@ As Jesus says:
 
 source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 
+## contents
+
+- [project in a nutshell](#project-in-a-nutshell)
+- [CONTRIBUTING.md](./CONTRIBUTING.md)
+- [YouTube channel](https://www.youtube.com/channel/UC4lYyonkvUGXNFcukJenKkA)
+- [mailing list](#mailing-list)
+- [discussion](#discussion)
+- [design](#design)
+- [related projects](#related-projects)
+- [previous repos](#previous-repos)
+- [other links](#other-links)
+
 ## project in a nutshell
 
 - what's the point of the project ?
@@ -107,22 +119,12 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 - what will the system look like?
     - see [design](#design)
 
-## links
-
-#### contributing
-
-- [CONTRIBUTING.md](./CONTRIBUTING.md)
-
-#### mailing list
+## mailing list
 
 - https://groups.google.com/g/deathstargame
 - deathstargame@googlegroups.com
 
-#### YouTube channel
-
-- https://www.youtube.com/channel/UC4lYyonkvUGXNFcukJenKkA
-
-#### discussion
+## discussion
 
 - reddit
     - https://www.reddit.com/r/Clojure/comments/hujrnk/pitch_lets_make_a_noncommercial_expressincode/
@@ -149,19 +151,12 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 - https://github.com/sergeiudris/play-scenarios-in-browser
 - https://github.com/sergeiudris/youtube-channel
 
-#### notes on game tournaments, events
+## other links
 
-- https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/cloud-native-system/design.md#user-experience
-
-#### figuring out what the game should be
-
-- https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language
-- project name
-    - https://github.com/DeathStarGame/DeathStarGame/tree/95d6314d88f78ecaa2c4fe42f139b33f6033c4d8/project-name.md
-
-#### idea of a volunteer automated cluster
-
-- https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/origin-cluster/origin-cluster.md
+- [notes on game tournaments, events](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/cloud-native-system/design.md#user-experience)
+- [figuring out what the game should be](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language)
+- [project name](https://github.com/DeathStarGame/DeathStarGame/tree/95d6314d88f78ecaa2c4fe42f139b33f6033c4d8/project-name.md)
+- [idea of a volunteer automated cluster before discovering IPFS](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/origin-cluster/origin-cluster.md)
 
 #### existing games that use languages
 
