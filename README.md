@@ -59,6 +59,7 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
     - scenarios are created by people and are installable via a link (from github for example), best scenarios will become standard for tournaments
     - a scenario is like a game in itself with it's own idea and objectives
     - scenario is randomly generated at the start, but there will be no randomness afterwards, so that there will be no RNG-complaints
+    - [game scenario ideas](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios)
     - for example
         - a scenario where players should build drones to explore a planet
         - a resource space will contain elements/parts/devices to build from, solution space will be unique location on the planet
@@ -73,7 +74,6 @@ source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
 - why use programming language as a gameplay?
     - complicated: [thinking turn-based game like HoMM3, realizing how limiting just one game world is, arriving at programming](https://github.com/sergeiudris/blog/blob/ce9244d4fe9bfd920e0f4423b2201014200a4831/posts/2020-10-27-rant-on-esports-and-idea-of-a-new-esport-game.md#considering-new-homm3-like-game-but-about-buildingcomposing-of-elements-and-github-like-system-around-it)
     - [original notes on why use language as the gameplay](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language)
-    - [game scenario ideas](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios)
     - building is developing a language, sciences have evolving set of words(terms) and meaning expressed with that vocabulary
     - it's sort of a libabry of functions, where some become deprecated  and new are added 
     - and it is done mostly via an informal language (e.g. english), which allows us to record information and understand each other
