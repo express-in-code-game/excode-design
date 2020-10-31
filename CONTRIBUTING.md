@@ -2,8 +2,7 @@
 
 - create your own repo(s) to reseach/experiment on game design, scenario ideas, docs, tools - it's an individuals space to take notes, try tools etc.
     - for example `github.com/username/deathstar.lab`
-- and/or see link to current design doc in readme, or suggest a better design - better idea wins
-    - [./README.md#design](./README.md#design)
+- and/or check out the current design, maybe suggest a better one - best idea wins
 
 ## git
 
