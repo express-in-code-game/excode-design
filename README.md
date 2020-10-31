@@ -1,24 +1,15 @@
 
-# Death Star Game
+# DeathStarGame
 
 - the game, multiplayer, ever non-commercial money-free project
 
 ## ever free and non-commercial
 
-- Death Star game is *ever any-money-concerns-free project*, openly created and contributed
+- DeathStarGame is *ever any-money-concerns-free project*, openly created and contributed
 - no funds, no pots, purely volunteer creating process, no strings attached or hidden
-- it's a playground, an inspiration-driven development
-- we are bulding a spacious, epic, designed for e-sports, yet elegant and simple game for people to be inspired
-
-As Jesus says:
-
-> <b>19 “Do not store up for yourselves treasures on earth, where moths and vermin destroy, and where thieves break in and steal. 20 But store up for yourselves treasures in heaven, where moths and vermin do not destroy, and where thieves do not break in and steal. 21 For where your treasure is, there your heart will be also.</b>
-
-> <b>22 “The eye is the lamp of the body. If your eyes are healthy,[c] your whole body will be full of light. 23 But if your eyes are unhealthy,[d] your whole body will be full of darkness. If then the light within you is darkness, how great is that darkness!</b>
-
-> <b>24 “No one can serve two masters. Either you will hate the one and love the other, or you will be devoted to the one and despise the other. You cannot serve both God and money.</b>
-
-source: [NIV Bible, Matthew:6](https://www.biblica.com/bible/niv/matthew/6/)
+- commercial insterests and "safety" income expectations make projects a routine, a drag, money suck freedom and excitement out of creation process and devalue the result
+- DeathStarGame is a children's playground, an inspiration-driven development
+- we are bulding a spacious, epic, designed for e-sports, yet elegant and simple game for people to be inspired, somehting Jesus would approve
 
 ## contents
 
