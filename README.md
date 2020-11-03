@@ -18,7 +18,7 @@
 - [YouTube channel](https://www.youtube.com/channel/UC4lYyonkvUGXNFcukJenKkA)
 - [mailing list](#mailing-list)
 - [discussion](#discussion)
-- [design](https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md)
+- [design](https://github.com/sergeiudris/DeathStarGame/blob/lab/lab/docs/design/design.md)
 - [related projects](#related-projects)
 - [previous repos](#previous-repos)
 - [other links](#other-links)
@@ -50,7 +50,7 @@
     - scenarios are created by people and are installable via a link (from github for example), best scenarios will become standard for tournaments
     - a scenario is like a game in itself with it's own idea and objectives
     - scenario is randomly generated at the start, but there will be no randomness afterwards, so that there will be no RNG-complaints
-    - [game scenario ideas](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios)
+    - [game scenario ideas](https://github.com/sergeiudris/DeathStarGame/tree/e519ddf989828f3f290321c046462e0426794d75/lab/docs/search-for-the-game.md#examples-of-scenarios)
     - for example
         - a scenario where players should build drones to explore a planet
         - a resource space will contain elements/parts/devices to build from, solution space will be unique location on the planet
@@ -64,7 +64,7 @@
     - scenarios should be designed not for fast-typer-wins, but for clearer-thinker-wins
 - why use programming language as a gameplay?
     - complicated: [thinking turn-based game like HoMM3, realizing how limiting just one game world is, arriving at programming](https://github.com/sergeiudris/blog/blob/ce9244d4fe9bfd920e0f4423b2201014200a4831/posts/2020-10-27-rant-on-esports-and-idea-of-a-new-esport-game.md#considering-new-homm3-like-game-but-about-buildingcomposing-of-elements-and-github-like-system-around-it)
-    - [original notes on why use language as the gameplay](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language)
+    - [original notes on why use language as the gameplay](https://github.com/sergeiudris/DeathStarGame/tree/e519ddf989828f3f290321c046462e0426794d75/lab/docs/search-for-the-game.md#building-is-about-developing-a-language)
     - building is developing a language, sciences have evolving set of words(terms) and meaning expressed with that vocabulary
     - it's sort of a libabry of functions, where some become deprecated  and new are added 
     - and it is done mostly via an informal language (e.g. english), which allows us to record information and understand each other
@@ -108,7 +108,7 @@
 - what programming lanugage will the game use?
     - clojure, because https://github.com/cljctools/readme#why-cljctools-and-why-use-clojure
 - what will the system look like?
-    - [design](https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md)
+    - [design](https://github.com/sergeiudris/DeathStarGame/blob/lab/lab/docs/design/design.md)
 
 ## mailing list
 
@@ -137,13 +137,14 @@
 - https://github.com/sergeiudris/deathstar.ltee
 - https://github.com/sergeiudris/deathstar.play-scenarios-in-browser
 - https://github.com/sergeiudris/youtube-channel
+- https://github.com/sergeiudris/deathstar.lab
 
 ## other links
 
-- [notes on game tournaments, events](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/cloud-native-system/design.md#user-experience)
-- [figuring out what the game should be](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language)
+- [notes on game tournaments, events](https://github.com/sergeiudris/DeathStarGame/tree/e519ddf989828f3f290321c046462e0426794d75/lab/docs/cloud-native-system/design.md#user-experience)
+- [figuring out what the game should be](https://github.com/sergeiudris/DeathStarGame/tree/e519ddf989828f3f290321c046462e0426794d75/lab/docs/search-for-the-game.md#building-is-about-developing-a-language)
 - [project name](https://github.com/DeathStarGame/DeathStarGame/tree/95d6314d88f78ecaa2c4fe42f139b33f6033c4d8/project-name.md)
-- [idea of a volunteer automated cluster before discovering IPFS](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/origin-cluster/origin-cluster.md)
+- [idea of a volunteer automated cluster before discovering IPFS](https://github.com/sergeiudris/DeathStarGame/tree/e519ddf989828f3f290321c046462e0426794d75/lab/docs/origin-cluster/origin-cluster.md)
 
 #### existing games that use languages
 
