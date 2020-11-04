@@ -1,0 +1,54 @@
+version: "3.8"
+
+networks:
+  network:
+
+services:
+
+  source:
+    image: deathstar.source
+    build:
+      context: ./source
+      dockerfile: ./Dockerfile
+      args:
+        workdir: /ctx
+    networks:
+      - network
+
+  # cljs-compiler:
+  #   image: deathstar.cljs-compiler
+  #   volumes:
+  #     - ./ui/.user:/root
+  #     - ./ui:/ctx/bin/ui
+  #     - ../src:/ctx/src
+  #   build:
+  #     context: ./ui
+  #     dockerfile: ./dev.Dockerfile
+  #     args:
+  #       workdir: /ctx/bin/ui
+  #   command: tail -f /dev/null
+  #   # command: bash f dev
+  #   ports:
+  #     - 8899:8899
+  #     - 9630:9630
+  #     - 9500:9500
+  #   stdin_open: true
+  #   tty: true
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '4'
+  #         memory: 4096M
+
+  # game-ui:
+  #   image: deathstar.game-ui
+  #   expose:
+  #     - 80
+  #   stdin_open: true
+  #   tty: true
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '4'
+  #         memory: 4096M
+

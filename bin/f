@@ -1,0 +1,158 @@
+#!/bin/bash
+
+#### docker app
+
+# docker app init --single-file --compose-file docker-compose.yml deathstar
+# docker app install deathstar.dockerapp --name deathstar-1
+
+
+#### docker stack
+
+# docker stack deploy --compose-file docker-compose.yml deathstar1
+# docker stack remove deathstar1
+# docker volume rm deathstar1_data deathstar1_source
+
+#### ipfs
+
+# bash f dc exec ipfs ipfs swarm peers
+
+dc_project_name(){
+  SUFFIX=$1
+  export COMPOSE_PROJECT_NAME="deathstar-${SUFFIX}"
+  echo $COMPOSE_PROJECT_NAME
+}
+
+up(){
+  $1 up -d --build "${@:2}"
+}
+
+down(){
+  $1 down "${@:2}"
+}
+
+deepdown(){
+  down $1 -v --remove-orphans "${@:2}"
+}
+
+dc(){
+  docker-compose --compatibility \
+  --env-file docker-compose.env \
+  -f docker-compose.yml \
+  "$@"
+}
+
+dev(){
+  docker-compose --compatibility \
+  -f dc-dev.yml \
+  "$@"
+}
+
+base(){
+  docker-compose --compatibility \
+  -f dc-base.yml \
+  build \
+  "$@"
+}
+
+builder(){
+  docker-compose --compatibility \
+  -f dc-builder.yml \
+  "$@"
+}
+
+
+build(){
+  # https://docs.docker.com/compose/reference/build/
+  $1 build $2 "${@:3}"
+}
+
+run(){
+  # https://docs.docker.com/compose/reference/run/
+  $1 run --service-ports $2 "${@:3}"
+}
+
+runbash(){
+  # https://docs.docker.com/compose/reference/run/
+  run $1 $2 bash -c "bash;"
+}
+
+buildrun(){
+  build $1 $2
+  run $1 $2 "${@:3}"
+}
+
+mount(){
+  build $1 $2 "${@:3}"
+  runbash $1 $2
+}
+
+into(){
+  $1 exec $2 bash -c "bash;"
+}
+
+release(){
+  base
+  builder build
+}
+
+
+
+
+
+
+
+dgraph(){
+  docker-compose --compatibility \
+  -f dc-dgraph.yml \
+  "$@"
+}
+
+traefik(){
+  docker-compose --compatibility \
+  -f dc-traefik.yml \
+  "$@"
+}
+
+dock(){
+  docker-compose --compatibility \
+  -f dc-dock.yml \
+  "$@"
+}
+
+
+scale(){
+  dc up -d --build --scale whoami=2
+}
+
+behold_loadbalance(){
+  curl -H Host:whoami.docker.localhost http://127.0.0.1
+}
+
+permissions(){
+  sudo chmod -R 777 volumes
+}
+
+symlinks(){
+  ln -s ../../../src containers/src
+}
+
+#### bash tests
+
+export_env_vars(){
+  export HELLO="hello"
+  # declare -x HELLO=2
+  echo $HELLO
+}
+
+test_env_vars(){
+  echo $HELLO
+}
+
+# if we source bash script with `source script_file`
+# fucntions from script can be called from shell directly
+# and if a function does `export FOO=bar` FOO will be exported to shell as well 
+
+
+
+
+"$@"
