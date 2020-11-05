@@ -15,7 +15,6 @@
 
 - [project in a nutshell](#project-in-a-nutshell)
 - [CONTRIBUTING.md](./CONTRIBUTING.md)
-- [YouTube channel](https://www.youtube.com/channel/UC4lYyonkvUGXNFcukJenKkA)
 - [mailing list](#mailing-list)
 - [discussion](#discussion)
 - [design](https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md)
