@@ -4,17 +4,17 @@ networks:
   network:
 
 volumes:
-  source:
+  sorce:
   data:
 
 services:
 
-  source:
-    image: deathstar.source
+  sorce:
+    image: deathstar.sorce
     volumes:
       - type: volume
-        source: source
-        target: /ctx/DeathStarGame
+        source: sorce
+        target: /ctx/sorce/DeathStarGame
         volume:
           nocopy: false
     networks:
@@ -24,14 +24,14 @@ services:
     # The official v2 Traefik docker image
     image: traefik:v2.3.2
     # Enables the web UI and tells Traefik to listen to docker
-    command: --api.insecure=true --providers.docker
+    command: --api.insecure=true --providers.docker --configFile=/ctx/sorce/DeathStarGame/bin/traefik/traefik.yml
     ports:
       # The HTTP port
       - "80:80"
       # The Web UI (enabled by --api.insecure=true)
       - "8080:8080"
     depends_on:
-      - source
+      - sorce
     networks:
       - network
     volumes:
@@ -39,7 +39,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - type: volume
         source: source
-        target: /ctx/DeathStarGame
+        target: /ctx/sorce/DeathStarGame
         volume:
           nocopy: false
       # - ./traefik/traefik.toml:/etc/traefik/traefik.toml
@@ -55,13 +55,13 @@ services:
       - IPFS_PROFILE=server
       - IPFS_PATH=/ipfsdata
     depends_on:
-      - source
+      - sorce
     networks:
       - network
     volumes:
       - type: volume
-        source: source
-        target: /ctx/DeathStarGame
+        source: sorce
+        target: /ctx/sorce/DeathStarGame
         volume:
           nocopy: true
       - type: volume
@@ -77,13 +77,13 @@ services:
       - 7788:7788
       - 8000:8080
     depends_on:
-      - source
+      - sorce
     networks:
       - network
     volumes:
       - type: volume
-        source: source
-        target: /ctx/DeathStarGame
+        source: sorce
+        target: /ctx/sorce/DeathStarGame
         volume:
           nocopy: true
     stdin_open: true
@@ -100,13 +100,13 @@ services:
       - 8800:8080
     command: --auth none
     depends_on:
-      - source
+      - sorce
     networks:
       - network
     volumes:
       - type: volume
-        source: source
-        target: /ctx/DeathStarGame
+        source: sorce
+        target: /ctx/sorce/DeathStarGame
         volume:
           nocopy: true
 

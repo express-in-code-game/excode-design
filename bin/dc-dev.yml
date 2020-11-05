@@ -4,7 +4,7 @@ networks:
   network:
 
 volumes:
-  repos:
+  sorce:
     driver: local
     driver_opts:
       type: none
@@ -20,7 +20,7 @@ services:
     # The official v2 Traefik docker image
     image: traefik:v2.3.2
     # Enables the web UI and tells Traefik to listen to docker
-    command: --api.insecure=true --providers.docker --configFile=/ctx/DeathStarGame/bin/traefik/traefik.yml
+    command: --api.insecure=true --providers.docker --configFile=/ctx/sorce/DeathStarGame/bin/traefik/traefik.yml
     ports:
       # The HTTP port
       - "80:80"
@@ -33,8 +33,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       # - ./traefik/traefik.toml:/etc/traefik/traefik.toml
       - type: volume
-        source: repos
-        target: /ctx/DeathStarGame
+        source: sorce
+        target: /ctx/sorce/DeathStarGame
         volume:
           nocopy: true
 
@@ -52,8 +52,8 @@ services:
       - network
     volumes:
       - type: volume
-        source: repos
-        target: /ctx/DeathStarGame
+        source: sorce
+        target: /ctx/sorce/DeathStarGame
         volume:
           nocopy: true
       - type: volume
@@ -68,7 +68,7 @@ services:
       context: ./app
       dockerfile: ./dev.Dockerfile
       args:
-        workdir: /ctx/DeathStarGame/bin/app
+        workdir: /ctx/sorce/DeathStarGame/bin/app
     command: tail -f /dev/null
     # command: bash f dev
     ports:
@@ -83,8 +83,8 @@ services:
         volume:
           nocopy: true
       - type: volume
-        source: repos
-        target: /ctx/DeathStarGame
+        source: sorce
+        target: /ctx/sorce/DeathStarGame
         volume:
           nocopy: true
     stdin_open: true
@@ -104,8 +104,8 @@ services:
       - network
     volumes:
       - type: volume
-        source: repos
-        target: /ctx/DeathStarGame
+        source: sorce
+        target: /ctx/sorce/DeathStarGame
         volume:
           nocopy: true
 

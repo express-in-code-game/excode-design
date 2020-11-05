@@ -5,13 +5,13 @@ networks:
 
 services:
 
-  source:
-    image: deathstar.source
+  sorce:
+    image: deathstar.sorce
     build:
-      context: ./source
+      context: ./sorce
       dockerfile: ./Dockerfile
       args:
-        workdir: /ctx
+        workdir: /ctx/sorce
     networks:
       - network
 
