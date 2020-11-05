@@ -143,6 +143,7 @@
 - [figuring out what the game should be](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language)
 - [project name](https://github.com/DeathStarGame/DeathStarGame/tree/95d6314d88f78ecaa2c4fe42f139b33f6033c4d8/project-name.md)
 - [idea of a volunteer automated cluster before discovering IPFS](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/origin-cluster/origin-cluster.md)
+- [why project does need no YouTube channel](https://github.com/DeathStarGame/DeathStarGame/commit/c712c6cea43a2ad4f9579f529ea29bc14f38f793)
 
 #### existing games that use languages
 
