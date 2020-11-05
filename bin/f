@@ -30,6 +30,12 @@ down(){
   $1 down "${@:2}"
 }
 
+restart(){
+  $1 stop $2
+  $1 rm $2
+  rund "$@"
+}
+
 deepdown(){
   down $1 -v --remove-orphans "${@:2}"
 }
@@ -70,6 +76,12 @@ run(){
   # https://docs.docker.com/compose/reference/run/
   $1 run --service-ports $2 "${@:3}"
 }
+
+rund(){
+  # https://docs.docker.com/compose/reference/run/
+  $1 run -d --service-ports $2 "${@:3}"
+}
+
 
 runbash(){
   # https://docs.docker.com/compose/reference/run/

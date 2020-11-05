@@ -1,0 +1,26 @@
+# http routing section
+http:
+  routers:
+    # Define a connection between requests and services
+    to-ipfs-webgui:
+      # rule: "PathPrefix(`/ipfs/webui`)"
+      rule: "Path(`/ipfs/webui`)"
+       # If the rule matches, applies the middleware
+      # middlewares:
+      # - test-user
+      # If the rule matches, forward to the whoami service (declared below)
+      service: ipfs
+
+  # middlewares:
+  #   # Define an authentication mechanism
+  #   test-user:
+  #     basicAuth:
+  #       users:
+  #       - test:$apr1$H6uskkkW$IgXLP6ewTrSuBkTrqE8wj/
+
+  services:
+    # Define how to reach an existing service on our infrastructure
+    ipfs:
+      loadBalancer:
+        servers:
+        - url: http://ipfs:5001/webui

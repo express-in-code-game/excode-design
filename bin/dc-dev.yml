@@ -20,7 +20,10 @@ services:
     # The official v2 Traefik docker image
     image: traefik:v2.3.2
     # Enables the web UI and tells Traefik to listen to docker
-    command: --api.insecure=true --providers.docker --configFile=/ctx/sorce/DeathStarGame/bin/traefik/traefik.yml
+    command: 
+      - "--api.insecure=true"
+      - "--providers.docker"
+      # - "--configFile=/ctx/sorce/DeathStarGame/bin/traefik/traefik.yml"
     ports:
       # The HTTP port
       - "80:80"
@@ -34,7 +37,7 @@ services:
       # - ./traefik/traefik.toml:/etc/traefik/traefik.toml
       - type: volume
         source: sorce
-        target: /ctx/sorce/DeathStarGame
+        target: /ctx/sorce
         volume:
           nocopy: true
 
@@ -53,7 +56,7 @@ services:
     volumes:
       - type: volume
         source: sorce
-        target: /ctx/sorce/DeathStarGame
+        target: /ctx/sorce
         volume:
           nocopy: true
       - type: volume
@@ -84,7 +87,7 @@ services:
           nocopy: true
       - type: volume
         source: sorce
-        target: /ctx/sorce/DeathStarGame
+        target: /ctx/sorce
         volume:
           nocopy: true
     stdin_open: true
@@ -105,7 +108,7 @@ services:
     volumes:
       - type: volume
         source: sorce
-        target: /ctx/sorce/DeathStarGame
+        target: /ctx/sorce
         volume:
           nocopy: true
 
