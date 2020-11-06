@@ -105,7 +105,7 @@
     - and existing e-sports games are closed source, most dark and click driven, most moneytized
     - hidden, hidden, private, hidden... so I don't think such game exists yet, otherwise we would have noticed it
 - what programming lanugage will the game use?
-    - clojure, because https://github.com/cljctools/readme#why-cljctools-and-why-use-clojure
+    - clojure, because https://github.com/cljctools/readme#rationale
 - what will the system look like?
     - [design](https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md)
 
