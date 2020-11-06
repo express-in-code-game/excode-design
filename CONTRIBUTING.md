@@ -7,7 +7,7 @@
 ## git
 
 - https://github.com/sergeiudris/deathstar.lab/blob/main/docs/git-forkflow.md#forkflow
-- https://github.com/cljctools/mult/blob/35d93ea4af3f2c586d29fa2ae8f5ce74d6096e41/docs/contributing.md
+- https://github.com/sergeiudris/mult/blob/35d93ea4af3f2c586d29fa2ae8f5ce74d6096e41/docs/contributing.md
 
 ## contributors' individual lab repos
 
