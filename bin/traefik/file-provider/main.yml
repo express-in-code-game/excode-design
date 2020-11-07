@@ -3,15 +3,17 @@ http:
   routers:
     # Define a connection between requests and services
     to-traefik:
+      priority: 1
       service: traefik
       rule: PathPrefix(`/traefik/`) || PathPrefix(`/api/`) || HeadersRegexp(`Referer`, `.*\/traefik\/.*`)
       middlewares:
         - "stripPrefix-traefik"
         # - "replacePath-traefik"
     to-ipfs-ui:
+      priority: 2
       service: ipfs-ui
       # rule: "PathPrefix(`/ipfs/webui`)"
-      rule: PathPrefix(`/ipfs-ui/`) || PathPrefix(`/ipfs/`) || HeadersRegexp(`Referer`, `.*\/ipfs-ui\/.*`)
+      rule: PathPrefix(`/ipfs-ui/`) || PathPrefix(`/ipfs/`) || PathPrefix(`/api/`) || HeadersRegexp(`Referer`, `.*\/ipfs-ui\/.*`)
       middlewares:
         - "stripPrefix-ipfs-ui"
        # If the rule matches, applies the middleware

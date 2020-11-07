@@ -42,6 +42,7 @@ services:
           nocopy: true
 
   ipfs:
+    # https://hub.docker.com/r/ipfs/go-ipfs/dockerfile
     image: ipfs/go-ipfs:latest
     ports:
       - 4001:4001
