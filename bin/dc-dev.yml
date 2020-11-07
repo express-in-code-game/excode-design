@@ -26,7 +26,7 @@ services:
       - "--configFile=/ctx/sorce/DeathStarGame/bin/traefik/traefik.yml"
     ports:
       # The HTTP port
-      - "80:80"
+      - "8000:80"
       # The Web UI (enabled by --api.insecure=true)
       - "8080:8080"
     networks:
@@ -76,7 +76,7 @@ services:
     # command: bash f dev
     ports:
       - 7788:7788
-      - 8000:8080
+      - 8085:8080
     networks:
       - network
     volumes:

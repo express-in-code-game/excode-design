@@ -2,13 +2,13 @@
 http:
   routers:
     # Define a connection between requests and services
-    traefik-ui:
+    to-traefik:
       service: traefik
-      rule: "PathPrefix(`/traefik-ui`)"
+      rule: PathPrefix(`/traefik/`) || PathPrefix(`/api/`) || HeadersRegexp(`Referer`, `.*\/traefik\/dashboard\/.*`)
       middlewares:
-        # - "stripPrefix-traefik-ui"
-        - "replacePath-traefik-ui"
-    ipfs-ui:
+        - "stripPrefix-traefik"
+        # - "replacePath-traefik"
+    to-ipfs-ui:
       service: ipfs
       # rule: "PathPrefix(`/ipfs/webui`)"
       rule: "PathPrefix(`/ipfs-ui`)"
@@ -20,11 +20,11 @@ http:
       # If the rule matches, forward to the whoami service (declared below)
   
   middlewares:
-    # stripPrefix-traefik-ui:
-    #   stripPrefix:
-    #     prefixes: 
-    #     - "/traefik-ui"
-    replacePath-traefik-ui:
+    stripPrefix-traefik:
+      stripPrefix:
+        prefixes: 
+        - "/traefik"
+    replacePath-traefik:
       replacePath:
         path: "/dashboard"
     replacePath-ipfs-ui:
