@@ -2,14 +2,30 @@
 http:
   routers:
     # Define a connection between requests and services
-    to-ipfs-webgui:
+    traefik-ui:
+      service: traefik
+      rule: "PathPrefix(`/traefik-ui`)"
+      middlewares:
+        - "stripPrefix-traefik-ui"
+    ipfs-ui:
+      service: ipfs
       # rule: "PathPrefix(`/ipfs/webui`)"
-      rule: "Path(`/ipfs/webui`)"
+      rule: "PathPrefix(`/ipfs-ui`)"
+      middlewares:
+        - "replacePath-ipfs-ui"
        # If the rule matches, applies the middleware
       # middlewares:
       # - test-user
       # If the rule matches, forward to the whoami service (declared below)
-      service: ipfs
+  
+  middlewares:
+    stripPrefix-traefik-ui:
+      stripPrefix:
+        prefixes: 
+        - "/traefik-ui"
+    replacePath-ipfs-ui:
+      replacePath:
+        path: "/webui"
 
   # middlewares:
   #   # Define an authentication mechanism
@@ -23,4 +39,8 @@ http:
     ipfs:
       loadBalancer:
         servers:
-        - url: http://ipfs:5001/webui
+        - url: http://ipfs:5001
+    traefik:
+      loadBalancer:
+        servers:
+        - url: http://traefik:8080
