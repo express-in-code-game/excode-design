@@ -3,14 +3,14 @@ http:
   routers:
     # Define a connection between requests and services
     to-traefik:
-      priority: 1
+      priority: 2
       service: traefik
       rule: PathPrefix(`/traefik/`) || PathPrefix(`/api/`) || HeadersRegexp(`Referer`, `.*\/traefik\/.*`)
       middlewares:
         - "stripPrefix-traefik"
         # - "replacePath-traefik"
     to-ipfs-ui:
-      priority: 2
+      priority: 1
       service: ipfs-ui
       # rule: "PathPrefix(`/ipfs/webui`)"
       rule: PathPrefix(`/ipfs-ui/`) || PathPrefix(`/ipfs/`) || PathPrefix(`/api/`) || HeadersRegexp(`Referer`, `.*\/ipfs-ui\/.*`)
@@ -20,6 +20,13 @@ http:
       # middlewares:
       # - test-user
       # If the rule matches, forward to the whoami service (declared below)
+    to-vscode:
+      priority: 0
+      service: vscode
+      rule: PathPrefix(`/vscode/`) || HeadersRegexp(`Referer`, `.*\/vscode\/.*`)
+      middlewares:
+        - "stripPrefix-vscode"
+        # - "replacePath-traefik"
   
   middlewares:
     stripPrefix-traefik:
@@ -30,6 +37,10 @@ http:
       stripPrefix:
         prefixes: 
         - "/ipfs-ui"
+    stripPrefix-vscode:
+      stripPrefix:
+        prefixes: 
+        - "/vscode"
     # replacePath-traefik:
     #   replacePath:
     #     path: "/dashboard"
@@ -55,3 +66,7 @@ http:
       loadBalancer:
         servers:
         - url: http://traefik:8080
+    vscode:
+      loadBalancer:
+        servers:
+        - url: http://vscode:8080
