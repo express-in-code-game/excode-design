@@ -12,7 +12,7 @@ volumes:
       # device: $PWD/${WEB_APP_PATH}
       o: bind
   data:
-  m2:
+  home:
 
 services:
 
@@ -82,8 +82,8 @@ services:
       - network
     volumes:
       - type: volume
-        source: m2
-        target: /home/root/.m2
+        source: home
+        target: /root
         volume:
           nocopy: true
       - type: volume
