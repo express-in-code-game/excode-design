@@ -6,7 +6,8 @@ http:
       service: traefik
       rule: "PathPrefix(`/traefik-ui`)"
       middlewares:
-        - "stripPrefix-traefik-ui"
+        # - "stripPrefix-traefik-ui"
+        - "replacePath-traefik-ui"
     ipfs-ui:
       service: ipfs
       # rule: "PathPrefix(`/ipfs/webui`)"
@@ -19,10 +20,13 @@ http:
       # If the rule matches, forward to the whoami service (declared below)
   
   middlewares:
-    stripPrefix-traefik-ui:
-      stripPrefix:
-        prefixes: 
-        - "/traefik-ui"
+    # stripPrefix-traefik-ui:
+    #   stripPrefix:
+    #     prefixes: 
+    #     - "/traefik-ui"
+    replacePath-traefik-ui:
+      replacePath:
+        path: "/dashboard"
     replacePath-ipfs-ui:
       replacePath:
         path: "/webui"
