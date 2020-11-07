@@ -112,6 +112,11 @@ services:
         target: /ctx/sorce
         volume:
           nocopy: true
+      - type: volume
+        source: vscode
+        target: /home/coder/project
+        volume:
+          nocopy: true
 
   # cljs-compiler:
   #   image: deathstar.cljs-compiler

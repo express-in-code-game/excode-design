@@ -11,7 +11,8 @@ volumes:
       device: ../../
       # device: $PWD/${WEB_APP_PATH}
       o: bind
-  data:
+  ipfs:
+  vscode:
   home:
 
 services:
@@ -61,7 +62,7 @@ services:
         volume:
           nocopy: true
       - type: volume
-        source: data
+        source: ipfs
         target: /ipfsdata
         volume:
           nocopy: true
@@ -75,6 +76,8 @@ services:
         workdir: /ctx/sorce/DeathStarGame/bin/app
     command: tail -f /dev/null
     # command: bash f dev
+    # expose:
+    #   - 7788
     ports:
       - 7788:7788
       # - 8085:8080
@@ -104,12 +107,21 @@ services:
     ports:
       - 8800:8080
     command: --auth none
+    # user: "${UID}:${GID}"
+    user: "${UID}:${UID}"
+    environment:
+       - DOCKER_USER=$USER
     networks:
       - network
     volumes:
       - type: volume
         source: sorce
         target: /ctx/sorce
+        volume:
+          nocopy: true
+      - type: volume
+        source: vscode
+        target: /root
         volume:
           nocopy: true
 
