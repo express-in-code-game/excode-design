@@ -27,8 +27,8 @@ services:
       - "--configFile=/ctx/sorce/DeathStarGame/bin/traefik/traefik.yml"
     ports:
       # The HTTP port
-      - "8000:80"
-      - "7080:7080"
+      - ${PORTS_PREFIX}080:80
+      - ${PORTS_PREFIX}077:7080
       # The Web UI (enabled by --api.insecure=true)
       # - "8090:8080"
     networks:
@@ -47,10 +47,12 @@ services:
     # https://hub.docker.com/r/ipfs/go-ipfs/dockerfile
     image: ipfs/go-ipfs:latest
     ports:
+      - ${PORTS_PREFIX}041:4001
       # - 4001:4001
-      - 127.0.0.1:5001:5001
-      # - 127.0.0.1:8080:8080
-      # - 127.0.0.1:8081:8081
+      - ${PORTS_PREFIX}050:5001
+    #   - 127.0.0.1:5001:5001
+    #   # - 127.0.0.1:8080:8080
+    #   # - 127.0.0.1:8081:8081
     environment:
       - IPFS_PROFILE=server
       - IPFS_PATH=/ipfsdata
@@ -80,7 +82,7 @@ services:
     # expose:
     #   - 7788
     ports:
-      - 7788:7788
+      - ${PORTS_PREFIX}088:7788
       # - 8085:8080
     networks:
       - network
