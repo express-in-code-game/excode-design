@@ -70,3 +70,20 @@ http:
       loadBalancer:
         servers:
         - url: http://vscode:8080
+
+tcp:
+  routers:
+    nrepl:
+      # won't listen to entry point web
+      entryPoints:
+        - nrepl
+      rule: "HostSNI(`*`)"
+      service: app
+      # will route TLS requests (and ignore non tls requests)
+      # tls: {}
+
+  services:
+    app:
+      loadBalancer:
+        servers:
+        - address: app:7788

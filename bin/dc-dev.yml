@@ -28,6 +28,7 @@ services:
     ports:
       # The HTTP port
       - "8000:80"
+      - "7080:7080"
       # The Web UI (enabled by --api.insecure=true)
       # - "8090:8080"
     networks:
@@ -104,8 +105,8 @@ services:
 
   vscode:
     image: codercom/code-server:latest
-    ports:
-      - 8800:8080
+    # ports:
+    #   - 8800:8080
     command: --auth none
     # user: "${UID}:${GID}"
     user: "${UID}:${UID}"
