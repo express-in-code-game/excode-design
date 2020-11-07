@@ -21,8 +21,8 @@ services:
     image: traefik:v2.3.2
     # Enables the web UI and tells Traefik to listen to docker
     command: 
-      - "--api.insecure=true"
-      - "--providers.docker"
+      # - "--api.insecure=true"
+      # - "--providers.docker"
       - "--configFile=/ctx/sorce/DeathStarGame/bin/traefik/traefik.yml"
     ports:
       # The HTTP port

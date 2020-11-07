@@ -4,16 +4,16 @@ http:
     # Define a connection between requests and services
     to-traefik:
       service: traefik
-      rule: PathPrefix(`/traefik/`) || PathPrefix(`/api/`) || HeadersRegexp(`Referer`, `.*\/traefik\/dashboard\/.*`)
+      rule: PathPrefix(`/traefik/`) || PathPrefix(`/api/`) || HeadersRegexp(`Referer`, `.*\/traefik\/.*`)
       middlewares:
         - "stripPrefix-traefik"
         # - "replacePath-traefik"
     to-ipfs-ui:
-      service: ipfs
+      service: ipfs-ui
       # rule: "PathPrefix(`/ipfs/webui`)"
-      rule: "PathPrefix(`/ipfs-ui`)"
+      rule: PathPrefix(`/ipfs-ui/`) || PathPrefix(`/ipfs/`) || HeadersRegexp(`Referer`, `.*\/ipfs-ui\/.*`)
       middlewares:
-        - "replacePath-ipfs-ui"
+        - "stripPrefix-ipfs-ui"
        # If the rule matches, applies the middleware
       # middlewares:
       # - test-user
@@ -24,12 +24,17 @@ http:
       stripPrefix:
         prefixes: 
         - "/traefik"
-    replacePath-traefik:
-      replacePath:
-        path: "/dashboard"
-    replacePath-ipfs-ui:
-      replacePath:
-        path: "/webui"
+    stripPrefix-ipfs-ui:
+      stripPrefix:
+        prefixes: 
+        - "/ipfs-ui"
+    # replacePath-traefik:
+    #   replacePath:
+    #     path: "/dashboard"
+    # replacePath-ipfs-ui:
+    #   replacePath:
+    #     path: "/webui"
+
 
   # middlewares:
   #   # Define an authentication mechanism
@@ -40,7 +45,7 @@ http:
 
   services:
     # Define how to reach an existing service on our infrastructure
-    ipfs:
+    ipfs-ui:
       loadBalancer:
         servers:
         - url: http://ipfs:5001
