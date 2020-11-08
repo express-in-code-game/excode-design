@@ -161,7 +161,7 @@ test_env_vars(){
 
 #### https://hub.docker.com/r/linuxserver/ipfs
 
-run_linuxserver_ipfs(){
+dock_linuxserver_ipfs(){
   docker run \
   --rm \
   --name=ipfs \
@@ -173,6 +173,21 @@ run_linuxserver_ipfs(){
   -p 5002:5001 \
   -p 8080:8080 \
   ghcr.io/linuxserver/ipfs
+}
+
+#### https://github.com/ipfs/go-ipfs/#running-ipfs-inside-docker
+
+dock_ipfs_node(){
+
+  docker run \
+  --rm \
+  --name ipfs_host \
+  -p 4001:4001 \
+  -p 4001:4001/udp \
+  -p 127.0.0.1:8080:8080 \
+  -p 127.0.0.1:5001:5001 \
+  ipfs/go-ipfs:latest
+
 }
 
 
