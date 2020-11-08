@@ -40,14 +40,14 @@ deepdown(){
 }
 
 dc(){
-  docker-compose --compatibility \
+  UID=$UID docker-compose --compatibility \
   --env-file docker-compose.env \
   -f docker-compose.yml \
   "$@"
 }
 
 dev(){
-  docker-compose --compatibility \
+  UID=$UID docker-compose --compatibility \
   -f dc-dev.yml \
   "$@"
 }
@@ -177,16 +177,16 @@ dock_linuxserver_ipfs(){
 
 #### https://github.com/ipfs/go-ipfs/#running-ipfs-inside-docker
 
-dock_ipfs_node(){
-
+dock_ipfs(){
+  export IPFS_PROFILE=server
   docker run \
   --rm \
-  --name ipfs_host \
+  --name ipfs \
   -p 4001:4001 \
   -p 4001:4001/udp \
   -p 127.0.0.1:8080:8080 \
   -p 127.0.0.1:5001:5001 \
-  ipfs/go-ipfs:latest
+  ipfs/go-ipfs:latest daemon --writable --enable-pubsub-experiment --migrate=true
 
 }
 

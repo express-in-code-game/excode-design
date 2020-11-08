@@ -47,10 +47,17 @@ services:
   ipfs:
     # https://hub.docker.com/r/ipfs/go-ipfs/dockerfile
     image: ipfs/go-ipfs:latest
+    command:
+      - "daemon"
+      - "--writable" 
+      - "--enable-pubsub-experiment"
+      - "--migrate=true"
     ports:
       - ${PORTS_PREFIX}041:4001
-      # - 4001:4001
       - ${PORTS_PREFIX}050:5001
+      - ${PORTS_PREFIX}800:8080
+      - ${PORTS_PREFIX}801:8081
+      # - 4001:4001
     #   - 127.0.0.1:5001:5001
     #   # - 127.0.0.1:8080:8080
     #   # - 127.0.0.1:8081:8081
@@ -131,6 +138,11 @@ services:
       - type: volume
         source: vscode
         target: /root
+        volume:
+          nocopy: true
+      - type: volume
+        source: ipfs-data
+        target: /data/ipfs
         volume:
           nocopy: true
 
