@@ -2,6 +2,8 @@ version: "3.8"
 
 networks:
   network:
+  ipfs-nodes:
+    name: ipfs-nodes
 
 volumes:
   sorce:
@@ -65,7 +67,11 @@ services:
       - IPFS_PROFILE=server
       - IPFS_PATH=/data/ipfs
     networks:
-      - network
+      network:
+      ipfs-nodes:
+        aliases:
+          - ipfs-${PORTS_PREFIX}
+
     volumes:
       - type: volume
         source: sorce
