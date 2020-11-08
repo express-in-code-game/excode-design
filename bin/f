@@ -40,14 +40,14 @@ deepdown(){
 }
 
 dc(){
-  UID=$UID docker-compose --compatibility \
+  UID_GID="$(id -u):$(id -g)" docker-compose --compatibility \
   --env-file docker-compose.env \
   -f docker-compose.yml \
   "$@"
 }
 
 dev(){
-  UID=$UID docker-compose --compatibility \
+  UID_GID="$(id -u):$(id -g)" docker-compose --compatibility \
   -f dc-dev.yml \
   "$@"
 }

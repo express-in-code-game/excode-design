@@ -123,8 +123,7 @@ services:
     # ports:
     #   - 8800:8080
     command: --auth none
-    # user: "${UID}:${GID}"
-    user: "${UID}:${UID}"
+    user: "${UID_GID}"
     environment:
        - DOCKER_USER=$USER
     networks:
