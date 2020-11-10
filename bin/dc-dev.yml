@@ -66,6 +66,7 @@ services:
     #   # - 127.0.0.1:8081:8081
     environment:
       # - IPFS_PROFILE=server
+      # - IPFS_PROFILE=local-discovery
       - IPFS_PATH=/data/ipfs
     networks:
       network:
