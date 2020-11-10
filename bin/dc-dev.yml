@@ -1,10 +1,10 @@
 version: "3.8"
 
 networks:
-  network:
-    name: deathstar-${PORTS_PREFIX}
-  ipfs-nodes:
-    name: ipfs-nodes
+  base-network:
+    name: deathstar-network-${PORTS_PREFIX}
+  ipfs-network:
+    name: ipfs-network
 
 volumes:
   sorce:
@@ -38,7 +38,7 @@ services:
       # The Web UI (enabled by --api.insecure=true)
       # - "8090:8080"
     networks:
-      - network
+      - base-network
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
@@ -71,8 +71,8 @@ services:
       # - IPFS_PROFILE=local-discovery
       - IPFS_PATH=/data/ipfs
     networks:
-      network:
-      ipfs-nodes:
+      base-network:
+      ipfs-network:
         aliases:
           - ipfs-${PORTS_PREFIX}
     volumes:
@@ -138,7 +138,7 @@ services:
       - ${PORTS_PREFIX}088:7788
       # - 8085:8080
     networks:
-      - network
+      - base-network
     volumes:
       - type: volume
         source: app_cache
@@ -167,7 +167,7 @@ services:
     environment:
        - DOCKER_USER=$USER
     networks:
-      - network
+      - base-network
     volumes:
       - type: volume
         source: sorce
