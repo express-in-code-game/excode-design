@@ -152,36 +152,36 @@ services:
         volume:
           nocopy: true
 
-  vscode:
-    image: deathstar.vscode
-    build:
-      context: ./vscode
-      dockerfile: ./Dockerfile
-      args:
-        workdir: /ctx/sorce/
-    # ports:
-    #   - 8800:8080
-    expose:
-      - 8080
-    user: "${UID_GID}"
-    networks:
-      - network
-    volumes:
-      - type: volume
-        source: sorce
-        target: /ctx/sorce
-        volume:
-          nocopy: true
-      - type: volume
-        source: vscode
-        target: /root
-        volume:
-          nocopy: true
-      - type: volume
-        source: ipfs-data
-        target: /data/ipfs
-        volume:
-          nocopy: true
+  # vscode:
+  #   image: deathstar.vscode
+  #   build:
+  #     context: ./vscode
+  #     dockerfile: ./Dockerfile
+  #     args:
+  #       workdir: /ctx/sorce/
+  #   # ports:
+  #   #   - 8800:8080
+  #   expose:
+  #     - 8080
+  #   user: "${UID_GID}"
+  #   networks:
+  #     - network
+  #   volumes:
+  #     - type: volume
+  #       source: sorce
+  #       target: /ctx/sorce
+  #       volume:
+  #         nocopy: true
+  #     - type: volume
+  #       source: vscode
+  #       target: /root
+  #       volume:
+  #         nocopy: true
+  #     - type: volume
+  #       source: ipfs-data
+  #       target: /data/ipfs
+  #       volume:
+  #         nocopy: true
 
   # cljs-compiler:
   #   image: deathstar.cljs-compiler
