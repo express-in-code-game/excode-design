@@ -48,7 +48,7 @@ http:
       stripPrefix:
         prefixes: 
         - "/code-server"
-    stripPrefix-code-server:
+    stripPrefix-vscode:
       stripPrefix:
         prefixes: 
         - "/vscode"
