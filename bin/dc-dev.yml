@@ -2,6 +2,7 @@ version: "3.8"
 
 networks:
   network:
+    name: deathstar-${PORTS_PREFIX}
   ipfs-nodes:
     name: ipfs-nodes
 
@@ -14,11 +15,11 @@ volumes:
       # device: $PWD/${WEB_APP_PATH}
       o: bind
   ipfs-data:
-  ipfs0-data:
+  # ipfs0-data:
   ipfs-export:
   code-server:
-  vscode:
-  home:
+  # vscode:
+  app_cache:
 
 services:
 
@@ -140,7 +141,7 @@ services:
       - network
     volumes:
       - type: volume
-        source: home
+        source: app_cache
         target: /root
         volume:
           nocopy: true
