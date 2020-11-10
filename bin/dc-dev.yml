@@ -71,9 +71,9 @@ services:
       - IPFS_PATH=/data/ipfs
     networks:
       network:
-      ipfs-nodes:
-        aliases:
-          - ipfs-${PORTS_PREFIX}
+      # ipfs-nodes:
+      #   aliases:
+      #     - ipfs-${PORTS_PREFIX}
     volumes:
       - type: volume
         source: sorce
