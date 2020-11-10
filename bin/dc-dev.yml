@@ -14,6 +14,7 @@ volumes:
       # device: $PWD/${WEB_APP_PATH}
       o: bind
   ipfs-data:
+  ipfs0-data:
   ipfs-export:
   code-server:
   vscode:
@@ -73,7 +74,6 @@ services:
       ipfs-nodes:
         aliases:
           - ipfs-${PORTS_PREFIX}
-
     volumes:
       - type: volume
         source: sorce
@@ -88,6 +88,37 @@ services:
       - type: volume
         source: ipfs-export
         target: /export
+        volume:
+          nocopy: true
+
+  ipfs0:
+    # https://hub.docker.com/r/ipfs/go-ipfs/dockerfile
+    image: ipfs/go-ipfs:latest
+    command:
+      - "daemon"
+      - "--writable" 
+      - "--enable-pubsub-experiment"
+      - "--migrate=true"
+    expose:
+      - 4001
+      - 5001
+      - 8080
+      - 8081
+    environment:
+      # - IPFS_PROFILE=server
+      # - IPFS_PROFILE=local-discovery
+      - IPFS_PATH=/data/ipfs
+    networks:
+      network:
+    volumes:
+      - type: volume
+        source: sorce
+        target: /ctx/sorce
+        volume:
+          nocopy: true
+      - type: volume
+        source: ipfs0-data
+        target: /data/ipfs
         volume:
           nocopy: true
 
