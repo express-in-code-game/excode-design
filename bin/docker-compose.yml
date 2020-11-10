@@ -97,7 +97,7 @@ services:
           cpus: '4'
           memory: 4096M
 
-  vscode:
+  code-server:
     image: codercom/code-server:latest
     ports:
       - 8800:8080
@@ -113,7 +113,7 @@ services:
         volume:
           nocopy: true
       - type: volume
-        source: vscode
+        source: code-server
         target: /home/coder/project
         volume:
           nocopy: true

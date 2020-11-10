@@ -15,6 +15,7 @@ volumes:
       o: bind
   ipfs-data:
   ipfs-export:
+  code-server:
   vscode:
   home:
 
@@ -124,7 +125,7 @@ services:
           cpus: '4'
           memory: 4096M
 
-  vscode:
+  code-server:
     image: codercom/code-server:latest
     # ports:
     #   - 8800:8080
@@ -132,6 +133,37 @@ services:
     user: "${UID_GID}"
     environment:
        - DOCKER_USER=$USER
+    networks:
+      - network
+    volumes:
+      - type: volume
+        source: sorce
+        target: /ctx/sorce
+        volume:
+          nocopy: true
+      - type: volume
+        source: code-server
+        target: /root
+        volume:
+          nocopy: true
+      - type: volume
+        source: ipfs-data
+        target: /data/ipfs
+        volume:
+          nocopy: true
+
+  vscode:
+    image: deathstar.vscode
+    build:
+      context: ./vscode
+      dockerfile: ./Dockerfile
+      args:
+        workdir: /ctx/sorce/
+    # ports:
+    #   - 8800:8080
+    expose:
+      - 8080
+    user: "${UID_GID}"
     networks:
       - network
     volumes:

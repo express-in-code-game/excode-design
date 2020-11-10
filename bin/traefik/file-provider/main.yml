@@ -20,6 +20,13 @@ http:
       # middlewares:
       # - test-user
       # If the rule matches, forward to the whoami service (declared below)
+    to-code-server:
+      priority: 0
+      service: code-server
+      rule: PathPrefix(`/code-server/`) || HeadersRegexp(`Referer`, `.*\/code-server\/.*`)
+      middlewares:
+        - "stripPrefix-code-server"
+        # - "replacePath-traefik"
     to-vscode:
       priority: 0
       service: vscode
@@ -37,7 +44,11 @@ http:
       stripPrefix:
         prefixes: 
         - "/ipfs-ui"
-    stripPrefix-vscode:
+    stripPrefix-code-server:
+      stripPrefix:
+        prefixes: 
+        - "/code-server"
+    stripPrefix-code-server:
       stripPrefix:
         prefixes: 
         - "/vscode"
@@ -66,6 +77,10 @@ http:
       loadBalancer:
         servers:
         - url: http://traefik:8080
+    code-server:
+      loadBalancer:
+        servers:
+        - url: http://code-server:8080
     vscode:
       loadBalancer:
         servers:
