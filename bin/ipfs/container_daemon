@@ -56,6 +56,6 @@ else
 
 fi
 
-ipfs config Swarm.EnableAutoRelay --bool true
+ipfs config Swarm.EnableAutoRelay --bool false
 
 exec ipfs "$@"
