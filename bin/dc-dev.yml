@@ -52,7 +52,11 @@ services:
 
   ipfs:
     # https://hub.docker.com/r/ipfs/go-ipfs/dockerfile
-    image: ipfs/go-ipfs:latest
+    # image: ipfs/go-ipfs:latest
+    image: sergeiudris/go-ipfs:v0.7.0-docker
+    build:
+      context: https://github.com/sergeiudris/go-ipfs.git#v0.7.0-docker:.
+      dockerfile: ./Dockerfile
     command:
       - "daemon"
       - "--writable" 
