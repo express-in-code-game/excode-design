@@ -1,0 +1,1 @@
+FROM adoptopenjdk/openjdk14-openj9:jdk-14.0.2_12_openj9-0.21.0-ubuntu@sha256:cad6367b9bc0846479f6b24cd2b6711689c9b6b5a60695a1f9caedaa41641df2
