@@ -52,9 +52,9 @@ dev(){
   "$@"
 }
 
-base(){
+images(){
   docker-compose --compatibility \
-  -f dc-base.yml \
+  -f dc-images.yml \
   build \
   "$@"
 }

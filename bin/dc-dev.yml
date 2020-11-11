@@ -158,6 +158,41 @@ services:
           cpus: '4'
           memory: 4096M
 
+  launch:
+    image: deathstar.launch
+    build:
+      context: ./launch
+      dockerfile: ./Dockerfile
+      args:
+        workdir: /ctx/sorce/DeathStarGame/bin/launch
+    command: tail -f /dev/null
+    # command: bash f dev
+    # expose:
+    #   - 7788
+    ports:
+      - ${PORTS_PREFIX}077:7788
+      # - 8085:8080
+    networks:
+      - base-network
+    volumes:
+      - type: volume
+        source: app_cache
+        target: /root
+        volume:
+          nocopy: true
+      - type: volume
+        source: sorce
+        target: /ctx/sorce
+        volume:
+          nocopy: true
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
   code-server:
     image: codercom/code-server:latest
     # ports:

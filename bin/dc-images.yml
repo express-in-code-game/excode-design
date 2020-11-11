@@ -20,6 +20,12 @@ services:
       context: ./images/openjdk-jdk11-clj-lein-node
       dockerfile: ./Dockerfile
 
+  adoptopenjdk-ubuntu-jdk14-openj9:
+    image: local.adoptopenjdk-ubuntu-jdk14-openj9
+    build:
+      context: ./images/adoptopenjdk-ubuntu-jdk14-openj9
+      dockerfile: ./Dockerfile
+
   jvm-prod-builder:
     image: local.jvm-prod-builder
     build:
