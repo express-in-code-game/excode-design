@@ -55,7 +55,8 @@ services:
     # image: ipfs/go-ipfs:latest
     image: sergeiudris/go-ipfs:v0.7.0-docker
     build:
-      context: https://github.com/sergeiudris/go-ipfs.git#v0.7.0-docker:.
+      # context: https://github.com/sergeiudris/go-ipfs.git#v0.7.0-docker:.
+      context: https://github.com/sergeiudris/go-ipfs.git#a7dca57f7455b7130af7992ab53e22539206adde:.
       dockerfile: ./Dockerfile
     command:
       - "daemon"
