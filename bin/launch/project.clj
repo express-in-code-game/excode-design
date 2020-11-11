@@ -1,4 +1,4 @@
-(def MAIN 'deathstar.app.main)
+(def MAIN 'deathstar.launch.main)
 #_(prn (clojure-version))
 #_(prn *command-line-args*)
 

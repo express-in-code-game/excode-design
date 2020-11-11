@@ -19,7 +19,8 @@ volumes:
   ipfs-export:
   code-server:
   # vscode:
-  app_cache:
+  # app_cache:
+  # launch_cache:
 
 services:
 
@@ -34,7 +35,7 @@ services:
     ports:
       # The HTTP port
       - ${PORTS_PREFIX}080:80
-      - ${PORTS_PREFIX}077:7080
+      - ${PORTS_PREFIX}081:7080
       # The Web UI (enabled by --api.insecure=true)
       # - "8090:8080"
     networks:
@@ -123,40 +124,38 @@ services:
   #       volume:
   #         nocopy: true
 
-  app:
-    image: deathstar.app
-    build:
-      context: ./app
-      dockerfile: ./dev.Dockerfile
-      args:
-        workdir: /ctx/sorce/DeathStarGame/bin/app
-    command: tail -f /dev/null
-    # command: bash f dev
-    # expose:
-    #   - 7788
-    ports:
-      - ${PORTS_PREFIX}088:7788
-      # - 8085:8080
-    networks:
-      - base-network
-    volumes:
-      - type: volume
-        source: app_cache
-        target: /root
-        volume:
-          nocopy: true
-      - type: volume
-        source: sorce
-        target: /ctx/sorce
-        volume:
-          nocopy: true
-    stdin_open: true
-    tty: true
-    deploy:
-      resources:
-        limits:
-          cpus: '4'
-          memory: 4096M
+  # app:
+  #   image: deathstar.app
+  #   build:
+  #     context: ./app
+  #     dockerfile: ./dev.Dockerfile
+  #     args:
+  #       workdir: /ctx/sorce/DeathStarGame/bin/app
+  #   command: tail -f /dev/null
+  #   # command: bash f dev
+  #   # expose:
+  #   #   - 7788
+  #   ports:
+  #     - ${PORTS_PREFIX}088:7788
+  #     # - 8085:8080
+  #   networks:
+  #     - base-network
+  #   volumes:
+  #     - type: bind
+  #       source: ./app/.user
+  #       target: /root
+  #     - type: volume
+  #       source: sorce
+  #       target: /ctx/sorce
+  #       volume:
+  #         nocopy: true
+  #   stdin_open: true
+  #   tty: true
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '4'
+  #         memory: 4096M
 
   launch:
     image: deathstar.launch
@@ -175,11 +174,7 @@ services:
     networks:
       - base-network
     volumes:
-      - type: volume
-        source: app_cache
-        target: /root
-        volume:
-          nocopy: true
+      - ./launch/.user:/root
       - type: volume
         source: sorce
         target: /ctx/sorce
