@@ -124,57 +124,24 @@ services:
   #       volume:
   #         nocopy: true
 
-  # app:
-  #   image: deathstar.app
-  #   build:
-  #     context: ./app
-  #     dockerfile: ./dev.Dockerfile
-  #     args:
-  #       workdir: /ctx/sorce/DeathStarGame/bin/app
-  #   command: tail -f /dev/null
-  #   # command: bash f dev
-  #   # expose:
-  #   #   - 7788
-  #   ports:
-  #     - ${PORTS_PREFIX}088:7788
-  #     # - 8085:8080
-  #   networks:
-  #     - base-network
-  #   volumes:
-  #     - type: bind
-  #       source: ./app/.user
-  #       target: /root
-  #     - type: volume
-  #       source: sorce
-  #       target: /ctx/sorce
-  #       volume:
-  #         nocopy: true
-  #   stdin_open: true
-  #   tty: true
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         cpus: '4'
-  #         memory: 4096M
-
-  launch:
-    image: deathstar.launch
+  app:
+    image: deathstar.app
     build:
-      context: ./launch
-      dockerfile: ./Dockerfile
+      context: ./app
+      dockerfile: ./dev.Dockerfile
       args:
-        workdir: /ctx/sorce/DeathStarGame/bin/launch
+        workdir: /ctx/sorce/DeathStarGame/bin/app
     command: tail -f /dev/null
     # command: bash f dev
     # expose:
     #   - 7788
     ports:
-      - ${PORTS_PREFIX}077:7788
+      - ${PORTS_PREFIX}088:7788
       # - 8085:8080
     networks:
       - base-network
     volumes:
-      - ./launch/.user:/root
+      - ./app/.user:/root
       - type: volume
         source: sorce
         target: /ctx/sorce
