@@ -2,13 +2,13 @@ version: "3.8"
 
 services:
 
-  ipfs-image:
-    # image: ipfs/go-ipfs:latest
-    image: local.sergeiudris/go-ipfs:v0.7.0-docker
-    build:
-      # context: https://github.com/sergeiudris/go-ipfs.git#v0.7.0-docker:.
-      context: https://github.com/sergeiudris/go-ipfs.git#c5b932f3886878a9e7c40de64441f915109e2cf8
-      dockerfile: ./Dockerfile
+  # ipfs-image:
+  #   # image: ipfs/go-ipfs:latest
+  #   image: local.sergeiudris/go-ipfs:v0.7.0-docker
+  #   build:
+  #     # context: https://github.com/sergeiudris/go-ipfs.git#v0.7.0-docker:.
+  #     context: https://github.com/sergeiudris/go-ipfs.git#aeeeca9ff5ad47283537d0a18ed68d86be707e2b
+  #     dockerfile: ./Dockerfile
 
   openjdk-jdk11-clj-lein:
     image: local.openjdk-jdk11-clj-lein

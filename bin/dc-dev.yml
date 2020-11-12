@@ -4,7 +4,12 @@ networks:
   base-network:
     name: deathstar-network-${PORTS_PREFIX}
   ipfs-network:
+    driver: bridge
     name: ipfs-network
+  # network1:
+  #   name: network1-${PORTS_PREFIX}
+  # network2:
+  #   name: network2-${PORTS_PREFIX}
 
 volumes:
   sorce:
@@ -74,7 +79,7 @@ services:
       # - IPFS_PROFILE=local-discovery
       - IPFS_PATH=/data/ipfs
     networks:
-      base-network:
+      # base-network:
       ipfs-network:
         aliases:
           - ipfs-${PORTS_PREFIX}
@@ -96,8 +101,10 @@ services:
           nocopy: true
 
   # ipfs0:
-  #   # https://hub.docker.com/r/ipfs/go-ipfs/dockerfile
-  #   image: ipfs/go-ipfs:latest
+  #   image: deathstar.ipfs
+  #   build:
+  #     context: ./ipfs
+  #     dockerfile: ./Dockerfile
   #   command:
   #     - "daemon"
   #     - "--writable" 
@@ -113,16 +120,15 @@ services:
   #     # - IPFS_PROFILE=local-discovery
   #     - IPFS_PATH=/data/ipfs
   #   networks:
-  #     network:
+  #     # base-network:
+  #     network2:
+  #     ipfs-network:
+  #       aliases:
+  #         - ipfs0-${PORTS_PREFIX}
   #   volumes:
   #     - type: volume
   #       source: sorce
   #       target: /ctx/sorce
-  #       volume:
-  #         nocopy: true
-  #     - type: volume
-  #       source: ipfs0-data
-  #       target: /data/ipfs
   #       volume:
   #         nocopy: true
 

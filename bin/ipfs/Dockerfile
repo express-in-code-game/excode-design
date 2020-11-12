@@ -1,5 +1,4 @@
-# FROM ipfs/go-ipfs:v0.7.0@sha256:d5bc45bd354e3fef2161adb0daa7dc390316589cfdcc6b0edc1ad13ac66626fd
-FROM local.sergeiudris/go-ipfs:v0.7.0-docker
+FROM ipfs/go-ipfs:v0.7.0@sha256:d5bc45bd354e3fef2161adb0daa7dc390316589cfdcc6b0edc1ad13ac66626fd
 
 COPY container_daemon /usr/local/bin/start_ipfs
 
