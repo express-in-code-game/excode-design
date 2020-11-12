@@ -55,10 +55,56 @@ services:
         volume:
           nocopy: true
 
+  # ipfs:
+  #   image: deathstar.ipfs
+  #   build:
+  #     context: ./ipfs
+  #     dockerfile: ./Dockerfile
+  #   command:
+  #     - "daemon"
+  #     - "--writable" 
+  #     - "--enable-pubsub-experiment"
+  #     - "--migrate=true"
+  #   ports:
+  #     - ${PORTS_PREFIX}041:4001
+  #     - ${PORTS_PREFIX}050:5001
+  #     - ${PORTS_PREFIX}800:8080
+  #     - ${PORTS_PREFIX}801:8081
+  #     # - 4001:4001
+  #   #   - 127.0.0.1:5001:5001
+  #   #   # - 127.0.0.1:8080:8080
+  #   #   # - 127.0.0.1:8081:8081
+  #   environment:
+  #     # - IPFS_PROFILE=server
+  #     # - IPFS_PROFILE=local-discovery
+  #     - IPFS_PATH=/data/ipfs
+  #   networks:
+  #     base-network:
+  #     ipfs-network:
+  #       aliases:
+  #         - ipfs-${PORTS_PREFIX}
+  #   volumes:
+  #     - type: volume
+  #       source: sorce
+  #       target: /ctx/sorce
+  #       volume:
+  #         nocopy: true
+  #     - type: volume
+  #       source: ipfs-data
+  #       target: /data/ipfs
+  #       volume:
+  #         nocopy: true
+  #     - type: volume
+  #       source: ipfs-export
+  #       target: /export
+  #       volume:
+  #         nocopy: true
+
+
   ipfs:
-    image: deathstar.ipfs
+    image: deathstar.js-ipfs
     build:
-      context: ./ipfs
+      context: ./js-ipfs
       dockerfile: ./Dockerfile
     command:
       - "daemon"
@@ -66,20 +112,16 @@ services:
       - "--enable-pubsub-experiment"
       - "--migrate=true"
     ports:
-      - ${PORTS_PREFIX}041:4001
-      - ${PORTS_PREFIX}050:5001
-      - ${PORTS_PREFIX}800:8080
-      - ${PORTS_PREFIX}801:8081
-      # - 4001:4001
-    #   - 127.0.0.1:5001:5001
-    #   # - 127.0.0.1:8080:8080
-    #   # - 127.0.0.1:8081:8081
+      - ${PORTS_PREFIX}042:4002
+      - ${PORTS_PREFIX}043:4003
+      - ${PORTS_PREFIX}052:5002
+      - ${PORTS_PREFIX}090:9090
     environment:
       # - IPFS_PROFILE=server
       # - IPFS_PROFILE=local-discovery
       - IPFS_PATH=/data/ipfs
     networks:
-      # base-network:
+      base-network:
       ipfs-network:
         aliases:
           - ipfs-${PORTS_PREFIX}
@@ -91,7 +133,7 @@ services:
           nocopy: true
       - type: volume
         source: ipfs-data
-        target: /data/ipfs
+        target: /root/.jsipfs
         volume:
           nocopy: true
       - type: volume
