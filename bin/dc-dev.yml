@@ -20,9 +20,9 @@ volumes:
       device: ../../
       # device: $PWD/${WEB_APP_PATH}
       o: bind
-  ipfs-data:
+  # ipfs-data:
   # ipfs0-data:
-  ipfs-export:
+  # ipfs-export:
   code-server:
   # vscode:
   # app_cache:
@@ -56,50 +56,50 @@ services:
         volume:
           nocopy: true
 
-  ipfs:
-    image: deathstar.ipfs
-    build:
-      context: ./ipfs
-      dockerfile: ./Dockerfile
-    command:
-      - "daemon"
-      - "--writable" 
-      - "--enable-pubsub-experiment"
-      - "--migrate=true"
-    ports:
-      - ${PORTS_PREFIX}041:4001
-      - ${PORTS_PREFIX}050:5001
-      - ${PORTS_PREFIX}800:8080
-      - ${PORTS_PREFIX}801:8081
-      # - 4001:4001
-    #   - 127.0.0.1:5001:5001
-    #   # - 127.0.0.1:8080:8080
-    #   # - 127.0.0.1:8081:8081
-    environment:
-      # - IPFS_PROFILE=server
-      # - IPFS_PROFILE=local-discovery
-      - IPFS_PATH=/data/ipfs
-    networks:
-      base-network:
-      ipfs-network:
-        aliases:
-          - ipfs-${PORTS_PREFIX}
-    volumes:
-      - type: volume
-        source: sorce
-        target: /ctx/sorce
-        volume:
-          nocopy: true
-      - type: volume
-        source: ipfs-data
-        target: /data/ipfs
-        volume:
-          nocopy: true
-      - type: volume
-        source: ipfs-export
-        target: /export
-        volume:
-          nocopy: true
+  # ipfs:
+  #   image: deathstar.ipfs
+  #   build:
+  #     context: ./ipfs
+  #     dockerfile: ./Dockerfile
+  #   command:
+  #     - "daemon"
+  #     - "--writable" 
+  #     - "--enable-pubsub-experiment"
+  #     - "--migrate=true"
+  #   ports:
+  #     - ${PORTS_PREFIX}041:4001
+  #     - ${PORTS_PREFIX}050:5001
+  #     - ${PORTS_PREFIX}800:8080
+  #     - ${PORTS_PREFIX}801:8081
+  #     # - 4001:4001
+  #   #   - 127.0.0.1:5001:5001
+  #   #   # - 127.0.0.1:8080:8080
+  #   #   # - 127.0.0.1:8081:8081
+  #   environment:
+  #     # - IPFS_PROFILE=server
+  #     # - IPFS_PROFILE=local-discovery
+  #     - IPFS_PATH=/data/ipfs
+  #   networks:
+  #     base-network:
+  #     ipfs-network:
+  #       aliases:
+  #         - ipfs-${PORTS_PREFIX}
+  #   volumes:
+  #     - type: volume
+  #       source: sorce
+  #       target: /ctx/sorce
+  #       volume:
+  #         nocopy: true
+  #     - type: volume
+  #       source: ipfs-data
+  #       target: /data/ipfs
+  #       volume:
+  #         nocopy: true
+  #     - type: volume
+  #       source: ipfs-export
+  #       target: /export
+  #       volume:
+  #         nocopy: true
 
 
   # ipfs:
