@@ -17,7 +17,7 @@
 - [CONTRIBUTING.md](./CONTRIBUTING.md)
 - [mailing list](#mailing-list)
 - [discussion](#discussion)
-- [design](#design)
+- [design](https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md)
 - [related projects](#related-projects)
 - [previous repos](#previous-repos)
 - [other links](#other-links)
@@ -107,13 +107,7 @@
 - what programming lanugage will the game use?
     - clojure, because https://github.com/cljctools/readme#rationale
 - what will the system look like?
-    - [see design section](#design)
-
-## design
-
-- [by github.com/sergeiudris (current)](https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md)
-- ...
-- ...
+    - [design](https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md)
 
 ## mailing list
 
