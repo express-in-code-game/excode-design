@@ -112,9 +112,6 @@
 ## design
 
 - [by github.com/sergeiudris (current)](https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md)
-
-    [<img width="512px" src="https://raw.githubusercontent.com/sergeiudris/deathstar.lab/6dcdffe6b228dc92c923342888f77a44087cc9d4/docs/design/svg/2020-10-31-IPFS%2Bvscode.svg"></img>](https://github.com/sergeiudris/deathstar.lab/blob/6dcdffe6b228dc92c923342888f77a44087cc9d4/docs/design/design.md#with-one-system-should-browser-vscode-be-in-its-own-tab-and-game-gui-in-its-own)
-
 - ...
 - ...
 
