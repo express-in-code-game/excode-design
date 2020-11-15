@@ -30,7 +30,7 @@ services:
       - 9630:9630
       - 9500:9500
     volumes:
-      - ./.cljs:/root
+      - ./.user:/root
       - type: volume
         source: code
         target: /ctx

@@ -49,7 +49,6 @@ tmp
 
 .peer*
 .user*
-.cljs
 **/js-out
 
 # cert
