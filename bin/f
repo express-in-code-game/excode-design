@@ -34,8 +34,8 @@ dock() {
     REPL_PORT=77$SUFFIX$SUFFIX
     NETWORK=deathstar
     HOMEDIR_VOLUME=.user$SUFFIX
-    SOURCE_DIR=/ctx/DeathStarGame
-    WORKDIR=$SOURCE_DIR/bin
+    SOURCE_DIR=/ctx
+    WORKDIR=$SOURCE_DIR/DeathStarGame/bin
   
     docker build \
       -t $IMAGE \
@@ -44,15 +44,22 @@ dock() {
     
     docker network create $NETWORK
 
+    xhost +
+
     docker run  --rm \
                 --cpus=4.0 \
+                --gpus all \
                 --memory=8g \
                 --name $NAME \
+                --privileged \
+                --net=host \
+                --device /dev/dri \
                 -it \
-                --network $NETWORK \
                 -p $REPL_PORT:7788 \
+                -e DISPLAY=$DISPLAY \
+                -v /tmp/.X11-unix:/tmp/.X11-unix \
                 -v "$(pwd)/$HOMEDIR_VOLUME":/root \
-                -v "$(cd ../ && pwd)/":$SOURCE_DIR \
+                -v "$(cd ../../ && pwd)/":$SOURCE_DIR \
                  $IMAGE \
                  bash
 }
