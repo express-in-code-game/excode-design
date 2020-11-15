@@ -1,4 +1,14 @@
-{:paths ["src"]
+{:paths ["src" "resources"]
  :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
              "clojars" {:url "https://clojars.org/repo/"}}
- :deps {github.DeathStarGame.app {:local/root "../src/app" #_"/ctx/DeathStarGame/src/app"}}}
+ :deps {github.DeathStarGame.app {:local/root "/ctx/DeathStarGame/src/app"}}
+ :aliases {:ui {:extra-deps {github.DeathStarGame.ui {:local/root "/ctx/DeathStarGame/src/ui"}}}
+           :ui-dev {:extra-deps {thheller/shadow-cljs {:mvn/version "2.10.21"
+                                                       :exclusions [nrepl
+                                                                    cider/piggieback
+                                                                    org.clojure/clojure
+                                                                    org.clojure/clojurescript
+                                                                    org.clojure/core.async]}
+                                 nrepl/nrepl {:mvn/version "0.6.0"}
+                                 cider/cider-nrepl {:mvn/version "0.24.0"}
+                                 cider/piggieback {:mvn/version "0.4.2"}}}}}

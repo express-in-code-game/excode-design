@@ -47,9 +47,9 @@ __pycache__
 # data
 tmp
 
-.user*
-.deathstar
-
+.peer*
+.cljs-compiler
+**/js-out
 
 # cert
 

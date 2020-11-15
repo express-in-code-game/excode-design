@@ -1,0 +1,133 @@
+version: "3.8"
+
+networks:
+  base-network:
+    driver: bridge
+    name: deathstar-network
+
+volumes:
+  code:
+    driver: local
+    driver_opts:
+      type: none
+      device: ../../
+      # device: $PWD/${WEB_APP_PATH}
+      o: bind
+
+services:
+
+  cljs-compiler:
+    image: deathstar.cljs-compiler
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      args:
+        workdir: /ctx/DeathStarGame/bin
+    command: tail -f /dev/null
+    # command: bash f dev
+    ports:
+      - 8899:8899
+      - 9630:9630
+      - 9500:9500
+    volumes:
+      - ./.cljs-compiler:/root
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
+  peer1:
+    image: deathstar
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      args:
+        workdir: /ctx/DeathStarGame/bin
+    command: tail -f /dev/null
+    # command: bash f dev
+    # expose:
+    #   - 7788
+    ports:
+      - 8011:8080
+      - 7711:7788
+    networks:
+      - base-network
+    volumes:
+      - ./.peer1:/root
+      - type: volume
+        source: code
+        target: /ctx
+        volume:
+          nocopy: true
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
+  peer2:
+    image: deathstar
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      args:
+        workdir: /ctx/DeathStarGame/bin
+    command: tail -f /dev/null
+    # command: bash f dev
+    # expose:
+    #   - 7788
+    ports:
+      - 8022:8080
+      - 7722:7788
+    networks:
+      - base-network
+    volumes:
+      - ./.peer2:/root
+      - type: volume
+        source: code
+        target: /ctx
+        volume:
+          nocopy: true
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
+  peer3:
+    image: deathstar
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      args:
+        workdir: /ctx/DeathStarGame/bin
+    command: tail -f /dev/null
+    # command: bash f dev
+    # expose:
+    #   - 7788
+    ports:
+      - 8033:8080
+      - 7733:7788
+    networks:
+      - base-network
+    volumes:
+      - ./.peer3:/root
+      - type: volume
+        source: code
+        target: /ctx
+        volume:
+          nocopy: true
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M

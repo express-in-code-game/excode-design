@@ -1,0 +1,19 @@
+{
+	"name": "DeathStarGame",
+	"description": "https://github.com/DeathStarGame/DeathStarGame",
+	"version": "0.1.0",
+	"license": "GPL2",
+	"publisher": "https://github.com/DeathStarGame/DeathStarGame",
+	"repository": "https://github.com/DeathStarGame/DeathStarGame",
+	"main": "./resources/js-out/main.js",
+	"dependencies": {
+		"antd": "4.6.1",
+		"react": "16.13.0",
+		"react-dom": "16.13.0"
+	},
+	"devDependencies": {
+		"shadow-cljs": "2.10.21",
+		"webpack": "4.44.1",
+		"webpack-cli": "3.3.12"
+	}
+}

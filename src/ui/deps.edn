@@ -1,0 +1,10 @@
+{:paths ["src"]
+ :deps {org.clojure/clojure         {:mvn/version "1.10.1"}
+        org.clojure/clojurescript {:mvn/version "1.10.758"}
+        org.clojure/spec.alpha {:mvn/version "0.2.187"}
+        org.clojure/test.check {:mvn/version "1.0.0"}
+        org.clojure/core.async {:mvn/version "1.1.587"}
+        reagent {:mvn/version "0.10.0" :exclusions [cljsjs/react cljsjs/react-dom]}
+
+        github.com.cljctools/cljc {:local/root "/ctx/cljctools/cljc"}
+        github.com.cljctools/csp {:local/root "/ctx/cljctools/csp"}}}

@@ -8,4 +8,5 @@
 **/.shadow-cljs
 **/js-out
 **/classes
-**/.user*
+**/.peer*
+.cljs-compiler

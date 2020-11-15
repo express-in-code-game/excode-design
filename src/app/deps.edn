@@ -12,5 +12,5 @@
 
         com.cognitect/transit-clj  {:mvn/version "1.0.324"}
 
-        github.cljctools.cljc {:local/root "../../../cljctools/cljc" #_"/ctx/cljctools/cljc"}
-        github.cljctools.csp {:local/root "../../../cljctools/csp" #_"/ctx/cljctools/csp"}}}
+        github.cljctools.cljc {:local/root  "/ctx/cljctools/cljc"}
+        github.cljctools.csp {:local/root  "/ctx/cljctools/csp"}}}

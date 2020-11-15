@@ -1,0 +1,19 @@
+{:deps  {:aliases [:ui :ui-dev]}
+ :nrepl {:host "0.0.0.0"
+         :port 8899}
+ :http {:port 9630
+        :host "0.0.0.0"}
+ :builds {:main {:target :browser
+                 :output-dir "resources/js-out"
+                 :asset-path "/js-out"
+                 :module-loader true
+                 :modules {:main {:entries [deathstar.ui.main]}}
+                 :compiler-options {:infer-externs   false  #_:auto
+                                    :closure-warnings {:global-this :off}
+                                    :closure-defines  {"deathstar._some_val_"         true}}
+                 :devtools {:repl-init-ns deathstar.ui.main
+                            :repl-pprint true
+                            :autobuild true
+                            :devtools-url "http://localhost:9630"
+                            :http-root  "resources"
+                            :http-port  9500}}}}
