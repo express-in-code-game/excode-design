@@ -47,7 +47,8 @@ __pycache__
 # data
 tmp
 
-.user
+.user*
+.deathstar
 
 
 # cert

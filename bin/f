@@ -26,4 +26,27 @@ native(){
   lein native-image
 }
 
+dock() {
+
+    SUFFIX=$1
+    IMAGE=deathstar
+    NAME=deathstar-$SUFFIX
+    REPL_PORT=77$SUFFIX$SUFFIX
+    NETWORK=deathstar
+    HOMEDIR_VOLUME=.user$SUFFIX
+  
+    docker build -t $IMAGE -f Dockerfile .
+    docker network create $NETWORK
+    docker run  --rm \
+                --cpus=4.0 \
+                --memory=8g \
+                --name $NAME \
+                -it \
+                --network $NETWORK \
+                -p $REPL_PORT:7788 \
+                -v "$(pwd)/$HOMEDIR_VOLUME":/root \
+                 $IMAGE \
+                 bash
+}
+
 "$@"
