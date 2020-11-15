@@ -15,5 +15,5 @@
                           :repl-pprint true
                           :autobuild true
                           :devtools-url "http://localhost:9630"
-                          :http-root  "resources"
+                          :http-root  "resources/public"
                           :http-port  9500}}}}
