@@ -17,7 +17,7 @@
 - [CONTRIBUTING.md](./CONTRIBUTING.md)
 - [mailing list](#mailing-list)
 - [discussion](#discussion)
-- [design](https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md)
+- [design](#design)
 - [related projects](#related-projects)
 - [previous repos](#previous-repos)
 - [other links](#other-links)
@@ -107,7 +107,13 @@
 - what programming lanugage will the game use?
     - clojure, because https://github.com/cljctools/readme#rationale
 - what will the system look like?
-    - [design](https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md)
+    - [see design section](#design)
+
+## design
+
+- [by github.com/sergeiudris (current)](https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md)
+- ...
+- ...
 
 ## mailing list
 
@@ -155,3 +161,4 @@
     - https://www.reddit.com/r/typescript/comments/ik0fxh/cybercode_online_a_mmorpg_webgame_that_looks_like/
 - GLADIABOTS__AI_Combat_Arena
     - https://store.steampowered.com/app/871930/GLADIABOTS__AI_Combat_Arena/
+- https://www.codingame.com/multiplayer
