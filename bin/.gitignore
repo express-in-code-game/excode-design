@@ -48,7 +48,8 @@ __pycache__
 tmp
 
 .peer*
-.cljs-compiler
+.user*
+.cljs
 **/js-out
 
 # cert
@@ -57,4 +58,24 @@ resources/*.jks
 resources/*.pem
 resources/*.tmp
 
+
+pom.xml
+*jar
+/lib/
+/classes/
+/out/
+/resources/out
+/target/
+.lein-deps-sum
+.lein-repl-history
+.lein-plugins/
+.repl
+.nrepl-port
+.cpcache/
+.rebel_readline_history
+
+node_modules/
+.shadow-cljs
+resources/public/js-out
+tmp/
 

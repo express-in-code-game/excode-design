@@ -9,4 +9,5 @@
 **/js-out
 **/classes
 **/.peer*
-.cljs-compiler
+**/.user*
+.cljs

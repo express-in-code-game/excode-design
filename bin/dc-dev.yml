@@ -16,8 +16,8 @@ volumes:
 
 services:
 
-  cljs-compiler:
-    image: deathstar.cljs-compiler
+  cljs:
+    image: deathstar.cljs
     build:
       context: ./
       dockerfile: ./Dockerfile
@@ -30,7 +30,12 @@ services:
       - 9630:9630
       - 9500:9500
     volumes:
-      - ./.cljs-compiler:/root
+      - ./.cljs:/root
+      - type: volume
+        source: code
+        target: /ctx
+        volume:
+          nocopy: true
     stdin_open: true
     tty: true
     deploy:
@@ -56,7 +61,8 @@ services:
     networks:
       - base-network
     volumes:
-      - ./.peer1:/root
+      - ./.user:/root
+      - ./.peer1:/root/.deathstar
       - type: volume
         source: code
         target: /ctx
@@ -87,7 +93,8 @@ services:
     networks:
       - base-network
     volumes:
-      - ./.peer2:/root
+      - ./.user:/root
+      - ./.peer2:/root/.deathstar
       - type: volume
         source: code
         target: /ctx
@@ -118,7 +125,8 @@ services:
     networks:
       - base-network
     volumes:
-      - ./.peer3:/root
+      - ./.user:/root
+      - ./.peer3:/root/.deathstar
       - type: volume
         source: code
         target: /ctx
