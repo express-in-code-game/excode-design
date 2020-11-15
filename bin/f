@@ -1,194 +1,29 @@
 #!/bin/bash
 
-#### docker app
-
-# docker app init --single-file --compose-file docker-compose.yml deathstar
-# docker app install deathstar.dockerapp --name deathstar-1
-
-
-#### docker stack
-
-# docker stack deploy --compose-file docker-compose.yml deathstar1
-# docker stack remove deathstar1
-# docker volume rm deathstar1_data deathstar1_source
-
-#### ipfs
-
-# bash f dc exec ipfs ipfs swarm peers
-
-dc_project_name(){
-  export PORTS_PREFIX=$1
-  export COMPOSE_PROJECT_NAME="deathstar-${PORTS_PREFIX}"
-  echo $PORTS_PREFIX $COMPOSE_PROJECT_NAME
-}
-
-up(){
-  $1 up -d --build "${@:2}"
-}
-
-down(){
-  $1 down "${@:2}"
-}
-
-restart(){
-  $1 rm -f -s $2
-  up $1
-}
-
-deepdown(){
-  down $1 -v --remove-orphans "${@:2}"
-}
-
-dc(){
-  UID_GID="$(id -u):$(id -g)" docker-compose --compatibility \
-  --env-file docker-compose.env \
-  -f docker-compose.yml \
-  "$@"
-}
-
 dev(){
-  UID_GID="$(id -u):$(id -g)" docker-compose --compatibility \
-  -f dc-dev.yml \
-  "$@"
-}
 
-images(){
-  docker-compose --compatibility \
-  -f dc-images.yml \
-  build \
-  "$@"
-}
-
-builder(){
-  docker-compose --compatibility \
-  -f dc-builder.yml \
-  "$@"
-}
-
-
-build(){
-  # https://docs.docker.com/compose/reference/build/
-  $1 build $2 "${@:3}"
-}
-
-run(){
-  # https://docs.docker.com/compose/reference/run/
-  $1 run --service-ports $2 "${@:3}"
-}
-
-rund(){
-  # https://docs.docker.com/compose/reference/run/
-  $1 run -d --service-ports $2 "${@:3}"
-}
-
-
-runbash(){
-  # https://docs.docker.com/compose/reference/run/
-  run $1 $2 bash -c "bash;"
-}
-
-buildrun(){
-  build $1 $2
-  run $1 $2 "${@:3}"
-}
-
-mount(){
-  build $1 $2 "${@:3}"
-  runbash $1 $2
-}
-
-into(){
-  $1 exec $2 bash -c "bash;"
-}
-
-release(){
-  base
-  builder build
-}
-
-
-dgraph(){
-  docker-compose --compatibility \
-  -f dc-dgraph.yml \
-  "$@"
-}
-
-traefik(){
-  docker-compose --compatibility \
-  -f dc-traefik.yml \
-  "$@"
-}
-
-dock(){
-  docker-compose --compatibility \
-  -f dc-dock.yml \
-  "$@"
-}
-
-
-scale(){
-  dc up -d --build --scale whoami=2
-}
-
-behold_loadbalance(){
-  curl -H Host:whoami.docker.localhost http://127.0.0.1
-}
-
-permissions(){
-  sudo chmod -R 777 volumes
-}
-
-symlinks(){
-  ln -s ../../../src containers/src
-}
-
-#### bash tests
-
-export_env_vars(){
-  export HELLO="hello"
-  # declare -x HELLO=2
-  echo $HELLO
-}
-
-test_env_vars(){
-  echo $HELLO
-}
-
-# if we source bash script with `source script_file`
-# fucntions from script can be called from shell directly
-# and if a function does `export FOO=bar` FOO will be exported to shell as well 
-
-
-#### https://hub.docker.com/r/linuxserver/ipfs
-
-dock_linuxserver_ipfs(){
-  docker run \
-  --rm \
-  --name=ipfs \
-  -e PUID=1000 \
-  -e PGID=1000 \
-  -e TZ=Europe/London \
-  -p 80:80 \
-  -p 4001:4001 \
-  -p 5002:5001 \
-  -p 8080:8080 \
-  ghcr.io/linuxserver/ipfs
-}
-
-#### https://github.com/ipfs/go-ipfs/#running-ipfs-inside-docker
-
-dock_ipfs(){
-  export IPFS_PROFILE=server
-  docker run \
-  --rm \
-  --name ipfs \
-  -p 4001:4001 \
-  -p 4001:4001/udp \
-  -p 127.0.0.1:8080:8080 \
-  -p 127.0.0.1:5001:5001 \
-  ipfs/go-ipfs:latest daemon --writable --enable-pubsub-experiment --migrate=true
+  # lein repl :start :host 0.0.0.0 :port 7788
+  # lein repl :headless :host 0.0.0.0 :port 7788
+  # lein repl :connect 0.0.0.0:7878
+  lein repl :headless
 
 }
 
+run_dev(){
+  lein run dev
+}
+
+run_uberjar(){
+  java -jar target/app.standalone.jar
+}
+
+uberjar(){
+  lein with-profiles +prod uberjar
+  # java -jar target/app.uber.jar 
+}
+
+native(){
+  lein native-image
+}
 
 "$@"
