@@ -5,12 +5,10 @@
         org.clojure/spec.alpha {:mvn/version "0.2.187"}
         org.clojure/test.check {:mvn/version "1.0.0"}
 
-        clj-http {:mvn/version "3.10.1"}
-
-        cljfx/cljfx {:git/url "https://github.com/cljfx/cljfx" :sha "c09343d357eb30b046d1ff752cf303d261f6c3e3"}
-        cljfx/css {:git/url "https://github.com/cljfx/css" :sha "b96e952f9c0e90029bd79d63c7c4c59924d99592"}
+        clj-http/clj-http {:mvn/version "3.10.1"}
 
         com.cognitect/transit-clj  {:mvn/version "1.0.324"}
 
+       ;;  github.sergeiudris.deathstar.lab/jvm-libp2p {:local/root  "/ctx/deathstar.lab/src/jvm-libp2p"}
         github.cljctools/cljc {:local/root  "/ctx/cljctools/cljc"}
         github.cljctools/csp {:local/root  "/ctx/cljctools/csp"}}}

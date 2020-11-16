@@ -1,4 +1,4 @@
-{:deps  {:aliases [:cljs-dev :ui :peer]}
+{:deps  true #_{:aliases [:cljs-dev :ui :peer]}
  :nrepl {:host "0.0.0.0"
          :port 8899}
  :http {:port 9630

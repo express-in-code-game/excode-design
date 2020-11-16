@@ -29,7 +29,7 @@ dev(){
 }
 
 tree(){
-    clojure -A:ui:cljs-dev -Stree
+    clojure -A:cljs-dev:peer -Stree
 }
 
 compile(){
