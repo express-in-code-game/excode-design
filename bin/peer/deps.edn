@@ -1,0 +1,13 @@
+{:paths ["src" "resources"]
+ :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
+             "clojars" {:url "https://clojars.org/repo/"}}
+ :deps {github.sergeiudris.deathstar.lab/js-libp2p {:local/root "/ctx/deathstar.lab/src/js-libp2p"}}
+ :aliases {:dev {:extra-deps {thheller/shadow-cljs {:mvn/version "2.11.7"
+                                                    :exclusions [nrepl/nrepl
+                                                                 cider/piggieback
+                                                                 org.clojure/clojure
+                                                                 org.clojure/clojurescript
+                                                                 org.clojure/core.async]}
+                              nrepl/nrepl {:mvn/version "0.6.0"}
+                              cider/cider-nrepl {:mvn/version "0.24.0"}
+                              cider/piggieback {:mvn/version "0.4.2"}}}}}

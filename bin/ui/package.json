@@ -1,0 +1,12 @@
+{
+	"dependencies": {
+		"antd": "4.6.1",
+		"react": "16.13.0",
+		"react-dom": "16.13.0"
+	},
+	"devDependencies": {
+		"shadow-cljs": "2.11.7",
+		"webpack": "4.44.1",
+		"webpack-cli": "3.3.12"
+	}
+}

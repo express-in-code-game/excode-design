@@ -2,39 +2,195 @@ version: "3.8"
 
 networks:
   base-network:
+    driver: overlay
+    name: deathstar-network-${PORTS_PREFIX}
+  ipfs-network:
     driver: bridge
-    name: deathstar-network
+    name: ipfs-network
 
 volumes:
-  code:
+  ctx:
     driver: local
     driver_opts:
       type: none
       device: ../../
       # device: $PWD/${WEB_APP_PATH}
       o: bind
+  ipfs-data:
+  # ipfs0-data:
+  # ipfs-export:
+  code-server:
+  # vscode:
+  # app_cache:
+  # launch_cache:
 
 services:
 
-  cljs:
-    image: deathstar.cljs
-    build:
-      context: ./
-      dockerfile: ./Dockerfile
-      args:
-        workdir: /ctx/DeathStarGame/bin
-    command: tail -f /dev/null
-    # command: bash f dev
+  traefik:
+    # The official v2 Traefik docker image
+    image: traefik:v2.3.2
+    # Enables the web UI and tells Traefik to listen to docker
+    command: 
+      # - "--api.insecure=true"
+      # - "--providers.docker"
+      - "--configFile=/ctx/DeathStarGame/bin/traefik/traefik.yml"
     ports:
-      - 8899:8899
-      - 9630:9630
-      - 9500:9500
+      # The HTTP port
+      - ${PORTS_PREFIX}080:80
+      - ${PORTS_PREFIX}081:7080
+      # The Web UI (enabled by --api.insecure=true)
+      # - "8090:8080"
     networks:
       - base-network
     volumes:
-      - ./.user:/root
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      # - ./traefik/traefik.toml:/etc/traefik/traefik.toml
       - type: volume
-        source: code
+        source: ctx
+        target: /ctx
+        volume:
+          nocopy: true
+
+  # ipfs:
+  #   image: deathstar.ipfs
+  #   build:
+  #     context: ./ipfs
+  #     dockerfile: ./Dockerfile
+  #   command:
+  #     - "daemon"
+  #     - "--writable" 
+  #     - "--enable-pubsub-experiment"
+  #     - "--migrate=true"
+  #   ports:
+  #     - ${PORTS_PREFIX}041:4001
+  #     - ${PORTS_PREFIX}050:5001
+  #     - ${PORTS_PREFIX}800:8080
+  #     - ${PORTS_PREFIX}801:8081
+  #     # - 4001:4001
+  #   #   - 127.0.0.1:5001:5001
+  #   #   # - 127.0.0.1:8080:8080
+  #   #   # - 127.0.0.1:8081:8081
+  #   environment:
+  #     # - IPFS_PROFILE=server
+  #     # - IPFS_PROFILE=local-discovery
+  #     - IPFS_PATH=/data/ipfs
+  #   networks:
+  #     base-network:
+  #     ipfs-network:
+  #       aliases:
+  #         - ipfs-${PORTS_PREFIX}
+  #   volumes:
+  #     - type: volume
+  #       source: ctx
+  #       target: /ctx
+  #       volume:
+  #         nocopy: true
+  #     - type: volume
+  #       source: ipfs-data
+  #       target: /data/ipfs
+  #       volume:
+  #         nocopy: true
+  #     - type: volume
+  #       source: ipfs-export
+  #       target: /export
+  #       volume:
+  #         nocopy: true
+
+
+  # ipfs:
+  #   image: deathstar.js-ipfs
+  #   build:
+  #     context: ./js-ipfs
+  #     dockerfile: ./Dockerfile
+  #   command:
+  #     - "daemon"
+  #     - "--writable" 
+  #     - "--enable-pubsub-experiment"
+  #     - "--migrate=true"
+  #   ports:
+  #     - ${PORTS_PREFIX}042:4002
+  #     - ${PORTS_PREFIX}043:4003
+  #     - ${PORTS_PREFIX}052:5002
+  #     - ${PORTS_PREFIX}090:9090
+  #   environment:
+  #     # - IPFS_PROFILE=server
+  #     # - IPFS_PROFILE=local-discovery
+  #     - IPFS_PATH=/data/ipfs
+  #   networks:
+  #     base-network:
+  #     ipfs-network:
+  #       aliases:
+  #         - ipfs-${PORTS_PREFIX}
+  #   volumes:
+  #     - type: volume
+  #       source: ctx
+  #       target: /ctx
+  #       volume:
+  #         nocopy: true
+  #     - type: volume
+  #       source: ipfs-data
+  #       target: /root/.jsipfs
+  #       volume:
+  #         nocopy: true
+  #     - type: volume
+  #       source: ipfs-export
+  #       target: /export
+  #       volume:
+  #         nocopy: true
+
+  # ipfs0:
+  #   image: deathstar.ipfs
+  #   build:
+  #     context: ./ipfs
+  #     dockerfile: ./Dockerfile
+  #   command:
+  #     - "daemon"
+  #     - "--writable" 
+  #     - "--enable-pubsub-experiment"
+  #     - "--migrate=true"
+  #   expose:
+  #     - 4001
+  #     - 5001
+  #     - 8080
+  #     - 8081
+  #   environment:
+  #     # - IPFS_PROFILE=server
+  #     # - IPFS_PROFILE=local-discovery
+  #     - IPFS_PATH=/data/ipfs
+  #   networks:
+  #     # base-network:
+  #     network2:
+  #     ipfs-network:
+  #       aliases:
+  #         - ipfs0-${PORTS_PREFIX}
+  #   volumes:
+  #     - type: volume
+  #       source: ctx
+  #       target: /ctx
+  #       volume:
+  #         nocopy: true
+
+  app:
+    image: deathstar.app
+    build:
+      context: ./app
+      dockerfile: ./dev.Dockerfile
+      args:
+        workdir: /ctx/DeathStarGame/bin/app
+    command: tail -f /dev/null
+    # command: bash f dev
+    # expose:
+    #   - 7788
+    ports:
+      - ${PORTS_PREFIX}088:7788
+      # - 8085:8080
+    networks:
+      - base-network
+    volumes:
+      - ./app/.user:/root
+      - type: volume
+        source: ctx
         target: /ctx
         volume:
           nocopy: true
@@ -46,27 +202,85 @@ services:
           cpus: '4'
           memory: 4096M
 
-  peer1:
-    image: deathstar
+  code-server:
+    image: codercom/code-server:latest
+    # ports:
+    #   - 8800:8080
+    command: --auth none
+    # user: "${UID_GID}"
+    # environment:
+    #    - DOCKER_USER=$USER
+    networks:
+      - base-network
+    volumes:
+      - type: volume
+        source: ctx
+        target: /ctx
+        volume:
+          nocopy: true
+      - type: volume
+        source: code-server
+        target: /root
+        volume:
+          nocopy: true
+      - type: volume
+        source: ipfs-data
+        target: /data/ipfs
+        volume:
+          nocopy: true
+
+  # vscode:
+  #   image: deathstar.vscode
+  #   build:
+  #     context: ./vscode
+  #     dockerfile: ./Dockerfile
+  #     args:
+  #       workdir: /ctx/
+  #   # ports:
+  #   #   - 8800:8080
+  #   expose:
+  #     - 8080
+  #   user: "${UID_GID}"
+  #   networks:
+  #     - network
+  #   volumes:
+  #     - type: volume
+  #       source: ctx
+  #       target: /ctx
+  #       volume:
+  #         nocopy: true
+  #     - type: volume
+  #       source: vscode
+  #       target: /root
+  #       volume:
+  #         nocopy: true
+  #     - type: volume
+  #       source: ipfs-data
+  #       target: /data/ipfs
+  #       volume:
+  #         nocopy: true
+
+  ui:
+    image: deathstar.ui-dev
     build:
-      context: ./
-      dockerfile: ./Dockerfile
+      context: ./ui
+      dockerfile: ./dev.Dockerfile
       args:
-        workdir: /ctx/DeathStarGame/bin
+        workdir: /ctx/DeathStarGame/bin/ui
     command: tail -f /dev/null
     # command: bash f dev
     # expose:
     #   - 7788
-    ports:
-      - 8011:8080
-      - 7711:7788
+    # ports:
+    #   - 8899:8899
+    #   - 9630:9630
+    #   - 9500:9500
     networks:
       - base-network
     volumes:
-      - ./.user:/root
-      - ./.peer1:/root/.deathstar
+      - ./ui/.user:/root
       - type: volume
-        source: code
+        source: ctx
         target: /ctx
         volume:
           nocopy: true
@@ -78,27 +292,28 @@ services:
           cpus: '4'
           memory: 4096M
 
-  peer2:
-    image: deathstar
+
+  peer:
+    image: deathstar.peer-dev
     build:
-      context: ./
-      dockerfile: ./Dockerfile
+      context: ./peer
+      dockerfile: ./dev.Dockerfile
       args:
-        workdir: /ctx/DeathStarGame/bin
+        workdir: /ctx/DeathStarGame/bin/peer
     command: tail -f /dev/null
     # command: bash f dev
     # expose:
     #   - 7788
-    ports:
-      - 8022:8080
-      - 7722:7788
+    # ports:
+    #   - 8899:8899
+    #   - 9630:9630
+    #   - 9500:9500
     networks:
       - base-network
     volumes:
-      - ./.user:/root
-      - ./.peer2:/root/.deathstar
+      - ./peer/.user:/root
       - type: volume
-        source: code
+        source: ctx
         target: /ctx
         volume:
           nocopy: true
@@ -110,34 +325,15 @@ services:
           cpus: '4'
           memory: 4096M
 
-  peer3:
-    image: deathstar
-    build:
-      context: ./
-      dockerfile: ./Dockerfile
-      args:
-        workdir: /ctx/DeathStarGame/bin
-    command: tail -f /dev/null
-    # command: bash f dev
-    # expose:
-    #   - 7788
-    ports:
-      - 8033:8080
-      - 7733:7788
-    networks:
-      - base-network
-    volumes:
-      - ./.user:/root
-      - ./.peer3:/root/.deathstar
-      - type: volume
-        source: code
-        target: /ctx
-        volume:
-          nocopy: true
-    stdin_open: true
-    tty: true
-    deploy:
-      resources:
-        limits:
-          cpus: '4'
-          memory: 4096M
+  # game-ui:
+  #   image: deathstar.game-ui
+  #   expose:
+  #     - 80
+  #   stdin_open: true
+  #   tty: true
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '4'
+  #         memory: 4096M
+
