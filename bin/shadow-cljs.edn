@@ -20,7 +20,7 @@
 
           :peer {;;       :target :node-library
                  :target :node-script
-                 :main lab.js-libp2p.discovery/main
+                 :main lab.js-libp2p.mdns/main
                 ;;  :exports-var deathstar.extension.main/exports
                  :output-to "resources/out/peer.js"
                  :compiler-options {:optimizations :simple
@@ -38,8 +38,8 @@
                  {:js-provider :shadow
                   :keep-native-requires true
                   :keep-as-require #{}}
-                 :devtools {:repl-init-ns lab.js-libp2p.discovery
+                 :devtools {:repl-init-ns lab.js-libp2p.mdns
                             :repl-pprint true
                             :autobuild true
                             :devtools-url "http://cljs:9630"
-                            :after-load lab.js-libp2p.discovery/reload}}}}
+                            :after-load lab.js-libp2p.mdns/reload}}}}

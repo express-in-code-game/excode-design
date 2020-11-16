@@ -9,7 +9,8 @@ RUN apt-get update && \
             git-core  \
             rlwrap  \
             software-properties-common  \
-            unzip wget curl net-tools lsof
+            unzip wget curl net-tools lsof \
+            build-essential
 
 WORKDIR /tmp
 

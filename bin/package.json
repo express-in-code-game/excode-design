@@ -8,6 +8,11 @@
 	"main": "./resources/js-out/main.js",
 	"dependencies": {
 		"antd": "4.6.1",
+		"libp2p": "0.29.3",
+		"libp2p-mdns": "0.15.0",
+		"libp2p-mplex": "0.10.1",
+		"libp2p-noise": "2.0.1",
+		"libp2p-tcp": "0.15.1",
 		"react": "16.13.0",
 		"react-dom": "16.13.0"
 	},
