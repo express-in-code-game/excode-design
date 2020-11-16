@@ -19,13 +19,15 @@ server(){
 }
 
 dev(){
-    npm i
-    shadow -A:cljs-dev:ui:peer watch \
-    :ui :peer
 
     # npm i
-    # shadow -A:dev watch \
-    # :extension
+    # shadow -A:cljs-dev:ui:peer watch \
+    # :ui :peer
+
+    npm i
+    shadow -A:cljs-dev:peer watch \
+    :peer
+
 }
 
 tree(){

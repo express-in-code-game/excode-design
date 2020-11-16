@@ -29,6 +29,8 @@ services:
       - 8899:8899
       - 9630:9630
       - 9500:9500
+    networks:
+      - base-network
     volumes:
       - ./.user:/root
       - type: volume

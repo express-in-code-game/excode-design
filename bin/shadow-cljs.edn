@@ -41,5 +41,5 @@
                  :devtools {:repl-init-ns lab.js-libp2p.discovery
                             :repl-pprint true
                             :autobuild true
-                            :devtools-url "http://localhost:9630"
+                            :devtools-url "http://cljs:9630"
                             :after-load lab.js-libp2p.discovery/reload}}}}
