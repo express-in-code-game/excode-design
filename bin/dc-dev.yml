@@ -189,6 +189,7 @@ services:
       - base-network
     volumes:
       - ./app/.user:/root
+      - ./app/.peer${PORTS_PREFIX}:/root/.deathstar
       - type: volume
         source: ctx
         target: /ctx
