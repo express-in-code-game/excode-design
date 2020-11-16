@@ -39,8 +39,8 @@ compile(){
     shadow -A:ui:cljs-dev compile  :ui
 }
 
-cljs_compile_extension(){
-    clj -A:ui:cljs-dev -m cljs.main -co build.edn -c deathstar.main
+cljs_compile_peer(){
+    clj -A:cljs-dev:peer -m cljs.main -co cljs-build-peer.edn -c
 }
 
 cljs_compile_tab_scenario(){

@@ -74,6 +74,8 @@ pom.xml
 .rebel_readline_history
 
 node_modules/
+node_modules1/
+
 .shadow-cljs
 resources/public/js-out
 tmp/
