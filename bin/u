@@ -14,14 +14,14 @@ shadow(){
 }
 
 server(){
-    shadow -A:ui:ui-dev server
+    shadow -A:ui:cljs-dev server
     # yarn server
 }
 
 dev(){
     npm i
-    shadow -A:ui:ui-dev watch \
-    :ui
+    shadow -A:cljs-dev:ui:peer watch \
+    :ui :peer
 
     # npm i
     # shadow -A:dev watch \
@@ -29,24 +29,24 @@ dev(){
 }
 
 tree(){
-    clojure -A:ui:ui-dev -Stree
+    clojure -A:ui:cljs-dev -Stree
 }
 
 compile(){
     npm i
-    shadow -A:ui:ui-dev compile  :ui
+    shadow -A:ui:cljs-dev compile  :ui
 }
 
 cljs_compile_extension(){
-    clj -A:ui:ui-dev -m cljs.main -co build.edn -c deathstar.main
+    clj -A:ui:cljs-dev -m cljs.main -co build.edn -c deathstar.main
 }
 
 cljs_compile_tab_scenario(){
-    clj -A:ui:ui-dev -m cljs.main -co build-tab-scenario.edn -v -c # -r
+    clj -A:ui:cljs-dev -m cljs.main -co build-tab-scenario.edn -v -c # -r
 }
 
 fwm(){
-    clojure -A:ui:ui-dev \
+    clojure -A:ui:cljs-dev \
     -m nrepl.cmdline  \
     --middleware "[cider.nrepl/cider-middleware cider.piggieback/wrap-cljs-repl]" \
     --bind "0.0.0.0" --port 5100

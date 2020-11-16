@@ -12,7 +12,7 @@
 		"react-dom": "16.13.0"
 	},
 	"devDependencies": {
-		"shadow-cljs": "2.10.21",
+		"shadow-cljs": "2.11.7",
 		"webpack": "4.44.1",
 		"webpack-cli": "3.3.12"
 	}
