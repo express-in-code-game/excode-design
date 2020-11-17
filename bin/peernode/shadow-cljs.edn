@@ -5,7 +5,7 @@
         :host "0.0.0.0"}
  :builds {:main {;;       :target :node-library
                  :target :node-script
-                 :main deathstar.peer.main/main
+                 :main deathstar.peernode.main/main
                 ;;  :exports-var deathstar.extension.main/exports
                  :output-to "resources/out/main.js"
                  :compiler-options {:optimizations :simple
@@ -23,8 +23,8 @@
                  {:js-provider :shadow
                   :keep-native-requires true
                   :keep-as-require #{}}
-                 :devtools {:repl-init-ns deathstar.peer.main
+                 :devtools {:repl-init-ns deathstar.peernode.main
                             :repl-pprint true
                             :autobuild true
                             :devtools-url "http://localhost:9630"
-                            :after-load deathstar.peer.main/reload}}}}
+                            :after-load deathstar.peernode.main/reload}}}}

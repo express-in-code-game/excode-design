@@ -294,13 +294,13 @@ services:
           memory: 4096M
 
 
-  peer:
-    image: deathstar.peer-dev
+  peernode:
+    image: deathstar.peernode-dev
     build:
-      context: ./peer
+      context: ./peernode
       dockerfile: ./dev.Dockerfile
       args:
-        workdir: /ctx/DeathStarGame/bin/peer
+        workdir: /ctx/DeathStarGame/bin/peernode
     command: tail -f /dev/null
     # command: bash f dev
     # expose:
@@ -312,7 +312,7 @@ services:
     networks:
       - base-network
     volumes:
-      - ./peer/.user:/root
+      - ./peernode/.user:/root
       - type: volume
         source: ctx
         target: /ctx
