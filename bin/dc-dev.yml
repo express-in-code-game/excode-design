@@ -305,6 +305,10 @@ services:
     # command: bash f dev
     # expose:
     #   - 7788
+    environment:
+      # - IPFS_PROFILE=server
+      # - IPFS_PROFILE=local-discovery
+      - IPFS_PATH=/data/ipfs
     ports:
       - ${PORTS_PREFIX}099:8899
       # - 9630:9630
@@ -316,6 +320,11 @@ services:
       - type: volume
         source: ctx
         target: /ctx
+        volume:
+          nocopy: true
+      - type: volume
+        source: ipfs-data
+        target: /root/.jsipfs
         volume:
           nocopy: true
     stdin_open: true
