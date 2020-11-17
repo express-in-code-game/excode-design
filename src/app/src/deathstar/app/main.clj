@@ -10,7 +10,7 @@
    [cljctools.cljc.core :as cljc.core]
 
    [cljctools.rsocket.impl]
-   [cljctools.rsocket.impl.example-client]))
+   [cljctools.rsocket.impl.examples]))
 
 (defn -main [& args]
   (println ::-main))

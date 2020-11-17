@@ -22,7 +22,7 @@ dev(){
 
     npm i
     shadow -A:dev watch \
-    :app
+    :main
 
 }
 
@@ -32,7 +32,7 @@ tree(){
 
 compile(){
     npm i
-    shadow -A:dev compile  :app
+    shadow -A:dev compile  :main
 }
 
 cljs_compile(){

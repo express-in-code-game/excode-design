@@ -1,7 +1,7 @@
 {:optimizations :simple
- :output-to "resources/out/peer.js"
+ :output-to "resources/out/main.js"
  :target :nodejs
- :main lab.js-libp2p.mdns
+ :main deathstar.peer.main
  :verbose true
  :output-dir "out"}
 #_{:optimizations :advanced

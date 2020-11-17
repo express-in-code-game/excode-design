@@ -6,4 +6,8 @@
         org.clojure/core.async {:mvn/version "1.1.587"}
 
         github.com.cljctools/cljc {:local/root "/ctx/cljctools/cljc"}
-        github.com.cljctools/csp {:local/root "/ctx/cljctools/csp"}}}
+        github.com.cljctools/csp {:local/root "/ctx/cljctools/csp"}
+
+
+        github.cljctools/rsocket-meta {:local/root  "/ctx/cljctools/rsocket-meta"}
+        github.cljctools/rsocket-js {:local/root  "/ctx/cljctools/rsocket-js"}}}

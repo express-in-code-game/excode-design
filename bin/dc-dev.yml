@@ -305,10 +305,10 @@ services:
     # command: bash f dev
     # expose:
     #   - 7788
-    # ports:
-    #   - 8899:8899
-    #   - 9630:9630
-    #   - 9500:9500
+    ports:
+      - ${PORTS_PREFIX}099:8899
+      # - 9630:9630
+      # - 9500:9500
     networks:
       - base-network
     volumes:

@@ -10,7 +10,13 @@
    [goog.object]
    [clojure.string :as string]
    [cljs.reader :refer [read-string]]
-   [cljs.nodejs :as node]))
+   [cljs.nodejs :as node]
+
+   [cljctools.csp.op.spec :as op.spec]
+   [cljctools.cljc.core :as cljc.core]
+
+   [cljctools.rsocket.impl]
+   [cljctools.rsocket.impl.examples-nodejs]))
 
 (def fs (node/require "fs"))
 (def path (node/require "path"))
