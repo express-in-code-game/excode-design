@@ -314,7 +314,10 @@ services:
       # - 9630:9630
       # - 9500:9500
     networks:
-      - base-network
+      base-network:
+      ipfs-network:
+        aliases:
+          - peernode-${PORTS_PREFIX}
     volumes:
       - ./peernode/.user:/root
       - type: volume
