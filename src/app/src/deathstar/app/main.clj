@@ -7,7 +7,10 @@
    [clojure.string :as str]
 
    [cljctools.csp.op.spec :as op.spec]
-   [cljctools.cljc.core :as cljc.core]))
+   [cljctools.cljc.core :as cljc.core]
+
+   [cljctools.rsocket.impl]
+   [cljctools.rsocket.impl.example-client]))
 
 (defn -main [& args]
   (println ::-main))

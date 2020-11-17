@@ -9,6 +9,9 @@
 
         com.cognitect/transit-clj  {:mvn/version "1.0.324"}
 
+        github.cljctools/rsocket-meta {:local/root  "/ctx/cljctools/rsocket-meta"}
+        github.cljctools/rsocket-java {:local/root  "/ctx/cljctools/rsocket-java"}
+
        ;;  github.sergeiudris.deathstar.lab/jvm-libp2p {:local/root  "/ctx/deathstar.lab/src/jvm-libp2p"}
         github.cljctools/cljc {:local/root  "/ctx/cljctools/cljc"}
         github.cljctools/csp {:local/root  "/ctx/cljctools/csp"}}}
