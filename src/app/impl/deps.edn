@@ -14,4 +14,7 @@
 
        ;;  github.sergeiudris.deathstar.lab/jvm-libp2p {:local/root  "/ctx/deathstar.lab/src/jvm-libp2p"}
         github.cljctools/cljc {:local/root  "/ctx/cljctools/cljc"}
-        github.cljctools/csp {:local/root  "/ctx/cljctools/csp"}}}
+        github.cljctools/csp {:local/root  "/ctx/cljctools/csp"}
+
+        github.DeathStarGame/app.meta {:local/root  "../meta"}
+        github.DeathStarGame/peernode.meta {:local/root  "/ctx/DeathStarGame/src/peernode/meta"}}}

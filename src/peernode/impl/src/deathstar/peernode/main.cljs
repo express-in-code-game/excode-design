@@ -16,7 +16,10 @@
    [cljctools.cljc.core :as cljc.core]
 
    [cljctools.rsocket.impl]
-   [cljctools.rsocket.examples-nodejs]))
+   [cljctools.rsocket.examples-nodejs]
+
+   [deathstar.peernode.spec :as peernode.spec]
+   [deathstar.peernode.chan :as peernode.chan]))
 
 (def fs (node/require "fs"))
 (def path (node/require "path"))
@@ -34,6 +37,11 @@
       (println (format "id is %s" id))))
 
   ;;
+  )
+
+
+(defn create-proc-ops
+  []
   )
 
 (defn main [d]
