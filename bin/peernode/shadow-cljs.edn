@@ -3,10 +3,11 @@
          :port 8899}
  :http {:port 9630
         :host "0.0.0.0"}
- :builds {:main {;;       :target :node-library
-                 :target :node-script
+ :builds {:main {;
+                 :target :node-library
+                ;  :target :node-script
                  :main deathstar.peernode.main/main
-                ;;  :exports-var deathstar.extension.main/exports
+                 :exports-var deathstar.peernode.main/exports
                  :output-to "resources/out/main.js"
                  :compiler-options {:optimizations :simple
                                     :infer-externs   false  #_:auto

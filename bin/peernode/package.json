@@ -1,17 +1,20 @@
 {
 	"dependencies": {
+		"fbjs": "2.0.0",
+		"ipfs-cli": "0.2.1",
+		"ipfs-core": "0.2.1",
 		"libp2p": "0.29.3",
 		"libp2p-mdns": "0.15.0",
 		"libp2p-mplex": "0.10.1",
 		"libp2p-noise": "2.0.1",
 		"libp2p-tcp": "0.15.1",
-		"fbjs": "2.0.0",
 		"rsocket-core": "0.0.19",
 		"rsocket-flowable": "0.0.14",
 		"rsocket-tcp-server": "0.0.19",
 		"rsocket-types": "0.0.16",
 		"rsocket-websocket-client": "0.0.19",
 		"rsocket-websocket-server": "0.0.19",
+		"string-argv": "0.3.1",
 		"ws": "7.4.0"
 	},
 	"devDependencies": {
