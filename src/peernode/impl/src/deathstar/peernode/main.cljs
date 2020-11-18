@@ -24,6 +24,9 @@
 (def fs (node/require "fs"))
 (def path (node/require "path"))
 
+(def channels (merge
+               (peernode.chan/create-channels)))
+
 (def ^:dynamic daemon nil)
 
 (comment
@@ -39,15 +42,43 @@
   ;;
   )
 
-
 (defn create-proc-ops
-  []
-  )
+  [channels ctx]
+  (let [{:keys [::peernode.chan/ops|]} channels]
+    (go
+      (loop []
+        (when-let [[v port] (alts! [ops|])]
+          (condp = port
+            ops|
+            (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
+
+              {::op.spec/op-key ::server.chan/init}
+              (let [{:keys []} v]
+                (println ::init))
+
+              {::op.spec/op-key ::peernode.chan/id
+               ::op.spec/op-type ::op.spec/request}
+              (let [{:keys []} v
+                    peerId (<p! (daemon._ipfs.id))
+                    id (.-id id)]
+                (println ::id id)
+                (peernode.chan/op
+                 {::op.spec/op-key ::peernode.chan/id
+                  ::op.spec/op-type ::op.spec/response}
+                 channels
+                 {::peernode.spec/id id})))))
+        (recur)))))
+
+(def peernode (create-proc-ops channels {}))
 
 (defn main [d]
   (println ::main)
   (println (js-keys d._ipfs))
-  (set! daemon d))
+  (set! daemon d)
+  (server.chan/op
+   {::op.spec/op-key ::server.chan/init}
+   channels
+   {::daemon d}))
 
 (def exports #js {:main main})
 
