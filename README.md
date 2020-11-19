@@ -82,7 +82,7 @@
     - and better than Microsoft, that just released Age of Empires 2: Definitive Edition and are investing into tournaments and game updates to catch up with Blizzard
     - I'm not mentioning Dota, LoL , CS:GO and stuff like that
     - those are scenes, those are games; they gather 100 000 viewer streams on twitch
-    - this game should do all that, but be open source and less stale
+    - this game should do all that, but be open source and not stale
     - and not like Heroes of Might and Magic 3 scene on twitch, where some dudes got the source code, maintain a server and although do it for free, it is again, happening under the carpet, and again, all tournaments are organized via forums and happen rarely
     - and existing e-sports games are closed source, most dark and click driven, most moneytized
     - hidden, hidden, private, hidden... so I don't think such game exists yet, otherwise we would have noticed it
