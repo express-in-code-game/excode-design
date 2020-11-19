@@ -16,4 +16,8 @@
         github.cljctools/rsocket-java {:local/root  "/ctx/cljctools/rsocket-java"}
 
         github.DeathStarGame/app.meta {:local/root  "../meta"}
-        github.DeathStarGame/peernode.meta {:local/root  "/ctx/DeathStarGame/src/peernode/meta"}}}
+        github.DeathStarGame/peernode.meta {:local/root  "/ctx/DeathStarGame/src/peernode/meta"}
+        github.DeathStarGame/ui.meta {:local/root  "/ctx/DeathStarGame/src/ui/meta"}
+
+
+        github.DeathStarGame/scenarios-list {:local/root "/ctx/DeathStarGame/src/scenarios-list"}}}

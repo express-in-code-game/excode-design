@@ -7,4 +7,8 @@
         reagent/reagent {:mvn/version "0.10.0" :exclusions [cljsjs/react cljsjs/react-dom]}
 
         github.cljctools/cljc {:local/root "/ctx/cljctools/cljc"}
-        github.cljctools/csp {:local/root "/ctx/cljctools/csp"}}}
+        github.cljctools/csp {:local/root "/ctx/cljctools/csp"}
+
+        github.DeathStarGame/ui.meta {:local/root  "../meta"}
+
+        github.DeathStarGame/scenarios-render-list {:local/root "/ctx/DeathStarGame/src/scenarios-render-list"}}}
