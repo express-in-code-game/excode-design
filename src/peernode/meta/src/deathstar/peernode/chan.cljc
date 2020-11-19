@@ -18,8 +18,12 @@
 
 (defn create-channels
   []
-  (let [ops| (chan 10)]
-    {::ops| ops|}))
+  (let [ops| (chan 10)
+        pubsub| (chan (sliding-buffer 10))
+        pubsub|m (mult pubsub|)]
+    {::ops| ops|
+     ::pubsub| pubsub|
+     ::pubsub|m pubsub|m}))
 
 (defmethod op*
   {::op.spec/op-key ::init} [_]

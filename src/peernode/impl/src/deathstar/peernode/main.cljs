@@ -4,6 +4,7 @@
                                      pub sub unsub mult tap untap mix admix unmix pipe
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
+   [cljs.core.async.impl.protocols :refer [closed?]]
    [cljs.core.async.interop :refer-macros [<p!]]
    [goog.string.format :as format]
    [goog.string :refer [format]]
@@ -34,6 +35,8 @@
 (pipe (::rsocket.chan/requests| channels) (::peernode.chan/ops| channels))
 
 (def ^:dynamic daemon nil)
+
+(def ^:const TOPIC "deathstar-1a58070")
 
 (comment
 
@@ -77,7 +80,9 @@
 
 (defn create-proc-ops
   [channels ctx]
-  (let [{:keys [::peernode.chan/ops|]} channels]
+  (let [{:keys [::peernode.chan/ops|
+                ::peernode.chan/pubsub|
+                ::peernode.chan/pubsub|m]} channels]
     (go
       (loop []
         (when-let [[value port] (alts! [ops|])]
@@ -88,14 +93,24 @@
               {::op.spec/op-key ::peernode.chan/init}
               (let [{:keys []} value
                     id (.-id (<p! (daemon._ipfs.id)))]
+                (println ::init)
                 (daemon._ipfs.pubsub.subscribe
-                 "deathstar"
+                 TOPIC
                  (fn [msg]
-                   (println (format "id: %s" id))
-                   (println (format "from: %s" msg.from))
-                   (println (format "data: %s" (.toString msg.data)))
-                   (println (format "topicIDs: %s" msg.topicIDs))))
-                (println ::init))
+                   (when-not (= id msg.from)
+                     (do
+                       (println (format "id: %s" id))
+                       (println (format "from: %s" msg.from))
+                       (println (format "data: %s" (.toString msg.data)))
+                       (println (format "topicIDs: %s" msg.topicIDs)))
+                     (put! pubsub| msg))))
+                (go (loop []
+                      (<! (timeout (* 2000 (+ 1 (rand-int 2)))))
+                      (daemon._ipfs.pubsub.publish
+                       TOPIC
+                       (-> (js/TextEncoder.)
+                           (.encode (str {::some-op (str "hello " (rand-int 10))}))))
+                      (recur))))
               {::op.spec/op-key ::peernode.chan/id
                ::op.spec/op-type ::op.spec/request-response
                ::op.spec/op-orient ::op.spec/request}
@@ -113,19 +128,25 @@
               {::op.spec/op-key ::peernode.chan/request-pubsub-stream
                ::op.spec/op-type ::op.spec/request-stream
                ::op.spec/op-orient ::op.spec/request}
-              (let [{:keys [::op.spec/out|]} value]
+              (let [{:keys [::op.spec/out|]} value
+                    id (.-id (<p! (daemon._ipfs.id)))]
                 (println ::request-pubsub-stream)
                 (println value)
-                (go (loop []
-                      (let [random (+ 1 (rand-int 2))]
-                        (<! (timeout (* 1000 random)))
-                        (peernode.chan/op
-                         {::op.spec/op-key ::peernode.chan/request-pubsub-stream
-                          ::op.spec/op-type ::op.spec/request-stream
-                          ::op.spec/op-orient ::op.spec/response}
-                         out|
-                         {::peernode.spec/id random}))
-                      (recur)))))))
+                (let [pubsub|t (tap pubsub|m (chan (sliding-buffer 10)))]
+                  (go (loop []
+                        (when-not (closed? out|)
+                          (when-let [msg (<! pubsub|t)]
+                            (peernode.chan/op
+                             {::op.spec/op-key ::peernode.chan/request-pubsub-stream
+                              ::op.spec/op-type ::op.spec/request-stream
+                              ::op.spec/op-orient ::op.spec/response}
+                             out|
+                             (merge
+                              {::peernode.spec/from (.-from msg)
+                               ::peernode.spec/topic-ids (js->clj (.-topicIDs msg))}
+                              (read-string (.toString (.-data msg)))))
+                            (recur))))
+                      (untap pubsub|m pubsub|t)))))))
         (recur)))))
 
 (def rsocket (rsocket.impl/create-proc-ops

@@ -32,7 +32,7 @@
 
 (defn create-proc-ops
   [channels ctx]
-  (let [{:keys [::peernode.chan/ops|]} channels]
+  (let [{:keys [::app.chan/ops|]} channels]
     (go
       (loop []
         (when-let [[value port] (alts! [ops|])]
@@ -40,10 +40,22 @@
             ops|
             (condp = (select-keys value [::op.spec/op-key ::op.spec/op-type ::op.spec/op-orient])
 
-              {::op.spec/op-key ::peernode.chan/init}
+              {::op.spec/op-key ::app.chan/init}
               (let [{:keys []} value]
-                
-                (println ::init)))))
+                (println ::init)
+                (go
+                  (let [out| (chan 64)]
+                    (peernode.chan/op
+                     {::op.spec/op-key ::peernode.chan/request-pubsub-stream
+                      ::op.spec/op-type ::op.spec/request-stream
+                      ::op.spec/op-orient ::op.spec/request}
+                     channels
+                     out|)
+                    (loop []
+                      (when-let [value  (<! out|)]
+                        (println ::request-pubsub-stream)
+                        (print value)
+                        (recur)))))))))
         (recur)))))
 
 (def rsocket (rsocket.impl/create-proc-ops
