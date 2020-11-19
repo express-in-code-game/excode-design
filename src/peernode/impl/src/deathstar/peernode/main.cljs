@@ -99,18 +99,20 @@
                  (fn [msg]
                    (when-not (= id msg.from)
                      (do
-                       (println (format "id: %s" id))
-                       (println (format "from: %s" msg.from))
+                       #_(println (format "id: %s" id))
+                       #_(println (format "from: %s" msg.from))
                        (println (format "data: %s" (.toString msg.data)))
-                       (println (format "topicIDs: %s" msg.topicIDs)))
+                       #_(println (format "topicIDs: %s" msg.topicIDs)))
                      (put! pubsub| msg))))
-                (go (loop []
-                      (<! (timeout (* 2000 (+ 1 (rand-int 2)))))
-                      (daemon._ipfs.pubsub.publish
-                       TOPIC
-                       (-> (js/TextEncoder.)
-                           (.encode (str {::some-op (str "hello " (rand-int 10))}))))
-                      (recur))))
+                (let [counter (volatile! 0)]
+                  (go (loop []
+                        (<! (timeout (* 2000 (+ 1 (rand-int 2)))))
+                        (vswap! counter inc)
+                        (daemon._ipfs.pubsub.publish
+                         TOPIC
+                         (-> (js/TextEncoder.)
+                             (.encode (str {::some-op (str (subs id (- (count id) 7)) " " @counter)}))))
+                        (recur)))))
               {::op.spec/op-key ::peernode.chan/id
                ::op.spec/op-type ::op.spec/request-response
                ::op.spec/op-orient ::op.spec/request}
@@ -142,8 +144,7 @@
                               ::op.spec/op-orient ::op.spec/response}
                              out|
                              (merge
-                              {::peernode.spec/from (.-from msg)
-                               ::peernode.spec/topic-ids (js->clj (.-topicIDs msg))}
+                              {::peernode.spec/from (.-from msg)}
                               (read-string (.toString (.-data msg)))))
                             (recur))))
                       (untap pubsub|m pubsub|t)))))))
