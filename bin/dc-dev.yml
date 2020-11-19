@@ -303,8 +303,8 @@ services:
         workdir: /ctx/DeathStarGame/bin/peernode
     command: tail -f /dev/null
     # command: bash f dev
-    # expose:
-    #   - 7788
+    expose:
+      - 7000
     environment:
       # - IPFS_PROFILE=server
       # - IPFS_PROFILE=local-discovery

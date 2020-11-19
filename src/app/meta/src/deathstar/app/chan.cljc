@@ -20,3 +20,13 @@
   []
   (let [ops| (chan 10)]
     {::ops| ops|}))
+
+(defmethod op*
+  {::op.spec/op-key ::init} [_]
+  (s/keys :req []))
+
+(defmethod op
+  {::op.spec/op-key ::init}
+  [op-meta channels value]
+  (put! (::ops| channels) (merge op-meta
+                                 value)))

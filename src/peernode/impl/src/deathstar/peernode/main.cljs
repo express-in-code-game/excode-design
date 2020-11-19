@@ -15,8 +15,11 @@
    [cljctools.csp.op.spec :as op.spec]
    [cljctools.cljc.core :as cljc.core]
 
-   [cljctools.rsocket.impl]
+   [cljctools.rsocket.spec :as rsocket.spec]
+   [cljctools.rsocket.chan :as rsocket.chan]
+   [cljctools.rsocket.impl :as rsocket.impl]
    [cljctools.rsocket.examples-nodejs]
+   [cljctools.rsocket.examples]
 
    [deathstar.peernode.spec :as peernode.spec]
    [deathstar.peernode.chan :as peernode.chan]))
@@ -25,7 +28,10 @@
 (def path (node/require "path"))
 
 (def channels (merge
+               (rsocket.chan/create-channels)
                (peernode.chan/create-channels)))
+
+(pipe (::rsocket.chan/requests| channels) (::peernode.chan/ops| channels))
 
 (def ^:dynamic daemon nil)
 
@@ -57,17 +63,26 @@
                 (println ::init))
 
               {::op.spec/op-key ::peernode.chan/id
-               ::op.spec/op-type ::op.spec/request}
-              (let [{:keys []} v
+               ::op.spec/op-type ::op.spec/request-response
+               ::op.spec/op-orient ::op.spec/request}
+              (let [{:keys [::op.spec/out|]} value
                     peerId (<p! (daemon._ipfs.id))
                     id (.-id peerId)]
                 (println ::id id)
                 (peernode.chan/op
                  {::op.spec/op-key ::peernode.chan/id
-                  ::op.spec/op-type ::op.spec/response}
-                 channels
+                  ::op.spec/op-type ::op.spec/request-response
+                  ::op.spec/op-orient ::op.spec/response}
+                 out|
                  {::peernode.spec/id id})))))
         (recur)))))
+
+(def rsocket (rsocket.impl/create-proc-ops
+              channels
+              {::rsocket.spec/connection-side ::rsocket.spec/accepting
+               ::rsocket.spec/host "0.0.0.0"
+               ::rsocket.spec/port 7000
+               ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
 (def peernode (create-proc-ops channels {}))
 

@@ -22,24 +22,42 @@
     {::ops| ops|}))
 
 (defmethod op*
+  {::op.spec/op-key ::init} [_]
+  (s/keys :req []))
+
+(defmethod op
+  {::op.spec/op-key ::init}
+  [op-meta channels value]
+  (put! (::ops| channels) (merge op-meta
+                                 value)))
+
+(defmethod op*
   {::op.spec/op-key ::id
-   ::op.spec/op-type ::op.spec/request} [_]
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/request} [_]
   (s/keys :req []))
 
 (defmethod op
   {::op.spec/op-key ::id
-   ::op.spec/op-type ::op.spec/request}
-  [op-meta channels]
-  (put! (::ops| channels) (merge op-meta)))
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/request}
+  ([op-meta channels]
+   (op op-meta  channels (chan 1)))
+  ([op-meta channels out|]
+   (put! (::ops| channels) (merge op-meta
+                                  {::op.spec/out| out|}))
+   out|))
 
 
 (defmethod op*
   {::op.spec/op-key ::id
-   ::op.spec/op-type ::op.spec/response} [_]
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/response} [_]
   (s/keys :req [::peernode.spec/id]))
 
 (defmethod op
   {::op.spec/op-key ::id
+   ::op.spec/op-type ::op.spec/request-response
    ::op.spec/op-type ::op.spec/response}
-  [op-meta channels value]
-  (put! (::ops| channels) value))
+  [op-meta out| value]
+  (put! out| value))
