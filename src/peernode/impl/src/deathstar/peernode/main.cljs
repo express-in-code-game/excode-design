@@ -52,7 +52,7 @@
             ops|
             (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
 
-              {::op.spec/op-key ::server.chan/init}
+              {::op.spec/op-key ::peernode.chan/init}
               (let [{:keys []} v]
                 (println ::init))
 
@@ -60,7 +60,7 @@
                ::op.spec/op-type ::op.spec/request}
               (let [{:keys []} v
                     peerId (<p! (daemon._ipfs.id))
-                    id (.-id id)]
+                    id (.-id peerId)]
                 (println ::id id)
                 (peernode.chan/op
                  {::op.spec/op-key ::peernode.chan/id
@@ -75,8 +75,8 @@
   (println ::main)
   (println (js-keys d._ipfs))
   (set! daemon d)
-  (server.chan/op
-   {::op.spec/op-key ::server.chan/init}
+  (peernode.chan/op
+   {::op.spec/op-key ::peernode.chan/init}
    channels
    {::daemon d}))
 

@@ -7,4 +7,6 @@
 
         github.cljctools/cljc {:local/root "/ctx/cljctools/cljc"}
         github.cljctools/csp {:local/root "/ctx/cljctools/csp"}
+        github.cljctools/rsocket-js {:local/root  "/ctx/cljctools/rsocket-js"}
+
         github.DeathStarGame/peernode.meta {:local/root "../meta"}}}
