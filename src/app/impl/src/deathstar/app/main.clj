@@ -54,7 +54,7 @@
                     (loop []
                       (when-let [value  (<! out|)]
                         (println ::request-pubsub-stream)
-                        (print value)
+                        (println value)
                         (recur)))))
                 #_(go (loop []
                         (<! (timeout (* 1000 (+ 1 (rand-int 2)))))
@@ -107,11 +107,15 @@
           (recur)))))
 
 
-  (peernode.chan/op
-   {::op.spec/op-key ::peernode.chan/pubsub-publish
-    ::op.spec/op-type ::op.spec/fire-and-forget}
-   channels
-   {::some 12})
+  (def counter (atom 0))
+
+  (do
+    (swap! counter inc)
+    (peernode.chan/op
+     {::op.spec/op-key ::peernode.chan/pubsub-publish
+      ::op.spec/op-type ::op.spec/fire-and-forget}
+     channels
+     {::some @counter}))
 
 
 
