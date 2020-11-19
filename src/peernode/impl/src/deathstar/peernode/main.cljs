@@ -45,6 +45,33 @@
       (println (.-id id))
       (println (format "id is %s" id))))
 
+  (js/Object.keys daemon._ipfs)
+  (js/Object.keys daemon._ipfs.pubsub)
+
+  (def handler (fn [msg]
+                 (println (format "from: %s" msg.from))
+                 (println (format "data: %s" (.toString msg.data)))
+                 (println (format "topicIDs: %s" msg.topicIDs))))
+
+  (daemon._ipfs.pubsub.subscribe
+   "deathstar"
+   handler)
+
+  (daemon._ipfs.pubsub.unsubscribe
+   "deathstar"
+   handler)
+
+  ; remove all handlers
+  (daemon._ipfs.pubsub.unsubscribe
+   "deathstar")
+
+  (daemon._ipfs.pubsub.publish
+   "deathstar"
+   (-> (js/TextEncoder.)
+       (.encode (str "hello " (rand-int 10)))))
+
+
+
   ;;
   )
 
@@ -59,17 +86,22 @@
             (condp = (select-keys value [::op.spec/op-key ::op.spec/op-type ::op.spec/op-orient])
 
               {::op.spec/op-key ::peernode.chan/init}
-              (let [{:keys []} value]
+              (let [{:keys []} value
+                    id (.-id (<p! (daemon._ipfs.id)))]
+                (daemon._ipfs.pubsub.subscribe
+                 "deathstar"
+                 (fn [msg]
+                   (println (format "id: %s" id))
+                   (println (format "from: %s" msg.from))
+                   (println (format "data: %s" (.toString msg.data)))
+                   (println (format "topicIDs: %s" msg.topicIDs))))
                 (println ::init))
-
               {::op.spec/op-key ::peernode.chan/id
                ::op.spec/op-type ::op.spec/request-response
                ::op.spec/op-orient ::op.spec/request}
-              (let #_[{:keys [::op.spec/out|]} value
-                      peerId (<p! (daemon._ipfs.id))
-                      id (.-id peerId)]
-                [{:keys [::op.spec/out|]} value
-                 id "hello"]
+              (let [{:keys [::op.spec/out|]} value
+                    peerId (<p! (daemon._ipfs.id))
+                    id (.-id peerId)]
                 (println ::id id)
                 (peernode.chan/op
                  {::op.spec/op-key ::peernode.chan/id
@@ -77,7 +109,7 @@
                   ::op.spec/op-orient ::op.spec/response}
                  out|
                  {::peernode.spec/id id}))
-              
+
               {::op.spec/op-key ::peernode.chan/request-pubsub-stream
                ::op.spec/op-type ::op.spec/request-stream
                ::op.spec/op-orient ::op.spec/request}
@@ -93,10 +125,7 @@
                           ::op.spec/op-orient ::op.spec/response}
                          out|
                          {::peernode.spec/id random}))
-                      (recur))))
-              
-              
-              )))
+                      (recur)))))))
         (recur)))))
 
 (def rsocket (rsocket.impl/create-proc-ops
