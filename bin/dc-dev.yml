@@ -300,8 +300,10 @@ services:
       context: ./peernode
       dockerfile: ./dev.Dockerfile
       args:
-        workdir: /ctx/DeathStarGame/bin/peernode
-    command: tail -f /dev/null
+        # workdir: /ctx/DeathStarGame/bin/peernode
+        workdir: /ctx/js-ipfs/packages/ipfs
+    command: bash init-and-daemon.sh
+    # command: tail -f /dev/null
     # command: bash f dev
     expose:
       - 7000

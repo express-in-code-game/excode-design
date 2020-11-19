@@ -98,11 +98,11 @@
                  TOPIC
                  (fn [msg]
                    (when-not (= id msg.from)
-                     (do
-                       #_(println (format "id: %s" id))
-                       #_(println (format "from: %s" msg.from))
-                       (println (format "data: %s" (.toString msg.data)))
-                       #_(println (format "topicIDs: %s" msg.topicIDs)))
+                     #_(do
+                         #_(println (format "id: %s" id))
+                         #_(println (format "from: %s" msg.from))
+                         (println (format "data: %s" (.toString msg.data)))
+                         #_(println (format "topicIDs: %s" msg.topicIDs)))
                      (put! pubsub| msg))))
                 #_(let [counter (volatile! 0)]
                     (go (loop []
@@ -132,7 +132,7 @@
                ::op.spec/op-orient ::op.spec/request}
               (let [{:keys [::op.spec/out|]} value
                     id (.-id (<p! (daemon._ipfs.id)))]
-                (println ::request-pubsub-stream)
+                #_(println ::request-pubsub-stream)
                 #_(println value)
                 (let [pubsub|t (tap pubsub|m (chan (sliding-buffer 10)))]
                   (go (loop []
@@ -148,12 +148,12 @@
                               (read-string (.toString (.-data msg)))))
                             (recur))))
                       (untap pubsub|m pubsub|t))))
-
+              
               {::op.spec/op-key ::peernode.chan/pubsub-publish
                ::op.spec/op-type ::op.spec/fire-and-forget}
               (let []
-                (println ::pubsub-publish)
-                (println value)
+                #_(println ::pubsub-publish)
+                #_(println value)
                 (daemon._ipfs.pubsub.publish
                  TOPIC
                  (-> (js/TextEncoder.)
