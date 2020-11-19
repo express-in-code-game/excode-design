@@ -35,10 +35,10 @@
   (let [{:keys [::peernode.chan/ops|]} channels]
     (go
       (loop []
-        (when-let [[v port] (alts! [ops|])]
+        (when-let [[value port] (alts! [ops|])]
           (condp = port
             ops|
-            (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
+            (condp = (select-keys value [::op.spec/op-key ::op.spec/op-type ::op.spec/op-orient])
 
               {::op.spec/op-key ::peernode.chan/init}
               (let [{:keys []} value]

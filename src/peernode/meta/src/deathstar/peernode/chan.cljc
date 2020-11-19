@@ -58,6 +58,6 @@
 (defmethod op
   {::op.spec/op-key ::id
    ::op.spec/op-type ::op.spec/request-response
-   ::op.spec/op-type ::op.spec/response}
+   ::op.spec/op-orient ::op.spec/response}
   [op-meta out| value]
   (put! out| value))

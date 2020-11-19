@@ -53,21 +53,23 @@
   (let [{:keys [::peernode.chan/ops|]} channels]
     (go
       (loop []
-        (when-let [[v port] (alts! [ops|])]
+        (when-let [[value port] (alts! [ops|])]
           (condp = port
             ops|
-            (condp = (select-keys v [::op.spec/op-key ::op.spec/op-type])
+            (condp = (select-keys value [::op.spec/op-key ::op.spec/op-type ::op.spec/op-orient])
 
               {::op.spec/op-key ::peernode.chan/init}
-              (let [{:keys []} v]
+              (let [{:keys []} value]
                 (println ::init))
 
               {::op.spec/op-key ::peernode.chan/id
                ::op.spec/op-type ::op.spec/request-response
                ::op.spec/op-orient ::op.spec/request}
-              (let [{:keys [::op.spec/out|]} value
-                    peerId (<p! (daemon._ipfs.id))
-                    id (.-id peerId)]
+              (let #_[{:keys [::op.spec/out|]} value
+                      peerId (<p! (daemon._ipfs.id))
+                      id (.-id peerId)]
+                [{:keys [::op.spec/out|]} value
+                 id "hello"]
                 (println ::id id)
                 (peernode.chan/op
                  {::op.spec/op-key ::peernode.chan/id
