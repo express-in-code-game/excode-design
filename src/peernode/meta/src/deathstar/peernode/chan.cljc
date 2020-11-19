@@ -61,3 +61,35 @@
    ::op.spec/op-orient ::op.spec/response}
   [op-meta out| value]
   (put! out| value))
+
+
+(defmethod op*
+  {::op.spec/op-key ::request-pubsub-stream
+   ::op.spec/op-type ::op.spec/request-stream
+   ::op.spec/op-orient ::op.spec/request} [_]
+  (s/keys :req []))
+
+(defmethod op
+  {::op.spec/op-key ::request-pubsub-stream
+   ::op.spec/op-type ::op.spec/request-stream
+   ::op.spec/op-orient ::op.spec/request}
+  ([op-meta channels]
+   (op op-meta  channels (chan 64)))
+  ([op-meta channels out|]
+   (put! (::ops| channels) (merge op-meta
+                                  {::op.spec/out| out|}))
+   out|))
+
+
+(defmethod op*
+  {::op.spec/op-key ::request-pubsub-stream
+   ::op.spec/op-type ::op.spec/request-stream
+   ::op.spec/op-orient ::op.spec/response} [_]
+  (s/keys :req [::peernode.spec/id]))
+
+(defmethod op
+  {::op.spec/op-key ::request-pubsub-stream
+   ::op.spec/op-type ::op.spec/request-stream
+   ::op.spec/op-orient ::op.spec/response}
+  [op-meta out| value]
+  (put! out| value))

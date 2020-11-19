@@ -66,13 +66,27 @@
 
   (cljc.core/rand-uuid)
 
-
   (go
     (println (<! (peernode.chan/op
                   {::op.spec/op-key ::peernode.chan/id
                    ::op.spec/op-type ::op.spec/request-response
                    ::op.spec/op-orient ::op.spec/request}
                   channels))))
+
+  (go
+    (let [out| (chan 64)]
+      (peernode.chan/op
+       {::op.spec/op-key ::peernode.chan/request-pubsub-stream
+        ::op.spec/op-type ::op.spec/request-stream
+        ::op.spec/op-orient ::op.spec/request}
+       channels
+       out|)
+      (loop []
+        (when-let [value  (<! out|)]
+          (println value)
+          (recur)))))
+
+
 
 
   ;;

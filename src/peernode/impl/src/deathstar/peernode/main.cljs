@@ -76,7 +76,27 @@
                   ::op.spec/op-type ::op.spec/request-response
                   ::op.spec/op-orient ::op.spec/response}
                  out|
-                 {::peernode.spec/id id})))))
+                 {::peernode.spec/id id}))
+              
+              {::op.spec/op-key ::peernode.chan/request-pubsub-stream
+               ::op.spec/op-type ::op.spec/request-stream
+               ::op.spec/op-orient ::op.spec/request}
+              (let [{:keys [::op.spec/out|]} value]
+                (println ::request-pubsub-stream)
+                (println value)
+                (go (loop []
+                      (let [random (+ 1 (rand-int 2))]
+                        (<! (timeout (* 1000 random)))
+                        (peernode.chan/op
+                         {::op.spec/op-key ::peernode.chan/request-pubsub-stream
+                          ::op.spec/op-type ::op.spec/request-stream
+                          ::op.spec/op-orient ::op.spec/response}
+                         out|
+                         {::peernode.spec/id random}))
+                      (recur))))
+              
+              
+              )))
         (recur)))))
 
 (def rsocket (rsocket.impl/create-proc-ops
