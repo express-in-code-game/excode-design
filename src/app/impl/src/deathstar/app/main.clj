@@ -55,7 +55,16 @@
                       (when-let [value  (<! out|)]
                         (println ::request-pubsub-stream)
                         (print value)
-                        (recur)))))))))
+                        (recur)))))
+                (go (loop []
+                      (<! (timeout (* 1000 (+ 1 (rand-int 2)))))
+                      (println "will send a value")
+                      (peernode.chan/op
+                       {::op.spec/op-key ::peernode.chan/pubsub-publish
+                        ::op.spec/op-type ::op.spec/fire-and-forget}
+                       channels
+                       {::some ::value})
+                      (recur)))))))
         (recur)))))
 
 (def rsocket (rsocket.impl/create-proc-ops

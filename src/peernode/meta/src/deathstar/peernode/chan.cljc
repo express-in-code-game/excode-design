@@ -97,3 +97,16 @@
    ::op.spec/op-orient ::op.spec/response}
   [op-meta out| value]
   (put! out| value))
+
+
+(defmethod op*
+  {::op.spec/op-key ::pubsub-publish
+   ::op.spec/op-type ::op.spec/fire-and-forget} [_]
+  (s/keys :req []))
+
+(defmethod op
+  {::op.spec/op-key ::pubsub-publish
+   ::op.spec/op-type ::op.spec/fire-and-forget}
+  [op-meta channels value]
+  (put! (::ops| channels) (merge op-meta
+                                 value)))

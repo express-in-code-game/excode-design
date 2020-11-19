@@ -104,15 +104,15 @@
                        (println (format "data: %s" (.toString msg.data)))
                        #_(println (format "topicIDs: %s" msg.topicIDs)))
                      (put! pubsub| msg))))
-                (let [counter (volatile! 0)]
-                  (go (loop []
-                        (<! (timeout (* 2000 (+ 1 (rand-int 2)))))
-                        (vswap! counter inc)
-                        (daemon._ipfs.pubsub.publish
-                         TOPIC
-                         (-> (js/TextEncoder.)
-                             (.encode (str {::some-op (str (subs id (- (count id) 7)) " " @counter)}))))
-                        (recur)))))
+                #_(let [counter (volatile! 0)]
+                    (go (loop []
+                          (<! (timeout (* 2000 (+ 1 (rand-int 2)))))
+                          (vswap! counter inc)
+                          (daemon._ipfs.pubsub.publish
+                           TOPIC
+                           (-> (js/TextEncoder.)
+                               (.encode (str {::some-op (str (subs id (- (count id) 7)) " " @counter)}))))
+                          (recur)))))
               {::op.spec/op-key ::peernode.chan/id
                ::op.spec/op-type ::op.spec/request-response
                ::op.spec/op-orient ::op.spec/request}
@@ -133,7 +133,7 @@
               (let [{:keys [::op.spec/out|]} value
                     id (.-id (<p! (daemon._ipfs.id)))]
                 (println ::request-pubsub-stream)
-                (println value)
+                #_(println value)
                 (let [pubsub|t (tap pubsub|m (chan (sliding-buffer 10)))]
                   (go (loop []
                         (when-not (closed? out|)
@@ -147,7 +147,17 @@
                               {::peernode.spec/from (.-from msg)}
                               (read-string (.toString (.-data msg)))))
                             (recur))))
-                      (untap pubsub|m pubsub|t)))))))
+                      (untap pubsub|m pubsub|t))))
+
+              {::op.spec/op-key ::peernode.chan/pubsub-publish
+               ::op.spec/op-type ::op.spec/fire-and-forget}
+              (let []
+                (println ::pubsub-publish)
+                (println value)
+                (daemon._ipfs.pubsub.publish
+                 TOPIC
+                 (-> (js/TextEncoder.)
+                     (.encode (str value))))))))
         (recur)))))
 
 (def rsocket (rsocket.impl/create-proc-ops
