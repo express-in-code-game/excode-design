@@ -11,5 +11,7 @@
         github.cljctools/rsocket-js {:local/root  "/ctx/cljctools/rsocket-js"}
 
         github.DeathStarGame/ui.meta {:local/root  "../meta"}
+        github.DeathStarGame/app.meta {:local/root  "/ctx/DeathStarGame/src/app/meta"}
+
 
         github.DeathStarGame/scenarios-render-list {:local/root "/ctx/DeathStarGame/src/scenarios-render-list"}}}

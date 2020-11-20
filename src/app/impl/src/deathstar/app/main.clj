@@ -38,6 +38,10 @@
 (pipe (::ui.chan/ops| channels) (::rsocket.chan/ops| channels-rsocket-ui))
 (pipe (::rsocket.chan/requests| channels-rsocket-ui) (::app.chan/ops| channels))
 
+(def state (atom
+            {::app.spec/counter 0
+             ::app.spec/games-list {}}))
+
 (defn create-proc-ops
   [channels ctx]
   (let [{:keys [::app.chan/ops|]} channels]
@@ -51,6 +55,15 @@
               {::op.spec/op-key ::app.chan/init}
               (let [{:keys []} value]
                 (println ::init)
+                (go (loop []
+                      (<! (timeout (* 1000 (+ 1 (rand-int 2)))))
+                      (swap! state update ::app.spec/counter inc)
+                      (ui.chan/op
+                       {::op.spec/op-key ::ui.chan/update-state
+                        ::op.spec/op-type ::op.spec/fire-and-forget}
+                       channels
+                       @state)
+                      (recur)))
                 #_(go
                     (let [out| (chan 64)]
                       (peernode.chan/op

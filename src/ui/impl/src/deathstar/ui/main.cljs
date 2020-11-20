@@ -21,7 +21,10 @@
    [cljctools.rsocket.examples]
 
    [deathstar.ui.spec :as ui.spec]
-   [deathstar.ui.chan :as ui.chan]))
+   [deathstar.ui.chan :as ui.chan]
+
+
+   [deathstar.ui.render.impl :as render.impl]))
 
 (goog-define RSOCKET_PORT 0)
 
@@ -30,6 +33,9 @@
                (ui.chan/create-channels)))
 
 (pipe (::rsocket.chan/requests| channels) (::ui.chan/ops| channels))
+
+(def state (render.impl/create-state
+            {}))
 
 (defn create-proc-ops
   [channels ctx]
@@ -43,7 +49,13 @@
 
               {::op.spec/op-key ::ui.chan/init}
               (let [{:keys []} value]
-                (println ::init)))))
+                (render.impl/render-ui channels state {})
+                (println ::init))
+
+              {::op.spec/op-key ::ui.chan/update-state
+               ::op.spec/op-type ::op.spec/fire-and-forget}
+              (let [{:keys []} value]
+                (reset! state value)))))
         (recur)))))
 
 (def rsocket (rsocket.impl/create-proc-ops
