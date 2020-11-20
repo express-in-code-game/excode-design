@@ -98,36 +98,46 @@
 
               {::op.spec/op-key ::app.chan/create-game
                ::op.spec/op-type ::op.spec/fire-and-forget}
-              (let [{:keys [::op.spec/out|]} value]
-                (println ::create-game)
-                (let [game-id (str (cljc.core/rand-uuid))
-                      game {::app.spec/game-id game-id}
-                      pubsub| (chan (sliding-buffer 64))]
-                  (swap! state-game-channels assoc game-id pubsub|)
-                  (swap! state update ::app.spec/games assoc  game-id game)
-                  (peernode.chan/op
-                   {::op.spec/op-key ::peernode.chan/pubsub-sub
-                    ::op.spec/op-type ::op.spec/fire-and-forget}
-                   channels
-                   {::peernode.spec/topic-id game-id})
-                  (peernode.chan/op
-                   {::op.spec/op-key ::peernode.chan/request-pubsub-stream
-                    ::op.spec/op-type ::op.spec/request-stream
-                    ::op.spec/op-orient ::op.spec/request}
-                   channels
-                   pubsub|
-                   {::peernode.spec/topic-id game-id})
-                  (go
-                    (loop []
-                      (when-let [msg (<! pubsub|)]
-                        (println ::pubsub-msg)
-                        (recur)))
-                    (println (format "game process % exits" game-id)))
-                  (ui.chan/op
-                   {::op.spec/op-key ::ui.chan/update-state
-                    ::op.spec/op-type ::op.spec/fire-and-forget}
-                   channels
-                   @state)))
+              (let [game-id (str (cljc.core/rand-uuid))
+                    game {::app.spec/game-id game-id}]
+                (swap! state update ::app.spec/games assoc  game-id game)
+                (app.chan/op
+                 {::op.spec/op-key ::app.chan/sub-to-game
+                  ::op.spec/op-type ::op.spec/fire-and-forget}
+                 channels
+                 {::app.spec/game-id game-id})
+                (ui.chan/op
+                 {::op.spec/op-key ::ui.chan/update-state
+                  ::op.spec/op-type ::op.spec/fire-and-forget}
+                 channels
+                 @state))
+
+              {::op.spec/op-key ::app.chan/sub-to-game
+               ::op.spec/op-type ::op.spec/fire-and-forget}
+              (let [{:keys [::app.spec/game-id]} value]
+                (println ::sub-to-game)
+                (when-not (get @state-game-channels game-id)
+                  (let [pubsub| (chan (sliding-buffer 64))]
+                    (swap! state-game-channels assoc game-id pubsub|)
+                    (peernode.chan/op
+                     {::op.spec/op-key ::peernode.chan/pubsub-sub
+                      ::op.spec/op-type ::op.spec/fire-and-forget}
+                     channels
+                     {::peernode.spec/topic-id game-id})
+                    (peernode.chan/op
+                     {::op.spec/op-key ::peernode.chan/request-pubsub-stream
+                      ::op.spec/op-type ::op.spec/request-stream
+                      ::op.spec/op-orient ::op.spec/request}
+                     channels
+                     pubsub|
+                     {::peernode.spec/topic-id game-id})
+                    (go
+                      (loop []
+                        (when-let [msg (<! pubsub|)]
+                          (println ::pubsub-msg)
+                          (recur)))
+                      (println (format (str ::game " process exits: % ") game-id))))))
+
 
               {::op.spec/op-key ::app.chan/unsub-from-game
                ::op.spec/op-type ::op.spec/fire-and-forget}
