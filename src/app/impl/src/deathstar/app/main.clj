@@ -19,16 +19,24 @@
    [deathstar.app.chan :as app.chan]
 
    [deathstar.peernode.spec :as peernode.spec]
-   [deathstar.peernode.chan :as peernode.chan]))
+   [deathstar.peernode.chan :as peernode.chan]
+
+   [deathstar.ui.spec :as ui.spec]
+   [deathstar.ui.chan :as ui.chan]))
 
 (def channels (merge
                (app.chan/create-channels)
-               (rsocket.chan/create-channels)
+               (ui.chan/create-channels)
                (peernode.chan/create-channels)))
 
-(pipe (::rsocket.chan/requests| channels) (::app.chan/ops| channels))
-(pipe (::peernode.chan/ops| channels) (::rsocket.chan/ops| channels))
+(def channels-rsocket-peernode (rsocket.chan/create-channels))
+(def channels-rsocket-ui (rsocket.chan/create-channels))
 
+(pipe (::peernode.chan/ops| channels) (::rsocket.chan/ops| channels-rsocket-peernode))
+(pipe (::rsocket.chan/requests| channels-rsocket-peernode) (::app.chan/ops| channels))
+
+(pipe (::ui.chan/ops| channels) (::rsocket.chan/ops| channels-rsocket-ui))
+(pipe (::rsocket.chan/requests| channels-rsocket-ui) (::app.chan/ops| channels))
 
 (defn create-proc-ops
   [channels ctx]
@@ -43,19 +51,19 @@
               {::op.spec/op-key ::app.chan/init}
               (let [{:keys []} value]
                 (println ::init)
-                (go
-                  (let [out| (chan 64)]
-                    (peernode.chan/op
-                     {::op.spec/op-key ::peernode.chan/request-pubsub-stream
-                      ::op.spec/op-type ::op.spec/request-stream
-                      ::op.spec/op-orient ::op.spec/request}
-                     channels
-                     out|)
-                    (loop []
-                      (when-let [value  (<! out|)]
-                        (println ::request-pubsub-stream)
-                        (println value)
-                        (recur)))))
+                #_(go
+                    (let [out| (chan 64)]
+                      (peernode.chan/op
+                       {::op.spec/op-key ::peernode.chan/request-pubsub-stream
+                        ::op.spec/op-type ::op.spec/request-stream
+                        ::op.spec/op-orient ::op.spec/request}
+                       channels
+                       out|)
+                      (loop []
+                        (when-let [value  (<! out|)]
+                          (println ::request-pubsub-stream)
+                          (println value)
+                          (recur)))))
                 #_(go (loop []
                         (<! (timeout (* 1000 (+ 1 (rand-int 2)))))
                         (peernode.chan/op
@@ -66,14 +74,21 @@
                         (recur)))))))
         (recur)))))
 
-(def rsocket (rsocket.impl/create-proc-ops
-              channels
-              {::rsocket.spec/connection-side ::rsocket.spec/initiating
-               ::rsocket.spec/host "peernode"
-               ::rsocket.spec/port 7000
-               ::rsocket.spec/transport ::rsocket.spec/websocket}))
+#_(def rsocket-peernode (rsocket.impl/create-proc-ops
+                         channels-rsocket-peernode
+                         {::rsocket.spec/connection-side ::rsocket.spec/initiating
+                          ::rsocket.spec/host "peernode"
+                          ::rsocket.spec/port 7000
+                          ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
-(def peernode (create-proc-ops channels {}))
+(def rsocket-ui (rsocket.impl/create-proc-ops
+                 channels-rsocket-ui
+                 {::rsocket.spec/connection-side ::rsocket.spec/accepting
+                  ::rsocket.spec/host "0.0.0.0"
+                  ::rsocket.spec/port 7000
+                  ::rsocket.spec/transport ::rsocket.spec/websocket}))
+
+(def ops (create-proc-ops channels {}))
 
 (defn -main [& args]
   (println ::-main)

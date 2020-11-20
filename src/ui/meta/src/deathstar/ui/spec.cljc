@@ -1,5 +1,5 @@
-(ns deathstar.ui.chan
-  #?(:cljs (:require-macros [deathstar.ui.chan]))
+(ns deathstar.ui.spec
+  #?(:cljs (:require-macros [deathstar.ui.spec]))
   (:require
    [clojure.spec.alpha :as s]))
 

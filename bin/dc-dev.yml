@@ -184,6 +184,7 @@ services:
     #   - 7788
     ports:
       - ${PORTS_PREFIX}088:7788
+      - ${PORTS_PREFIX}070:7000
       # - 8085:8080
     networks:
       - base-network
@@ -272,10 +273,13 @@ services:
     # command: bash f dev
     # expose:
     #   - 7788
-    # ports:
-    #   - 8899:8899
-    #   - 9630:9630
-    #   - 9500:9500
+    ports:
+      - ${PORTS_PREFIX}095:9500
+      - ${PORTS_PREFIX}099:8899
+      - ${PORTS_PREFIX}096:9630
+    environment:
+      - RSOCKET_PORT=${PORTS_PREFIX}070
+      - DEVTOOLS_URL=http://localhost:${PORTS_PREFIX}096
     networks:
       - base-network
     volumes:
@@ -312,7 +316,7 @@ services:
       # - IPFS_PROFILE=local-discovery
       - IPFS_PATH=/data/ipfs
     ports:
-      - ${PORTS_PREFIX}099:8899
+      - ${PORTS_PREFIX}089:8899
       # - 9630:9630
       # - 9500:9500
     networks:
