@@ -23,7 +23,7 @@
    [deathstar.ui.spec :as ui.spec]
    [deathstar.ui.chan :as ui.chan]))
 
-(declare RSOCKET_PORT)
+(goog-define RSOCKET_PORT 0)
 
 (def channels (merge
                (rsocket.chan/create-channels)
