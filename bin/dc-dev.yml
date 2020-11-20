@@ -297,17 +297,16 @@ services:
           cpus: '4'
           memory: 4096M
 
-
   peernode:
     image: deathstar.peernode-dev
     build:
-      context: ./peernode
+      context: ../../peernode/bin
       dockerfile: ./dev.Dockerfile
       args:
-        # workdir: /ctx/DeathStarGame/bin/peernode
-        workdir: /ctx/js-ipfs/packages/ipfs
-    command: bash init-and-daemon.sh
-    # command: tail -f /dev/null
+        workdir: /ctx/peernode/bin
+        # workdir: /ctx/js-ipfs/packages/ipfs
+    # command: bash init-and-daemon.sh
+    command: tail -f /dev/null
     # command: bash f dev
     expose:
       - 7000
@@ -325,7 +324,7 @@ services:
         aliases:
           - peernode-${PORTS_PREFIX}
     volumes:
-      - ./peernode/.user:/root
+      - ../../peernode/bin/.user:/root
       - type: volume
         source: ctx
         target: /ctx
