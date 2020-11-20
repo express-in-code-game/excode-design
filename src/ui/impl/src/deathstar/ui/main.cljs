@@ -48,7 +48,7 @@
 (def state (render.impl/create-state
             {}))
 
-(def routes ["/" {"" ::ui.spec/page-events
+(def routes ["/" {"" ::ui.spec/page-main
                   "game/" {[::app.spec/game-id ""] ::ui.spec/page-game}}])
 (def router (browser-router.impl/create-proc-ops channels state {::browser-router.spec/routes routes}))
 

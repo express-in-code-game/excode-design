@@ -1,6 +1,6 @@
 {
 	"dependencies": {
-		"antd": "4.6.1",
+		"antd": "4.8.4",
 		"react": "16.13.0",
 		"react-dom": "16.13.0",
 		"rsocket-core": "0.0.19",

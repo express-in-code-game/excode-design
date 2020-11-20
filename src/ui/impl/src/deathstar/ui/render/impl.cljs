@@ -15,6 +15,9 @@
    [deathstar.app.spec :as app.spec]
    [deathstar.app.chan :as app.chan]
 
+   [deathstar.ui.spec :as ui.spec]
+   [cljctools.browser-router.spec :as browser-router.spec]
+
    ["antd/lib/layout" :default AntLayout]
    ["antd/lib/menu" :default AntMenu]
    ["antd/lib/icon" :default AntIcon]
@@ -62,70 +65,107 @@
 (def ant-icon-loading-outlined (r/adapt-react-class AntIconLoadingOutlined))
 (def ant-icon-sync-outlined (r/adapt-react-class AntIconSyncOutlined))
 
+; https://github.com/sergeiudris/starnet/blob/af86204ff94776ceab140208f5a6e0d654d30eba/ui/src/starnet/ui/alpha/main.cljs
+; https://github.com/sergeiudris/starnet/blob/af86204ff94776ceab140208f5a6e0d654d30eba/ui/src/starnet/ui/alpha/render.cljs
 
 (defn create-state
   [data]
   (r/atom data))
 
-(declare rc-main)
+(declare  rc-main rc-page-main rc-page-game rc-page-not-found)
 
 (defn render-ui
   [channels state {:keys [id] :or {id "ui"}}]
   (rdom/render [rc-main channels state]  (.getElementById js/document id)))
 
-(def rc-tab-connections-columns
-  [{:title "Settings file"
-    :key :settings
-    :dataIndex (str ::app.spec/settings-filepath)}
-   {:title "Status"
-    :key :status
-    :dataIndex (str ::app.spec/connection-status)}
-   {:title "Actions"
-    :key "action"
-    :width "48px"
-    :render (fn [txt rec idx]
-              (r/as-element
-               [ant-button-group
-                {:size "small"}
-                [ant-button
-                 {;:icon "plus"
-                  :type "primary"
-                  :on-click #(println ::connect-button-click)}
-                 "connect"]
-                [ant-button
-                 {;:icon "plus"
-                  :type "primary"
-
-                  :on-click #(println ::disconnect-button-click)}
-                 "disconnect"]]))}
-   #_{:title ""
-      :key "empty"}])
-
-(defn rc-tab-connections
-  [channels state]
-  (r/with-let [data (r/cursor state [:data])
-               counter (r/cursor state [:counter])]
-    [ant-table {:show-header true
-                :size "small"
-                :row-key :name
-                :style {:height "30%" :overflow-y "auto"}
-                :columns rc-tab-connections-columns
-                :dataSource data
-                :scroll {:y 216}
-                :pagination false
-                :rowSelection {:selectedRowKeys []
-                               :on-change
-                               (fn [ks rows ea]
-                                 (println ks))}}]))
-
-(defn rc-tab-state
-  [channels state]
-  (r/with-let [data (r/cursor state [:data])
-               counter (r/cursor state [:counter])]
-    [:<>
-     [:pre {} (with-out-str (pprint @state))]]))
-
 (defn rc-main
+  [channels state]
+  (r/with-let [route-key* (r/cursor state [::browser-router.spec/route-key])]
+    (let [route-key @route-key*]
+      (println (format "rendering %s" route-key))
+      (condp = route-key
+        ::ui.spec/page-main [rc-page-main channels state]
+        ::ui.spec/page-game [rc-page-game channels state]
+        [rc-page-not-found channels state]))))
+
+(defn menu
+  [channels state]
+  (r/with-let
+    [route-key* (r/cursor state [::browser-router.spec/route-key])
+     url* (r/cursor state [::browser-router.spec/url])]
+    (let [route-key @route-key*
+          url @url*]
+      [ant-menu {:theme "light"
+                 :mode "horizontal"
+                 :size "small"
+                 :style {:lineHeight "32px"}
+                 :default-selected-keys ["home-panel"]
+                 :selected-keys [route-key]
+                 :on-select (fn [x] (do))}
+       [ant-menu-item {:key ::ui.spec/page-main}
+        [:a {:href "/"} "main"]]
+       [ant-menu-item {:key ::ui.spec/page-game}
+        [:a {:href (format "/game/%s" "frequency")} "game/:frequency"]]])))
+
+(defn layout
+  [channels state content]
+  [ant-layout {:style {:min-height "100vh"}}
+   [ant-layout-header
+    {:style {:position "fixed"
+             :z-index 1
+             :lineHeight "32px"
+             :height "32px"
+             :padding 0
+             :background "#000" #_"#001529"
+             :width "100%"}}
+    [:div {:href "/"
+           :class "ui-logo"}
+     #_[:img {:class "logo-img" :src "./img/logo-4.png"}]
+     [:div {:class "logo-name"} "DeathStarGame"]]
+    [menu channels state]]
+   [ant-layout-content {:class "main-content"
+                        :style {:margin-top "32px"
+                                :padding "32px 32px 32px 32px"}}
+    content]])
+
+
+(defn rc-page-main
+  [channels state]
+  (r/with-let
+    []
+    [layout channels state
+     [:<>
+      [:div "rc-page-main"]
+      [:<>
+       (if (empty? @state)
+
+         [:div "loading..."]
+
+         [:<>
+          [:pre {} (with-out-str (pprint @state))]
+          [ant-button {:icon (r/as-element [ant-icon-sync-outlined])
+                       :size "small"
+                       :title "button"
+                       :on-click (fn [] ::button-click)}]])]]]))
+
+(defn rc-page-game
+  [channels state]
+  (r/with-let
+    []
+    [layout channels state
+     [:<>
+      [:div "rc-page-game"]]]))
+
+(defn rc-page-not-found
+  [channels state]
+  (r/with-let
+    []
+    [layout channels state
+     [:<>
+      [:div "rc-page-not-found"]]]))
+
+
+#_(defn rc-main
   [{:keys [input|] :as channels} state]
   (r/with-let [data (r/cursor state [:data])
                counter (r/cursor state [:counter])]
