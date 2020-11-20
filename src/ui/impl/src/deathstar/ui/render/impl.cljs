@@ -131,7 +131,8 @@
                                 :padding "32px 32px 32px 32px"}}
     content]])
 
-(def table-games-columns
+(defn table-games-columns
+  [channels state]
   [{:title "game frequency"
     :key ::app.spec/game-id
     :dataIndex ::app.spec/game-id}
@@ -147,23 +148,27 @@
                            :overflow-x "hidden"}}
             v])))}])
 
-(def table-games-columns-extra
+(defn table-games-columns-extra
+  [channels state]
   [{:title "action"
     :key "action"
     :width "48px"
-    :render (fn [txt rec idx]
+    :render (fn [text record index]
               (r/as-element
                [ant-button-group
                 {:size "small"}
                 [ant-button
-                 {:type "primary"
-                  :on-click (fn [record]
-                              (println ::record)
-                              (println record))}
+                 {:type "default"
+                  :on-click (fn [evt]
+                              (app.chan/op
+                               {::op.spec/op-key ::app.chan/unsub-from-game
+                                ::op.spec/op-type ::op.spec/fire-and-forget}
+                               channels
+                               {::app.spec/game-id (aget record "game-id")}))}
                  "unsub from game"]
                 [ant-button
-                 {:type "primary"
-                  :on-click (fn [record]
+                 {:type "default"
+                  :on-click (fn [evt]
                               (println ::record)
                               (println record))}
                  "open a tab"]]))}
@@ -175,14 +180,12 @@
   [channels state]
   (r/with-let
     [games* (r/cursor state [::app.spec/games])
-     columns (vec (concat table-games-columns table-games-columns-extra))]
+     columns (vec (concat (table-games-columns channels state) (table-games-columns-extra channels state)))]
     (let [games (vec (vals @games*))
           total (count games)]
-      (println ::games)
-      (println games)
       [ant-table {:show-header true
                   :size "small"
-                  :row-key :id
+                  :row-key ::app.spec/game-id
                   :style {:height "50%" :width "100%"}
                   :columns columns
                   :dataSource games
@@ -208,9 +211,8 @@
                    :size "small"
                    :on-click (fn []
                                (app.chan/op
-                                {::op.spec/op-key ::create-game
-                                 ::op.spec/op-type ::op.spec/request-response
-                                 ::op.spec/orient ::op.spec/request}
+                                {::op.spec/op-key ::app.chan/create-game
+                                 ::op.spec/op-type ::op.spec/fire-and-forget}
                                 channels
                                 {}))} "create game"]
 

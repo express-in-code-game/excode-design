@@ -34,12 +34,24 @@
 
 (defmethod op*
   {::op.spec/op-key ::create-game
-   ::op.spec/op-type ::op.spec/request-response} [_]
+   ::op.spec/op-type ::op.spec/fire-and-forget} [_]
   (s/keys :req []))
 
 (defmethod op
   {::op.spec/op-key ::create-game
-   ::op.spec/op-type ::op.spec/request-response}
+   ::op.spec/op-type ::op.spec/fire-and-forget}
+  [op-meta channels value]
+  (put! (::ops| channels) (merge op-meta
+                                 value)))
+
+(defmethod op*
+  {::op.spec/op-key ::unsub-from-game
+   ::op.spec/op-type ::op.spec/fire-and-forget} [_]
+  (s/keys :req []))
+
+(defmethod op
+  {::op.spec/op-key ::unsub-from-game
+   ::op.spec/op-type ::op.spec/fire-and-forget}
   [op-meta channels value]
   (put! (::ops| channels) (merge op-meta
                                  value)))

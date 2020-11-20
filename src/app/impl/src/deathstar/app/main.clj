@@ -94,13 +94,26 @@
                  channels
                  @state))
 
-              {::op.spec/op-key ::create-game
+              {::op.spec/op-key ::app.chan/create-game
                ::op.spec/op-type ::op.spec/fire-and-forget}
               (let [{:keys [::op.spec/out|]} value]
                 (println ::create-game)
-                (let [game-id (str (random-uuid))
+                (let [game-id (str (cljc.core/rand-uuid))
                       game {::app.spec/game-id game-id}]
                   (swap! state update ::app.spec/games assoc  game-id game)
+                  (ui.chan/op
+                   {::op.spec/op-key ::ui.chan/update-state
+                    ::op.spec/op-type ::op.spec/fire-and-forget}
+                   channels
+                   @state)))
+
+              {::op.spec/op-key ::app.chan/unsub-from-game
+               ::op.spec/op-type ::op.spec/fire-and-forget}
+              (let [{:keys [::op.spec/out| ::app.spec/game-id]} value]
+                (println ::unsub-from-game)
+                (println value)
+                (let []
+                  (swap! state update ::app.spec/games dissoc game-id)
                   (ui.chan/op
                    {::op.spec/op-key ::ui.chan/update-state
                     ::op.spec/op-type ::op.spec/fire-and-forget}
