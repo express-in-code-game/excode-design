@@ -138,7 +138,12 @@
        [ant-button {:icon (r/as-element [ant-icon-sync-outlined])
                     :size "small"
                     :title "button"
-                    :on-click (fn [] ::button-click)}]]
+                    :on-click (fn [] ::button-click)}]
+
+       #_[:iframe {:width "768"
+                   :height "400"
+                   :loading "eager"
+                   :src "http://localhost:11080/code-server/"}]]
 
       #_[:<>
          [ant-tabs {:defaultActiveKey :connections}

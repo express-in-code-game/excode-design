@@ -2,6 +2,16 @@
 http:
   routers:
     # Define a connection between requests and services
+    # to-ui:
+    #   priority: 10
+    #   service: ui
+    #   rule: Path(`/`) || HeadersRegexp(`Referer`, `\/.*`)
+    to-ui:
+      priority: 10
+      service: ui
+      rule: PathPrefix(`/ui/`) || HeadersRegexp(`Referer`, `\/ui\/.*`) 
+      middlewares:
+        - "stripPrefix-ui"
     to-traefik:
       priority: 2
       service: traefik
@@ -9,21 +19,21 @@ http:
       middlewares:
         - "stripPrefix-traefik"
         # - "replacePath-traefik"
-    to-ipfs-ui:
-      priority: 1
-      service: ipfs-ui
-      # rule: "PathPrefix(`/ipfs/webui`)"
-      rule: PathPrefix(`/ipfs-ui/`) || PathPrefix(`/ipfs/`) || PathPrefix(`/api/`) || HeadersRegexp(`Referer`, `.*\/ipfs-ui\/.*`)
-      middlewares:
-        - "stripPrefix-ipfs-ui"
+    # to-ipfs-ui:
+    #   priority: 1
+    #   service: ipfs-ui
+    #   # rule: "PathPrefix(`/ipfs/webui`)"
+    #   rule: PathPrefix(`/ipfs-ui/`) || PathPrefix(`/ipfs/`) || PathPrefix(`/api/`) || HeadersRegexp(`Referer`, `.*\/ipfs-ui\/.*`)
+    #   middlewares:
+    #     - "stripPrefix-ipfs-ui"
        # If the rule matches, applies the middleware
       # middlewares:
       # - test-user
       # If the rule matches, forward to the whoami service (declared below)
     to-code-server:
-      priority: 0
+      priority: 20
       service: code-server
-      rule: PathPrefix(`/code-server/`) || HeadersRegexp(`Referer`, `.*\/code-server\/.*`)
+      rule: PathPrefix(`/code-server/`) ||  PathPrefix(`/code-server`) || HeadersRegexp(`Referer`, `\/code-server\/.*`)
       middlewares:
         - "stripPrefix-code-server"
         # - "replacePath-traefik"
@@ -52,6 +62,10 @@ http:
       stripPrefix:
         prefixes: 
         - "/vscode"
+    stripPrefix-ui:
+      stripPrefix:
+        prefixes: 
+        - "/ui"
     # replacePath-traefik:
     #   replacePath:
     #     path: "/dashboard"
@@ -85,6 +99,10 @@ http:
       loadBalancer:
         servers:
         - url: http://vscode:8080
+    ui:
+      loadBalancer:
+        servers:
+        - url: http://ui:9500
 
 tcp:
   routers:

@@ -23,5 +23,5 @@ entryPoints:
 providers:
   # Enable the file provider to define routers / middlewares / services in file
   file:
-    directory: /ctx/sorce/DeathStarGame/bin/traefik/file-provider
+    directory: /ctx/DeathStarGame/bin/traefik/file-provider
     watch: false
