@@ -37,13 +37,14 @@
 (goog-define RSOCKET_PORT 0)
 
 (def channels (merge
+               (app.chan/create-channels)
                (rsocket.chan/create-channels)
                (browser-router.chan/create-channels)
                (ui.chan/create-channels)))
 
 (pipe (::rsocket.chan/requests| channels) (::ui.chan/ops| channels))
 
-
+(pipe (::app.chan/ops| channels) (::rsocket.chan/ops| channels))
 
 (def state (render.impl/create-state
             {}))
@@ -67,8 +68,13 @@
 
               {::op.spec/op-key ::ui.chan/init}
               (let [{:keys []} value]
+                (println ::init)
                 (render.impl/render-ui channels state {})
-                (println ::init))
+                (app.chan/op
+                 {::op.spec/op-key ::app.chan/request-state-update
+                  ::op.spec/op-type ::op.spec/fire-and-forget}
+                 channels
+                 {}))
 
               {::op.spec/op-key ::ui.chan/update-state
                ::op.spec/op-type ::op.spec/fire-and-forget}

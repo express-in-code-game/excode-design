@@ -39,8 +39,7 @@
 (pipe (::rsocket.chan/requests| channels-rsocket-ui) (::app.chan/ops| channels))
 
 (def state (atom
-            {::app.spec/counter 0
-             ::app.spec/games-list {}}))
+            {::app.spec/games {}}))
 
 (defn create-proc-ops
   [channels ctx]
@@ -55,15 +54,15 @@
               {::op.spec/op-key ::app.chan/init}
               (let [{:keys []} value]
                 (println ::init)
-                (go (loop []
-                      (<! (timeout (* 1000 (+ 1 (rand-int 2)))))
-                      (swap! state update ::app.spec/counter inc)
-                      (ui.chan/op
-                       {::op.spec/op-key ::ui.chan/update-state
-                        ::op.spec/op-type ::op.spec/fire-and-forget}
-                       channels
-                       @state)
-                      (recur)))
+                #_(go (loop []
+                        (<! (timeout 2000))
+                        #_(swap! state update ::app.spec/counter inc)
+                        (ui.chan/op
+                         {::op.spec/op-key ::ui.chan/update-state
+                          ::op.spec/op-type ::op.spec/fire-and-forget}
+                         channels
+                         @state)
+                        (recur)))
                 #_(go
                     (let [out| (chan 64)]
                       (peernode.chan/op
@@ -84,7 +83,29 @@
                           ::op.spec/op-type ::op.spec/fire-and-forget}
                          channels
                          {::some ::value})
-                        (recur)))))))
+                        (recur))))
+
+              {::op.spec/op-key ::app.chan/request-state-update
+               ::op.spec/op-type ::op.spec/fire-and-forget}
+              (let [{:keys []} value]
+                (ui.chan/op
+                 {::op.spec/op-key ::ui.chan/update-state
+                  ::op.spec/op-type ::op.spec/fire-and-forget}
+                 channels
+                 @state))
+
+              {::op.spec/op-key ::create-game
+               ::op.spec/op-type ::op.spec/fire-and-forget}
+              (let [{:keys [::op.spec/out|]} value]
+                (println ::create-game)
+                (let [game-id (str (random-uuid))
+                      game {::app.spec/game-id game-id}]
+                  (swap! state update ::app.spec/games assoc  game-id game)
+                  (ui.chan/op
+                   {::op.spec/op-key ::ui.chan/update-state
+                    ::op.spec/op-type ::op.spec/fire-and-forget}
+                   channels
+                   @state))))))
         (recur)))))
 
 #_(def rsocket-peernode (rsocket.impl/create-proc-ops

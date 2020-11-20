@@ -14,6 +14,8 @@
 
    [deathstar.app.spec :as app.spec]
    [deathstar.app.chan :as app.chan]
+   [cljctools.csp.op.spec :as op.spec]
+   [cljctools.cljc.core :as cljc.core]
 
    [deathstar.ui.spec :as ui.spec]
    [cljctools.browser-router.spec :as browser-router.spec]
@@ -129,6 +131,72 @@
                                 :padding "32px 32px 32px 32px"}}
     content]])
 
+(def table-games-columns
+  [{:title "game frequency"
+    :key ::app.spec/game-id
+    :dataIndex ::app.spec/game-id}
+   #_{:title "preview"
+      :key "preview"
+      :render
+      (fn [txt rec idx]
+        (let [v (js/JSON.stringify (aget rec "properties"))]
+          (r/as-element
+           [:div {:title v
+                  :style  {:white-space "nowrap"
+                           :max-width "216px"
+                           :overflow-x "hidden"}}
+            v])))}])
+
+(def table-games-columns-extra
+  [{:title "action"
+    :key "action"
+    :width "48px"
+    :render (fn [txt rec idx]
+              (r/as-element
+               [ant-button-group
+                {:size "small"}
+                [ant-button
+                 {:type "primary"
+                  :on-click (fn [record]
+                              (println ::record)
+                              (println record))}
+                 "unsub from game"]
+                [ant-button
+                 {:type "primary"
+                  :on-click (fn [record]
+                              (println ::record)
+                              (println record))}
+                 "open a tab"]]))}
+   #_{:title ""
+      :key "empty"}])
+
+
+(defn table-games
+  [channels state]
+  (r/with-let
+    [games* (r/cursor state [::app.spec/games])
+     columns (vec (concat table-games-columns table-games-columns-extra))]
+    (let [games (vec (vals @games*))
+          total (count games)]
+      (println ::games)
+      (println games)
+      [ant-table {:show-header true
+                  :size "small"
+                  :row-key :id
+                  :style {:height "50%" :width "100%"}
+                  :columns columns
+                  :dataSource games
+                  :on-change (fn [pag fil sor ext]
+                               #_(js->clj {:pagination pag
+                                           :filters fil
+                                           :sorter sor
+                                           :extra ext} :keywordize-keys true))
+                  :scroll {;  :x "max-content" 
+                                ;  :y 256
+                           }
+                  :pagination false}])))
+
+
 
 (defn rc-page-main
   [channels state]
@@ -136,18 +204,29 @@
     []
     [layout channels state
      [:<>
-      [:div "rc-page-main"]
-      [:<>
-       (if (empty? @state)
+      [ant-button {:type "default"
+                   :size "small"
+                   :on-click (fn []
+                               (app.chan/op
+                                {::op.spec/op-key ::create-game
+                                 ::op.spec/op-type ::op.spec/request-response
+                                 ::op.spec/orient ::op.spec/request}
+                                channels
+                                {}))} "create game"]
 
-         [:div "loading..."]
 
-         [:<>
-          [:pre {} (with-out-str (pprint @state))]
-          [ant-button {:icon (r/as-element [ant-icon-sync-outlined])
-                       :size "small"
-                       :title "button"
-                       :on-click (fn [] ::button-click)}]])]]]))
+      [table-games channels state]
+      #_[:<>
+         (if (empty? @state)
+
+           [:div "loading..."]
+
+           [:<>
+            [:pre {} (with-out-str (pprint @state))]
+            [ant-button {:icon (r/as-element [ant-icon-sync-outlined])
+                         :size "small"
+                         :title "button"
+                         :on-click (fn [] ::button-click)}]])]]]))
 
 (defn rc-page-game
   [channels state]
@@ -160,7 +239,6 @@
 (defn rc-page-not-found
   [channels state]
   (r/with-let
-    []
     [layout channels state
      [:<>
       [:div "rc-page-not-found"]]]))
