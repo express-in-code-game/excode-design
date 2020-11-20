@@ -3,17 +3,17 @@
          :port 8899}
  :http {:port 9630
         :host "0.0.0.0"}
- :builds {:app {:target :browser
-                :output-dir "resources/public/js-out"
-                :asset-path "./js-out"
-                :module-loader true
-                :modules {:main {:entries [deathstar.ui.main]}}
-                :compiler-options {:infer-externs   false  #_:auto
-                                   :closure-warnings {:global-this :off}
-                                   :closure-defines {deathstar.ui.main/RSOCKET_PORT #shadow/env ["RSOCKET_PORT" :as :int :default 7000]}}
-                :devtools {:repl-init-ns deathstar.ui.main
-                           :repl-pprint true
-                           :autobuild true
-                           :devtools-url #shadow/env ["DEVTOOLS_URL" :default "http://localhost:9630"]
-                           :http-root  "resources/public"
-                           :http-port  9500}}}}
+ :builds {:main {:target :browser
+                 :output-dir "resources/public/js-out"
+                 :asset-path "./js-out"
+                 :module-loader true
+                 :modules {:main {:entries [deathstar.ui.main]}}
+                 :compiler-options {:infer-externs   false  #_:auto
+                                    :closure-warnings {:global-this :off}
+                                    :closure-defines {deathstar.ui.main/RSOCKET_PORT #shadow/env ["RSOCKET_PORT" :as :int :default 7000]}}
+                 :devtools {:repl-init-ns deathstar.ui.main
+                            :repl-pprint true
+                            :autobuild true
+                            :devtools-url #shadow/env ["DEVTOOLS_URL" :default "http://localhost:9630"]
+                            :http-root  "resources/public"
+                            :http-port  9500}}}}

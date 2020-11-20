@@ -21,7 +21,7 @@ server(){
 dev(){
 
     npm i
-    shadow -A:dev watch :app
+    shadow -A:dev watch :main
 
 }
 
@@ -31,7 +31,7 @@ tree(){
 
 compile(){
     npm i
-    shadow -A:dev compile  :ui
+    shadow -A:dev compile  :main
 }
 
 cljs_compile(){
