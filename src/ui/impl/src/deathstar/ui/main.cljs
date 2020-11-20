@@ -49,7 +49,8 @@
             {}))
 
 (def routes ["/" {"" ::ui.spec/page-main
-                  "game/" {[::app.spec/game-id ""] ::ui.spec/page-game}}])
+                  [::app.spec/game-id ""] ::ui.spec/page-game
+                  #_"/game/frequncy" #_{[::app.spec/game-id ""] ::ui.spec/page-game}}])
 (def router (browser-router.impl/create-proc-ops channels state {::browser-router.spec/routes routes}))
 
 
@@ -72,7 +73,7 @@
               {::op.spec/op-key ::ui.chan/update-state
                ::op.spec/op-type ::op.spec/fire-and-forget}
               (let [{:keys []} value]
-                (reset! state value)))))
+                (swap! state merge value)))))
         (recur)))))
 
 (def rsocket (rsocket.impl/create-proc-ops

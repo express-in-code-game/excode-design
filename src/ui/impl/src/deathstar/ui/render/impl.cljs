@@ -82,7 +82,6 @@
   [channels state]
   (r/with-let [route-key* (r/cursor state [::browser-router.spec/route-key])]
     (let [route-key @route-key*]
-      (println (format "rendering %s" route-key))
       (condp = route-key
         ::ui.spec/page-main [rc-page-main channels state]
         ::ui.spec/page-game [rc-page-game channels state]
@@ -105,7 +104,9 @@
        [ant-menu-item {:key ::ui.spec/page-main}
         [:a {:href "/"} "main"]]
        [ant-menu-item {:key ::ui.spec/page-game}
-        [:a {:href (format "/game/%s" "frequency")} "game/:frequency"]]])))
+        [:a {:href (str (random-uuid))} ":game-frequency"]]
+       #_[ant-menu-item {:key ::ui.spec/page-game}
+          [:a {:href (format "/%s" "frequency")} "game/:frequency"]]])))
 
 (defn layout
   [channels state content]
