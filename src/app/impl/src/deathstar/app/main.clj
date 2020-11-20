@@ -41,6 +41,8 @@
 (def state (atom
             {::app.spec/games {}}))
 
+(def state-game-channels (atom {}))
+
 (defn create-proc-ops
   [channels ctx]
   (let [{:keys [::app.chan/ops|]} channels]
@@ -99,8 +101,28 @@
               (let [{:keys [::op.spec/out|]} value]
                 (println ::create-game)
                 (let [game-id (str (cljc.core/rand-uuid))
-                      game {::app.spec/game-id game-id}]
+                      game {::app.spec/game-id game-id}
+                      pubsub| (chan (sliding-buffer 64))]
+                  (swap! state-game-channels assoc game-id pubsub|)
                   (swap! state update ::app.spec/games assoc  game-id game)
+                  (peernode.chan/op
+                   {::op.spec/op-key ::peernode.chan/pubsub-sub
+                    ::op.spec/op-type ::op.spec/fire-and-forget}
+                   channels
+                   {::peernode.spec/topic-id game-id})
+                  (peernode.chan/op
+                   {::op.spec/op-key ::peernode.chan/request-pubsub-stream
+                    ::op.spec/op-type ::op.spec/request-stream
+                    ::op.spec/op-orient ::op.spec/request}
+                   channels
+                   pubsub|
+                   {::peernode.spec/topic-id game-id})
+                  (go
+                    (loop []
+                      (when-let [msg (<! pubsub|)]
+                        (println ::pubsub-msg)
+                        (recur)))
+                    (println (format "game process % exits" game-id)))
                   (ui.chan/op
                    {::op.spec/op-key ::ui.chan/update-state
                     ::op.spec/op-type ::op.spec/fire-and-forget}
@@ -112,8 +134,15 @@
               (let [{:keys [::op.spec/out| ::app.spec/game-id]} value]
                 (println ::unsub-from-game)
                 (println value)
-                (let []
+                (let [pubsub| (get @state-game-channels game-id)]
+                  (swap! state-game-channels dissoc game-id)
+                  (close! pubsub|)
                   (swap! state update ::app.spec/games dissoc game-id)
+                  (peernode.chan/op
+                   {::op.spec/op-key ::peernode.chan/pubsub-ubsub
+                    ::op.spec/op-type ::op.spec/fire-and-forget}
+                   channels
+                   {::peernode.spec/topic-id game-id})
                   (ui.chan/op
                    {::op.spec/op-key ::ui.chan/update-state
                     ::op.spec/op-type ::op.spec/fire-and-forget}

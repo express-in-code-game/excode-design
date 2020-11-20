@@ -15,15 +15,13 @@
 (s/def ::op (s/multi-spec op* op.spec/op-spec-retag-fn))
 (defmulti op op.spec/op-dispatch-fn)
 
+(s/def ::pubsub|)
+(s/def ::pubsub|m)
 
 (defn create-channels
   []
-  (let [ops| (chan 10)
-        pubsub| (chan (sliding-buffer 10))
-        pubsub|m (mult pubsub|)]
-    {::ops| ops|
-     ::pubsub| pubsub|
-     ::pubsub|m pubsub|m}))
+  (let [ops| (chan 10)]
+    {::ops| ops|}))
 
 (defmethod op*
   {::op.spec/op-key ::init} [_]
@@ -71,16 +69,17 @@
   {::op.spec/op-key ::request-pubsub-stream
    ::op.spec/op-type ::op.spec/request-stream
    ::op.spec/op-orient ::op.spec/request} [_]
-  (s/keys :req []))
+  (s/keys :req [::peernode.spec/topic-id]))
 
 (defmethod op
   {::op.spec/op-key ::request-pubsub-stream
    ::op.spec/op-type ::op.spec/request-stream
    ::op.spec/op-orient ::op.spec/request}
-  ([op-meta channels]
-   (op op-meta  channels (chan 64)))
-  ([op-meta channels out|]
+  ([op-meta channels value]
+   (op op-meta  channels value (chan 64)))
+  ([op-meta channels value out|]
    (put! (::ops| channels) (merge op-meta
+                                  value
                                   {::op.spec/out| out|}))
    out|))
 
@@ -89,7 +88,7 @@
   {::op.spec/op-key ::request-pubsub-stream
    ::op.spec/op-type ::op.spec/request-stream
    ::op.spec/op-orient ::op.spec/response} [_]
-  (s/keys :req [::peernode.spec/id]))
+  (s/keys :req []))
 
 (defmethod op
   {::op.spec/op-key ::request-pubsub-stream
@@ -102,7 +101,7 @@
 (defmethod op*
   {::op.spec/op-key ::pubsub-publish
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
-  (s/keys :req []))
+  (s/keys :req [::peernode.spec/topic-id]))
 
 (defmethod op
   {::op.spec/op-key ::pubsub-publish
@@ -115,7 +114,7 @@
 (defmethod op*
   {::op.spec/op-key ::pubsub-sub
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
-  (s/keys :req []))
+  (s/keys :req [::peernode.spec/topic-id]))
 
 (defmethod op
   {::op.spec/op-key ::pubsub-sub
@@ -127,7 +126,7 @@
 (defmethod op*
   {::op.spec/op-key ::pubsub-unsub
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
-  (s/keys :req []))
+  (s/keys :req [::peernode.spec/topic-id]))
 
 (defmethod op
   {::op.spec/op-key ::pubsub-unsub

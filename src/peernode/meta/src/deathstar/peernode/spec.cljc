@@ -8,4 +8,6 @@
 (s/def ::from ::id)
 (s/def ::seqno string?)
 (s/def ::data any?)
-(s/def ::topic-ids (s/coll-of string?))
+(s/def ::topic-id string?)
+(s/def ::topic-ids (s/coll-of ::topic-id))
+

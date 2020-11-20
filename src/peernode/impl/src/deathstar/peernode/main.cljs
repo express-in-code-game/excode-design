@@ -36,7 +36,7 @@
 
 (def ^:dynamic daemon nil)
 
-(def ^:const TOPIC "deathstar-1a58070")
+(def ^:const TOPIC-ID "deathstar-1a58070")
 
 (comment
 
@@ -82,7 +82,8 @@
   [channels ctx]
   (let [{:keys [::peernode.chan/ops|
                 ::peernode.chan/pubsub|
-                ::peernode.chan/pubsub|m]} channels]
+                ::peernode.chan/pubsub|m]} channels
+        state-pubsubs (atom {})]
     (go
       (loop []
         (when-let [[value port] (alts! [ops|])]
@@ -95,7 +96,7 @@
                     id (.-id (<p! (daemon._ipfs.id)))]
                 (println ::init)
                 (daemon._ipfs.pubsub.subscribe
-                 TOPIC
+                 TOPIC-ID
                  (fn [msg]
                    (when-not (= id msg.from)
                      #_(do
@@ -109,7 +110,7 @@
                           (<! (timeout (* 2000 (+ 1 (rand-int 2)))))
                           (vswap! counter inc)
                           (daemon._ipfs.pubsub.publish
-                           TOPIC
+                           TOPIC-ID
                            (-> (js/TextEncoder.)
                                (.encode (str {::some-op (str (subs id (- (count id) 7)) " " @counter)}))))
                           (recur)))))
@@ -127,35 +128,70 @@
                  out|
                  {::peernode.spec/id id}))
 
+              {::op.spec/op-key ::pubsub-sub
+               ::op.spec/op-type ::op.spec/fire-and-forget}
+              (let [{:keys [::peernode.spec/topic-id]} value
+                    pubsub| (chan (sliding-buffer 64))
+                    pubsub|m (mult pubsub|)
+                    id (.-id (<p! (daemon._ipfs.id)))]
+                (when-not (get @state-pubsubs topic-id)
+                  (swap! state-pubsubs assoc topic-id {::peernode.chan/pubsub| pubsub|
+                                                       ::peernode.chan/pubsub|m pubsub|m})
+                  (daemon._ipfs.pubsub.subscribe
+                   topic-id
+                   (fn [msg]
+                     (when-not (= id (.-from msg))
+                       #_(do
+                           #_(println (format "id: %s" id))
+                           #_(println (format "from: %s" msg.from))
+                           (println (format "data: %s" (.toString msg.data)))
+                           #_(println (format "topicIDs: %s" msg.topicIDs)))
+                       (put! pubsub| msg))))))
+
+              {::op.spec/op-key ::pubsub-unsub
+               ::op.spec/op-type ::op.spec/fire-and-forget}
+              (let [{:keys [::peernode.spec/topic-id]} value
+                    {:keys [::peernode.chan/pubsub|
+                            ::peernode.chan/pubsub|m]} (get @state-pubsubs topic-id)]
+                (when pubsub|
+                  (swap! state-pubsubs dissoc topic-id)
+                  (close! pubsub|)
+                  (clojure.core.async/untap-all pubsub|m)
+                  (daemon._ipfs.pubsub.unsubscribe topic-id)))
+              
               {::op.spec/op-key ::peernode.chan/request-pubsub-stream
                ::op.spec/op-type ::op.spec/request-stream
                ::op.spec/op-orient ::op.spec/request}
-              (let [{:keys [::op.spec/out|]} value
-                    id (.-id (<p! (daemon._ipfs.id)))]
+              (let [{:keys [::op.spec/out| ::peernode.spec/topic-id]} value
+                    {:keys [::peernode.chan/pubsub|
+                            ::peernode.chan/pubsub|m]} (get @state-pubsubs topic-id)]
                 #_(println ::request-pubsub-stream)
                 #_(println value)
-                (let [pubsub|t (tap pubsub|m (chan (sliding-buffer 10)))]
-                  (go (loop []
-                        (when-not (closed? out|)
-                          (when-let [msg (<! pubsub|t)]
-                            (peernode.chan/op
-                             {::op.spec/op-key ::peernode.chan/request-pubsub-stream
-                              ::op.spec/op-type ::op.spec/request-stream
-                              ::op.spec/op-orient ::op.spec/response}
-                             out|
-                             (merge
-                              {::peernode.spec/from (.-from msg)}
-                              (read-string (.toString (.-data msg)))))
-                            (recur))))
-                      (untap pubsub|m pubsub|t))))
-              
+                (when pubsub|m
+                  (let [pubsub|t (tap pubsub|m (chan (sliding-buffer 10)))]
+                    (go (loop []
+                          (when-not (or (closed? out|) (closed? pubsub|t))
+                            (when-let [msg (<! pubsub|t)]
+                              (peernode.chan/op
+                               {::op.spec/op-key ::peernode.chan/request-pubsub-stream
+                                ::op.spec/op-type ::op.spec/request-stream
+                                ::op.spec/op-orient ::op.spec/response}
+                               out|
+                               (merge
+                                {::peernode.spec/from (.-from msg)}
+                                (read-string (.toString (.-data msg)))))
+                              (recur))))
+                        (do
+                          (untap pubsub|m pubsub|t)
+                          (close! pubsub|t))))))
+
               {::op.spec/op-key ::peernode.chan/pubsub-publish
                ::op.spec/op-type ::op.spec/fire-and-forget}
-              (let []
+              (let [{:keys [::peernode.spec/topic-id]} value]
                 #_(println ::pubsub-publish)
                 #_(println value)
                 (daemon._ipfs.pubsub.publish
-                 TOPIC
+                 topic-id
                  (-> (js/TextEncoder.)
                      (.encode (str value))))))))
         (recur)))))
