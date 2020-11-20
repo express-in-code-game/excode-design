@@ -11,7 +11,6 @@
    [goog.object]
    [clojure.string :as string]
    [cljs.reader :refer [read-string]]
-   [cljs.nodejs :as node]
 
    [cljctools.csp.op.spec :as op.spec]
    [cljctools.cljc.core :as cljc.core]
@@ -34,9 +33,7 @@
 
 (defn create-proc-ops
   [channels ctx]
-  (let [{:keys [::peernode.chan/ops|
-                ::peernode.chan/pubsub|
-                ::peernode.chan/pubsub|m]} channels]
+  (let [{:keys [::ui.chan/ops|]} channels]
     (go
       (loop []
         (when-let [[value port] (alts! [ops|])]
@@ -44,7 +41,7 @@
             ops|
             (condp = (select-keys value [::op.spec/op-key ::op.spec/op-type ::op.spec/op-orient])
 
-              {::op.spec/op-key ::peernode.chan/init}
+              {::op.spec/op-key ::ui.chan/init}
               (let [{:keys []} value]
                 (println ::init)))))
         (recur)))))
