@@ -18,8 +18,8 @@
    [deathstar.app.spec :as app.spec]
    [deathstar.app.chan :as app.chan]
 
-   [deathstar.peernode.spec :as peernode.spec]
-   [deathstar.peernode.chan :as peernode.chan]
+   [cljctools.peernode.spec :as peernode.spec]
+   [cljctools.peernode.chan :as peernode.chan]
 
    [deathstar.ui.spec :as ui.spec]
    [deathstar.ui.chan :as ui.chan]))
