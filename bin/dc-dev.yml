@@ -17,6 +17,13 @@ volumes:
       # device: $PWD/${WEB_APP_PATH}
       o: bind
   ipfs-data:
+  deathstar-dir:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./app/.peer${PORTS_PREFIX}
+      # device: $PWD/${WEB_APP_PATH}
+      o: bind
   # ipfs0-data:
   # ipfs-export:
   code-server:
@@ -188,9 +195,15 @@ services:
       # - 8085:8080
     networks:
       - base-network
+    # user: 1000:1000
     volumes:
       - ./app/.user:/root
-      - ./app/.peer${PORTS_PREFIX}:/root/.deathstar
+      - type: volume
+        source: deathstar-dir
+        target: /root/.deathstar
+        volume:
+          nocopy: true
+      # - ./app/.peer${PORTS_PREFIX}:/root/.deathstar
       - type: volume
         source: ctx
         target: /ctx
@@ -205,16 +218,26 @@ services:
           memory: 4096M
 
   code-server:
-    image: codercom/code-server:latest
+    image: deathstar.code-server
+    build:
+      context: ./code-server
+      dockerfile: ./Dockerfile
+      args:
+        workdir: /root/.deathstar
     # ports:
     #   - 8800:8080
     command: --auth none
-    # user: "${UID_GID}"
     # environment:
     #    - DOCKER_USER=$USER
     networks:
       - base-network
+    user: 0:0
     volumes:
+      - type: volume
+        source: deathstar-dir
+        target: /root/.deathstar
+        volume:
+          nocopy: true
       - type: volume
         source: ctx
         target: /ctx
@@ -282,6 +305,7 @@ services:
       - DEVTOOLS_URL=http://localhost:${PORTS_PREFIX}096
     networks:
       - base-network
+    # user: 1000:1000
     volumes:
       - ./ui/.user:/root
       - type: volume
