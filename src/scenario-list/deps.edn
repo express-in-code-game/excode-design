@@ -1,0 +1,6 @@
+{:paths ["src"]
+ :deps {github.sergeiudris.deathstar.lab.scenarios/rovers-render
+        {:local/root  "/ctx/deathstar.lab/scenarios/rovers/render"}
+        #_{:git/url "https://github.com/username/deathstar.lab"
+           :sha "988b8191c6b31ece0cfcef6d15111efda999f262"
+           :deps/root "./scenarios/rovers-render"}}}
