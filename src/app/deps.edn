@@ -14,9 +14,7 @@
         github.cljctools/cljc {:local/root  "/ctx/cljctools/cljc"}
         github.cljctools/csp {:local/root  "/ctx/cljctools/csp"}
         github.cljctools/rsocket-java {:local/root  "/ctx/cljctools/rsocket-java"}
-        github.cljctools/peernode.meta {:local/root  "/ctx/peernode/src/meta"}
+        github.cljctools/peernode-meta {:local/root  "/ctx/peernode/src/peernode-meta"}
 
-        github.DeathStarGame/app.meta {:local/root  "../meta"}
-        github.DeathStarGame/ui.meta {:local/root  "/ctx/DeathStarGame/src/ui/meta"}
-
-        github.DeathStarGame/scenarios-list {:local/root "/ctx/DeathStarGame/src/scenarios-list"}}}
+        github.DeathStarGame/app-meta {:local/root  "/ctx/DeathStarGame/src/app-meta"}
+        github.DeathStarGame/ui-meta {:local/root  "/ctx/DeathStarGame/src/ui-meta"}}}

@@ -1,7 +1,7 @@
 {:paths ["src" "resources"]
  :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
              "clojars" {:url "https://clojars.org/repo/"}}
- :deps {github.DeathStarGame/ui {:local/root "/ctx/DeathStarGame/src/ui"}}
+ :deps {github.DeathStarGame/scenario-list {:local/root "/ctx/DeathStarGame/src/scenario-list"}}
  :aliases {:dev {:extra-deps {thheller/shadow-cljs {:mvn/version "2.11.7"
                                                     :exclusions [nrepl/nrepl
                                                                  cider/piggieback
