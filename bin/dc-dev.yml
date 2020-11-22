@@ -21,7 +21,7 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: ./app/.peer${PORTS_PREFIX}
+      device: ./app-node/.peer${PORTS_PREFIX}
       # device: $PWD/${WEB_APP_PATH}
       o: bind
   # ipfs0-data:
@@ -178,17 +178,54 @@ services:
   #       volume:
   #         nocopy: true
 
+  # app:
+  #   image: deathstar.app-jvm
+  #   build:
+  #     context: ./app-jvm
+  #     dockerfile: ./dev.Dockerfile
+  #     args:
+  #       workdir: /ctx/DeathStarGame/bin/app-jvm
+  #   command: tail -f /dev/null
+  #   # command: bash f dev
+  #   # expose:
+  #   #   - 7788
+  #   ports:
+  #     - ${PORTS_PREFIX}088:7788
+  #     - ${PORTS_PREFIX}070:7000
+  #     # - 8085:8080
+  #   networks:
+  #     - base-network
+  #   # user: 1000:1000
+  #   volumes:
+  #     - ./app-jvm/.user:/root
+  #     - type: volume
+  #       source: deathstar-dir
+  #       target: /root/.deathstar
+  #       volume:
+  #         nocopy: true
+  #     # - ./app/.peer${PORTS_PREFIX}:/root/.deathstar
+  #     - type: volume
+  #       source: ctx
+  #       target: /ctx
+  #       volume:
+  #         nocopy: true
+  #   stdin_open: true
+  #   tty: true
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '4'
+  #         memory: 4096M
+
   app:
-    image: deathstar.app
+    image: deathstar.app-node
     build:
-      context: ./app
+      context: ./app-node
       dockerfile: ./dev.Dockerfile
       args:
-        workdir: /ctx/DeathStarGame/bin/app
+        workdir:  /ctx/DeathStarGame/bin/app-node
     command: tail -f /dev/null
     # command: bash f dev
-    # expose:
-    #   - 7788
     ports:
       - ${PORTS_PREFIX}088:7788
       - ${PORTS_PREFIX}070:7000
@@ -197,12 +234,12 @@ services:
       - base-network
     # user: 1000:1000
     volumes:
-      - ./app/.user:/root
-      - type: volume
-        source: deathstar-dir
-        target: /root/.deathstar
-        volume:
-          nocopy: true
+      - ./app-node/.user:/root
+      # - type: volume
+      #   source: deathstar-dir
+      #   target: /root/.deathstar
+      #   volume:
+      #     nocopy: true
       # - ./app/.peer${PORTS_PREFIX}:/root/.deathstar
       - type: volume
         source: ctx
@@ -392,9 +429,43 @@ services:
         target: /ctx
         volume:
           nocopy: true
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
+  puppeteer:
+    image: deathstar.puppeteer
+    build:
+      context: ./puppeteer
+      dockerfile: ./Dockerfile
+      args:
+        workdir: /ctx/DeathStarGame/bin/puppeteer
+    command: tail -f /dev/null
+    # command: bash f dev
+    # user: 0:0
+    expose:
+      - 9222
+    environment:
+      - IPFS_PATH=/data/ipfs
+      # - PUPPETEER_DOWNLOAD_PATH=/home/pptruser/.local-chromium
+      # - PUPPETEER_EXECUTABLE_PATH=/home/pptruser/.local-chromium
+    # cap_add:
+    #   - SYS_ADMIN
+    ports:
+      - ${PORTS_PREFIX}086:8899
+      - 9223:9222
+      # - 9500:9500
+    networks:
+      - base-network
+    volumes:
+      # - ./puppeteer/.user:/home/pptruser
       - type: volume
-        source: ipfs-data
-        target: /root/.jsipfs
+        source: ctx
+        target: /ctx
         volume:
           nocopy: true
     stdin_open: true
