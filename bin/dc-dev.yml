@@ -227,7 +227,7 @@ services:
     command: tail -f /dev/null
     # command: bash f dev
     ports:
-      - ${PORTS_PREFIX}088:7788
+      - ${PORTS_PREFIX}890:8899
       - ${PORTS_PREFIX}070:7000
       # - 8085:8080
     networks:

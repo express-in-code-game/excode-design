@@ -4,7 +4,7 @@
  :http {:port 9630
         :host "0.0.0.0"}
  :builds {:main {;
-                 :target :node-library
+                ;  :target :node-library
                  :target :node-script
                  :main deathstar.app.main/main
                  :exports-var deathstar.app.main/exports
