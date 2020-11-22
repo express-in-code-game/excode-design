@@ -16,6 +16,7 @@ pom.xml
 node_modules/
 
 .shadow-cljs
+.calva
 resources/public/js-out
 tmp/
 .user

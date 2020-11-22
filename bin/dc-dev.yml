@@ -243,11 +243,12 @@ services:
         target: /ctx
         volume:
           nocopy: true
-      - type: volume
-        source: code-server
-        target: /root
-        volume:
-          nocopy: true
+      - ./code-server/.user:/root
+      # - type: volume
+      #   source: code-server
+      #   target: /root
+      #   volume:
+      #     nocopy: true
       - type: volume
         source: ipfs-data
         target: /data/ipfs
