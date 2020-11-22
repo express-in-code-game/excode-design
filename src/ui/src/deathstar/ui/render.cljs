@@ -38,7 +38,8 @@
    ["antd/lib/divider" :default AntDivider]
    ["@ant-design/icons/SmileOutlined" :default AntIconSmileOutlined]
    ["@ant-design/icons/LoadingOutlined" :default AntIconLoadingOutlined]
-   ["@ant-design/icons/SyncOutlined" :default AntIconSyncOutlined]))
+   ["@ant-design/icons/SyncOutlined" :default AntIconSyncOutlined]
+   ["@ant-design/icons/ReloadOutlined" :default AntIconReloadOutlined]))
 
 
 (def ant-row (r/adapt-react-class AntRow))
@@ -66,6 +67,7 @@
 (def ant-icon-smile-outlined (r/adapt-react-class AntIconSmileOutlined))
 (def ant-icon-loading-outlined (r/adapt-react-class AntIconLoadingOutlined))
 (def ant-icon-sync-outlined (r/adapt-react-class AntIconSyncOutlined))
+(def ant-icon-reload-outlined (r/adapt-react-class AntIconReloadOutlined))
 
 ; https://github.com/sergeiudris/starnet/blob/af86204ff94776ceab140208f5a6e0d654d30eba/ui/src/starnet/ui/alpha/main.cljs
 ; https://github.com/sergeiudris/starnet/blob/af86204ff94776ceab140208f5a6e0d654d30eba/ui/src/starnet/ui/alpha/render.cljs
@@ -200,6 +202,19 @@
                   :pagination false}])))
 
 
+(defn rc-iframe-scenario
+  [channels state]
+  (r/with-let
+    [force-updater (r/atom (random-uuid))]
+    [:<>
+     [ant-button {:icon (r/as-element [ant-icon-reload-outlined])
+                  :size "small"
+                  :title "button"
+                  :on-click (fn [] (reset! force-updater (random-uuid)))}]
+     [:iframe {:src "http://localhost:11950/index.html"
+               :key @force-updater
+               :width "100%"
+               :height "400"}]]))
 
 (defn rc-page-main
   [channels state]
@@ -226,9 +241,7 @@
        [ant-col {:span 10}
         [table-games channels state]]
        [ant-col {:span 14}
-        [:iframe {:src "http://localhost:11950"
-                  :width "100%"
-                  :height "400"}]]]
+        [rc-iframe-scenario channels state]]]
 
 
 
