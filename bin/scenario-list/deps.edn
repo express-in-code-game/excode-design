@@ -1,7 +1,18 @@
 {:paths ["src" "resources"]
  :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
              "clojars" {:url "https://clojars.org/repo/"}}
- :deps {github.DeathStarGame/scenario-list {:local/root "/ctx/DeathStarGame/src/scenario-list"}}
+ :deps {org.clojure/clojure         {:mvn/version "1.10.1"}
+        org.clojure/clojurescript {:mvn/version "1.10.758"}
+        org.clojure/spec.alpha {:mvn/version "0.2.187"}
+        org.clojure/test.check {:mvn/version "1.0.0"}
+        org.clojure/core.async {:mvn/version "1.1.587"}
+        reagent/reagent {:mvn/version "0.10.0" :exclusions [cljsjs/react cljsjs/react-dom]}
+
+        github.cljctools/cljc {:local/root "/ctx/cljctools/cljc"}
+        github.cljctools/csp {:local/root "/ctx/cljctools/csp"}
+        github.cljctools/rsocket-js {:local/root  "/ctx/cljctools/rsocket-js"}
+        
+        github.DeathStarGame/scenario-list {:local/root "/ctx/DeathStarGame/src/scenario-list"}}
  :aliases {:dev {:extra-deps {thheller/shadow-cljs {:mvn/version "2.11.7"
                                                     :exclusions [nrepl/nrepl
                                                                  cider/piggieback

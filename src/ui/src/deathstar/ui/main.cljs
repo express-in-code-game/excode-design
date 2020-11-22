@@ -32,7 +32,7 @@
 
 
 
-   [deathstar.ui.render.impl :as render.impl]))
+   [deathstar.ui.render :as ui.render]))
 
 (goog-define RSOCKET_PORT 0)
 
@@ -46,7 +46,7 @@
 
 (pipe (::app.chan/ops| channels) (::rsocket.chan/ops| channels))
 
-(def state (render.impl/create-state
+(def state (ui.render/create-state
             {}))
 
 (def routes ["/" {"" ::ui.spec/page-main
@@ -69,7 +69,7 @@
               {::op.spec/op-key ::ui.chan/init}
               (let [{:keys []} value]
                 (println ::init)
-                (render.impl/render-ui channels state {})
+                (ui.render/render-ui channels state {})
                 (app.chan/op
                  {::op.spec/op-key ::app.chan/request-state-update
                   ::op.spec/op-type ::op.spec/fire-and-forget}
@@ -82,12 +82,12 @@
                 (swap! state merge value)))))
         (recur)))))
 
-(def rsocket (rsocket.impl/create-proc-ops
-              channels
-              {::rsocket.spec/connection-side ::rsocket.spec/initiating
-               ::rsocket.spec/host "localhost"
-               ::rsocket.spec/port RSOCKET_PORT
-               ::rsocket.spec/transport ::rsocket.spec/websocket}))
+#_(def rsocket (rsocket.impl/create-proc-ops
+                channels
+                {::rsocket.spec/connection-side ::rsocket.spec/initiating
+                 ::rsocket.spec/host "localhost"
+                 ::rsocket.spec/port RSOCKET_PORT
+                 ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
 (def ui (create-proc-ops channels {}))
 

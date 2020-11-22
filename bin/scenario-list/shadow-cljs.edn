@@ -7,11 +7,11 @@
                  :output-dir "resources/public/js-out"
                  :asset-path "./js-out"
                  :module-loader true
-                 :modules {:main {:entries [deathstar.ui.main]}}
+                 :modules {:main {:entries [github.sergeiudris.deathstar-lab.scenarios.rovers.main]}}
                  :compiler-options {:infer-externs   false  #_:auto
                                     :closure-warnings {:global-this :off}
-                                    :closure-defines {deathstar.ui.main/RSOCKET_PORT #shadow/env ["RSOCKET_PORT" :as :int :default 7000]}}
-                 :devtools {:repl-init-ns deathstar.ui.main
+                                    :closure-defines {github.sergeiudris.deathstar-lab.scenarios.rovers.main/RSOCKET_PORT #shadow/env ["RSOCKET_PORT" :as :int :default 7000]}}
+                 :devtools {:repl-init-ns github.sergeiudris.deathstar-lab.scenarios.rovers.main
                             :repl-pprint true
                             :autobuild true
                             :devtools-url #shadow/env ["DEVTOOLS_URL" :default "http://localhost:9630"]

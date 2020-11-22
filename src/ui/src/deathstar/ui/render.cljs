@@ -1,4 +1,4 @@
-(ns deathstar.ui.render.impl
+(ns deathstar.ui.render
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
                                      pub sub unsub mult tap untap mix admix unmix pipe
@@ -216,8 +216,24 @@
                                 channels
                                 {}))} "create game"]
 
+      [ant-row]
 
-      [table-games channels state]
+      [ant-row {:justify "center"
+                :align "top"#_"middle"
+                :style {:height "85%"}
+                    ;; :gutter [16 24]
+                }
+       [ant-col {:span 10}
+        [table-games channels state]]
+       [ant-col {:span 14}
+        [:iframe {:src "http://localhost:11950"
+                  :width "100%"
+                  :height "400"}]]]
+
+
+
+
+
       #_[:<>
          (if (empty? @state)
 

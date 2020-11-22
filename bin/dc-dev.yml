@@ -321,6 +321,43 @@ services:
           cpus: '4'
           memory: 4096M
 
+
+  scenario-list:
+    image: deathstar.scenario-list
+    build:
+      context: ./scenario-list
+      dockerfile: ./dev.Dockerfile
+      args:
+        workdir: /ctx/DeathStarGame/bin/scenario-list
+    command: tail -f /dev/null
+    # command: bash f dev
+    # expose:
+    #   - 7788
+    ports:
+      - ${PORTS_PREFIX}950:9500
+      - ${PORTS_PREFIX}990:8899
+      - ${PORTS_PREFIX}960:9630
+    environment:
+      - RSOCKET_PORT=${PORTS_PREFIX}070
+      - DEVTOOLS_URL=http://localhost:${PORTS_PREFIX}960
+    networks:
+      - base-network
+    # user: 1000:1000
+    volumes:
+      - ./scenario-list/.user:/root
+      - type: volume
+        source: ctx
+        target: /ctx
+        volume:
+          nocopy: true
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
   peernode:
     image: deathstar.peernode-dev
     build:

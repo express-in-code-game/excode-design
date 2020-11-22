@@ -1,2 +1,0 @@
-{:paths ["src"]
- :deps {github.DeathStarGame/scenario-agent-meta {:local/root  "/ctx/DeathStarGame/src/scenario-agent-meta"}}}
