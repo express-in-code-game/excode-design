@@ -1,5 +1,5 @@
-(ns deathstar.ui.chan
-  #?(:cljs (:require-macros [deathstar.ui.chan]))
+(ns deathstar.scenario.chan
+  #?(:cljs (:require-macros [deathstar.scenario.chan]))
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
                                      pub sub unsub mult tap untap mix admix unmix pipe
@@ -7,7 +7,7 @@
                                      pipeline pipeline-async]]
    [clojure.spec.alpha :as s]
    [cljctools.csp.op.spec :as op.spec]
-   [deathstar.ui.spec :as ui.spec]))
+   [deathstar.scenario.spec :as scenario.spec]))
 
 (do (clojure.spec.alpha/check-asserts true))
 
@@ -20,16 +20,6 @@
   []
   (let [ops| (chan 10)]
     {::ops| ops|}))
-
-(defmethod op*
-  {::op.spec/op-key ::init} [_]
-  (s/keys :req []))
-
-(defmethod op
-  {::op.spec/op-key ::init}
-  [op-meta channels value]
-  (put! (::ops| channels) (merge op-meta
-                                 value)))
 
 
 (defmethod op*

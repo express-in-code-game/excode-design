@@ -238,9 +238,9 @@
                 :style {:height "85%"}
                     ;; :gutter [16 24]
                 }
-       [ant-col {:span 10}
+       [ant-col {:span 8}
         [table-games channels state]]
-       [ant-col {:span 14}
+       [ant-col {:span 16}
         [rc-iframe-scenario channels state]]]
 
 
