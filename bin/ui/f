@@ -25,13 +25,18 @@ dev(){
 
 }
 
-tree(){
-    clojure -A:dev -Stree
-}
-
 compile(){
     npm i
     shadow -A:dev compile  :main
+}
+
+release(){
+    npm i
+    shadow -A:dev release :main
+}
+
+tree(){
+    clojure -A:dev -Stree
 }
 
 cljs_compile(){
