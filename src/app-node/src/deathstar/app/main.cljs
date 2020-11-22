@@ -30,6 +30,8 @@
 
 (def fs (js/require "fs"))
 (def path (js/require "path"))
+(def axios (.-default (js/require "axios")))
+(def puppeteer (js/require "puppeteer-core"))
 
 (def channels (merge
                (app.chan/create-channels)
@@ -50,6 +52,10 @@
 
 (def state-game-channels (atom {}))
 
+(def ^:dynamic browser nil)
+
+(declare init-puppeteer)
+
 (defn create-proc-ops
   [channels ctx]
   (let [{:keys [::app.chan/ops|]} channels]
@@ -63,6 +69,9 @@
               {::op.spec/op-key ::app.chan/init}
               (let [{:keys []} value]
                 (println ::init)
+                (<! (init-puppeteer))
+                
+
                 #_(go (loop []
                         (<! (timeout 2000))
                         #_(swap! state update ::app.spec/counter inc)
@@ -164,8 +173,8 @@
                    {::op.spec/op-key ::ui.chan/update-state
                     ::op.spec/op-type ::op.spec/fire-and-forget}
                    channels
-                   @state))))))
-        (recur)))))
+                   @state)))))
+          (recur))))))
 
 #_(def rsocket-peernode (rsocket.impl/create-proc-ops
                          channels-rsocket-peernode
@@ -194,6 +203,8 @@
 
 (when (exists? js/module)
   (set! js/module.exports exports))
+
+
 
 
 (comment
@@ -234,10 +245,49 @@
   ;;
   )
 
+
+(defn init-puppeteer
+  []
+  (go
+    (try
+      (let [data (<p! (.request axios
+                                (clj->js
+                                 {"url" "http://puppeteer:9222/json/version"
+                                  "method" "get"
+                                  "headers" {"Host" "localhost:9222"}})))
+
+            webSocketDebuggerUrl (-> (aget (.-data data) "webSocketDebuggerUrl")
+                                     (str/replace "localhost" "puppeteer"))]
+        (set! browser (<p! (.connect puppeteer
+                                     (clj->js
+                                      {"browserWSEndpoint" webSocketDebuggerUrl
+                                       #_"browserURL" #_"http://puppeteer:9222"})))))
+      (catch js/Error err (println err)))))
+
 (comment
-  
-  
-  
-  
+
+  (go
+    (let [data (<p! (.request axios
+                              (clj->js
+                               {"url" "http://puppeteer:9222/json/version"
+                                "method" "get"
+                                "headers" {"Host" "localhost:9222"}})))
+
+          webSocketDebuggerUrl (-> (aget (.-data data) "webSocketDebuggerUrl")
+                                   (str/replace "localhost" "puppeteer"))]
+      (println webSocketDebuggerUrl)
+      #_(println (js-keys data))
+      #_(println (aget (.-data data) "webSocketDebuggerUrl"))))
+
+
+  (go
+    (try
+      (let [page (<p! (.newPage browser))
+            _ (<p! (.goto page "https://example.com"))
+            dimensions (<p! (.evaluate page (fn []
+                                              {:width js/document.documentElement.clientWidth})))]
+        (println dimensions))
+      (catch js/Error err (println err))))
+
   ;;
   )
