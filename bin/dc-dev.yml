@@ -229,6 +229,8 @@ services:
     ports:
       - ${PORTS_PREFIX}890:8899
       - ${PORTS_PREFIX}070:7000
+      - ${PORTS_PREFIX}071:7001
+      - ${PORTS_PREFIX}072:7002
       # - 8085:8080
     networks:
       - base-network
@@ -375,7 +377,8 @@ services:
       - ${PORTS_PREFIX}990:8899
       - ${PORTS_PREFIX}960:9630
     environment:
-      - RSOCKET_PORT=${PORTS_PREFIX}070
+      - RSOCKET_PORT_SCENARIO=${PORTS_PREFIX}071
+      - RSOCKET_PORT_PLAYER=${PORTS_PREFIX}072
       - DEVTOOLS_URL=http://localhost:${PORTS_PREFIX}960
     networks:
       - base-network
