@@ -89,7 +89,7 @@
                  ::rsocket.spec/port RSOCKET_PORT
                  ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
-(def ui (create-proc-ops channels {}))
+(def ops (create-proc-ops channels {}))
 
 (defn ^:export main
   []
