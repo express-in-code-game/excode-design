@@ -202,8 +202,8 @@
                   :pagination false}])))
 
 
-(defn rc-iframe-scenario
-  [channels state]
+(defn rc-iframe
+  [channels state opts-iframe]
   (r/with-let
     [force-updater (r/atom (random-uuid))]
     [:<>
@@ -211,10 +211,12 @@
                   :size "small"
                   :title "button"
                   :on-click (fn [] (reset! force-updater (random-uuid)))}]
-     [:iframe {:src "http://localhost:11950/render.html"
-               :key @force-updater
-               :width "100%"
-               :height "400"}]]))
+     [:iframe (merge
+               {:src "http://localhost:11950/render.html"
+                :key @force-updater
+                :width "100%"
+                :height "400"}
+               opts-iframe)]]))
 
 (defn rc-page-main
   [channels state]
@@ -231,21 +233,13 @@
                                 channels
                                 {}))} "create game"]
 
-      [ant-row]
-
       [ant-row {:justify "center"
-                :align "top"#_"middle"
+                :align "top" #_"middle"
                 :style {:height "85%"}
                     ;; :gutter [16 24]
                 }
-       [ant-col {:span 8}
-        [table-games channels state]]
-       [ant-col {:span 16}
-        [rc-iframe-scenario channels state]]]
-
-
-
-
+       [ant-col {:span 24}
+        [table-games channels state]]]
 
       #_[:<>
          (if (empty? @state)
@@ -265,7 +259,30 @@
     []
     [layout channels state
      [:<>
-      [:div "rc-page-game"]]]))
+      [ant-row {:justify "center"
+                :align "top" #_"middle"
+                :style {:height "85%"}
+                    ;; :gutter [16 24]
+                }
+       [ant-col {:span 8}
+        [table-games channels state]]
+       [ant-col {:span 16}
+        [rc-iframe channels state {:width "100%"
+                                   :height "400"
+                                   :src "http://localhost:11950/render.html"}]
+        [ant-row {:justify "start"
+                  :align "top" #_"middle"
+                  :style {:height "85%"}
+                    ;; :gutter [16 24]
+                  }
+         [ant-col {:span 4}
+          [rc-iframe channels state {:width "80px"
+                                     :height "32px"
+                                     :src "http://localhost:11950/player.html"}]]
+         [ant-col {:span 4}
+          [rc-iframe channels state {:width "80px"
+                                     :height "32px"
+                                     :src "http://localhost:11950/scenario.html"}]]]]]]]))
 
 (defn rc-page-not-found
   [channels state]
