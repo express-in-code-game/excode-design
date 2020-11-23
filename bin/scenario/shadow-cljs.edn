@@ -1,0 +1,50 @@
+{:deps  true #_{:aliases [:cljs-dev :ui :peer]}
+ :nrepl {:host "0.0.0.0"
+         :port 8899}
+ :http {:port 9630
+        :host "0.0.0.0"}
+ :builds {:scenario {:target :browser
+                     :output-dir "resources/public/js-out/scenario"
+                     :asset-path "./js-out/scenario"
+                     :module-loader true
+                     :modules {:main {:entries [deathstar.scenario.main]}}
+                     :compiler-options {:infer-externs   false  #_:auto
+                                        :closure-warnings {:global-this :off}
+                                        :closure-defines {deathstar.scenario.main/RSOCKET_PORT #shadow/env ["RSOCKET_PORT" :as :int :default 7000]}}
+                     :devtools {:repl-init-ns deathstar.scenario.main
+                                :repl-pprint true
+                                :autobuild true
+                                :devtools-url #shadow/env ["DEVTOOLS_URL" :default "http://localhost:9630"]
+                                :http-root  "resources/public"
+                                :http-port  9501}}
+
+          :render {:target :browser
+                   :output-dir "resources/public/js-out/render"
+                   :asset-path "./js-out/render"
+                   :module-loader true
+                   :modules {:main {:entries [deathstar.scenario.render.main]}}
+                   :compiler-options {:infer-externs   false  #_:auto
+                                      :closure-warnings {:global-this :off}
+                                      :closure-defines {deathstar.scenario.render.main/RSOCKET_PORT #shadow/env ["RSOCKET_PORT" :as :int :default 7000]}}
+                   :devtools {:repl-init-ns deathstar.scenario.render.main
+                              :repl-pprint true
+                              :autobuild true
+                              :devtools-url #shadow/env ["DEVTOOLS_URL" :default "http://localhost:9630"]
+                              :http-root  "resources/public"
+                              :http-port  9502}}
+
+
+          :player {:target :browser
+                   :output-dir "resources/public/js-out/player"
+                   :asset-path "./js-out/player"
+                   :module-loader true
+                   :modules {:main {:entries [deathstar.scenario.player.main]}}
+                   :compiler-options {:infer-externs   false  #_:auto
+                                      :closure-warnings {:global-this :off}
+                                      :closure-defines {deathstar.scenario.player.main/RSOCKET_PORT #shadow/env ["RSOCKET_PORT" :as :int :default 7000]}}
+                   :devtools {:repl-init-ns deathstar.scenario.player.main
+                              :repl-pprint true
+                              :autobuild true
+                              :devtools-url #shadow/env ["DEVTOOLS_URL" :default "http://localhost:9630"]
+                              :http-root  "resources/public"
+                              :http-port  9503}}}}

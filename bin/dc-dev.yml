@@ -359,13 +359,13 @@ services:
           cpus: '4'
           memory: 4096M
 
-  scenario-list:
-    image: deathstar.scenario-list
+  scenario:
+    image: deathstar.scenario
     build:
-      context: ./scenario-list
+      context: ./scenario
       dockerfile: ./dev.Dockerfile
       args:
-        workdir: /ctx/DeathStarGame/bin/scenario-list
+        workdir: /ctx/DeathStarGame/bin/scenario
     command: tail -f /dev/null
     # command: bash f dev
     # expose:
@@ -381,7 +381,7 @@ services:
       - base-network
     # user: 1000:1000
     volumes:
-      - ./scenario-list/.user:/root
+      - ./scenario/.user:/root
       - type: volume
         source: ctx
         target: /ctx
