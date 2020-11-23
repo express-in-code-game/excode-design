@@ -285,7 +285,7 @@
       (let [page (<p! (.newPage browser))
             _ (<p! (.goto page "https://example.com"))
             dimensions (<p! (.evaluate page (fn []
-                                              {:width js/document.documentElement.clientWidth})))]
+                                              #js {"width" js/document.documentElement.clientWidth})))]
         (println dimensions))
       (catch js/Error err (println err))))
 
