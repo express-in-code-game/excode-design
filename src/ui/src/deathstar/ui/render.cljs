@@ -269,7 +269,7 @@
        [ant-col {:span 16}
         [rc-iframe channels state {:width "100%"
                                    :height "400"
-                                   :src "http://localhost:11950/render.html"}]
+                                   :src "http://localhost:11950/scenario.html"}]
         [ant-row {:justify "start"
                   :align "top" #_"middle"
                   :style {:height "85%"}
@@ -278,11 +278,7 @@
          [ant-col {:span 4}
           [rc-iframe channels state {:width "80px"
                                      :height "32px"
-                                     :src "http://localhost:11950/player.html"}]]
-         [ant-col {:span 4}
-          [rc-iframe channels state {:width "80px"
-                                     :height "32px"
-                                     :src "http://localhost:11950/scenario.html"}]]]]]]]))
+                                     :src "http://localhost:11950/player.html"}]]]]]]]))
 
 (defn rc-page-not-found
   [channels state]
