@@ -64,4 +64,4 @@ ARG workdir
 
 WORKDIR ${workdir}
 
-# RUN sudo npm i -g puppeteer@5.5.0
+# RUN sudo npm i -g puppeteer@5.5.0 --unsafe-perm

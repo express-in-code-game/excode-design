@@ -359,7 +359,6 @@ services:
           cpus: '4'
           memory: 4096M
 
-
   scenario-list:
     image: deathstar.scenario-list
     build:
@@ -405,8 +404,9 @@ services:
         workdir: /ctx/peernode/bin
         # workdir: /ctx/js-ipfs/packages/ipfs
     # command: bash init-and-daemon.sh
-    command: tail -f /dev/null
+    # command: tail -f /dev/null
     # command: bash f dev
+    command: bash f start
     expose:
       - 7000
     environment:
@@ -445,8 +445,8 @@ services:
       args:
         workdir: /ctx/DeathStarGame/bin/puppeteer
     # command: tail -f /dev/null
-    command: node resources/out/main.js
     # command: bash f dev
+    command: bash f main
     # user: 0:0
     expose:
       - 9222
