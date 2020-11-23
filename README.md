@@ -7,7 +7,7 @@
 
 - DeathStarGame is *ever any-money-concerns-free project*, openly created and contributed
 - no funds, no pots, purely volunteer creating process, no strings attached or hidden
-- commercial insterests and "safety" income expectations make projects a routine, a drag, money suck freedom and excitement out of creation process and devalue the result
+- commercial insterests and "safety" income expectations make projects a routine, a drag, money suck freedom and excitement out of creation process, so desperately needed for making and playing games, and devalue the result
 - DeathStarGame is a children's playground, an inspiration-driven development
 - we are bulding a spacious, epic, designed for e-sports, yet elegant and simple game for people to be inspired, somehting Jesus would approve
 
