@@ -211,7 +211,7 @@
                   :size "small"
                   :title "button"
                   :on-click (fn [] (reset! force-updater (random-uuid)))}]
-     [:iframe {:src "http://localhost:11950/index.html"
+     [:iframe {:src "http://localhost:11950/render.html"
                :key @force-updater
                :width "100%"
                :height "400"}]]))

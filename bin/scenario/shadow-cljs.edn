@@ -16,7 +16,7 @@
                                 :autobuild true
                                 :devtools-url #shadow/env ["DEVTOOLS_URL" :default "http://localhost:9630"]
                                 :http-root  "resources/public"
-                                :http-port  9501}}
+                                :http-port  9500}}
 
           :render {:target :browser
                    :output-dir "resources/public/js-out/render"
@@ -31,7 +31,7 @@
                               :autobuild true
                               :devtools-url #shadow/env ["DEVTOOLS_URL" :default "http://localhost:9630"]
                               :http-root  "resources/public"
-                              :http-port  9502}}
+                              :http-port  9500}}
 
 
           :player {:target :browser
@@ -47,4 +47,4 @@
                               :autobuild true
                               :devtools-url #shadow/env ["DEVTOOLS_URL" :default "http://localhost:9630"]
                               :http-root  "resources/public"
-                              :http-port  9503}}}}
+                              :http-port  9500}}}}

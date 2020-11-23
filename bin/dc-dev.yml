@@ -371,9 +371,7 @@ services:
     # expose:
     #   - 7788
     ports:
-      - ${PORTS_PREFIX}951:9501
-      - ${PORTS_PREFIX}952:9502
-      - ${PORTS_PREFIX}953:9503
+      - ${PORTS_PREFIX}950:9500
       - ${PORTS_PREFIX}990:8899
       - ${PORTS_PREFIX}960:9630
     environment:
