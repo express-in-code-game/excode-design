@@ -21,18 +21,18 @@ server(){
 dev(){
 
     npm i
-    shadow -A:dev watch :main
+    shadow -A:dev watch :scenario :render :player
 
 }
 
 compile(){
     npm i
-    shadow -A:dev compile  :main
+    shadow -A:dev compile  :scenario :render :player
 }
 
 release(){
     npm i
-    shadow -A:dev release :main
+    shadow -A:dev release :scenario :render :player
 }
 
 tree(){
