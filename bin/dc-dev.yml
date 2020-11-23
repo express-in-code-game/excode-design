@@ -444,7 +444,8 @@ services:
       dockerfile: ./Dockerfile
       args:
         workdir: /ctx/DeathStarGame/bin/puppeteer
-    command: tail -f /dev/null
+    # command: tail -f /dev/null
+    command: node resources/out/main.js
     # command: bash f dev
     # user: 0:0
     expose:
@@ -462,7 +463,7 @@ services:
     networks:
       - base-network
     volumes:
-      # - ./puppeteer/.user:/home/pptruser
+      - ./puppeteer/.user:/root
       - type: volume
         source: ctx
         target: /ctx

@@ -52,13 +52,13 @@ RUN apt-get update && \
 
 RUN echo 'kernel.unprivileged_userns_clone=1' > /etc/sysctl.d/userns.conf
 
-# Add user so we don't need --no-sandbox.
-RUN groupadd -g 1000 -r pptruser && useradd -u 1000 -r -g pptruser -G audio,video pptruser \
-    && mkdir -p /home/pptruser/Downloads \
-    && chown -R pptruser:pptruser /home/pptruser
+# # Add user so we don't need --no-sandbox.
+# RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
+#     && mkdir -p /home/pptruser/Downloads \
+#     && chown -R pptruser:pptruser /home/pptruser
 
-# Run everything after as non-privileged user.
-USER pptruser
+# # Run everything after as non-privileged user.
+# USER pptruser
 
 ARG workdir
 
