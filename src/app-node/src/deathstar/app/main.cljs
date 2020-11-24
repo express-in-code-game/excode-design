@@ -40,12 +40,43 @@
 
 (def channels-rsocket-peernode (rsocket.chan/create-channels))
 (def channels-rsocket-ui (rsocket.chan/create-channels))
+(def channels-rsocket-scenario (rsocket.chan/create-channels))
+(def channels-rsocket-player (rsocket.chan/create-channels))
 
 (pipe (::peernode.chan/ops| channels) (::rsocket.chan/ops| channels-rsocket-peernode))
 (pipe (::rsocket.chan/requests| channels-rsocket-peernode) (::app.chan/ops| channels))
+(def rsocket-peernode (rsocket.impl/create-proc-ops
+                       channels-rsocket-peernode
+                       {::rsocket.spec/connection-side ::rsocket.spec/initiating
+                        ::rsocket.spec/host "peernode"
+                        ::rsocket.spec/port 7000
+                        ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
 (pipe (::ui.chan/ops| channels) (::rsocket.chan/ops| channels-rsocket-ui))
 (pipe (::rsocket.chan/requests| channels-rsocket-ui) (::app.chan/ops| channels))
+(def rsocket-ui (rsocket.impl/create-proc-ops
+                 channels-rsocket-ui
+                 {::rsocket.spec/connection-side ::rsocket.spec/accepting
+                  ::rsocket.spec/host "0.0.0.0"
+                  ::rsocket.spec/port 7000
+                  ::rsocket.spec/transport ::rsocket.spec/websocket}))
+
+(pipe (::rsocket.chan/requests| channels-rsocket-player) (::rsocket.chan/ops| channels-rsocket-scenario))
+(def rsocket-scenario (rsocket.impl/create-proc-ops
+                       channels-rsocket-scenario
+                       {::rsocket.spec/connection-side ::rsocket.spec/accepting
+                        ::rsocket.spec/host "0.0.0.0"
+                        ::rsocket.spec/port 7001
+                        ::rsocket.spec/transport ::rsocket.spec/websocket}))
+
+(pipe (::rsocket.chan/requests| channels-rsocket-scenario) (::rsocket.chan/ops| channels-rsocket-player))
+(def rsocket-player (rsocket.impl/create-proc-ops
+                     channels-rsocket-player
+                     {::rsocket.spec/connection-side ::rsocket.spec/accepting
+                      ::rsocket.spec/host "0.0.0.0"
+                      ::rsocket.spec/port 7002
+                      ::rsocket.spec/transport ::rsocket.spec/websocket}))
+
 
 (def state (atom
             {::app.spec/games {}}))
@@ -69,8 +100,8 @@
               {::op.spec/op-key ::app.chan/init}
               (let [{:keys []} value]
                 (println ::init)
-                (<! (init-puppeteer))
-                
+                #_(<! (init-puppeteer))
+
 
                 #_(go (loop []
                         (<! (timeout 2000))
@@ -176,19 +207,6 @@
                    @state)))))
           (recur))))))
 
-#_(def rsocket-peernode (rsocket.impl/create-proc-ops
-                         channels-rsocket-peernode
-                         {::rsocket.spec/connection-side ::rsocket.spec/initiating
-                          ::rsocket.spec/host "peernode"
-                          ::rsocket.spec/port 7000
-                          ::rsocket.spec/transport ::rsocket.spec/websocket}))
-
-(def rsocket-ui (rsocket.impl/create-proc-ops
-                 channels-rsocket-ui
-                 {::rsocket.spec/connection-side ::rsocket.spec/accepting
-                  ::rsocket.spec/host "0.0.0.0"
-                  ::rsocket.spec/port 7000
-                  ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
 (def ops (create-proc-ops channels {}))
 
