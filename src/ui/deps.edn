@@ -12,4 +12,5 @@
         github.cljctools/browser-router {:local/root  "/ctx/cljctools/browser-router"}
 
         github.DeathStarGame/ui-meta {:local/root  "/ctx/DeathStarGame/src/ui-meta"}
-        github.DeathStarGame/app-meta {:local/root  "/ctx/DeathStarGame/src/app-meta"}}}
+        github.DeathStarGame/app-meta {:local/root  "/ctx/DeathStarGame/src/app-meta"}
+        github.DeathStarGame/scenario-api-meta {:local/root  "/ctx/DeathStarGame/src/scenario-api-meta"}}}

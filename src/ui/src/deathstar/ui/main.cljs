@@ -31,6 +31,10 @@
    [deathstar.app.chan :as app.chan]
 
 
+   [deathstar.scenario-api.spec :as scenario-api.spec]
+   [deathstar.scenario-api.chan :as scenario-api.chan]
+
+
 
    [deathstar.ui.render :as ui.render]))
 
@@ -39,12 +43,14 @@
 (def channels (merge
                (app.chan/create-channels)
                (rsocket.chan/create-channels)
+               (scenario-api.chan/create-channels)
                (browser-router.chan/create-channels)
                (ui.chan/create-channels)))
 
 (pipe (::rsocket.chan/requests| channels) (::ui.chan/ops| channels))
 
 (pipe (::app.chan/ops| channels) (::rsocket.chan/ops| channels))
+(pipe (::scenario-api.chan/ops| channels) (::rsocket.chan/ops| channels))
 
 (def state (ui.render/create-state
             {}))

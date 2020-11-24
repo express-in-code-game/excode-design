@@ -20,6 +20,9 @@
    [deathstar.ui.spec :as ui.spec]
    [cljctools.browser-router.spec :as browser-router.spec]
 
+   [deathstar.scenario-api.spec :as scenario-api.spec]
+   [deathstar.scenario-api.chan :as scenario-api.chan]
+
    ["antd/lib/layout" :default AntLayout]
    ["antd/lib/menu" :default AntMenu]
    ["antd/lib/icon" :default AntIcon]
@@ -207,16 +210,69 @@
   (r/with-let
     [force-updater (r/atom (random-uuid))]
     [:<>
-     [ant-button {:icon (r/as-element [ant-icon-reload-outlined])
-                  :size "small"
-                  :title "button"
-                  :on-click (fn [] (reset! force-updater (random-uuid)))}]
-     [:iframe (merge
-               {:src "http://localhost:11950/render.html"
+     [ant-row
+      [ant-button {:icon (r/as-element [ant-icon-reload-outlined])
+                   :size "small"
+                   :title "button"
+                   :on-click (fn [] (reset! force-updater (random-uuid)))}]]
+     [ant-row
+      [:iframe (merge
+                {:src "http://localhost:11950/render.html"
+                 :key @force-updater
+                 :width "100%"
+                 :height "400"}
+                opts-iframe)]]]))
+
+
+(defn rc-iframe-scenario
+  [channels state]
+  (r/with-let
+    [force-updater (r/atom (random-uuid))]
+    [:<>
+     [ant-row
+      [ant-button-group
+       {:size "small"}
+       [ant-button {:icon (r/as-element [ant-icon-reload-outlined])
+                    :size "small"
+                    :title "reload page"
+                    :on-click (fn [] (reset! force-updater (random-uuid)))}]
+       [ant-button {:size "small"
+                    :title "generate"
+                    :on-click (fn []
+                                (app.chan/op
+                                 {::op.spec/op-key ::scenario-api.chan/generate
+                                  ::op.spec/op-type ::op.spec/fire-and-forget}
+                                 channels
+                                 {}))} "generate"]
+       [ant-button {:size "small"
+                    :title "reset"
+                    :on-click (fn []
+                                (app.chan/op
+                                 {::op.spec/op-key ::scenario-api.chan/reset
+                                  ::op.spec/op-type ::op.spec/fire-and-forget}
+                                 channels
+                                 {}))} "reset"]
+       [ant-button {:size "small"
+                    :title "resume"
+                    :on-click (fn []
+                                (app.chan/op
+                                 {::op.spec/op-key ::scenario-api.chan/resume
+                                  ::op.spec/op-type ::op.spec/fire-and-forget}
+                                 channels
+                                 {}))} "resume"]
+       [ant-button {:size "small"
+                    :title "pause"
+                    :on-click (fn []
+                                (app.chan/op
+                                 {::op.spec/op-key ::scenario-api.chan/pause
+                                  ::op.spec/op-type ::op.spec/fire-and-forget}
+                                 channels
+                                 {}))} "pause"]]]
+     [ant-row
+      [:iframe {:src "http://localhost:11950/scenario.html"
                 :key @force-updater
                 :width "100%"
-                :height "400"}
-               opts-iframe)]]))
+                :height "400"}]]]))
 
 (defn rc-page-main
   [channels state]
@@ -267,9 +323,7 @@
        [ant-col {:span 8}
         [table-games channels state]]
        [ant-col {:span 16}
-        [rc-iframe channels state {:width "100%"
-                                   :height "400"
-                                   :src "http://localhost:11950/scenario.html"}]
+        [rc-iframe-scenario channels state]
         [ant-row {:justify "start"
                   :align "top" #_"middle"
                   :style {:height "85%"}

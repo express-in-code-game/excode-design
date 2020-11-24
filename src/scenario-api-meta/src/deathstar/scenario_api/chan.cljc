@@ -7,7 +7,7 @@
                                      pipeline pipeline-async]]
    [clojure.spec.alpha :as s]
    [cljctools.csp.op.spec :as op.spec]
-   [deathstar.scenario.spec :as scenario.spec]))
+   [deathstar.scenario-api.spec :as scenario-api.spec]))
 
 (do (clojure.spec.alpha/check-asserts true))
 
@@ -29,6 +29,57 @@
 
 (defmethod op
   {::op.spec/op-key ::update-state
+   ::op.spec/op-type ::op.spec/fire-and-forget}
+  [op-meta channels value]
+  (put! (::ops| channels) (merge op-meta
+                                 value)))
+
+
+(defmethod op*
+  {::op.spec/op-key ::generate
+   ::op.spec/op-type ::op.spec/fire-and-forget} [_]
+  (s/keys :req []))
+
+(defmethod op
+  {::op.spec/op-key ::generate
+   ::op.spec/op-type ::op.spec/fire-and-forget}
+  [op-meta channels value]
+  (put! (::ops| channels) (merge op-meta
+                                 value)))
+
+(defmethod op*
+  {::op.spec/op-key ::reset
+   ::op.spec/op-type ::op.spec/fire-and-forget} [_]
+  (s/keys :req []))
+
+(defmethod op
+  {::op.spec/op-key ::reset
+   ::op.spec/op-type ::op.spec/fire-and-forget}
+  [op-meta channels value]
+  (put! (::ops| channels) (merge op-meta
+                                 value)))
+
+
+(defmethod op*
+  {::op.spec/op-key ::resume
+   ::op.spec/op-type ::op.spec/fire-and-forget} [_]
+  (s/keys :req []))
+
+(defmethod op
+  {::op.spec/op-key ::resume
+   ::op.spec/op-type ::op.spec/fire-and-forget}
+  [op-meta channels value]
+  (put! (::ops| channels) (merge op-meta
+                                 value)))
+
+
+(defmethod op*
+  {::op.spec/op-key ::pause
+   ::op.spec/op-type ::op.spec/fire-and-forget} [_]
+  (s/keys :req []))
+
+(defmethod op
+  {::op.spec/op-key ::pause
    ::op.spec/op-type ::op.spec/fire-and-forget}
   [op-meta channels value]
   (put! (::ops| channels) (merge op-meta
