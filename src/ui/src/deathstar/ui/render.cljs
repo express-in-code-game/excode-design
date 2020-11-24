@@ -72,8 +72,6 @@
 (def ant-icon-sync-outlined (r/adapt-react-class AntIconSyncOutlined))
 (def ant-icon-reload-outlined (r/adapt-react-class AntIconReloadOutlined))
 
-; https://github.com/sergeiudris/starnet/blob/af86204ff94776ceab140208f5a6e0d654d30eba/ui/src/starnet/ui/alpha/main.cljs
-; https://github.com/sergeiudris/starnet/blob/af86204ff94776ceab140208f5a6e0d654d30eba/ui/src/starnet/ui/alpha/render.cljs
 
 (defn create-state
   [data]
@@ -342,46 +340,3 @@
       [:div "rc-page-not-found"]]]))
 
 
-#_(defn rc-main
-  [{:keys [input|] :as channels} state]
-  (r/with-let [data (r/cursor state [:data])
-               counter (r/cursor state [:counter])]
-    (if (empty? @state)
-
-      [:div "loading..."]
-
-      [:<>
-       [:pre {} (with-out-str (pprint @state))]
-       [ant-button {:icon (r/as-element [ant-icon-sync-outlined])
-                    :size "small"
-                    :title "button"
-                    :on-click (fn [] ::button-click)}]]
-
-      #_[:<>
-         [ant-tabs {:defaultActiveKey :connections}
-          [ant-tab-pane {:tab "Connections" :key :connections}
-           [rc-tab-connections channels state]]
-          [ant-tab-pane {:tab "Multiplayer" :key :multiplayer}
-           [:div  ::multiplayer]]
-          [ant-tab-pane {:tab "State" :key :state}
-           [rc-tab-state channels state]]]]
-      #_[:<>
-         #_[:div {} "rc-main"]
-         #_[:button {:on-click (fn [e]
-                                 (println "button clicked")
-                                 #_(put! ops| ???))} "button"]
-         #_[:div ":conf"]
-         #_[:div {} (with-out-str (pprint @conf))]
-         #_[:div @lrepl-id]
-         #_[:div @ns-sym]
-         [:br]
-         [:div ":counter"]
-         [:div {} (str @counter)]
-         [:input {:type "button" :value "counter-inc"
-                  :on-click #(swap! (ctx :state) update :counter inc)}]
-         [:br]
-         [:div ":data"]
-         [:section
-          (map-indexed (fn [i v]
-                         ^{:key i} [:pre {} (with-out-str (pprint v))])
-                       @data)]])))
