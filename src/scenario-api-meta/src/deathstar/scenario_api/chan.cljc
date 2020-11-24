@@ -21,11 +21,23 @@
   (let [ops| (chan 10)]
     {::ops| ops|}))
 
+(comment
+
+  (derive ::request-response ::op-key)
+  (derive ::fire-and-forget ::op-key)
+  (derive ::request-stream ::op-key)
+  (derive ::request-channel ::op-key)
+
+
+  (isa? ::request-response ::op-key))
+
 
 (defmethod op*
   {::op.spec/op-key ::update-state
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
   (s/keys :req []))
+(derive ::update-state ::op)
+#_(isa? ::update-state ::op)
 
 (defmethod op
   {::op.spec/op-key ::update-state
@@ -34,11 +46,11 @@
   (put! (::ops| channels) (merge op-meta
                                  value)))
 
-
 (defmethod op*
   {::op.spec/op-key ::generate
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
   (s/keys :req []))
+(derive ::generate ::op)
 
 (defmethod op
   {::op.spec/op-key ::generate
@@ -51,6 +63,7 @@
   {::op.spec/op-key ::reset
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
   (s/keys :req []))
+(derive ::reset ::op)
 
 (defmethod op
   {::op.spec/op-key ::reset
@@ -64,6 +77,7 @@
   {::op.spec/op-key ::resume
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
   (s/keys :req []))
+(derive ::resume ::op)
 
 (defmethod op
   {::op.spec/op-key ::resume
@@ -77,6 +91,7 @@
   {::op.spec/op-key ::pause
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
   (s/keys :req []))
+(derive ::pause ::op)
 
 (defmethod op
   {::op.spec/op-key ::pause

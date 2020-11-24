@@ -34,8 +34,6 @@
    [deathstar.scenario-api.spec :as scenario-api.spec]
    [deathstar.scenario-api.chan :as scenario-api.chan]
 
-
-
    [deathstar.ui.render :as ui.render]))
 
 (goog-define RSOCKET_PORT 0)

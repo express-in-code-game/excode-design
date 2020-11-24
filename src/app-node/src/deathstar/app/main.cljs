@@ -25,6 +25,10 @@
    [cljctools.peernode.spec :as peernode.spec]
    [cljctools.peernode.chan :as peernode.chan]
 
+
+   [deathstar.scenario-api.spec :as scenario-api.spec]
+   [deathstar.scenario-api.chan :as scenario-api.chan]
+
    [deathstar.ui.spec :as ui.spec]
    [deathstar.ui.chan :as ui.chan]))
 
@@ -53,7 +57,14 @@
                         ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
 (pipe (::ui.chan/ops| channels) (::rsocket.chan/ops| channels-rsocket-ui))
-(pipe (::rsocket.chan/requests| channels-rsocket-ui) (::app.chan/ops| channels))
+(go (loop []
+      (when-let [value (<! (::rsocket.chan/requests| channels-rsocket-ui))
+                 {:keys [::op.spec/op-key]} value]
+        (cond
+          (isa? op-key ::app.chan/op) (put! (::app.chan/ops| channels) value)
+          (isa? op-key ::scenario-api.chan/op) (put! (::rsocket.chan/ops| channels-rsocket-scenario) value))
+        (recur))))
+
 (def rsocket-ui (rsocket.impl/create-proc-ops
                  channels-rsocket-ui
                  {::rsocket.spec/connection-side ::rsocket.spec/accepting
@@ -69,7 +80,14 @@
                         ::rsocket.spec/port 7001
                         ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
-(pipe (::rsocket.chan/requests| channels-rsocket-scenario) (::rsocket.chan/ops| channels-rsocket-player))
+(go (loop []
+      (when-let [value (<! (::rsocket.chan/requests| channels-rsocket-scenario))
+                 {:keys [::op.spec/op-key]} value]
+        (cond
+          (isa? op-key ::app.chan/op) (put! (::app.chan/ops| channels) value)
+          :else (put! (::rsocket.chan/ops| channels-rsocket-player) value))
+        (recur))))
+
 (def rsocket-player (rsocket.impl/create-proc-ops
                      channels-rsocket-player
                      {::rsocket.spec/connection-side ::rsocket.spec/accepting

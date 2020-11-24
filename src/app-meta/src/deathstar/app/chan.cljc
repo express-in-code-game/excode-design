@@ -24,6 +24,7 @@
 (defmethod op*
   {::op.spec/op-key ::init} [_]
   (s/keys :req []))
+(derive ::init ::op)
 
 (defmethod op
   {::op.spec/op-key ::init}
@@ -36,6 +37,7 @@
   {::op.spec/op-key ::create-game
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
   (s/keys :req []))
+(derive ::create-game ::op)
 
 (defmethod op
   {::op.spec/op-key ::create-game
@@ -48,6 +50,7 @@
   {::op.spec/op-key ::unsub-from-game
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
   (s/keys :req [::app.spec/game-id]))
+(derive ::unsub-from-game ::op)
 
 (defmethod op
   {::op.spec/op-key ::unsub-from-game
@@ -61,6 +64,7 @@
   {::op.spec/op-key ::sub-to-game
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
   (s/keys :req [::app.spec/game-id]))
+(derive ::sub-to-game ::op)
 
 (defmethod op
   {::op.spec/op-key ::sub-to-game
@@ -74,6 +78,7 @@
   {::op.spec/op-key ::request-state-update
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
   (s/keys :req []))
+(derive ::request-state-update ::op)
 
 (defmethod op
   {::op.spec/op-key ::request-state-update
