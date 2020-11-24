@@ -239,7 +239,7 @@
        [ant-button {:size "small"
                     :title "generate"
                     :on-click (fn []
-                                (app.chan/op
+                                (scenario-api.chan/op
                                  {::op.spec/op-key ::scenario-api.chan/generate
                                   ::op.spec/op-type ::op.spec/fire-and-forget}
                                  channels
@@ -247,7 +247,7 @@
        [ant-button {:size "small"
                     :title "reset"
                     :on-click (fn []
-                                (app.chan/op
+                                (scenario-api.chan/op
                                  {::op.spec/op-key ::scenario-api.chan/reset
                                   ::op.spec/op-type ::op.spec/fire-and-forget}
                                  channels
@@ -255,7 +255,7 @@
        [ant-button {:size "small"
                     :title "resume"
                     :on-click (fn []
-                                (app.chan/op
+                                (scenario-api.chan/op
                                  {::op.spec/op-key ::scenario-api.chan/resume
                                   ::op.spec/op-type ::op.spec/fire-and-forget}
                                  channels
@@ -263,7 +263,7 @@
        [ant-button {:size "small"
                     :title "pause"
                     :on-click (fn []
-                                (app.chan/op
+                                (scenario-api.chan/op
                                  {::op.spec/op-key ::scenario-api.chan/pause
                                   ::op.spec/op-type ::op.spec/fire-and-forget}
                                  channels

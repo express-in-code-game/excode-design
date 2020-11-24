@@ -58,11 +58,11 @@
 
 (pipe (::ui.chan/ops| channels) (::rsocket.chan/ops| channels-rsocket-ui))
 (go (loop []
-      (when-let [value (<! (::rsocket.chan/requests| channels-rsocket-ui))
-                 {:keys [::op.spec/op-key]} value]
-        (cond
-          (isa? op-key ::app.chan/op) (put! (::app.chan/ops| channels) value)
-          (isa? op-key ::scenario-api.chan/op) (put! (::rsocket.chan/ops| channels-rsocket-scenario) value))
+      (when-let [value (<! (::rsocket.chan/requests| channels-rsocket-ui))]
+        (let [{:keys [::op.spec/op-key]} value]
+          (cond
+            (isa? op-key ::app.chan/op) (put! (::app.chan/ops| channels) value)
+            (isa? op-key ::scenario-api.chan/op) (put! (::rsocket.chan/ops| channels-rsocket-scenario) value)))
         (recur))))
 
 (def rsocket-ui (rsocket.impl/create-proc-ops
@@ -81,11 +81,11 @@
                         ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
 (go (loop []
-      (when-let [value (<! (::rsocket.chan/requests| channels-rsocket-scenario))
-                 {:keys [::op.spec/op-key]} value]
-        (cond
-          (isa? op-key ::app.chan/op) (put! (::app.chan/ops| channels) value)
-          :else (put! (::rsocket.chan/ops| channels-rsocket-player) value))
+      (when-let [value (<! (::rsocket.chan/requests| channels-rsocket-scenario))]
+        (let [{:keys [::op.spec/op-key]} value]
+          (cond
+            (isa? op-key ::app.chan/op) (put! (::app.chan/ops| channels) value)
+            :else (put! (::rsocket.chan/ops| channels-rsocket-player) value)))
         (recur))))
 
 (def rsocket-player (rsocket.impl/create-proc-ops
