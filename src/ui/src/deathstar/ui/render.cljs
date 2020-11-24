@@ -319,7 +319,7 @@
                     ;; :gutter [16 24]
                 }
        [ant-col {:span 8}
-        [table-games channels state]]
+        #_[table-games channels state]]
        [ant-col {:span 16}
         [rc-iframe-scenario channels state]
         [ant-row {:justify "start"
