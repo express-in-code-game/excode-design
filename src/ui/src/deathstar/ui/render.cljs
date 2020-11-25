@@ -270,7 +270,7 @@
       [:iframe {:src "http://localhost:11950/scenario.html"
                 :key @force-updater
                 :width "100%"
-                :height "400"}]]]))
+                :height "512"}]]]))
 
 (defn rc-page-main
   [channels state]
