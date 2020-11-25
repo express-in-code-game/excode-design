@@ -39,7 +39,6 @@ start(){
 }
 
 main(){
-    npm i
     compile
     start
 }

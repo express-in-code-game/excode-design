@@ -19,21 +19,34 @@ server(){
 }
 
 dev(){
-
     npm i
-    shadow -A:dev watch \
-    :main
-
-}
-
-tree(){
-    clojure -A:dev -Stree
+    shadow -A:dev watch :main
 }
 
 compile(){
     npm i
     shadow -A:dev compile  :main
 }
+
+release(){
+    npm i
+    shadow -A:dev release  :main
+}
+
+start(){
+    node resources/out/main.js
+}
+
+main(){
+    compile
+    start
+}
+
+tree(){
+    clojure -A:dev -Stree
+}
+
+
 
 cljs_compile(){
     clj -A:dev -m cljs.main -co cljs-build.edn -c
