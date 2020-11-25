@@ -21,7 +21,7 @@
 - [related projects](#related-projects)
 - [previous repos](#previous-repos)
 - [other links](#other-links)
-- [essense of DeathStarGame (video)](https://www.youtube.com/watch?v=32Mfl2oegoM)
+- [essence of DeathStarGame, a rovers scenario example (video)](https://www.youtube.com/watch?v=32Mfl2oegoM)
 
 ## project in a nutshell
 
