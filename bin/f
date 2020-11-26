@@ -39,6 +39,13 @@ deepdown(){
   down $1 -v --remove-orphans "${@:2}"
 }
 
+peers(){
+  docker-compose --compatibility \
+  -f dc-peers-dev.yml \
+  "$@"
+}
+
+
 dc(){
   UID_GID="$(id -u):$(id -g)" docker-compose --compatibility \
   --env-file docker-compose.env \

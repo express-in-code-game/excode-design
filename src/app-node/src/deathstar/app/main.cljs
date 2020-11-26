@@ -14,6 +14,9 @@
    [cljctools.csp.op.spec :as op.spec]
    [cljctools.cljc.core :as cljc.core]
 
+   [cljctools.process.spec :as process.spec]
+   [cljctools.process.impl :as process.impl]
+
    [cljctools.rsocket.spec :as rsocket.spec]
    [cljctools.rsocket.chan :as rsocket.chan]
    [cljctools.rsocket.impl :as rsocket.impl]
@@ -49,7 +52,7 @@
 
 (pipe (::peernode.chan/ops| channels) (::rsocket.chan/ops| channels-rsocket-peernode))
 (pipe (::rsocket.chan/requests| channels-rsocket-peernode) (::app.chan/ops| channels))
-(def rsocket-peernode (rsocket.impl/create-proc-ops
+(defonce rsocket-peernode (rsocket.impl/create-proc-ops
                        channels-rsocket-peernode
                        {::rsocket.spec/connection-side ::rsocket.spec/initiating
                         ::rsocket.spec/host "peernode"
@@ -65,7 +68,7 @@
             (isa? op-key ::scenario-api.chan/op) (put! (::rsocket.chan/ops| channels-rsocket-scenario) value)))
         (recur))))
 
-(def rsocket-ui (rsocket.impl/create-proc-ops
+(defonce rsocket-ui (rsocket.impl/create-proc-ops
                  channels-rsocket-ui
                  {::rsocket.spec/connection-side ::rsocket.spec/accepting
                   ::rsocket.spec/host "0.0.0.0"
@@ -73,7 +76,7 @@
                   ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
 (pipe (::rsocket.chan/requests| channels-rsocket-player) (::rsocket.chan/ops| channels-rsocket-scenario))
-(def rsocket-scenario (rsocket.impl/create-proc-ops
+(defonce rsocket-scenario (rsocket.impl/create-proc-ops
                        channels-rsocket-scenario
                        {::rsocket.spec/connection-side ::rsocket.spec/accepting
                         ::rsocket.spec/host "0.0.0.0"
@@ -88,7 +91,7 @@
             :else (put! (::rsocket.chan/ops| channels-rsocket-player) value)))
         (recur))))
 
-(def rsocket-player (rsocket.impl/create-proc-ops
+(defonce rsocket-player (rsocket.impl/create-proc-ops
                      channels-rsocket-player
                      {::rsocket.spec/connection-side ::rsocket.spec/accepting
                       ::rsocket.spec/host "0.0.0.0"
