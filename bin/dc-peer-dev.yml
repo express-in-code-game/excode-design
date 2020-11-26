@@ -1,0 +1,134 @@
+version: "3.8"
+
+networks:
+  base-network:
+    driver: bridge
+    name: deathstar-network
+
+volumes:
+  ctx:
+    driver: local
+    driver_opts:
+      type: none
+      device: ../../
+      # device: $PWD/${WEB_APP_PATH}
+      o: bind
+
+services:
+
+  peer1:
+    image: deathstar.peer1
+    build:
+      context: ./app-node
+      dockerfile: ./dev.Dockerfile
+      args:
+        workdir:  /ctx/DeathStarGame/bin/app-node
+    command: tail -f /dev/null
+    # command: bash f dev
+    ports:
+      - 8801:8899
+      - 7010:7000
+      - 7011:7001
+      - 7012:7002
+      # - 8085:8080
+    networks:
+      - base-network
+    # user: 1000:1000
+    volumes:
+      - ./app-node/.peer1:/root
+      # - type: volume
+      #   source: deathstar-dir
+      #   target: /root/.deathstar
+      #   volume:
+      #     nocopy: true
+      # - ./app/.peer${PORTS_PREFIX}:/root/.deathstar
+      - type: volume
+        source: ctx
+        target: /ctx
+        volume:
+          nocopy: true
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
+  peer2:
+    image: deathstar.peer2
+    build:
+      context: ./app-node
+      dockerfile: ./dev.Dockerfile
+      args:
+        workdir:  /ctx/DeathStarGame/bin/app-node
+    command: tail -f /dev/null
+    # command: bash f dev
+    ports:
+      - 8802:8899
+      - 7020:7000
+      - 7021:7001
+      - 7022:7002
+      # - 8085:8080
+    networks:
+      - base-network
+    # user: 1000:1000
+    volumes:
+      - ./app-node/.peer2:/root
+      # - type: volume
+      #   source: deathstar-dir
+      #   target: /root/.deathstar
+      #   volume:
+      #     nocopy: true
+      # - ./app/.peer${PORTS_PREFIX}:/root/.deathstar
+      - type: volume
+        source: ctx
+        target: /ctx
+        volume:
+          nocopy: true
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
+  peer3:
+    image: deathstar.peer3
+    build:
+      context: ./app-node
+      dockerfile: ./dev.Dockerfile
+      args:
+        workdir:  /ctx/DeathStarGame/bin/app-node
+    command: tail -f /dev/null
+    # command: bash f dev
+    ports:
+      - 8803:8899
+      - 7030:7000
+      - 7031:7001
+      - 7032:7002
+      # - 8085:8080
+    networks:
+      - base-network
+    # user: 1000:1000
+    volumes:
+      - ./app-node/.peer3:/root
+      # - type: volume
+      #   source: deathstar-dir
+      #   target: /root/.deathstar
+      #   volume:
+      #     nocopy: true
+      # - ./app/.peer${PORTS_PREFIX}:/root/.deathstar
+      - type: volume
+        source: ctx
+        target: /ctx
+        volume:
+          nocopy: true
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
