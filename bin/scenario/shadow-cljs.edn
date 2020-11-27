@@ -1,7 +1,7 @@
 {:deps  true #_{:aliases [:cljs-dev :ui :peer]}
  :nrepl {:host "0.0.0.0"
-         :port 8899}
- :http {:port 9630
+         :port #shadow/env ["SHADOWCLJS_NREPL_PORT" :as :int :default 8899]}
+ :http {:port #shadow/env ["SHADOWCLJS_HTTP_PORT" :as :int :default 9630]
         :host "0.0.0.0"}
  :builds {:scenario {:target :browser
                      :output-dir "resources/public/js-out/scenario"
@@ -14,9 +14,9 @@
                      :devtools {:repl-init-ns deathstar.scenario.main
                                 :repl-pprint true
                                 :autobuild true
-                                :devtools-url #shadow/env ["DEVTOOLS_URL" :default "http://localhost:9630"]
-                                :http-root  "resources/public"
-                                :http-port  9500}}
+                                :devtools-url #shadow/env ["SHADOWCLJS_DEVTOOLS_URL" :default "http://localhost:9630"]
+                                :http-root "resources/public"
+                                :http-port #shadow/env ["SHADOWCLJS_DEVTOOLS_HTTP_PORT" :as :int :default 9500]}}
 
           :player {:target :browser
                    :output-dir "resources/public/js-out/player"
@@ -29,6 +29,6 @@
                    :devtools {:repl-init-ns deathstar.scenario.player.main
                               :repl-pprint true
                               :autobuild true
-                              :devtools-url #shadow/env ["DEVTOOLS_URL" :default "http://localhost:9630"]
-                              :http-root  "resources/public"
-                              :http-port  9500}}}}
+                              :devtools-url #shadow/env ["SHADOWCLJS_DEVTOOLS_URL" :default "http://localhost:9630"]
+                              :http-root "resources/public"
+                              :http-port #shadow/env ["SHADOWCLJS_DEVTOOLS_HTTP_PORT" :as :int :default 9500]}}}}
