@@ -36,20 +36,20 @@
    [deathstar.ui.spec :as ui.spec]
    [deathstar.ui.chan :as ui.chan]))
 
-(def fs (js/require "fs"))
-(def path (js/require "path"))
-(def axios (.-default (js/require "axios")))
-(def puppeteer (js/require "puppeteer-core"))
+(defonce fs (js/require "fs"))
+(defonce path (js/require "path"))
+(defonce axios (.-default (js/require "axios")))
+(defonce puppeteer (js/require "puppeteer-core"))
 
-(def channels (merge
-               (app.chan/create-channels)
-               (ui.chan/create-channels)
-               (peernode.chan/create-channels)))
+(defonce channels (merge
+                   (app.chan/create-channels)
+                   (ui.chan/create-channels)
+                   (peernode.chan/create-channels)))
 
-(def channels-rsocket-peernode (rsocket.chan/create-channels))
-(def channels-rsocket-ui (rsocket.chan/create-channels))
-(def channels-rsocket-scenario (rsocket.chan/create-channels))
-(def channels-rsocket-player (rsocket.chan/create-channels))
+(defonce channels-rsocket-peernode (rsocket.chan/create-channels))
+(defonce channels-rsocket-ui (rsocket.chan/create-channels))
+(defonce channels-rsocket-scenario (rsocket.chan/create-channels))
+(defonce channels-rsocket-player (rsocket.chan/create-channels))
 
 (pipe (::peernode.chan/ops| channels) (::rsocket.chan/ops| channels-rsocket-peernode))
 (pipe (::rsocket.chan/requests| channels-rsocket-peernode) (::app.chan/ops| channels))
@@ -99,8 +99,8 @@
                       ::rsocket.spec/port 7002
                       ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
-(def scenario-compiler|| (process.chan/create-channels))
-(def scenario-compiler (process.impl/create-proc-ops
+(defonce scenario-compiler|| (process.chan/create-channels))
+(defonce scenario-compiler (process.impl/create-proc-ops
                         scenario-compiler||
                         {::process.spec/process-key ::scenario-compiler
                          ::process.spec/print-to-stdout? true
@@ -119,9 +119,9 @@
                                    "cwd" "/ctx/DeathStarGame/bin/scenario"
                                    "detached" true})}))
 
-(def ui-compiler|| (process.chan/create-channels))
-(def ui-compiler (process.impl/create-proc-ops
-                  scenario-compiler||
+(defonce ui-compiler|| (process.chan/create-channels))
+(defonce ui-compiler (process.impl/create-proc-ops
+                  ui-compiler||
                   {::process.spec/process-key ::ui-compiler
                    ::process.spec/print-to-stdout? true
                    ::process.spec/cmd "sh f dev"
@@ -133,14 +133,22 @@
                                     #js {}
                                     js/global.process.env
                                     #js {"SHADOWCLJS_NREPL_PORT" 8803
+
                                          "SHADOWCLJS_HTTP_PORT" 9633
-                                         "SHADOWCLJS_DEVTOOLS_URL" "http://localhost:9633"
-                                         "SHADOWCLJS_DEVTOOLS_HTTP_PORT" 9503})
+
+                                         "RSOCKET_PORT"
+                                         (aget js/global.process.env "RSOCKET_PORT_UI")
+
+                                         "SHADOWCLJS_DEVTOOLS_URL"
+                                         (aget js/global.process.env "SHADOWCLJS_DEVTOOLS_URL_UI")
+
+                                         "SHADOWCLJS_DEVTOOLS_HTTP_PORT"
+                                         (aget js/global.process.env "SHADOWCLJS_DEVTOOLS_HTTP_PORT_UI")})
                              "cwd" "/ctx/DeathStarGame/bin/ui"
                              "detached" true})}))
 
-(def peernode-compiler|| (process.chan/create-channels))
-(def peernode-compiler (process.impl/create-proc-ops
+(defonce peernode-compiler|| (process.chan/create-channels))
+(defonce peernode-compiler (process.impl/create-proc-ops
                         peernode-compiler||
                         {::process.spec/process-key ::peernode-compiler
                          ::process.spec/print-to-stdout? true
@@ -156,12 +164,12 @@
                                                "SHADOWCLJS_HTTP_PORT" 9632
                                                "SHADOWCLJS_DEVTOOLS_URL" "http://localhost:9632"
                                                "SHADOWCLJS_DEVTOOLS_HTTP_PORT" 9502
-                                               "PEERNODE_RSOCKET_PORT" 7000})
+                                               "RSOCKET_PORT" 7000})
                                    "cwd" "/ctx/cljstools/bin/peernode"
                                    "detached" true})}))
 
-(def peernode|| (process.chan/create-channels))
-(def peernode (process.impl/create-proc-ops
+(defonce peernode|| (process.chan/create-channels))
+(defonce peernode (process.impl/create-proc-ops
                peernode||
                {::process.spec/process-key ::peernode
                 ::process.spec/print-to-stdout? true
@@ -173,10 +181,26 @@
                           "env" (js/Object.assign
                                  #js {}
                                  js/global.process.env
-                                 #js {"PEERNODE_RSOCKET_PORT" 7000})
+                                 #js {"RSOCKET_PORT" 7000})
                           "cwd" "/ctx/cljstools/bin/peernode"
                           "detached" true})}))
 
+(comment
+
+  (process.chan/start scenario-compiler|| {})
+  (process.chan/terminate scenario-compiler|| {})
+  (process.chan/restart scenario-compiler|| {})
+  (process.chan/print-logs scenario-compiler|| {})
+
+  (process.chan/start ui-compiler|| {})
+  (process.chan/terminate ui-compiler|| {})
+  (process.chan/restart ui-compiler|| {})
+  (process.chan/print-logs ui-compiler|| {})
+
+  (js/global.process.kill 524 "SIGINT")
+
+  ;;
+  )
 
 
 (def state (atom

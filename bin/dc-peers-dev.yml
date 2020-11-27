@@ -26,11 +26,30 @@ services:
     command: tail -f /dev/null
     # command: bash f dev
     ports:
-      - 8801:8899
-      - 7010:7000
+      - 9511:9501
+      - 8811:8801
+      - 9611:9631
+
+      - 9510:9503
+      - 8810:8803
+      - 9610:9633
+
+      - 8819:8899
       - 7011:7001
       - 7012:7002
-      # - 8085:8080
+      - 7013:7003
+    environment:
+      - SHADOWCLJS_DEVTOOLS_URL_UI=http://localhost:9610
+      - SHADOWCLJS_DEVTOOLS_PORT_UI=9503
+      - SHADOWCLJS_NREPL_PORT_UI=8803
+
+      - SHADOWCLJS_DEVTOOLS_URL_SCENARIO=http://localhost:9611
+      - SHADOWCLJS_DEVTOOLS_PORT_SCENARIO=9611
+      - SHADOWCLJS_NREPL_PORT_SCENARIO=8811
+
+      - RSOCKET_PORT_UI=7001
+      - RSOCKET_PORT_SCENARIO=7002
+      - RSOCKET_PORT_PLAYER=7003
     networks:
       - base-network
     # user: 1000:1000
