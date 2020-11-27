@@ -9,7 +9,6 @@
         github.cljctools/cljc {:local/root  "/ctx/cljctools/cljc"}
         github.cljctools/csp {:local/root  "/ctx/cljctools/csp"}
         github.cljctools/rsocket-js {:local/root  "/ctx/cljctools/rsocket-js"}
-        github.cljctools/process-nodejs {:local/root  "/ctx/cljctools/process-nodejs"}
 
         github.cljctools/peernode-meta {:local/root  "/ctx/peernode/src/peernode-meta"}
 
