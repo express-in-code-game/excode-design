@@ -5,3 +5,4 @@
 
 (s/def ::page-events keyword?)
 (s/def ::page-game keyword?)
+(s/def ::scenario-origin string?)

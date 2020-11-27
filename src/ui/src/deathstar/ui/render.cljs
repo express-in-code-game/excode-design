@@ -225,7 +225,8 @@
 (defn rc-iframe-scenario
   [channels state]
   (r/with-let
-    [force-updater (r/atom (random-uuid))]
+    [force-updater (r/atom (random-uuid))
+     scenario-origin (r/cursor state [::ui.spec/scenario-origin])]
     [:<>
      [ant-row
       [ant-button-group
@@ -267,7 +268,7 @@
                                  channels
                                  {}))} "pause"]]]
      [ant-row
-      [:iframe {:src "http://localhost:11950/scenario.html"
+      [:iframe {:src (format "%s/scenario.html" @scenario-origin)
                 :key @force-updater
                 :width "100%"
                 :height "512"}]]]))
@@ -310,7 +311,7 @@
 (defn rc-page-game
   [channels state]
   (r/with-let
-    []
+    [ scenario-origin (r/cursor state [::ui.spec/scenario-origin])]
     [layout channels state
      [:<>
       [ant-row {:justify "center"
@@ -330,7 +331,7 @@
          [ant-col {:span 4}
           [rc-iframe channels state {:width "80px"
                                      :height "32px"
-                                     :src "http://localhost:11950/player.html"}]]]]]]]))
+                                     :src (format "%s/player.html" @scenario-origin)}]]]]]]]))
 
 (defn rc-page-not-found
   [channels state]

@@ -38,6 +38,8 @@
 
 (goog-define RSOCKET_PORT 0)
 
+(goog-define SCENARIO_ORIGIN "")
+
 (def channels (merge
                (app.chan/create-channels)
                (rsocket.chan/create-channels)
@@ -51,7 +53,7 @@
 (pipe (::scenario-api.chan/ops| channels) (::rsocket.chan/ops| channels))
 
 (def state (ui.render/create-state
-            {}))
+            {::ui.spec/scenario-origin SCENARIO_ORIGIN}))
 
 (def routes ["/" {"" ::ui.spec/page-main
                   [::app.spec/game-id ""] ::ui.spec/page-game
