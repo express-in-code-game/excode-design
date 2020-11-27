@@ -53,7 +53,7 @@ services:
       resources:
         limits:
           cpus: '4'
-          memory: 4096M
+          memory: 8192M
 
   peer2:
     image: deathstar.peer2
@@ -92,7 +92,7 @@ services:
       resources:
         limits:
           cpus: '4'
-          memory: 4096M
+          memory: 8192M
 
   peer3:
     image: deathstar.peer3
@@ -131,4 +131,4 @@ services:
       resources:
         limits:
           cpus: '4'
-          memory: 4096M
+          memory: 8192M

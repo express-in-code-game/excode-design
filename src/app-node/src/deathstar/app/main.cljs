@@ -15,6 +15,7 @@
    [cljctools.cljc.core :as cljc.core]
 
    [cljctools.process.spec :as process.spec]
+   [cljctools.process.chan :as process.chan]
    [cljctools.process.impl :as process.impl]
 
    [cljctools.rsocket.spec :as rsocket.spec]
@@ -98,6 +99,85 @@
                       ::rsocket.spec/port 7002
                       ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
+(def scenario-compiler|| (process.chan/create-channels))
+(def scenario-compiler (process.impl/create-proc-ops
+                        scenario-compiler||
+                        {::process.spec/process-key ::scenario-compiler
+                         ::process.spec/print-to-stdout? true
+                         ::process.spec/cmd "sh f dev"
+                         ::process.spec/args  #js []
+                         ::process.spec/child-process-options
+                         (clj->js {"stdio" ["pipe"]
+                                   "shell" "/bin/bash"
+                                   "env" (js/Object.assign
+                                          #js {}
+                                          js/global.process.env
+                                          #js {"SHADOWCLJS_NREPL_PORT" 8801
+                                               "SHADOWCLJS_HTTP_PORT" 9631
+                                               "SHADOWCLJS_DEVTOOLS_URL" "http://localhost:9631"
+                                               "SHADOWCLJS_DEVTOOLS_HTTP_PORT" 9501})
+                                   "cwd" "/ctx/DeathStarGame/bin/scenario"
+                                   "detached" true})}))
+
+(def ui-compiler|| (process.chan/create-channels))
+(def ui-compiler (process.impl/create-proc-ops
+                  scenario-compiler||
+                  {::process.spec/process-key ::ui-compiler
+                   ::process.spec/print-to-stdout? true
+                   ::process.spec/cmd "sh f dev"
+                   ::process.spec/args  #js []
+                   ::process.spec/child-process-options
+                   (clj->js {"stdio" ["pipe"]
+                             "shell" "/bin/bash"
+                             "env" (js/Object.assign
+                                    #js {}
+                                    js/global.process.env
+                                    #js {"SHADOWCLJS_NREPL_PORT" 8803
+                                         "SHADOWCLJS_HTTP_PORT" 9633
+                                         "SHADOWCLJS_DEVTOOLS_URL" "http://localhost:9633"
+                                         "SHADOWCLJS_DEVTOOLS_HTTP_PORT" 9503})
+                             "cwd" "/ctx/DeathStarGame/bin/ui"
+                             "detached" true})}))
+
+(def peernode-compiler|| (process.chan/create-channels))
+(def peernode-compiler (process.impl/create-proc-ops
+                        peernode-compiler||
+                        {::process.spec/process-key ::peernode-compiler
+                         ::process.spec/print-to-stdout? true
+                         ::process.spec/cmd "sh f dev"
+                         ::process.spec/args  #js []
+                         ::process.spec/child-process-options
+                         (clj->js {"stdio" ["pipe"]
+                                   "shell" "/bin/bash"
+                                   "env" (js/Object.assign
+                                          #js {}
+                                          js/global.process.env
+                                          #js {"SHADOWCLJS_NREPL_PORT" 8802
+                                               "SHADOWCLJS_HTTP_PORT" 9632
+                                               "SHADOWCLJS_DEVTOOLS_URL" "http://localhost:9632"
+                                               "SHADOWCLJS_DEVTOOLS_HTTP_PORT" 9502
+                                               "PEERNODE_RSOCKET_PORT" 7000})
+                                   "cwd" "/ctx/cljstools/bin/peernode"
+                                   "detached" true})}))
+
+(def peernode|| (process.chan/create-channels))
+(def peernode (process.impl/create-proc-ops
+               peernode||
+               {::process.spec/process-key ::peernode
+                ::process.spec/print-to-stdout? true
+                ::process.spec/cmd "sh f daemon"
+                ::process.spec/args  #js []
+                ::process.spec/child-process-options
+                (clj->js {"stdio" ["pipe"]
+                          "shell" "/bin/bash"
+                          "env" (js/Object.assign
+                                 #js {}
+                                 js/global.process.env
+                                 #js {"PEERNODE_RSOCKET_PORT" 7000})
+                          "cwd" "/ctx/cljstools/bin/peernode"
+                          "detached" true})}))
+
+
 
 (def state (atom
             {::app.spec/games {}}))
@@ -121,6 +201,9 @@
               {::op.spec/op-key ::app.chan/init}
               (let [{:keys []} value]
                 (println ::init)
+                
+                #_(process.chan/start scenario-compiler|| {})
+                
                 #_(<! (init-puppeteer))
 
 
