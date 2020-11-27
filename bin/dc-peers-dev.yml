@@ -19,8 +19,8 @@ services:
   peer1:
     image: deathstar.peer1
     build:
-      context: ./app-node
-      dockerfile: ./dev.Dockerfile
+      context: ./peer
+      dockerfile: ./Dockerfile
       args:
         workdir:  /ctx/DeathStarGame/bin/app-node
     command: tail -f /dev/null
@@ -58,8 +58,8 @@ services:
   peer2:
     image: deathstar.peer2
     build:
-      context: ./app-node
-      dockerfile: ./dev.Dockerfile
+      context: ./peer
+      dockerfile: ./Dockerfile
       args:
         workdir:  /ctx/DeathStarGame/bin/app-node
     command: tail -f /dev/null
@@ -97,8 +97,8 @@ services:
   peer3:
     image: deathstar.peer3
     build:
-      context: ./app-node
-      dockerfile: ./dev.Dockerfile
+      context: ./peer
+      dockerfile: ./Dockerfile
       args:
         workdir:  /ctx/DeathStarGame/bin/app-node
     command: tail -f /dev/null
