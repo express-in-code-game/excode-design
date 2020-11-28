@@ -207,8 +207,8 @@
   [channels state opts-iframe]
   (r/with-let
     [force-updater (r/atom (random-uuid))]
-    [:<>
-     [ant-row
+    [:div {:style {:display "none"}}
+     [ant-row 
       [ant-button {:icon (r/as-element [ant-icon-reload-outlined])
                    :size "small"
                    :title "button"
@@ -267,11 +267,11 @@
                                   ::op.spec/op-type ::op.spec/fire-and-forget}
                                  channels
                                  {}))} "pause"]]]
-     [ant-row
+     [ant-row {:style {:height "100%"}}
       [:iframe {:src (format "%s/scenario.html" @scenario-origin)
                 :key @force-updater
                 :width "100%"
-                :height "512"}]]]))
+                :height "100%"}]]]))
 
 (defn rc-page-main
   [channels state]
@@ -290,7 +290,7 @@
 
       [ant-row {:justify "center"
                 :align "top" #_"middle"
-                :style {:height "85%"}
+                :style {:height "94%"}
                     ;; :gutter [16 24]
                 }
        [ant-col {:span 24}
@@ -316,19 +316,18 @@
      [:<>
       [ant-row {:justify "center"
                 :align "top" #_"middle"
-                :style {:height "85%"}
+                :style {:height "94%"}
                     ;; :gutter [16 24]
                 }
        [ant-col {:span 8}
         #_[table-games channels state]]
-       [ant-col {:span 16}
+       [ant-col {:span 16 :style {:height "100%"}}
         [rc-iframe-scenario channels state]
         [ant-row {:justify "start"
                   :align "top" #_"middle"
-                  :style {:height "85%"}
                     ;; :gutter [16 24]
                   }
-         [ant-col {:span 4}
+         [ant-col {:span 4 }
           [rc-iframe channels state {:width "80px"
                                      :height "32px"
                                      :src (format "%s/player.html" @scenario-origin)}]]]]]]]))
