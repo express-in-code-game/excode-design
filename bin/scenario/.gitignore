@@ -13,6 +13,8 @@ pom.xml
 .cpcache/
 .rebel_readline_history
 
+package-lock.json
+
 node_modules/
 
 .shadow-cljs
