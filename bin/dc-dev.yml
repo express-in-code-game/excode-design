@@ -228,9 +228,9 @@ services:
     # command: bash f dev
     ports:
       - ${PORTS_PREFIX}890:8899
-      - ${PORTS_PREFIX}070:7000
       - ${PORTS_PREFIX}071:7001
       - ${PORTS_PREFIX}072:7002
+      - ${PORTS_PREFIX}073:7003
       # - 8085:8080
     networks:
       - base-network
@@ -341,8 +341,9 @@ services:
       - ${PORTS_PREFIX}099:8899
       - ${PORTS_PREFIX}096:9630
     environment:
-      - RSOCKET_PORT=${PORTS_PREFIX}070
-      - DEVTOOLS_URL=http://localhost:${PORTS_PREFIX}096
+      - RSOCKET_PORT=${PORTS_PREFIX}071
+      - SCENARIO_ORIGIN=http://localhost:${PORTS_PREFIX}950
+      - SHADOWCLJS_DEVTOOLS_URL=http://localhost:${PORTS_PREFIX}096
     networks:
       - base-network
     # user: 1000:1000
@@ -377,9 +378,9 @@ services:
       - ${PORTS_PREFIX}990:8899
       - ${PORTS_PREFIX}960:9630
     environment:
-      - RSOCKET_PORT_SCENARIO=${PORTS_PREFIX}071
-      - RSOCKET_PORT_PLAYER=${PORTS_PREFIX}072
-      - DEVTOOLS_URL=http://localhost:${PORTS_PREFIX}960
+      - RSOCKET_PORT_SCENARIO=${PORTS_PREFIX}072
+      - RSOCKET_PORT_PLAYER=${PORTS_PREFIX}073
+      - SHADOWCLJS_DEVTOOLS_URL=http://localhost:${PORTS_PREFIX}960
     networks:
       - base-network
     # user: 1000:1000
