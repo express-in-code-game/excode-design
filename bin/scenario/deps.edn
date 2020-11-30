@@ -6,7 +6,8 @@
         org.clojure/spec.alpha {:mvn/version "0.2.187"}
         org.clojure/test.check {:mvn/version "1.0.0"}
         org.clojure/core.async {:mvn/version "1.1.587"}
-        reagent/reagent {:mvn/version "1.0.0-alpha2" :exclusions [cljsjs/react cljsjs/react-dom]}
+        reagent/reagent {:mvn/version "1.0.0-rc1" :exclusions [cljsjs/react cljsjs/react-dom]}
+       ;  reagent/reagent {:local/root "/ctx/reagent" :exclusions [cljsjs/react cljsjs/react-dom]}
 
         github.cljctools/cljc {:local/root "/ctx/cljctools/cljc"}
         github.cljctools/csp {:local/root "/ctx/cljctools/csp"}

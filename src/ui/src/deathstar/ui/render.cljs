@@ -207,7 +207,7 @@
   [channels state opts-iframe]
   (r/with-let
     [force-updater (r/atom (random-uuid))]
-    [:div {:style {:display "none"}}
+    [:div {:style {}#_{:display "none"}}
      [ant-row 
       [ant-button {:icon (r/as-element [ant-icon-reload-outlined])
                    :size "small"
