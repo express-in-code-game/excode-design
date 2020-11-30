@@ -45,47 +45,47 @@
    ["@ant-design/icons/ReloadOutlined" :default AntIconReloadOutlined]))
 
 
-(def ant-row (r/adapt-react-class AntRow))
-(def ant-col (r/adapt-react-class AntCol))
-(def ant-divider (r/adapt-react-class AntDivider))
-(def ant-layout (r/adapt-react-class AntLayout))
-(def ant-layout-content (r/adapt-react-class (.-Content AntLayout)))
-(def ant-layout-header (r/adapt-react-class (.-Header AntLayout)))
+(def ant-row (reagent.core/adapt-react-class AntRow))
+(def ant-col (reagent.core/adapt-react-class AntCol))
+(def ant-divider (reagent.core/adapt-react-class AntDivider))
+(def ant-layout (reagent.core/adapt-react-class AntLayout))
+(def ant-layout-content (reagent.core/adapt-react-class (.-Content AntLayout)))
+(def ant-layout-header (reagent.core/adapt-react-class (.-Header AntLayout)))
 
-(def ant-menu (r/adapt-react-class AntMenu))
-(def ant-menu-item (r/adapt-react-class (.-Item AntMenu)))
-(def ant-icon (r/adapt-react-class AntIcon))
-(def ant-button (r/adapt-react-class AntButton))
-(def ant-button-group (r/adapt-react-class (.-Group AntButton)))
-(def ant-list (r/adapt-react-class AntList))
-(def ant-input (r/adapt-react-class AntInput))
-(def ant-input-password (r/adapt-react-class (.-Password AntInput)))
-(def ant-checkbox (r/adapt-react-class AntCheckbox))
-(def ant-form (r/adapt-react-class AntForm))
-(def ant-table (r/adapt-react-class AntTable))
-(def ant-form-item (r/adapt-react-class (.-Item AntForm)))
-(def ant-tabs (r/adapt-react-class AntTabs))
-(def ant-tab-pane (r/adapt-react-class (.-TabPane AntTabs)))
+(def ant-menu (reagent.core/adapt-react-class AntMenu))
+(def ant-menu-item (reagent.core/adapt-react-class (.-Item AntMenu)))
+(def ant-icon (reagent.core/adapt-react-class AntIcon))
+(def ant-button (reagent.core/adapt-react-class AntButton))
+(def ant-button-group (reagent.core/adapt-react-class (.-Group AntButton)))
+(def ant-list (reagent.core/adapt-react-class AntList))
+(def ant-input (reagent.core/adapt-react-class AntInput))
+(def ant-input-password (reagent.core/adapt-react-class (.-Password AntInput)))
+(def ant-checkbox (reagent.core/adapt-react-class AntCheckbox))
+(def ant-form (reagent.core/adapt-react-class AntForm))
+(def ant-table (reagent.core/adapt-react-class AntTable))
+(def ant-form-item (reagent.core/adapt-react-class (.-Item AntForm)))
+(def ant-tabs (reagent.core/adapt-react-class AntTabs))
+(def ant-tab-pane (reagent.core/adapt-react-class (.-TabPane AntTabs)))
 
-(def ant-icon-smile-outlined (r/adapt-react-class AntIconSmileOutlined))
-(def ant-icon-loading-outlined (r/adapt-react-class AntIconLoadingOutlined))
-(def ant-icon-sync-outlined (r/adapt-react-class AntIconSyncOutlined))
-(def ant-icon-reload-outlined (r/adapt-react-class AntIconReloadOutlined))
+(def ant-icon-smile-outlined (reagent.core/adapt-react-class AntIconSmileOutlined))
+(def ant-icon-loading-outlined (reagent.core/adapt-react-class AntIconLoadingOutlined))
+(def ant-icon-sync-outlined (reagent.core/adapt-react-class AntIconSyncOutlined))
+(def ant-icon-reload-outlined (reagent.core/adapt-react-class AntIconReloadOutlined))
 
 
 (defn create-state
   [data]
-  (r/atom data))
+  (reagent.core/atom data))
 
 (declare  rc-main rc-page-main rc-page-game rc-page-not-found)
 
 (defn render-ui
   [channels state {:keys [id] :or {id "ui"}}]
-  (rdom/render [rc-main channels state]  (.getElementById js/document id)))
+  (reagent.dom/render [rc-main channels state]  (.getElementById js/document id)))
 
 (defn rc-main
   [channels state]
-  (r/with-let [route-key* (r/cursor state [::browser-router.spec/route-key])]
+  (reagent.core/with-let [route-key* (reagent.core/cursor state [::browser-router.spec/route-key])]
     (let [route-key @route-key*]
       (condp = route-key
         ::ui.spec/page-main [rc-page-main channels state]
@@ -94,9 +94,9 @@
 
 (defn menu
   [channels state]
-  (r/with-let
-    [route-key* (r/cursor state [::browser-router.spec/route-key])
-     url* (r/cursor state [::browser-router.spec/url])]
+  (reagent.core/with-let
+    [route-key* (reagent.core/cursor state [::browser-router.spec/route-key])
+     url* (reagent.core/cursor state [::browser-router.spec/url])]
     (let [route-key @route-key*
           url @url*]
       [ant-menu {:theme "light"
@@ -144,7 +144,7 @@
       :render
       (fn [txt rec idx]
         (let [v (js/JSON.stringify (aget rec "properties"))]
-          (r/as-element
+          (reagent.core/as-element
            [:div {:title v
                   :style  {:white-space "nowrap"
                            :max-width "216px"
@@ -157,7 +157,7 @@
     :key "action"
     :width "48px"
     :render (fn [text record index]
-              (r/as-element
+              (reagent.core/as-element
                [ant-button-group
                 {:size "small"}
                 [ant-button
@@ -181,8 +181,8 @@
 
 (defn table-games
   [channels state]
-  (r/with-let
-    [games* (r/cursor state [::app.spec/games])
+  (reagent.core/with-let
+    [games* (reagent.core/cursor state [::app.spec/games])
      columns (vec (concat (table-games-columns channels state) (table-games-columns-extra channels state)))]
     (let [games (vec (vals @games*))
           total (count games)]
@@ -205,11 +205,11 @@
 
 (defn rc-iframe
   [channels state opts-iframe]
-  (r/with-let
-    [force-updater (r/atom (random-uuid))]
+  (reagent.core/with-let
+    [force-updater (reagent.core/atom (random-uuid))]
     [:div {:style {}#_{:display "none"}}
      [ant-row 
-      [ant-button {:icon (r/as-element [ant-icon-reload-outlined])
+      [ant-button {:icon (reagent.core/as-element [ant-icon-reload-outlined])
                    :size "small"
                    :title "button"
                    :on-click (fn [] (reset! force-updater (random-uuid)))}]]
@@ -224,14 +224,14 @@
 
 (defn rc-iframe-scenario
   [channels state]
-  (r/with-let
-    [force-updater (r/atom (random-uuid))
-     scenario-origin (r/cursor state [::ui.spec/scenario-origin])]
+  (reagent.core/with-let
+    [force-updater (reagent.core/atom (random-uuid))
+     scenario-origin (reagent.core/cursor state [::ui.spec/scenario-origin])]
     [:<>
      [ant-row
       [ant-button-group
        {:size "small"}
-       [ant-button {:icon (r/as-element [ant-icon-reload-outlined])
+       [ant-button {:icon (reagent.core/as-element [ant-icon-reload-outlined])
                     :size "small"
                     :title "reload page"
                     :on-click (fn [] (reset! force-updater (random-uuid)))}]
@@ -275,7 +275,7 @@
 
 (defn rc-page-main
   [channels state]
-  (r/with-let
+  (reagent.core/with-let
     []
     [layout channels state
      [:<>
@@ -303,15 +303,15 @@
 
            [:<>
             [:pre {} (with-out-str (pprint @state))]
-            [ant-button {:icon (r/as-element [ant-icon-sync-outlined])
+            [ant-button {:icon (reagent.core/as-element [ant-icon-sync-outlined])
                          :size "small"
                          :title "button"
                          :on-click (fn [] ::button-click)}]])]]]))
 
 (defn rc-page-game
   [channels state]
-  (r/with-let
-    [ scenario-origin (r/cursor state [::ui.spec/scenario-origin])]
+  (reagent.core/with-let
+    [ scenario-origin (reagent.core/cursor state [::ui.spec/scenario-origin])]
     [layout channels state
      [:<>
       [ant-row {:justify "center"
@@ -334,7 +334,7 @@
 
 (defn rc-page-not-found
   [channels state]
-  (r/with-let
+  (reagent.core/with-let
     [layout channels state
      [:<>
       [:div "rc-page-not-found"]]]))
