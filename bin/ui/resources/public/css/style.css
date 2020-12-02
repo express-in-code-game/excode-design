@@ -24,3 +24,7 @@
 .ant-layout {
   background: none !important;
 }
+
+.ant-tabs-content {
+  height: 100% !important;
+}

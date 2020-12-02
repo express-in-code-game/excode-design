@@ -276,10 +276,23 @@
                                  channels
                                  {}))} "next-step"]]]
      [ant-row {:style {:height "100%"}}
-      [:iframe {:src (format "%s/scenario.html" @scenario-origin)
-                :key @force-updater
-                :width "100%"
-                :height "100%"}]]]))
+      [ant-tabs {:style {:width "100%"
+                         :height "100%"}
+                 :defaultActiveKey "player"}
+       [ant-tab-pane {:style {:width "100%"
+                              :height "100%"}
+                      :tab "player" :key "player"}
+        [:iframe {:src (format "%s/scenario.html" @scenario-origin)
+                  :key @force-updater
+                  :width "100%"
+                  :height "100%"}]]
+       [ant-tab-pane {:style {:width "100%"
+                              :height "100%"}
+                      :tab "peers" :key "peers"}
+        [:iframe {:src (format "%s/scenario.html" @scenario-origin)
+                  :key @force-updater
+                  :width "100%"
+                  :height "100%"}]]]]]))
 
 (defn rc-page-main
   [channels state]
