@@ -266,7 +266,15 @@
                                  {::op.spec/op-key ::scenario-api.chan/pause
                                   ::op.spec/op-type ::op.spec/fire-and-forget}
                                  channels
-                                 {}))} "pause"]]]
+                                 {}))} "pause"]
+       [ant-button {:size "small"
+                    :title "next-step"
+                    :on-click (fn []
+                                (scenario-api.chan/op
+                                 {::op.spec/op-key ::scenario-api.chan/next-step
+                                  ::op.spec/op-type ::op.spec/fire-and-forget}
+                                 channels
+                                 {}))} "next-step"]]]
      [ant-row {:style {:height "100%"}}
       [:iframe {:src (format "%s/scenario.html" @scenario-origin)
                 :key @force-updater
