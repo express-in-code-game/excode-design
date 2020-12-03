@@ -1,0 +1,11 @@
+{
+	"dependencies": {
+		"app-node": "file:/ctx/DeathStarGame/bin/app-node",
+		"ui": "file:/ctx/DeathStarGame/bin/ui",
+		"scenario": "file:/ctx/DeathStarGame/bin/scenario",
+		"peernode": "file:/ctx/peernode/bin"
+	},
+	"devDependencies": {
+		"shadow-cljs": "2.11.7"
+	}
+}
