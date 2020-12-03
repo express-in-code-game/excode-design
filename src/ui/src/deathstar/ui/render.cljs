@@ -297,10 +297,10 @@
        [ant-tab-pane {:style {:width "100%"
                               :height "100%"}
                       :tab "peers" :key "peers"}
-        [:iframe {:src (format "%s/scenario.html" @scenario-origin)
-                  :key @force-updater
-                  :width "100%"
-                  :height "100%"}]]]]]))
+        #_[:iframe {:src (format "%s/scenario.html" @scenario-origin)
+                    :key @force-updater
+                    :width "100%"
+                    :height "100%"}]]]]]))
 
 (defn rc-page-main
   [channels state]
