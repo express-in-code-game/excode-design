@@ -24,7 +24,7 @@
                      :devtools {:repl-init-ns deathstar.app.main
                                 :repl-pprint true
                                 :autobuild true
-                                :devtools-url "http://localhost:9630"
+                                :devtools-url "http://compiler:9630"
                                 :after-load deathstar.app.main/reload}}
 
           :ui {:target :browser

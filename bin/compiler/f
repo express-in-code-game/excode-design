@@ -21,7 +21,7 @@ server(){
 dev(){
 
     npm i
-    shadow -A:dev watch :ui :scenario :player :app-node
+    shadow -A:dev:ui:scenario:app-node watch :ui :scenario :player :app-node
 
 }
 
