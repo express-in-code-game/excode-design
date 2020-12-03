@@ -5,7 +5,7 @@
         :host "0.0.0.0"}
  :dev-http {8000 {:roots ["/ctx/DeathStarGame/bin/ui/resources/public"]
                   :host "0.0.0.0"}
-            8001 {:roots ["/ctx/DeathStarGame/bin/scenario/resources/public"]
+            8001 {:roots ["/ctx/DeathStarGame/bin/scenario-compiler/resources/public"]
                   :host "0.0.0.0"}}
  :builds {:app-node {:target :node-script
                      :main deathstar.app.main/main
@@ -64,7 +64,7 @@
                 :devtools-url #shadow/env ["SHADOWCLJS_DEVTOOLS_URL" :default "http://localhost:9630"]}}
 
           :scenario {:target :browser
-                     :output-dir "/ctx/DeathStarGame/bin/scenario/resources/public/js-out/scenario"
+                     :output-dir "/ctx/DeathStarGame/bin/scenario-compiler/resources/public/js-out/scenario"
                      :asset-path "./js-out/scenario"
                      :module-loader true
                      :modules {:main {:entries [deathstar.scenario.main]}}
@@ -78,7 +78,7 @@
                                 :devtools-url #shadow/env ["SHADOWCLJS_DEVTOOLS_URL" :default "http://localhost:9630"]}}
 
           :player {:target :browser
-                   :output-dir "/ctx/DeathStarGame/bin/scenario/resources/public/js-out/player"
+                   :output-dir "/ctx/DeathStarGame/bin/scenario-compiler/resources/public/js-out/player"
                    :asset-path "./js-out/player"
                    :module-loader true
                    :modules {:main {:entries [deathstar.scenario.player.main]}}

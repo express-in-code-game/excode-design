@@ -8,7 +8,7 @@
         org.clojure/core.async {:mvn/version "1.1.587"}}
  :aliases {:app-node {:extra-deps {github.DeathStarGame.bin/app-node {:local/root "/ctx/DeathStarGame/bin/app-node"}}}
            :ui {:extra-deps {github.DeathStarGame.bin/ui {:local/root "/ctx/DeathStarGame/bin/ui"}}}
-           :scenario {:extra-deps {github.DeathStarGame.bin/scenario {:local/root "/ctx/DeathStarGame/bin/scenario"}}}
+           :scenario-compiler {:extra-deps {github.DeathStarGame.bin/scenario-compiler {:local/root "/ctx/DeathStarGame/bin/scenario-compiler"}}}
            :peernode {:extra-deps {github.cljctools.bin/peernode {:local/root "/ctx/peernode/bin"}}}
            :dev {:extra-deps {thheller/shadow-cljs {:mvn/version "2.11.7"
                                                     :exclusions [nrepl/nrepl
