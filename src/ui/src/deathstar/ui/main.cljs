@@ -9,7 +9,7 @@
    [goog.string.format :as format]
    [goog.string :refer [format]]
    [goog.object]
-   [clojure.string :as string]
+   [clojure.string :as str]
    [cljs.reader :refer [read-string]]
 
    [cljctools.csp.op.spec :as op.spec]
@@ -39,6 +39,9 @@
 (goog-define RSOCKET_PORT 0)
 
 (goog-define SCENARIO_ORIGIN "")
+
+(set! RSOCKET_PORT (str (subs js/location.port 0 2) (subs (str RSOCKET_PORT) 2)))
+(set! SCENARIO_ORIGIN (format "http://localhost:%s081" (subs js/location.port 0 2)))
 
 (def channels (merge
                (app.chan/create-channels)
