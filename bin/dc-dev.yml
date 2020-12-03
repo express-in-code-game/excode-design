@@ -450,9 +450,9 @@ services:
         workdir: /ctx/peernode/bin
         # workdir: /ctx/js-ipfs/packages/ipfs
     # command: bash init-and-daemon.sh
-    # command: tail -f /dev/null
+    command: tail -f /dev/null
     # command: bash f dev
-    command: bash f start
+    # command: bash f start
     expose:
       - 7000
     environment:
