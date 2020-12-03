@@ -268,6 +268,14 @@
                                  channels
                                  {}))} "pause"]
        [ant-button {:size "small"
+                    :title "replay"
+                    :on-click (fn []
+                                (scenario-api.chan/op
+                                 {::op.spec/op-key ::scenario-api.chan/replay
+                                  ::op.spec/op-type ::op.spec/fire-and-forget}
+                                 channels
+                                 {}))} "replay"]
+       [ant-button {:size "small"
                     :title "next-step"
                     :on-click (fn []
                                 (scenario-api.chan/op
