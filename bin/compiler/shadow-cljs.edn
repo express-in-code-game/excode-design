@@ -26,26 +26,27 @@
                                 :autobuild true
                                 :devtools-url "http://compiler:9630"
                                 :after-load deathstar.app.main/reload}}
-          :peernode {:target :node-library
-                     :main cljctools.peernode.main/main
-                     :exports-var cljctools.peernode.main/exports
-                     :output-to "/ctx/peernode/bin/resources/out/main.js"
-                     :compiler-options {:optimizations :simple
-                                        :infer-externs   false  #_:auto
-                                        :stable-names true
-                                        :recompile-dependents true
-                                        :source-maps true
-                                        :closure-defines {cljctools.peernode.main/RSOCKET_PORT #shadow/env ["RSOCKET_PORT" :as :int :default 7000]}
-                                        :cross-chunk-method-motion false}
-                     :js-options
-                     {:js-provider :shadow
-                      :keep-native-requires true
-                      :keep-as-require #{}}
-                     :devtools {:repl-init-ns cljctools.peernode.main
-                                :repl-pprint true
-                                :autobuild true
-                                :devtools-url "http://compiler:9630"
-                                :after-load cljctools.peernode.main/reload}}
+          
+      ;     :peernode {:target :node-library
+      ;                :main cljctools.peernode.main/main
+      ;                :exports-var cljctools.peernode.main/exports
+      ;                :output-to "/ctx/peernode/bin/resources/out/main.js"
+      ;                :compiler-options {:optimizations :simple
+      ;                                   :infer-externs   false  #_:auto
+      ;                                   :stable-names true
+      ;                                   :recompile-dependents true
+      ;                                   :source-maps true
+      ;                                   :closure-defines {cljctools.peernode.main/RSOCKET_PORT #shadow/env ["RSOCKET_PORT" :as :int :default 7000]}
+      ;                                   :cross-chunk-method-motion false}
+      ;                :js-options
+      ;                {:js-provider :shadow
+      ;                 :keep-native-requires true
+      ;                 :keep-as-require #{}}
+      ;                :devtools {:repl-init-ns cljctools.peernode.main
+      ;                           :repl-pprint true
+      ;                           :autobuild true
+      ;                           :devtools-url "http://compiler:9630"
+      ;                           :after-load cljctools.peernode.main/reload}}
 
           :ui {:target :browser
                :output-dir "/ctx/DeathStarGame/bin/ui/resources/public/js-out"

@@ -37,6 +37,7 @@
 (defonce axios (.-default (js/require "axios")))
 (defonce puppeteer (js/require "puppeteer-core"))
 (defonce OrbitDB (js/require "orbit-db"))
+(defonce IpfsClient (js/require "ipfs-http-client"))
 
 (defonce channels (merge
                    (app.chan/create-channels)
@@ -102,6 +103,25 @@
 (def state-game-channels (atom {}))
 
 (def ^:dynamic browser nil)
+(def ^:dynamic ipfs nil)
+(def ^:dynamic orbitdb nil)
+
+(def ^:const TOPIC-ID "deathstar-1a58070")
+
+
+(comment
+
+  (js/Object.keys ipfs)
+  (js/Object.keys ipfs.pubsub)
+
+  (go
+    (let [id (<p! (daemon._ipfs.id))]
+      (println (js-keys id))
+      (println (.-id id))
+      (println (format "id is %s" id))))
+
+  ;;
+  )
 
 (declare init-puppeteer)
 
@@ -118,7 +138,31 @@
               {::op.spec/op-key ::app.chan/init}
               (let [{:keys []} value]
                 (println ::init)
-                
+                (try
+                  (set! ipfs (IpfsClient "http://ipfs:5001"))
+                  (<p! (.createInstance OrbitDB ipfs (clj->js {"directory" "/root/.orbitdb"})))
+                  (catch js/Error err (println err)))
+                (let [id (.-id (<p! (ipfs.id)))
+                      text-decoder (js/TextDecoder.)]
+                  (ipfs.pubsub.subscribe
+                   TOPIC-ID
+                   (fn [msg]
+                     (when-not (= id (.-from msg))
+                       (do
+                         #_(println (format "id: %s" id))
+                         (println (format "from: %s" (.-from msg)))
+                         (println (format "data: %s" (.decode text-decoder  (.-data msg))))
+                         #_(println (format "topicIDs: %s" msg.topicIDs)))))))
+                (let [id (.-id (<p! (ipfs.id)))
+                      text-encoder (js/TextEncoder.)]
+                  (go (loop [counter 0]
+                        (<! (timeout 3000))
+                        (ipfs.pubsub.publish
+                         TOPIC-ID
+                         (-> text-encoder
+                             (.encode  (pr-str {::id id
+                                                ::counter counter}))))
+                        (recur (inc counter)))))
                 #_(<! (init-puppeteer))
 
 

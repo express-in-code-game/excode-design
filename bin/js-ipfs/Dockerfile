@@ -1,7 +1,10 @@
-FROM ipfs/js-ipfs
+FROM ipfs/js-ipfs:v0.52.2
 
-RUN jsipfs config Pubsub.Enabled --bool false
+COPY start.sh /root/start.sh
+RUN chmod 0755 /root/start.sh
 
-ENTRYPOINT ["jsipfs"]
+ENTRYPOINT ["/root/start.sh"]
 
-CMD ["daemon", "--migrate=true"]
+# CMD ["daemon", "--migrate=true"]
+CMD [""]
+

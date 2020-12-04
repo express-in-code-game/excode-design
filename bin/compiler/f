@@ -21,7 +21,7 @@ server(){
 dev(){
 
     npm i
-    shadow -A:dev:ui:scenario-compiler:app-node:peernode watch :ui :scenario :player :app-node :peernode
+    shadow -A:dev:ui:scenario-compiler:app-node watch :ui :scenario :player :app-node 
 
 }
 
