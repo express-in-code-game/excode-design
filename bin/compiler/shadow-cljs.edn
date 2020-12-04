@@ -7,7 +7,7 @@
                   :host "0.0.0.0"}
             8001 {:roots ["/ctx/DeathStarGame/bin/scenario-compiler/resources/public"]
                   :host "0.0.0.0"}}
- :builds {:app-node {:target :node-script
+ :builds {:app-node {:target #_:node-library :node-script
                      :main deathstar.app.main/main
                      :exports-var deathstar.app.main/exports
                      :output-to "/ctx/DeathStarGame/bin/app-node/resources/out/main.js"

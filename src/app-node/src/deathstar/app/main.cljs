@@ -36,6 +36,7 @@
 (defonce path (js/require "path"))
 (defonce axios (.-default (js/require "axios")))
 (defonce puppeteer (js/require "puppeteer-core"))
+(defonce OrbitDB (js/require "orbit-db"))
 
 (defonce channels (merge
                    (app.chan/create-channels)
