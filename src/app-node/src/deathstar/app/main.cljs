@@ -113,6 +113,8 @@
 (def ^:dynamic browser nil)
 (def ^:dynamic ipfs nil)
 (def ^:dynamic orbitdb nil)
+(def ^:dynamic dblog nil)
+(def ^:dynamic dbdocs nil)
 
 (def ^:const TOPIC-ID "deathstar-1a58070")
 
@@ -147,8 +149,33 @@
               (let [{:keys []} value]
                 (println ::init)
                 (try
-                  (set! ipfs (IpfsClient "http://ipfs:5001"))
-                  (<p! (.createInstance OrbitDB ipfs (clj->js {"directory" "/root/.orbitdb"})))
+                  (let [options (clj->js {"accessController"
+                                          {"write" ["*"] #_[(.. orbitdb -identity -publicKey)]}})]
+                    (set! ipfs (IpfsClient "http://ipfs:5001"))
+                    (set! orbitdb (<p! (.createInstance OrbitDB ipfs (clj->js {"directory" "/root/.orbitdb"}))))
+                    (set! dblog (<p! (.log orbitdb TOPIC-ID options)))
+                    (<p! (.load dblog))
+                    (set! dbdocs (<p! (.docs orbitdb "foo")))
+                    (<p! (.load dbdocs))
+                    (do
+                      #_(println (.. orbitdb -identity -publicKey))
+                      #_(println (.-address dblog))
+                      (println (.toString (.-address dblog)))
+                      #_(println (.. dblog -identity -publicKey))
+                      #_(println (.. dbdocs -identity -publicKey)))
+                    (let [id (.-id (<p! (ipfs.id)))]
+                      (go (loop []
+                            (<! (timeout 2000))
+                            (.add dblog (pr-str {::app.spec/peer-id id
+                                                 ::locale-time-string (.toLocaleTimeString (js/Date.)) 
+                                                 ::random-int (rand-int 1000)}))
+                            (recur))))
+                    (.on (.-events dblog) "replicated" (fn [address]
+                                                         (-> dblog
+                                                             (.iterator  #js {"limit" 1})
+                                                             (.collect)
+                                                             (.map (fn [e] (.-value (.-payload e))))
+                                                             (println)))))
                   (catch js/Error err (println err)))
                 (let [id (.-id (<p! (ipfs.id)))
                       text-decoder (js/TextDecoder.)]
