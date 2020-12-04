@@ -55,13 +55,14 @@
 (pipe (::app.chan/ops| channels) (::rsocket.chan/ops| channels))
 (pipe (::scenario-api.chan/ops| channels) (::rsocket.chan/ops| channels))
 
-(def state (ui.render/create-state
-            {::ui.spec/scenario-origin SCENARIO_ORIGIN}))
+(def state* (ui.render/create-state*
+            {::ui.spec/scenario-origin SCENARIO_ORIGIN
+             ::app.spec/peer-metas {}}))
 
 (def routes ["/" {"" ::ui.spec/page-main
                   [::app.spec/game-id ""] ::ui.spec/page-game
                   #_"/game/frequncy" #_{[::app.spec/game-id ""] ::ui.spec/page-game}}])
-(def router (browser-router.impl/create-proc-ops channels state {::browser-router.spec/routes routes}))
+(def router (browser-router.impl/create-proc-ops channels state* {::browser-router.spec/routes routes}))
 
 
 
@@ -78,7 +79,7 @@
               {::op.spec/op-key ::ui.chan/init}
               (let [{:keys []} value]
                 (println ::init)
-                (ui.render/render-ui channels state {})
+                (ui.render/render-ui channels state* {})
                 (app.chan/op
                  {::op.spec/op-key ::app.chan/request-state-update
                   ::op.spec/op-type ::op.spec/fire-and-forget}
@@ -88,8 +89,9 @@
               {::op.spec/op-key ::ui.chan/update-state
                ::op.spec/op-type ::op.spec/fire-and-forget}
               (let [{:keys []} value]
-                (swap! state merge value)))))
-        (recur)))))
+                (swap! state* merge value))))
+
+          (recur))))))
 
 (def rsocket (rsocket.impl/create-proc-ops
               channels

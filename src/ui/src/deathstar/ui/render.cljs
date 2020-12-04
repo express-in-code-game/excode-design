@@ -73,30 +73,30 @@
 (def ant-icon-reload-outlined (reagent.core/adapt-react-class AntIconReloadOutlined))
 
 
-(defn create-state
+(defn create-state*
   [data]
   (reagent.core/atom data))
 
 (declare  rc-main rc-page-main rc-page-game rc-page-not-found)
 
 (defn render-ui
-  [channels state {:keys [id] :or {id "ui"}}]
-  (reagent.dom/render [rc-main channels state]  (.getElementById js/document id)))
+  [channels state* {:keys [id] :or {id "ui"}}]
+  (reagent.dom/render [rc-main channels state*]  (.getElementById js/document id)))
 
 (defn rc-main
-  [channels state]
-  (reagent.core/with-let [route-key* (reagent.core/cursor state [::browser-router.spec/route-key])]
+  [channels state*]
+  (reagent.core/with-let [route-key* (reagent.core/cursor state* [::browser-router.spec/route-key])]
     (let [route-key @route-key*]
       (condp = route-key
-        ::ui.spec/page-main [rc-page-main channels state]
-        ::ui.spec/page-game [rc-page-game channels state]
-        [rc-page-not-found channels state]))))
+        ::ui.spec/page-main [rc-page-main channels state*]
+        ::ui.spec/page-game [rc-page-game channels state*]
+        [rc-page-not-found channels state*]))))
 
 (defn menu
-  [channels state]
+  [channels state*]
   (reagent.core/with-let
-    [route-key* (reagent.core/cursor state [::browser-router.spec/route-key])
-     url* (reagent.core/cursor state [::browser-router.spec/url])]
+    [route-key* (reagent.core/cursor state* [::browser-router.spec/route-key])
+     url* (reagent.core/cursor state* [::browser-router.spec/url])]
     (let [route-key @route-key*
           url @url*]
       [ant-menu {:theme "light"
@@ -114,7 +114,7 @@
           [:a {:href (format "/%s" "frequency")} "game/:frequency"]]])))
 
 (defn layout
-  [channels state content]
+  [channels state* content]
   [ant-layout {:style {:min-height "100vh"}}
    [ant-layout-header
     {:style {:position "fixed"
@@ -128,14 +128,14 @@
            :class "ui-logo"}
      #_[:img {:class "logo-img" :src "./img/logo-4.png"}]
      [:div {:class "logo-name"} "DeathStarGame"]]
-    [menu channels state]]
+    [menu channels state*]]
    [ant-layout-content {:class "main-content"
                         :style {:margin-top "32px"
                                 :padding "32px 32px 32px 32px"}}
     content]])
 
 (defn table-games-columns
-  [channels state]
+  [channels state*]
   [{:title "game frequency"
     :key ::app.spec/game-id
     :dataIndex ::app.spec/game-id}
@@ -152,7 +152,7 @@
             v])))}])
 
 (defn table-games-columns-extra
-  [channels state]
+  [channels state*]
   [{:title "action"
     :key "action"
     :width "48px"
@@ -180,10 +180,10 @@
 
 
 (defn table-games
-  [channels state]
+  [channels state*]
   (reagent.core/with-let
-    [games* (reagent.core/cursor state [::app.spec/games])
-     columns (vec (concat (table-games-columns channels state) (table-games-columns-extra channels state)))]
+    [games* (reagent.core/cursor state* [::app.spec/games])
+     columns (vec (concat (table-games-columns channels state*) (table-games-columns-extra channels state*)))]
     (let [games (vec (vals @games*))
           total (count games)]
       [ant-table {:show-header true
@@ -202,9 +202,41 @@
                            }
                   :pagination false}])))
 
+(defn table-peer-metas-columns
+  [channels state*]
+  [{:title "peer-id"
+    :key ::app.spec/peer-id
+    :dataIndex ::app.spec/peer-id}
+   {:title "counter"
+    :key ::app.spec/counter
+    :dataIndex ::app.spec/counter}])
+
+(defn table-peer-metas
+  [channels state*]
+  (reagent.core/with-let
+    [peer-metas* (reagent.core/cursor state* [::app.spec/peer-metas])
+     columns (vec (concat (table-peer-metas-columns channels state*)))]
+    (let [dataSource (vec (vals @peer-metas*))
+          total (count dataSource)]
+      [ant-table {:show-header true
+                  :size "small"
+                  :row-key ::app.spec/peer-id
+                  :style {:height "50%" :width "100%"}
+                  :columns columns
+                  :dataSource dataSource
+                  :on-change (fn [pag fil sor ext]
+                               #_(js->clj {:pagination pag
+                                           :filters fil
+                                           :sorter sor
+                                           :extra ext} :keywordize-keys true))
+                  :scroll {;  :x "max-content" 
+                                ;  :y 256
+                           }
+                  :pagination false}])))
+
 
 (defn rc-iframe
-  [channels state opts-iframe]
+  [channels state* opts-iframe]
   (reagent.core/with-let
     [force-updater (reagent.core/atom (random-uuid))]
     [:div {:style {}#_{:display "none"}}
@@ -223,10 +255,10 @@
 
 
 (defn rc-iframe-scenario
-  [channels state]
+  [channels state*]
   (reagent.core/with-let
     [force-updater (reagent.core/atom (random-uuid))
-     scenario-origin (reagent.core/cursor state [::ui.spec/scenario-origin])]
+     scenario-origin (reagent.core/cursor state* [::ui.spec/scenario-origin])]
     [:<>
      [ant-row
       [ant-button-group
@@ -303,10 +335,10 @@
                     :height "100%"}]]]]]))
 
 (defn rc-page-main
-  [channels state]
+  [channels state*]
   (reagent.core/with-let
     []
-    [layout channels state
+    [layout channels state*
      [:<>
       [ant-button {:type "default"
                    :size "small"
@@ -319,29 +351,36 @@
 
       [ant-row {:justify "center"
                 :align "top" #_"middle"
-                :style {:height "94%"}
+                :style {:height "40%"}
                     ;; :gutter [16 24]
                 }
        [ant-col {:span 24}
-        [table-games channels state]]]
+        [table-games channels state*]]]
+      [ant-row {:justify "center"
+                :align "top" #_"middle"
+                :style {:height "40%"}
+                    ;; :gutter [16 24]
+                }
+       [ant-col {:span 24}
+        [table-peer-metas channels state*]]]
 
       #_[:<>
-         (if (empty? @state)
+         (if (empty? @state*)
 
            [:div "loading..."]
 
            [:<>
-            [:pre {} (with-out-str (pprint @state))]
+            [:pre {} (with-out-str (pprint @state*))]
             [ant-button {:icon (reagent.core/as-element [ant-icon-sync-outlined])
                          :size "small"
                          :title "button"
                          :on-click (fn [] ::button-click)}]])]]]))
 
 (defn rc-page-game
-  [channels state]
+  [channels state*]
   (reagent.core/with-let
-    [ scenario-origin (reagent.core/cursor state [::ui.spec/scenario-origin])]
-    [layout channels state
+    [ scenario-origin (reagent.core/cursor state* [::ui.spec/scenario-origin])]
+    [layout channels state*
      [:<>
       [ant-row {:justify "center"
                 :align "top" #_"middle"
@@ -349,22 +388,22 @@
                     ;; :gutter [16 24]
                 }
        [ant-col {:span 8}
-        #_[table-games channels state]]
+        #_[table-games channels state*]]
        [ant-col {:span 16 :style {:height "100%"}}
-        [rc-iframe-scenario channels state]
+        [rc-iframe-scenario channels state*]
         [ant-row {:justify "start"
                   :align "top" #_"middle"
                     ;; :gutter [16 24]
                   }
          [ant-col {:span 4 }
-          [rc-iframe channels state {:width "80px"
+          [rc-iframe channels state* {:width "80px"
                                      :height "32px"
                                      :src (format "%s/player.html" @scenario-origin)}]]]]]]]))
 
 (defn rc-page-not-found
-  [channels state]
+  [channels state*]
   (reagent.core/with-let
-    [layout channels state
+    [layout channels state*
      [:<>
       [:div "rc-page-not-found"]]]))
 

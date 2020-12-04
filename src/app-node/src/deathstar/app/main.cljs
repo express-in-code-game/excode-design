@@ -97,10 +97,18 @@
                       ::rsocket.spec/port 7003
                       ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
-(def state (atom
-            {::app.spec/games {}}))
+(def state* (atom
+            {::app.spec/games {}
+             ::app.spec/peer-metas {}}))
 
-(def state-game-channels (atom {}))
+(add-watch state* ::watch (fn [k atom-ref oldstate newstate]
+                            (ui.chan/op
+                             {::op.spec/op-key ::ui.chan/update-state
+                              ::op.spec/op-type ::op.spec/fire-and-forget}
+                             channels
+                             newstate)))
+
+(def state-game-channels* (atom {}))
 
 (def ^:dynamic browser nil)
 (def ^:dynamic ipfs nil)
@@ -149,31 +157,45 @@
                    (fn [msg]
                      (when-not (= id (.-from msg))
                        (do
+                         (swap! state* assoc-in [::app.spec/peer-metas (.-from msg)]
+                                (merge
+                                 (read-string (.decode text-decoder  (.-data msg)))
+                                 {::app.spec/peer-id (.-from msg)
+                                  ::app.spec/received-at (.now js/Date)}))
                          #_(println (format "id: %s" id))
-                         (println (format "from: %s" (.-from msg)))
-                         (println (format "data: %s" (.decode text-decoder  (.-data msg))))
+                         #_(println (format "from: %s" (.-from msg)))
+                         #_(println (format "data: %s" (.decode text-decoder  (.-data msg))))
                          #_(println (format "topicIDs: %s" msg.topicIDs)))))))
                 (let [id (.-id (<p! (ipfs.id)))
                       text-encoder (js/TextEncoder.)]
                   (go (loop [counter 0]
-                        (<! (timeout 3000))
+                        (<! (timeout 2000))
                         (ipfs.pubsub.publish
                          TOPIC-ID
                          (-> text-encoder
-                             (.encode  (pr-str {::id id
-                                                ::counter counter}))))
+                             (.encode  (pr-str {::app.spec/peer-id id 
+                                                ::app.spec/counter counter}))))
                         (recur (inc counter)))))
+                (go (loop []
+                      (<! (timeout 4000))
+                      (doseq [[peer-id {:keys [::app.spec/received-at]
+                                        :as peer-meta}] (::app.spec/peer-metas   @state*)
+                              :when (> (- (.now js/Date) received-at) 8000)]
+                        (println ::removing-peer)
+                        (swap! state* update-in [::app.spec/peer-metas] dissoc peer-id))
+                      (recur)))
+
                 #_(<! (init-puppeteer))
 
 
                 #_(go (loop []
                         (<! (timeout 2000))
-                        #_(swap! state update ::app.spec/counter inc)
+                        #_(swap! state* update ::app.spec/counter inc)
                         (ui.chan/op
                          {::op.spec/op-key ::ui.chan/update-state
                           ::op.spec/op-type ::op.spec/fire-and-forget}
                          channels
-                         @state)
+                         @state*)
                         (recur)))
                 #_(go
                     (let [out| (chan 64)]
@@ -204,31 +226,31 @@
                  {::op.spec/op-key ::ui.chan/update-state
                   ::op.spec/op-type ::op.spec/fire-and-forget}
                  channels
-                 @state))
+                 @state*))
 
               {::op.spec/op-key ::app.chan/create-game
                ::op.spec/op-type ::op.spec/fire-and-forget}
               (let [game-id (str (cljc.core/rand-uuid))
                     game {::app.spec/game-id game-id}]
-                (swap! state update ::app.spec/games assoc  game-id game)
+                (swap! state* update ::app.spec/games assoc  game-id game)
                 (app.chan/op
                  {::op.spec/op-key ::app.chan/sub-to-game
                   ::op.spec/op-type ::op.spec/fire-and-forget}
                  channels
                  {::app.spec/game-id game-id})
-                (ui.chan/op
-                 {::op.spec/op-key ::ui.chan/update-state
-                  ::op.spec/op-type ::op.spec/fire-and-forget}
-                 channels
-                 @state))
+                #_(ui.chan/op
+                   {::op.spec/op-key ::ui.chan/update-state
+                    ::op.spec/op-type ::op.spec/fire-and-forget}
+                   channels
+                   @state*))
 
               {::op.spec/op-key ::app.chan/sub-to-game
                ::op.spec/op-type ::op.spec/fire-and-forget}
               (let [{:keys [::app.spec/game-id]} value]
                 (println ::sub-to-game)
-                (when-not (get @state-game-channels game-id)
+                (when-not (get @state-game-channels* game-id)
                   (let [pubsub| (chan (sliding-buffer 64))]
-                    (swap! state-game-channels assoc game-id pubsub|)
+                    (swap! state-game-channels* assoc game-id pubsub|)
                     (peernode.chan/op
                      {::op.spec/op-key ::peernode.chan/pubsub-sub
                       ::op.spec/op-type ::op.spec/fire-and-forget}
@@ -254,24 +276,24 @@
               (let [{:keys [::op.spec/out| ::app.spec/game-id]} value]
                 (println ::unsub-from-game)
                 (println value)
-                (let [pubsub| (get @state-game-channels game-id)]
-                  (swap! state-game-channels dissoc game-id)
+                (let [pubsub| (get @state-game-channels* game-id)]
+                  (swap! state-game-channels* dissoc game-id)
                   (close! pubsub|)
-                  (swap! state update ::app.spec/games dissoc game-id)
+                  (swap! state* update ::app.spec/games dissoc game-id)
                   (peernode.chan/op
                    {::op.spec/op-key ::peernode.chan/pubsub-ubsub
                     ::op.spec/op-type ::op.spec/fire-and-forget}
                    channels
                    {::peernode.spec/topic-id game-id})
-                  (ui.chan/op
-                   {::op.spec/op-key ::ui.chan/update-state
-                    ::op.spec/op-type ::op.spec/fire-and-forget}
-                   channels
-                   @state)))))
+                  #_(ui.chan/op
+                     {::op.spec/op-key ::ui.chan/update-state
+                      ::op.spec/op-type ::op.spec/fire-and-forget}
+                     channels
+                     @state*)))))
           (recur))))))
 
 
-(def ops (create-proc-ops channels {}))
+(defonce ops (create-proc-ops channels {}))
 
 (defn main [& args]
   (println ::main)
