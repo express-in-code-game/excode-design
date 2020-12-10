@@ -85,7 +85,7 @@
   [data]
   (reagent.core/atom data))
 
-(declare  rc-main rc-page-main rc-page-tournament rc-page-game rc-page-scenario rc-page-not-found)
+(declare  rc-main rc-page-main rc-page-tournament rc-page-tournament-join rc-page-game rc-page-scenario rc-page-not-found)
 
 (defn render-ui
   [channels state* {:keys [id] :or {id "ui"}}]
@@ -107,6 +107,9 @@
        [:f> rc-page-main channels state*]]
       [:> Route {"path" "/tournament/:frequency"}
        [:f> rc-page-tournament channels state*]]
+      [:> Route {"path" "/tournament"
+                 "exact" true}
+       [:f> rc-page-tournament-join channels state*]]
       [:> Route {"path" "/game/:frequency"}
        [:f> rc-page-game channels state*]]
       [:> Route {"path" "/scenario/:frequency"}
@@ -129,6 +132,8 @@
                  :on-select (fn [x] (do))}
        [ant-menu-item {:key "/"}
         [:r> Link #js {:to "/"} "main"]]
+       [ant-menu-item {:key "/tournament"}
+        [:r> Link #js  {:to "/tournament"} "tournament"]]
        [ant-menu-item {:key "/tournament/:frequency"}
         [:r> Link #js  {:to (format "/tournament/%s" (subs (str (random-uuid)) 0 7))} "/tournament/:frequency"]]
        [ant-menu-item {:key "/game/:frequency"}
@@ -401,6 +406,59 @@
                            :size "small"
                            :title "button"
                            :on-click (fn [] ::button-click)}]])]]]))
+
+(defn rc-page-tournament-join
+  [channels state*]
+  (reagent.core/with-let
+    [[form] (vec (.useForm AntForm))
+     on-join
+     (fn []
+       (let [value (.getFieldsValue form)]
+         (-> form
+             (.validateFields)
+             (.then (fn [values]
+                      (println ::on-join)
+                      (println values)
+                      #_(put! ch-inputs {:ch/topic :inputs/ops
+                                         :ops/op :op/login
+                                         :u/password (aget vs "password")
+                                         :u/username (aget vs "username")})))
+             (.catch (fn [errorInfo]
+                       (println ::on-join-error)
+                       (println errorInfo))))))
+     on-create
+     (fn []
+       (let [value (.getFieldsValue form)]
+         (-> form
+             (.validateFields #js ["name"])
+             (.then (fn [values]
+                      (println ::on-create)
+                      (println values)
+                      #_(put! ch-inputs {:ch/topic :inputs/ops
+                                         :ops/op :op/login
+                                         :u/password (aget vs "password")
+                                         :u/username (aget vs "username")})))
+             (.catch (fn [errorInfo]
+                       (println ::on-join-error)
+                       (println errorInfo))))))]
+    [layout channels state*
+     [ant-form {:labelCol {:span 8} :wrapperCol {:span 24} :form form}
+      [ant-form-item {:label nil
+                      :name "name"
+                      :wrapperCol {:offset 1 :span 12}
+                      :rules [{:required true :message "required"}]}
+       [ant-input {:placeholder "name"}]]
+      [ant-form-item {:label nil
+                      :name "frequency"
+                      :wrapperCol {:offset 1 :span 12}
+                      :rules [{:required true :message "required"}]}
+       [ant-input-password {:placeholder "frequency (only when join)"}]]
+      [ant-form-item {:wrapperCol {:offset 1 :span 12}}
+       [ant-row {:justify "start"}
+        [ant-col {:offset 0 :span 2}
+         [ant-button {:type "default" :on-click on-join} "join"]]
+        [ant-col {:offset 0 :span 2}
+         [ant-button {:type "default" :on-click on-create} "create"]]]]]]))
 
 (defn rc-page-tournament
   [channels state*]
