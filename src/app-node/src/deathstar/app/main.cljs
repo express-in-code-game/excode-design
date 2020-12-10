@@ -160,12 +160,32 @@
                                                               TOPIC-ID
                                                               (clj->js {"accessController"
                                                                         {"write" ["*"]}}))))
+                    #_(<p! (.drop tournaments-kvstore))
                     (<p! (.load tournaments-kvstore))
+                    (swap! state* assoc ::app.spec/tournaments
+                           (reduce
+                            (fn [result [k value]]
+                              (assoc result k (read-string value)))
+                            {}
+                            (js->clj (.-all tournaments-kvstore))))
+                    (println ::count-tournaments-kvstore (count (js->clj (.-all tournaments-kvstore))))
+                    (doseq [[k tournament] (get @state* ::app.spec/tournaments)]
+                      (app.chan/op
+                       {::op.spec/op-key ::app.chan/join-tournament
+                        ::op.spec/op-type ::op.spec/fire-and-forget}
+                       channels
+                       tournament))
+                    
+                    #_(println (keys (js->clj (.-all tournaments-kvstore))))
                     (.on (.-events tournaments-kvstore)
                          "replicated"
                          (fn [address]
-                           (println (count (js->clj (.-all tournaments-kvstore))))
-                           (println (keys (js->clj (.-all tournaments-kvstore))))
+                           (swap! state* assoc ::app.spec/tournaments
+                                  (reduce
+                                   (fn [result [k value]]
+                                     (assoc result k (read-string value)))
+                                   {}
+                                   (js->clj (.-all tournaments-kvstore))))
                            #_(-> dblog
                                  (.iterator  #js {"limit" 1})
                                  (.collect)
@@ -285,7 +305,7 @@
 
               {::op.spec/op-key ::app.chan/create-tournament
                ::op.spec/op-type ::op.spec/fire-and-forget}
-              (let [frequency (cljc.core/rand-uuid)
+              (let [frequency (str (cljc.core/rand-uuid))
                     tournament {::app.spec/frequency frequency
                                 ::app.spec/host-id (get @state* ::app.spec/peer-id)}]
                 (swap! state* update ::app.spec/tournaments assoc frequency tournament)
@@ -324,7 +344,7 @@
                     (swap! state-tournament-channels* assoc frequency pubsub|)
                     (swap! state-tournament-eventlogs* assoc frequency eventlog)
                     #_(ipfs.pubsub.subscribe
-                       (str frequency)
+                       frequency
                        (fn [msg]
                          (when-not (= peer-id (.-from msg))
                            (do
@@ -337,11 +357,15 @@
                ::op.spec/op-type ::op.spec/fire-and-forget}
               (let [{:keys [::op.spec/out| ::app.spec/frequency]} value]
                 (println ::leave-tournament)
+                (println value)
                 (when (get @state-tournament-channels* frequency)
                   (let [pubsub| (get @state-tournament-channels* frequency)
+                        eventlog (get @state-tournament-eventlogs* frequency)
                         tournament (get-in @state* [::app.spec/tournaments frequency])
                         peer-id (::app.spec/peer-id @state*)]
                     (swap! state-tournament-channels* dissoc frequency)
+                    (swap! state-tournament-eventlogs* dissoc frequency)
+                    (.drop eventlog)
                     (close! pubsub|)
                     (swap! state* update ::app.spec/tournaments dissoc frequency)
                     (when (= peer-id (::app.spec/host-id tournament))

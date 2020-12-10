@@ -166,7 +166,7 @@
   [channels state*]
   [{:title "frequency"
     :key ::app.spec/frequency
-    :dataIndex ::app.spec/frequency}
+    :dataIndex "frequency"}
    #_{:title "preview"
       :key "preview"
       :render
