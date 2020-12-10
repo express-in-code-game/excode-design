@@ -173,7 +173,22 @@
                                  (println)))))
                   (catch js/Error err (println err)))
                 (let [id (.-id (<p! (ipfs.id)))
-                      text-encoder (js/TextEncoder.)]
+                      text-encoder (js/TextEncoder.)
+                      text-decoder (js/TextDecoder.)]
+                  (ipfs.pubsub.subscribe
+                   TOPIC-ID
+                   (fn [msg]
+                     (when-not (= id (.-from msg))
+                       (do
+                         (swap! state* assoc-in [::app.spec/peer-metas (.-from msg)]
+                                (merge
+                                 (read-string (.decode text-decoder  (.-data msg)))
+                                 {::app.spec/peer-id (.-from msg)
+                                  ::app.spec/received-at (.now js/Date)}))
+                         #_(println (format "id: %s" id))
+                         #_(println (format "from: %s" (.-from msg)))
+                         #_(println (format "data: %s" (.decode text-decoder  (.-data msg))))
+                         #_(println (format "topicIDs: %s" msg.topicIDs))))))
                   (go (loop [counter 0]
                         (<! (timeout 2000))
                         (ipfs.pubsub.publish
@@ -181,16 +196,16 @@
                          (-> text-encoder
                              (.encode  (pr-str {::app.spec/peer-id id
                                                 ::app.spec/counter counter}))))
-                        (recur (inc counter)))))
-                (go (loop []
-                      (<! (timeout 4000))
-                      (doseq [[peer-id {:keys [::app.spec/received-at]
-                                        :as peer-meta}] (::app.spec/peer-metas   @state*)
-                              :when (> (- (.now js/Date) received-at) 8000)]
-                        (println ::removing-peer)
-                        (swap! state* update-in [::app.spec/peer-metas] dissoc peer-id))
-                      (recur))))
-
+                        (recur (inc counter))))
+                  (go (loop []
+                        (<! (timeout 4000))
+                        (doseq [[peer-id {:keys [::app.spec/received-at]
+                                          :as peer-meta}] (::app.spec/peer-metas   @state*)
+                                :when (> (- (.now js/Date) received-at) 8000)]
+                          (println ::removing-peer)
+                          (swap! state* update-in [::app.spec/peer-metas] dissoc peer-id))
+                        (recur)))))
+              
               #_(let [{:keys []} value]
                   (println ::init)
                   (try
