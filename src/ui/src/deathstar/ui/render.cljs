@@ -18,11 +18,20 @@
    [cljctools.cljc.core :as cljc.core]
 
    [deathstar.ui.spec :as ui.spec]
-   [cljctools.browser-router.spec :as browser-router.spec]
 
    [deathstar.scenario-api.spec :as scenario-api.spec]
    [deathstar.scenario-api.chan :as scenario-api.chan]
 
+   ["react" :as React]
+   ["react-router-dom" :as ReactRouter :refer [BrowserRouter
+                                               HashRouter
+                                               Switch
+                                               Route
+                                               Link
+                                               useLocation
+                                               useHistory
+                                               useRouteMatch
+                                               useParams]]
    ["antd/lib/layout" :default AntLayout]
    ["antd/lib/menu" :default AntMenu]
    ["antd/lib/icon" :default AntIcon]
@@ -34,7 +43,7 @@
    ["antd/lib/input" :default AntInput]
    ["antd/lib/tabs" :default AntTabs]
    ["antd/lib/table" :default AntTable]
-   ["react" :as React]
+
    ["antd/lib/checkbox" :default AntCheckbox]
 
 
@@ -44,74 +53,88 @@
    ["@ant-design/icons/SyncOutlined" :default AntIconSyncOutlined]
    ["@ant-design/icons/ReloadOutlined" :default AntIconReloadOutlined]))
 
+(do
+  (def ant-row (reagent.core/adapt-react-class AntRow))
+  (def ant-col (reagent.core/adapt-react-class AntCol))
+  (def ant-divider (reagent.core/adapt-react-class AntDivider))
+  (def ant-layout (reagent.core/adapt-react-class AntLayout))
+  (def ant-layout-content (reagent.core/adapt-react-class (.-Content AntLayout)))
+  (def ant-layout-header (reagent.core/adapt-react-class (.-Header AntLayout)))
 
-(def ant-row (reagent.core/adapt-react-class AntRow))
-(def ant-col (reagent.core/adapt-react-class AntCol))
-(def ant-divider (reagent.core/adapt-react-class AntDivider))
-(def ant-layout (reagent.core/adapt-react-class AntLayout))
-(def ant-layout-content (reagent.core/adapt-react-class (.-Content AntLayout)))
-(def ant-layout-header (reagent.core/adapt-react-class (.-Header AntLayout)))
+  (def ant-menu (reagent.core/adapt-react-class AntMenu))
+  (def ant-menu-item (reagent.core/adapt-react-class (.-Item AntMenu)))
+  (def ant-icon (reagent.core/adapt-react-class AntIcon))
+  (def ant-button (reagent.core/adapt-react-class AntButton))
+  (def ant-button-group (reagent.core/adapt-react-class (.-Group AntButton)))
+  (def ant-list (reagent.core/adapt-react-class AntList))
+  (def ant-input (reagent.core/adapt-react-class AntInput))
+  (def ant-input-password (reagent.core/adapt-react-class (.-Password AntInput)))
+  (def ant-checkbox (reagent.core/adapt-react-class AntCheckbox))
+  (def ant-form (reagent.core/adapt-react-class AntForm))
+  (def ant-table (reagent.core/adapt-react-class AntTable))
+  (def ant-form-item (reagent.core/adapt-react-class (.-Item AntForm)))
+  (def ant-tabs (reagent.core/adapt-react-class AntTabs))
+  (def ant-tab-pane (reagent.core/adapt-react-class (.-TabPane AntTabs)))
 
-(def ant-menu (reagent.core/adapt-react-class AntMenu))
-(def ant-menu-item (reagent.core/adapt-react-class (.-Item AntMenu)))
-(def ant-icon (reagent.core/adapt-react-class AntIcon))
-(def ant-button (reagent.core/adapt-react-class AntButton))
-(def ant-button-group (reagent.core/adapt-react-class (.-Group AntButton)))
-(def ant-list (reagent.core/adapt-react-class AntList))
-(def ant-input (reagent.core/adapt-react-class AntInput))
-(def ant-input-password (reagent.core/adapt-react-class (.-Password AntInput)))
-(def ant-checkbox (reagent.core/adapt-react-class AntCheckbox))
-(def ant-form (reagent.core/adapt-react-class AntForm))
-(def ant-table (reagent.core/adapt-react-class AntTable))
-(def ant-form-item (reagent.core/adapt-react-class (.-Item AntForm)))
-(def ant-tabs (reagent.core/adapt-react-class AntTabs))
-(def ant-tab-pane (reagent.core/adapt-react-class (.-TabPane AntTabs)))
-
-(def ant-icon-smile-outlined (reagent.core/adapt-react-class AntIconSmileOutlined))
-(def ant-icon-loading-outlined (reagent.core/adapt-react-class AntIconLoadingOutlined))
-(def ant-icon-sync-outlined (reagent.core/adapt-react-class AntIconSyncOutlined))
-(def ant-icon-reload-outlined (reagent.core/adapt-react-class AntIconReloadOutlined))
-
+  (def ant-icon-smile-outlined (reagent.core/adapt-react-class AntIconSmileOutlined))
+  (def ant-icon-loading-outlined (reagent.core/adapt-react-class AntIconLoadingOutlined))
+  (def ant-icon-sync-outlined (reagent.core/adapt-react-class AntIconSyncOutlined))
+  (def ant-icon-reload-outlined (reagent.core/adapt-react-class AntIconReloadOutlined)))
 
 (defn create-state*
   [data]
   (reagent.core/atom data))
 
-(declare  rc-main rc-page-main rc-page-game rc-page-not-found)
+(declare  rc-main rc-page-main rc-page-tournament rc-page-game rc-page-scenario rc-page-not-found)
 
 (defn render-ui
   [channels state* {:keys [id] :or {id "ui"}}]
-  (reagent.dom/render [rc-main channels state*]  (.getElementById js/document id)))
+  (reagent.dom/render [:f> rc-main channels state*]  (.getElementById js/document id)))
+
+; https://github.com/reagent-project/reagent/blob/master/CHANGELOG.md
+; https://github.com/reagent-project/reagent/blob/master/examples/functional-components-and-hooks/src/example/core.cljs
+; https://github.com/reagent-project/reagent/blob/master/doc/ReagentCompiler.md
+; https://github.com/reagent-project/reagent/blob/master/doc/ReactFeatures.md
 
 (defn rc-main
   [channels state*]
-  (reagent.core/with-let [route-key* (reagent.core/cursor state* [::browser-router.spec/route-key])]
-    (let [route-key @route-key*]
-      (condp = route-key
-        ::ui.spec/page-main [rc-page-main channels state*]
-        ::ui.spec/page-game [rc-page-game channels state*]
-        [rc-page-not-found channels state*]))))
+  (r/with-let
+    []
+    [:> #_BrowserRouter HashRouter
+     [:> Switch
+      [:> Route {"path" "/"
+                 "exact" true}
+       [:f> rc-page-main channels state*]]
+      [:> Route {"path" "/tournament/:frequency"}
+       [:f> rc-page-tournament channels state*]]
+      [:> Route {"path" "/game/:frequency"}
+       [:f> rc-page-game channels state*]]
+      [:> Route {"path" "/scenario/:frequency"}
+       [:f> rc-page-scenario channels state*]]
+      [:> Route {"path" "*"}
+       [:f> rc-page-not-found channels state*]]]]))
 
 (defn menu
   [channels state*]
   (reagent.core/with-let
-    [route-key* (reagent.core/cursor state* [::browser-router.spec/route-key])
-     url* (reagent.core/cursor state* [::browser-router.spec/url])]
-    (let [route-key @route-key*
-          url @url*]
+    [{:keys [:path :url :isExact :params]} (js->clj (useRouteMatch)
+                                                    :keywordize-keys true)]
+    (let []
       [ant-menu {:theme "light"
                  :mode "horizontal"
                  :size "small"
                  :style {:lineHeight "32px"}
                  :default-selected-keys ["home-panel"]
-                 :selected-keys [route-key]
+                 :selected-keys [path]
                  :on-select (fn [x] (do))}
-       [ant-menu-item {:key ::ui.spec/page-main}
-        [:a {:href "/"} "main"]]
-       [ant-menu-item {:key ::ui.spec/page-game}
-        [:a {:href (str (random-uuid))} ":game-frequency"]]
-       #_[ant-menu-item {:key ::ui.spec/page-game}
-          [:a {:href (format "/%s" "frequency")} "game/:frequency"]]])))
+       [ant-menu-item {:key "/"}
+        [:r> Link #js {:to "/"} "main"]]
+       [ant-menu-item {:key "/tournament/:frequency"}
+        [:r> Link #js  {:to (format "/tournament/%s" (subs (str (random-uuid)) 0 7))} "/tournament/:frequency"]]
+       [ant-menu-item {:key "/game/:frequency"}
+        [:r> Link #js  {:to (format "/game/%s" (subs (str (random-uuid)) 0 7))} "/game/:frequency"]]
+       [ant-menu-item {:key "/scenario/:frequency"}
+        [:r> Link #js  {:to (format "/scenario/%s" (subs (str (random-uuid)) 0 7))} "/scenario/:frequency"]]])))
 
 (defn layout
   [channels state* content]
@@ -128,7 +151,7 @@
            :class "ui-logo"}
      #_[:img {:class "logo-img" :src "./img/logo-4.png"}]
      [:div {:class "logo-name"} "DeathStarGame"]]
-    [menu channels state*]]
+    [:f> menu channels state*]]
    [ant-layout-content {:class "main-content"
                         :style {:margin-top "32px"
                                 :padding "32px 32px 32px 32px"}}
@@ -336,50 +359,70 @@
 
 (defn rc-page-main
   [channels state*]
+  [layout channels state*
+   [:<>
+    [:div ::rc-page-main]]]
+  #_(reagent.core/with-let
+      []
+      [layout channels state*
+       [:<>
+        [ant-button {:type "default"
+                     :size "small"
+                     :on-click (fn []
+                                 (app.chan/op
+                                  {::op.spec/op-key ::app.chan/create-game
+                                   ::op.spec/op-type ::op.spec/fire-and-forget}
+                                  channels
+                                  {}))} "create game"]
+
+        [ant-row {:justify "center"
+                  :align "top" #_"middle"
+                  :style {:height "40%"}
+                    ;; :gutter [16 24]
+                  }
+         [ant-col {:span 24}
+          [table-games channels state*]]]
+        [ant-row {:justify "center"
+                  :align "top" #_"middle"
+                  :style {:height "40%"}
+                    ;; :gutter [16 24]
+                  }
+         [ant-col {:span 24}
+          [table-peer-metas channels state*]]]
+
+        #_[:<>
+           (if (empty? @state*)
+
+             [:div "loading..."]
+
+             [:<>
+              [:pre {} (with-out-str (pprint @state*))]
+              [ant-button {:icon (reagent.core/as-element [ant-icon-sync-outlined])
+                           :size "small"
+                           :title "button"
+                           :on-click (fn [] ::button-click)}]])]]]))
+
+(defn rc-page-tournament
+  [channels state*]
   (reagent.core/with-let
-    []
+    [scenario-origin (reagent.core/cursor state* [::ui.spec/scenario-origin])]
     [layout channels state*
      [:<>
-      [ant-button {:type "default"
-                   :size "small"
-                   :on-click (fn []
-                               (app.chan/op
-                                {::op.spec/op-key ::app.chan/create-game
-                                 ::op.spec/op-type ::op.spec/fire-and-forget}
-                                channels
-                                {}))} "create game"]
-
-      [ant-row {:justify "center"
-                :align "top" #_"middle"
-                :style {:height "40%"}
-                    ;; :gutter [16 24]
-                }
-       [ant-col {:span 24}
-        [table-games channels state*]]]
-      [ant-row {:justify "center"
-                :align "top" #_"middle"
-                :style {:height "40%"}
-                    ;; :gutter [16 24]
-                }
-       [ant-col {:span 24}
-        [table-peer-metas channels state*]]]
-
-      #_[:<>
-         (if (empty? @state*)
-
-           [:div "loading..."]
-
-           [:<>
-            [:pre {} (with-out-str (pprint @state*))]
-            [ant-button {:icon (reagent.core/as-element [ant-icon-sync-outlined])
-                         :size "small"
-                         :title "button"
-                         :on-click (fn [] ::button-click)}]])]]]))
+      [:div ::rc-page-tournament]
+      ]]))
 
 (defn rc-page-game
   [channels state*]
   (reagent.core/with-let
-    [ scenario-origin (reagent.core/cursor state* [::ui.spec/scenario-origin])]
+    [scenario-origin (reagent.core/cursor state* [::ui.spec/scenario-origin])]
+    [layout channels state*
+     [:<>
+      [:div ::rc-page-game]]]))
+
+(defn rc-page-scenario
+  [channels state*]
+  (reagent.core/with-let
+    [scenario-origin (reagent.core/cursor state* [::ui.spec/scenario-origin])]
     [layout channels state*
      [:<>
       [ant-row {:justify "center"
@@ -395,16 +438,16 @@
                   :align "top" #_"middle"
                     ;; :gutter [16 24]
                   }
-         [ant-col {:span 4 }
+         [ant-col {:span 4}
           [rc-iframe channels state* {:width "80px"
-                                     :height "32px"
-                                     :src (format "%s/player.html" @scenario-origin)}]]]]]]]))
+                                      :height "32px"
+                                      :src (format "%s/player.html" @scenario-origin)}]]]]]]]))
 
 (defn rc-page-not-found
   [channels state*]
   (reagent.core/with-let
     [layout channels state*
      [:<>
-      [:div "rc-page-not-found"]]]))
+      [:div ::rc-page-not-found]]]))
 
 

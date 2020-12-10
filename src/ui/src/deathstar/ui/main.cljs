@@ -20,10 +20,6 @@
    [cljctools.rsocket.impl :as rsocket.impl]
    [cljctools.rsocket.examples]
 
-   [cljctools.browser-router.spec :as browser-router.spec]
-   [cljctools.browser-router.chan :as browser-router.chan]
-   [cljctools.browser-router.impl :as browser-router.impl]
-
    [deathstar.ui.spec :as ui.spec]
    [deathstar.ui.chan :as ui.chan]
 
@@ -47,7 +43,7 @@
                (app.chan/create-channels)
                (rsocket.chan/create-channels)
                (scenario-api.chan/create-channels)
-               (browser-router.chan/create-channels)
+               
                (ui.chan/create-channels)))
 
 (pipe (::rsocket.chan/requests| channels) (::ui.chan/ops| channels))
@@ -58,12 +54,6 @@
 (def state* (ui.render/create-state*
             {::ui.spec/scenario-origin SCENARIO_ORIGIN
              ::app.spec/peer-metas {}}))
-
-(def routes ["/" {"" ::ui.spec/page-main
-                  [::app.spec/game-id ""] ::ui.spec/page-game
-                  #_"/game/frequncy" #_{[::app.spec/game-id ""] ::ui.spec/page-game}}])
-(def router (browser-router.impl/create-proc-ops channels state* {::browser-router.spec/routes routes}))
-
 
 
 (defn create-proc-ops
