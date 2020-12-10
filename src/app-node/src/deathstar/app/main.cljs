@@ -163,13 +163,13 @@
                       (println (.toString (.-address dblog)))
                       #_(println (.. dblog -identity -publicKey))
                       #_(println (.. dbdocs -identity -publicKey)))
-                    (let [id (.-id (<p! (ipfs.id)))]
-                      (go (loop []
-                            (<! (timeout 2000))
-                            (.add dblog (pr-str {::app.spec/peer-id id
-                                                 ::locale-time-string (.toLocaleTimeString (js/Date.)) 
-                                                 ::random-int (rand-int 1000)}))
-                            (recur))))
+                    #_(let [id (.-id (<p! (ipfs.id)))]
+                        (go (loop []
+                              (<! (timeout 2000))
+                              (.add dblog (pr-str {::app.spec/peer-id id
+                                                   ::locale-time-string (.toLocaleTimeString (js/Date.))
+                                                   ::random-int (rand-int 1000)}))
+                              (recur))))
                     (.on (.-events dblog) "replicated" (fn [address]
                                                          (-> dblog
                                                              (.iterator  #js {"limit" 1})

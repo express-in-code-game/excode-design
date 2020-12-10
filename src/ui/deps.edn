@@ -10,6 +10,7 @@
         github.cljctools/csp {:local/root "/ctx/cljctools/csp"}
         github.cljctools/rsocket-js {:local/root  "/ctx/cljctools/rsocket-js"}
         github.cljctools/browser-router {:local/root  "/ctx/cljctools/browser-router"}
+        github.cljctools/tournament-render-antd {:local/root  "/ctx/cljctools/tournament-render-antd"}
 
         github.DeathStarGame/ui-meta {:local/root  "/ctx/DeathStarGame/src/ui-meta"}
         github.DeathStarGame/app-meta {:local/root  "/ctx/DeathStarGame/src/app-meta"}

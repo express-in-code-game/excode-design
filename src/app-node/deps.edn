@@ -10,7 +10,7 @@
         github.cljctools/csp {:local/root  "/ctx/cljctools/csp"}
         github.cljctools/rsocket-js {:local/root  "/ctx/cljctools/rsocket-js"}
 
-        github.cljctools/peernode-meta {:local/root  "/ctx/peernode/src/peernode-meta"}
+        github.cljctools/tournament {:local/root  "/ctx/cljctools/tournament"}
 
         github.DeathStarGame/app-meta {:local/root  "/ctx/DeathStarGame/src/app-meta"}
         github.DeathStarGame/scenario-api-meta {:local/root  "/ctx/DeathStarGame/src/scenario-api-meta"}
