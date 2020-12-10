@@ -34,26 +34,26 @@
 
 
 (defmethod op*
-  {::op.spec/op-key ::create-game
+  {::op.spec/op-key ::create-tournament
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
   (s/keys :req []))
-(derive ::create-game ::op)
+(derive ::create-tournament ::op)
 
 (defmethod op
-  {::op.spec/op-key ::create-game
+  {::op.spec/op-key ::create-tournament
    ::op.spec/op-type ::op.spec/fire-and-forget}
   [op-meta channels value]
   (put! (::ops| channels) (merge op-meta
                                  value)))
 
 (defmethod op*
-  {::op.spec/op-key ::unsub-from-game
+  {::op.spec/op-key ::leave-tournament
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
   (s/keys :req [::app.spec/game-id]))
-(derive ::unsub-from-game ::op)
+(derive ::leave-tournament ::op)
 
 (defmethod op
-  {::op.spec/op-key ::unsub-from-game
+  {::op.spec/op-key ::leave-tournament
    ::op.spec/op-type ::op.spec/fire-and-forget}
   [op-meta channels value]
   (put! (::ops| channels) (merge op-meta
@@ -61,13 +61,13 @@
 
 
 (defmethod op*
-  {::op.spec/op-key ::sub-to-game
+  {::op.spec/op-key ::join-tournament
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
   (s/keys :req [::app.spec/game-id]))
 (derive ::sub-to-game ::op)
 
 (defmethod op
-  {::op.spec/op-key ::sub-to-game
+  {::op.spec/op-key ::join-tournament
    ::op.spec/op-type ::op.spec/fire-and-forget}
   [op-meta channels value]
   (put! (::ops| channels) (merge op-meta

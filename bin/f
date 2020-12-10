@@ -32,7 +32,7 @@ down(){
 
 restart(){
   $1 rm -f -s $2
-  up $1
+  up $1 $2
 }
 
 deepdown(){

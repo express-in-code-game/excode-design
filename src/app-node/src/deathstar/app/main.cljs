@@ -98,7 +98,8 @@
                       ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
 (def state* (atom
-            {::app.spec/games {}
+            {::app.spec/peer-id nil
+             ::app.spec/tournaments {}
              ::app.spec/peer-metas {}}))
 
 (add-watch state* ::watch (fn [k atom-ref oldstate newstate]
@@ -108,7 +109,9 @@
                              channels
                              newstate)))
 
-(def state-game-channels* (atom {}))
+(def state-tournament-channels* (atom {}))
+(def state-tournament-eventlogs* (atom {}))
+(def ^:dynamic tournaments-kvstore nil)
 
 (def ^:dynamic browser nil)
 (def ^:dynamic ipfs nil)
@@ -149,50 +152,26 @@
               (let [{:keys []} value]
                 (println ::init)
                 (try
-                  (let [options (clj->js {"accessController"
-                                          {"write" ["*"] #_[(.. orbitdb -identity -publicKey)]}})]
+                  (let []
                     (set! ipfs (IpfsClient "http://ipfs:5001"))
+                    (swap! state* assoc ::app.spec/peer-id (.-id (<p! (ipfs.id))))
                     (set! orbitdb (<p! (.createInstance OrbitDB ipfs (clj->js {"directory" "/root/.orbitdb"}))))
-                    (set! dblog (<p! (.log orbitdb TOPIC-ID options)))
-                    (<p! (.load dblog))
-                    (set! dbdocs (<p! (.docs orbitdb "foo")))
-                    (<p! (.load dbdocs))
-                    (do
-                      #_(println (.. orbitdb -identity -publicKey))
-                      #_(println (.-address dblog))
-                      (println (.toString (.-address dblog)))
-                      #_(println (.. dblog -identity -publicKey))
-                      #_(println (.. dbdocs -identity -publicKey)))
-                    #_(let [id (.-id (<p! (ipfs.id)))]
-                        (go (loop []
-                              (<! (timeout 2000))
-                              (.add dblog (pr-str {::app.spec/peer-id id
-                                                   ::locale-time-string (.toLocaleTimeString (js/Date.))
-                                                   ::random-int (rand-int 1000)}))
-                              (recur))))
-                    (.on (.-events dblog) "replicated" (fn [address]
-                                                         (-> dblog
-                                                             (.iterator  #js {"limit" 1})
-                                                             (.collect)
-                                                             (.map (fn [e] (.-value (.-payload e))))
-                                                             (println)))))
+                    (set! tournaments-kvstore (<p! (.keyvalue orbitdb
+                                                              TOPIC-ID
+                                                              (clj->js {"accessController"
+                                                                        {"write" ["*"]}}))))
+                    (<p! (.load tournaments-kvstore))
+                    (.on (.-events tournaments-kvstore)
+                         "replicated"
+                         (fn [address]
+                           (println (count (js->clj (.-all tournaments-kvstore))))
+                           (println (keys (js->clj (.-all tournaments-kvstore))))
+                           #_(-> dblog
+                                 (.iterator  #js {"limit" 1})
+                                 (.collect)
+                                 (.map (fn [e] (.-value (.-payload e))))
+                                 (println)))))
                   (catch js/Error err (println err)))
-                (let [id (.-id (<p! (ipfs.id)))
-                      text-decoder (js/TextDecoder.)]
-                  (ipfs.pubsub.subscribe
-                   TOPIC-ID
-                   (fn [msg]
-                     (when-not (= id (.-from msg))
-                       (do
-                         (swap! state* assoc-in [::app.spec/peer-metas (.-from msg)]
-                                (merge
-                                 (read-string (.decode text-decoder  (.-data msg)))
-                                 {::app.spec/peer-id (.-from msg)
-                                  ::app.spec/received-at (.now js/Date)}))
-                         #_(println (format "id: %s" id))
-                         #_(println (format "from: %s" (.-from msg)))
-                         #_(println (format "data: %s" (.decode text-decoder  (.-data msg))))
-                         #_(println (format "topicIDs: %s" msg.topicIDs)))))))
                 (let [id (.-id (<p! (ipfs.id)))
                       text-encoder (js/TextEncoder.)]
                   (go (loop [counter 0]
@@ -200,7 +179,7 @@
                         (ipfs.pubsub.publish
                          TOPIC-ID
                          (-> text-encoder
-                             (.encode  (pr-str {::app.spec/peer-id id 
+                             (.encode  (pr-str {::app.spec/peer-id id
                                                 ::app.spec/counter counter}))))
                         (recur (inc counter)))))
                 (go (loop []
@@ -210,41 +189,75 @@
                               :when (> (- (.now js/Date) received-at) 8000)]
                         (println ::removing-peer)
                         (swap! state* update-in [::app.spec/peer-metas] dissoc peer-id))
-                      (recur)))
+                      (recur))))
 
-                #_(<! (init-puppeteer))
+              #_(let [{:keys []} value]
+                  (println ::init)
+                  (try
+                    (let [options (clj->js {"accessController"
+                                            {"write" ["*"] #_[(.. orbitdb -identity -publicKey)]}})]
+                      (set! ipfs (IpfsClient "http://ipfs:5001"))
+                      (set! orbitdb (<p! (.createInstance OrbitDB ipfs (clj->js {"directory" "/root/.orbitdb"}))))
+                      (set! dblog (<p! (.log orbitdb TOPIC-ID options)))
+                      (<p! (.load dblog))
+                      (set! dbdocs (<p! (.docs orbitdb "foo")))
+                      (<p! (.load dbdocs))
+                      (do
+                        #_(println (.. orbitdb -identity -publicKey))
+                        #_(println (.-address dblog))
+                        (println (.toString (.-address dblog)))
+                        #_(println (.. dblog -identity -publicKey))
+                        #_(println (.. dbdocs -identity -publicKey)))
+                      (let [id (.-id (<p! (ipfs.id)))]
+                        (go (loop []
+                              (<! (timeout 2000))
+                              (.add dblog (pr-str {::app.spec/peer-id id
+                                                   ::locale-time-string (.toLocaleTimeString (js/Date.))
+                                                   ::random-int (rand-int 1000)}))
+                              (recur))))
+                      (.on (.-events dblog) "replicated" (fn [address]
+                                                           (-> dblog
+                                                               (.iterator  #js {"limit" 1})
+                                                               (.collect)
+                                                               (.map (fn [e] (.-value (.-payload e))))
+                                                               (println)))))
+                    (catch js/Error err (println err)))
 
 
-                #_(go (loop []
-                        (<! (timeout 2000))
-                        #_(swap! state* update ::app.spec/counter inc)
-                        (ui.chan/op
-                         {::op.spec/op-key ::ui.chan/update-state
-                          ::op.spec/op-type ::op.spec/fire-and-forget}
-                         channels
-                         @state*)
-                        (recur)))
-                #_(go
-                    (let [out| (chan 64)]
-                      (peernode.chan/op
-                       {::op.spec/op-key ::peernode.chan/request-pubsub-stream
-                        ::op.spec/op-type ::op.spec/request-stream
-                        ::op.spec/op-orient ::op.spec/request}
-                       channels
-                       out|)
-                      (loop []
-                        (when-let [value  (<! out|)]
-                          (println ::request-pubsub-stream)
-                          (println value)
-                          (recur)))))
-                #_(go (loop []
-                        (<! (timeout (* 1000 (+ 1 (rand-int 2)))))
+
+                  #_(<! (init-puppeteer))
+
+
+                  #_(go (loop []
+                          (<! (timeout 2000))
+                          #_(swap! state* update ::app.spec/counter inc)
+                          (ui.chan/op
+                           {::op.spec/op-key ::ui.chan/update-state
+                            ::op.spec/op-type ::op.spec/fire-and-forget}
+                           channels
+                           @state*)
+                          (recur)))
+                  #_(go
+                      (let [out| (chan 64)]
                         (peernode.chan/op
-                         {::op.spec/op-key ::peernode.chan/pubsub-publish
-                          ::op.spec/op-type ::op.spec/fire-and-forget}
+                         {::op.spec/op-key ::peernode.chan/request-pubsub-stream
+                          ::op.spec/op-type ::op.spec/request-stream
+                          ::op.spec/op-orient ::op.spec/request}
                          channels
-                         {::some ::value})
-                        (recur))))
+                         out|)
+                        (loop []
+                          (when-let [value  (<! out|)]
+                            (println ::request-pubsub-stream)
+                            (println value)
+                            (recur)))))
+                  #_(go (loop []
+                          (<! (timeout (* 1000 (+ 1 (rand-int 2)))))
+                          (peernode.chan/op
+                           {::op.spec/op-key ::peernode.chan/pubsub-publish
+                            ::op.spec/op-type ::op.spec/fire-and-forget}
+                           channels
+                           {::some ::value})
+                          (recur))))
 
               {::op.spec/op-key ::app.chan/request-state-update
                ::op.spec/op-type ::op.spec/fire-and-forget}
@@ -255,68 +268,71 @@
                  channels
                  @state*))
 
-              {::op.spec/op-key ::app.chan/create-game
+              {::op.spec/op-key ::app.chan/create-tournament
                ::op.spec/op-type ::op.spec/fire-and-forget}
-              (let [game-id (str (cljc.core/rand-uuid))
-                    game {::app.spec/game-id game-id}]
-                (swap! state* update ::app.spec/games assoc  game-id game)
+              (let [frequency (cljc.core/rand-uuid)
+                    tournament {::app.spec/frequency frequency
+                                ::app.spec/host-id (get @state* ::app.spec/peer-id)}]
+                (swap! state* update ::app.spec/tournaments assoc frequency tournament)
+                (.set tournaments-kvstore frequency (pr-str tournament))
                 (app.chan/op
-                 {::op.spec/op-key ::app.chan/sub-to-game
+                 {::op.spec/op-key ::app.chan/join-tournament
                   ::op.spec/op-type ::op.spec/fire-and-forget}
                  channels
-                 {::app.spec/game-id game-id})
+                 {::app.spec/frequency frequency})
                 #_(ui.chan/op
                    {::op.spec/op-key ::ui.chan/update-state
                     ::op.spec/op-type ::op.spec/fire-and-forget}
                    channels
                    @state*))
 
-              {::op.spec/op-key ::app.chan/sub-to-game
+              {::op.spec/op-key ::app.chan/join-tournament
                ::op.spec/op-type ::op.spec/fire-and-forget}
-              (let [{:keys [::app.spec/game-id]} value]
-                (println ::sub-to-game)
-                (when-not (get @state-game-channels* game-id)
-                  (let [pubsub| (chan (sliding-buffer 64))]
-                    (swap! state-game-channels* assoc game-id pubsub|)
-                    (peernode.chan/op
-                     {::op.spec/op-key ::peernode.chan/pubsub-sub
-                      ::op.spec/op-type ::op.spec/fire-and-forget}
-                     channels
-                     {::peernode.spec/topic-id game-id})
-                    (peernode.chan/op
-                     {::op.spec/op-key ::peernode.chan/request-pubsub-stream
-                      ::op.spec/op-type ::op.spec/request-stream
-                      ::op.spec/op-orient ::op.spec/request}
-                     channels
-                     pubsub|
-                     {::peernode.spec/topic-id game-id})
-                    (go
-                      (loop []
-                        (when-let [msg (<! pubsub|)]
-                          (println ::pubsub-msg)
-                          (recur)))
-                      (println (format (str ::game " process exits: % ") game-id))))))
+              (let [{:keys [::app.spec/frequency]} value]
+                (println ::app.chan/join-tournament)
+                (when-not (get @state-tournament-channels* frequency)
+                  (let [pubsub| (chan (sliding-buffer 64))
+                        peer-id (get @state* ::app.spec/peer-id)
+                        eventlog (<p! (.eventlog orbitdb
+                                                 frequency
+                                                 (clj->js {"accessController"
+                                                           {"write" ["*"] #_[(.. orbitdb -identity -publicKey)]}})))]
+                    (<p! (.load eventlog))
+                    (.on (.-events eventlog) "replicated" (fn [address]
+                                                            (println ::replicated frequency)
+                                                            (-> dblog
+                                                                (.iterator  #js {"limit" 1})
+                                                                (.collect)
+                                                                (.map (fn [e]
+                                                                        (swap! state* update ::app.spec/tournaments assoc frequency
+                                                                               (read-string (.-value (.-payload e)))))))))
+                    (swap! state-tournament-channels* assoc frequency pubsub|)
+                    (swap! state-tournament-eventlogs* assoc frequency eventlog)
+                    #_(ipfs.pubsub.subscribe
+                       (str frequency)
+                       (fn [msg]
+                         (when-not (= peer-id (.-from msg))
+                           (do
+                             (put! pubsub| (merge
+                                            (read-string (.decode text-decoder  (.-data msg)))
+                                            {::app.spec/peer-id (.-from msg)
+                                             ::app.spec/received-at (.now js/Date)})))))))))
 
-
-              {::op.spec/op-key ::app.chan/unsub-from-game
+              {::op.spec/op-key ::app.chan/leave-tournament
                ::op.spec/op-type ::op.spec/fire-and-forget}
-              (let [{:keys [::op.spec/out| ::app.spec/game-id]} value]
-                (println ::unsub-from-game)
-                (println value)
-                (let [pubsub| (get @state-game-channels* game-id)]
-                  (swap! state-game-channels* dissoc game-id)
-                  (close! pubsub|)
-                  (swap! state* update ::app.spec/games dissoc game-id)
-                  (peernode.chan/op
-                   {::op.spec/op-key ::peernode.chan/pubsub-ubsub
-                    ::op.spec/op-type ::op.spec/fire-and-forget}
-                   channels
-                   {::peernode.spec/topic-id game-id})
-                  #_(ui.chan/op
-                     {::op.spec/op-key ::ui.chan/update-state
-                      ::op.spec/op-type ::op.spec/fire-and-forget}
-                     channels
-                     @state*)))))
+              (let [{:keys [::op.spec/out| ::app.spec/frequency]} value]
+                (println ::leave-tournament)
+                (when (get @state-tournament-channels* frequency)
+                  (let [pubsub| (get @state-tournament-channels* frequency)
+                        tournament (get-in @state* [::app.spec/tournaments frequency])
+                        peer-id (::app.spec/peer-id @state*)]
+                    (swap! state-tournament-channels* dissoc frequency)
+                    (close! pubsub|)
+                    (swap! state* update ::app.spec/tournaments dissoc frequency)
+                    (when (= peer-id (::app.spec/host-id tournament))
+                      (println ::host-closes-tournament)
+                      (.del tournaments-kvstore frequency))
+                    #_(ipfs.pubsub.unsubscribe frequency))))))
           (recur))))))
 
 

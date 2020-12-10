@@ -162,11 +162,11 @@
                                 :padding "32px 32px 32px 32px"}}
     content]])
 
-(defn table-games-columns
+(defn table-tournaments-columns
   [channels state*]
-  [{:title "game frequency"
-    :key ::app.spec/game-id
-    :dataIndex ::app.spec/game-id}
+  [{:title "frequency"
+    :key ::app.spec/frequency
+    :dataIndex ::app.spec/frequency}
    #_{:title "preview"
       :key "preview"
       :render
@@ -179,7 +179,7 @@
                            :overflow-x "hidden"}}
             v])))}])
 
-(defn table-games-columns-extra
+(defn table-tournaments-columns-extra
   [channels state*]
   [{:title "action"
     :key "action"
@@ -192,34 +192,58 @@
                  {:type "default"
                   :on-click (fn [evt]
                               (app.chan/op
-                               {::op.spec/op-key ::app.chan/unsub-from-game
+                               {::op.spec/op-key ::app.chan/leave-tournament
                                 ::op.spec/op-type ::op.spec/fire-and-forget}
                                channels
-                               {::app.spec/game-id (aget record "game-id")}))}
-                 "unsub from game"]
+                               {::app.spec/frequency (aget record "frequency")}))}
+                 "leave"]
+                (when (not= (::app.spec/peer-id @state*) (aget record "host-id"))
+                  [ant-button
+                   {:type "default"
+                    :on-click (fn [evt]
+                                (app.chan/op
+                                 {::op.spec/op-key ::app.chan/join-tournament
+                                  ::op.spec/op-type ::op.spec/fire-and-forget}
+                                 channels
+                                 {::app.spec/frequency (aget record "frequency")}))}
+                   "join"])
                 [ant-button
                  {:type "default"
                   :on-click (fn [evt]
                               (println ::record)
                               (println record))}
-                 "open a tab"]]))}
+                 "open tab"]]))}
    #_{:title ""
       :key "empty"}])
 
 
-(defn table-games
+(defn table-tournaments
   [channels state*]
   (reagent.core/with-let
-    [games* (reagent.core/cursor state* [::app.spec/games])
-     columns (vec (concat (table-games-columns channels state*) (table-games-columns-extra channels state*)))]
-    (let [games (vec (vals @games*))
-          total (count games)]
+    [tournaments* (reagent.core/cursor state* [::app.spec/tournaments])
+     columns (vec (concat (table-tournaments-columns channels state*) (table-tournaments-columns-extra channels state*)))]
+    (let [data (vec (vals @tournaments*))
+          total (count data)]
       [ant-table {:show-header true
                   :size "small"
-                  :row-key ::app.spec/game-id
+                  :title (fn [] (reagent.core/as-element
+                                 [ant-row
+                                  [ant-col {:span 2}
+                                   [:span "Tournaments"]]
+                                  [ant-col {:span 22}
+                                   [ant-button-group
+                                    {:size "small"}
+                                    [ant-button
+                                     {:on-click (fn [evt]
+                                                  (app.chan/op
+                                                   {::op.spec/op-key ::app.chan/create-tournament
+                                                    ::op.spec/op-type ::op.spec/fire-and-forget}
+                                                   channels
+                                                   {}))} "create"]]]]))
+                  :row-key ::app.spec/frequency
                   :style {:height "50%" :width "100%"}
                   :columns columns
-                  :dataSource games
+                  :dataSource data
                   :on-change (fn [pag fil sor ext]
                                #_(js->clj {:pagination pag
                                            :filters fil
@@ -367,45 +391,35 @@
   [layout channels state*
    [:<>
     [:div ::rc-page-main]]]
-  #_(reagent.core/with-let
-      []
-      [layout channels state*
-       [:<>
-        [ant-button {:type "default"
-                     :size "small"
-                     :on-click (fn []
-                                 (app.chan/op
-                                  {::op.spec/op-key ::app.chan/create-game
-                                   ::op.spec/op-type ::op.spec/fire-and-forget}
-                                  channels
-                                  {}))} "create game"]
-
-        [ant-row {:justify "center"
-                  :align "top" #_"middle"
-                  :style {:height "40%"}
+  (reagent.core/with-let
+    []
+    [layout channels state*
+     [:<>
+      [ant-row {:justify "center"
+                :align "top" #_"middle"
+                :style {:height "40%"}
                     ;; :gutter [16 24]
-                  }
-         [ant-col {:span 24}
-          [table-games channels state*]]]
-        [ant-row {:justify "center"
-                  :align "top" #_"middle"
-                  :style {:height "40%"}
+                }
+       [ant-col {:span 24}
+        [table-tournaments channels state*]]]
+      [ant-row {:justify "center"
+                :align "top" #_"middle"
+                :style {:height "40%"}
                     ;; :gutter [16 24]
-                  }
-         [ant-col {:span 24}
-          [table-peer-metas channels state*]]]
+                }
+       [ant-col {:span 24}
+        [table-peer-metas channels state*]]]
+      #_[:<>
+         (if (empty? @state*)
 
-        #_[:<>
-           (if (empty? @state*)
+           [:div "loading..."]
 
-             [:div "loading..."]
-
-             [:<>
-              [:pre {} (with-out-str (pprint @state*))]
-              [ant-button {:icon (reagent.core/as-element [ant-icon-sync-outlined])
-                           :size "small"
-                           :title "button"
-                           :on-click (fn [] ::button-click)}]])]]]))
+           [:<>
+            [:pre {} (with-out-str (pprint @state*))]
+            [ant-button {:icon (reagent.core/as-element [ant-icon-sync-outlined])
+                         :size "small"
+                         :title "button"
+                         :on-click (fn [] ::button-click)}]])]]]))
 
 (defn rc-page-tournament-join
   [channels state*]
@@ -466,8 +480,14 @@
     [scenario-origin (reagent.core/cursor state* [::ui.spec/scenario-origin])]
     [layout channels state*
      [:<>
-      [:div ::rc-page-tournament]
-      ]]))
+      [ant-button {:type "default"
+                   :size "small"
+                   :on-click (fn []
+                               (app.chan/op
+                                {::op.spec/op-key ::app.chan/create-game
+                                 ::op.spec/op-type ::op.spec/fire-and-forget}
+                                channels
+                                {}))} "create game"]]]))
 
 (defn rc-page-game
   [channels state*]
@@ -489,7 +509,7 @@
                     ;; :gutter [16 24]
                 }
        [ant-col {:span 8}
-        #_[table-games channels state*]]
+        #_[table-tournaments channels state*]]
        [ant-col {:span 16 :style {:height "100%"}}
         [rc-iframe-scenario channels state*]
         [ant-row {:justify "start"

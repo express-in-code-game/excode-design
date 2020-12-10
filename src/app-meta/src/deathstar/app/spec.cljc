@@ -3,12 +3,14 @@
   (:require
    [clojure.spec.alpha :as s]))
 
-(s/def ::game-id string?)
+(s/def ::frequency string?)
 
-(s/def ::game (s/keys :req [::game-id]))
-(s/def ::games (s/map-of string? ::game-state))
+(s/def ::tournament (s/keys :req [::frequency]))
+(s/def ::tournaments (s/map-of string? ::tournament))
 
-(s/def ::peer-id string?)
+(s/def ::peer-id uuid?)
+
+(s/def ::host-id uuid?)
 
 (s/def ::peer-meta (s/keys :req [::peer-id]))
 
