@@ -25,7 +25,6 @@
    [cljctools.peernode.spec :as peernode.spec]
    [cljctools.peernode.chan :as peernode.chan]
 
-
    [deathstar.scenario-api.spec :as scenario-api.spec]
    [deathstar.scenario-api.chan :as scenario-api.chan]
 
