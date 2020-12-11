@@ -111,8 +111,9 @@
 
               ::app.spec/scenario-channels* (atom {})
               ::app.spec/scenario-eventlogs* (atom {})
-              
-              ::app.spec/tournaments-kvstore* (atom nil)
+
+              ::app.spec/app-eventlog* (atom {::app.spec/eventlog nil
+                                              ::app.spec/eventlog-prev-hash nil})
               ::app.spec/browser* (atom nil)
               ::app.spec/ipfs* (atom nil)
               ::app.spec/orbitdb* (atom nil)
@@ -153,6 +154,7 @@
               (println (js-keys e))
               (println (js-keys (.-payload e)))
               (println (.-hash e))
+              (println (.-next e))
               (read-string (.-value (.-payload e)))))
       #_(first)
       (println))
@@ -160,6 +162,7 @@
   (go
     (<p! (.drop eventlog)))
 
+  (empty? #js [])
 
 
 
@@ -176,7 +179,7 @@
                 ::app.spec/orbitdb*
                 ::app.spec/tournament-channels*
                 ::app.spec/tournament-eventlogs*
-                ::app.spec/tournaments-kvstore*
+                ::app.spec/app-eventlog*
                 ::app.spec/TOPIC-ID]} ctx]
     (go
       (loop []
@@ -193,42 +196,41 @@
                     (reset! ipfs* ipfs)
                     (swap! state* assoc ::app.spec/peer-id (.-id (<p! (.id ipfs))))
                     (reset! orbitdb* (<p! (.createInstance OrbitDB ipfs (clj->js {"directory" "/root/.orbitdb"}))))
-                    (reset! tournaments-kvstore* (<p! (.keyvalue @orbitdb*
-                                                                 TOPIC-ID
-                                                                 (clj->js {"accessController"
-                                                                           {"write" ["*"]}})))))
-                  (let [tournaments-kvstore @tournaments-kvstore*]
-                    #_(<p! (.drop tournaments-kvstore))
-                    (<p! (.load tournaments-kvstore))
-                    (swap! state* assoc ::app.spec/tournaments
-                           (reduce
-                            (fn [result [k value]]
-                              (assoc result k (read-string value)))
-                            {}
-                            (js->clj (.-all tournaments-kvstore))))
-                    (println ::count-tournaments-kvstore (count (js->clj (.-all tournaments-kvstore))))
-                    (doseq [[k tournament] (get @state* ::app.spec/tournaments)]
-                      (app.chan/op
-                       {::op.spec/op-key ::app.chan/join-tournament
-                        ::op.spec/op-type ::op.spec/fire-and-forget}
-                       channels
-                       tournament))
-
-                    #_(println (keys (js->clj (.-all tournaments-kvstore))))
-                    (.on (.-events tournaments-kvstore)
+                    (reset! app-eventlog* (<p! (.eventlog @orbitdb*
+                                                          TOPIC-ID
+                                                          (clj->js {"accessController"
+                                                                    {"write" ["*"]}})))))
+                  (let [app-eventlog (::app.spec/eventlog @app-eventlog*)
+                        done| (chan 1)]
+                    #_(<p! (.drop (::app.spec/eventlog @app-eventlog*)))
+                    (<p! (.load app-eventlog))
+                    (-> app-eventlog
+                        (.iterator  #js {"limit" -1})
+                        (.collect)
+                        (.map (fn [e]
+                                (let [value (read-string (.-value (.-payload e)))]
+                                  (put! ops| value))
+                                (when (empty? (.-next e))
+                                  (swap! app-eventlog*
+                                         assoc
+                                         ::app.spec/eventlog-prev-hash
+                                         (.-hash e))
+                                  (close! done|)))))
+                    (<! done|)
+                    (.on (.-events app-eventlog)
                          "replicated"
                          (fn [address]
-                           (swap! state* assoc ::app.spec/tournaments
-                                  (reduce
-                                   (fn [result [k value]]
-                                     (assoc result k (read-string value)))
-                                   {}
-                                   (js->clj (.-all tournaments-kvstore))))
-                           #_(-> dblog
-                                 (.iterator  #js {"limit" 1})
-                                 (.collect)
-                                 (.map (fn [e] (.-value (.-payload e))))
-                                 (println)))))
+                           (-> app-eventlog
+                               (.iterator  #js {"gt" (::app.spec/eventlog-prev-hash @app-eventlog*)})
+                               (.collect)
+                               (.map (fn [e]
+                                       (let [value (read-string (.-value (.-payload e)))]
+                                         (put! ops| value))
+                                       (when (empty? (.-next e))
+                                         (swap! app-eventlog*
+                                                assoc
+                                                ::app.spec/eventlog-prev-hash
+                                                (.-hash e)))))))))
                   (catch js/Error err (println err)))
                 (let [ipfs @ipfs*
                       id (.-id (<p! (.id ipfs)))
@@ -348,7 +350,7 @@
                     tournament {::app.spec/frequency frequency
                                 ::app.spec/host-id (get @state* ::app.spec/peer-id)}]
                 (swap! state* update ::app.spec/tournaments assoc frequency tournament)
-                (.set @tournaments-kvstore* frequency (pr-str tournament))
+                #_(.set (::app.spec/eventlog @app-eventlog*) frequency (pr-str tournament))
                 (app.chan/op
                  {::op.spec/op-key ::app.chan/join-tournament
                   ::op.spec/op-type ::op.spec/fire-and-forget}
@@ -409,7 +411,7 @@
                     (swap! state* update ::app.spec/tournaments dissoc frequency)
                     (when (= peer-id (::app.spec/host-id tournament))
                       (println ::host-closes-tournament)
-                      (.del @tournaments-kvstore* frequency))
+                      #_(.del @tournaments-kvstore* frequency))
                     #_(ipfs.pubsub.unsubscribe frequency))))))
           (recur))))))
 
