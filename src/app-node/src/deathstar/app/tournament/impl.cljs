@@ -13,15 +13,31 @@
    #?(:cljs [cljs.reader :refer [read-string]])
 
    [cljctools.csp.op.spec :as op.spec]
-   [cljctools.cljc.core :as cljc.core]))
+   [cljctools.cljc.core :as cljc.core]
+
+
+   [deathstar.app.spec :as app.spec]
+   [deathstar.app.chan :as app.chan]
+
+   [deathstar.app.tournament.spec :as app.tournament.spec]
+   [deathstar.app.tournament.chan :as app.tournament.chan]))
+
+(defonce fs (js/require "fs"))
+(defonce path (js/require "path"))
 
 (defn create-state*
   []
   (atom {}))
 
 (defn create-proc-ops
-  [channels state* opts]
-  (let [{:keys [::app.chan/ops|]} channels]
+  [channels ctx opts]
+  (let [{:keys [::app.tournament.chan/ops|]} channels
+        {:keys [::app.spec/state*
+                ::app.spec/ipfs*
+                ::app.spec/orbitdb*
+                ::app.spec/tournament-channels*
+                ::app.spec/tournament-eventlogs*
+                ::app.spec/tournaments-kvstore*]} ctx]
     (go
       (loop []
         (when-let [[value port] (alts! [ops|])]
