@@ -96,26 +96,35 @@
                       ::rsocket.spec/port 7003
                       ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
-(def ctx {::app.spec/state*
-          (atom
-           {::app.spec/peer-id nil
-            ::app.spec/tournaments {}
-            ::app.spec/peer-metas {}})
-          ::app.spec/tournament-channels* (atom {})
-          ::app.spec/tournament-eventlogs* (atom {})
-          ::app.spec/tournaments-kvstore* (atom nil)
-          ::app.spec/browser* (atom nil)
-          ::app.spec/ipfs* (atom nil)
-          ::app.spec/orbitdb* (atom nil)
-          ::app.spec/TOPIC-ID "deathstar-1a58070"})
+(defonce ctx {::app.spec/state*
+              (atom
+               {::app.spec/peer-id nil
+                ::app.spec/tournaments {}
+                ::app.spec/games {}
+                ::app.spec/scenarios {}
+                ::app.spec/peer-metas {}})
+              ::app.spec/tournament-channels* (atom {})
+              ::app.spec/tournament-eventlogs* (atom {})
 
-(add-watch (::app.spec/state* ctx) ::watch
-           (fn [k atom-ref oldstate newstate]
-             (ui.chan/op
-              {::op.spec/op-key ::ui.chan/update-state
-               ::op.spec/op-type ::op.spec/fire-and-forget}
-              channels
-              newstate)))
+              ::app.spec/game-channels* (atom {})
+              ::app.spec/game-eventlogs* (atom {})
+
+              ::app.spec/scenario-channels* (atom {})
+              ::app.spec/scenario-eventlogs* (atom {})
+              
+              ::app.spec/tournaments-kvstore* (atom nil)
+              ::app.spec/browser* (atom nil)
+              ::app.spec/ipfs* (atom nil)
+              ::app.spec/orbitdb* (atom nil)
+              ::app.spec/TOPIC-ID "deathstar-1a58070"})
+
+(defonce _ (add-watch (::app.spec/state* ctx) ::watch
+                      (fn [k atom-ref oldstate newstate]
+                        (ui.chan/op
+                         {::op.spec/op-key ::ui.chan/update-state
+                          ::op.spec/op-type ::op.spec/fire-and-forget}
+                         channels
+                         newstate))))
 
 
 (comment
@@ -128,6 +137,31 @@
       (println (js-keys id))
       (println (.-id id))
       (println (format "id is %s" id))))
+
+
+  (def orbitdb @(::app.spec/orbitdb* ctx))
+  (go
+    (def eventlog (<p! (.eventlog orbitdb "foo")))
+    (<p! (.load eventlog)))
+  (go
+    (println (<p! (.add eventlog (pr-str {::app.spec/peer-id (::app.spec/peer-id @(::app.spec/state* ctx))
+                                          ::random-int 1  #_(rand-int 1000)})))))
+  (-> eventlog
+      (.iterator  #js {"limit" -1})
+      (.collect)
+      (.map (fn [e]
+              (println (js-keys e))
+              (println (js-keys (.-payload e)))
+              (println (.-hash e))
+              (read-string (.-value (.-payload e)))))
+      #_(first)
+      (println))
+
+  (go
+    (<p! (.drop eventlog)))
+
+
+
 
   ;;
   )
