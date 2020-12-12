@@ -4,16 +4,20 @@
    [clojure.spec.alpha :as s]))
 
 (s/def ::frequency string?)
+(s/def ::peer-id string?)
+(s/def ::host-id ::peer-id)
+(s/def ::peer-name string?)
 
-(s/def ::tournament (s/keys :req [::frequency]))
+(s/def ::peer-meta (s/keys :req [::peer-id
+                                 ::peer-name]))
+(s/def ::peer-metas (s/map-of ::peer-id ::peer-meta))
+(s/def ::received-at some?)
+
+(s/def ::tournament (s/keys :req [::frequency
+                                  ::host-id
+                                  ::peer-metas]))
+
 (s/def ::tournaments (s/map-of string? ::tournament))
 
-(s/def ::peer-id uuid?)
 
-(s/def ::host-id uuid?)
 
-(s/def ::peer-meta (s/keys :req [::peer-id]))
-
-(s/def ::peer-metas (s/map-of ::peer-id ::peer-meta))
-
-(s/def ::received-at some?)

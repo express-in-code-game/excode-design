@@ -103,13 +103,9 @@
                 ::app.spec/games {}
                 ::app.spec/scenarios {}
                 ::app.spec/peer-metas {}})
-              ::app.spec/tournament-channels* (atom {})
+              
               ::app.spec/tournament-eventlogs* (atom {})
-
-              ::app.spec/game-channels* (atom {})
               ::app.spec/game-eventlogs* (atom {})
-
-              ::app.spec/scenario-channels* (atom {})
               ::app.spec/scenario-eventlogs* (atom {})
 
               ::app.spec/app-eventlog* (atom {::app.spec/eventlog nil
@@ -177,8 +173,9 @@
         {:keys [::app.spec/state*
                 ::app.spec/ipfs*
                 ::app.spec/orbitdb*
-                ::app.spec/tournament-channels*
                 ::app.spec/tournament-eventlogs*
+                ::app.spec/game-eventlogs*
+                ::app.spec/scenario-eventlogs*
                 ::app.spec/app-eventlog*
                 ::app.spec/TOPIC-ID]} ctx]
     (go
@@ -188,7 +185,8 @@
             ops|
             (condp = (select-keys value [::op.spec/op-key ::op.spec/op-type ::op.spec/op-orient])
 
-              {::op.spec/op-key ::app.chan/init}
+              {::op.spec/op-key ::app.chan/init
+               ::op.spec/op-type ::op.spec/fire-and-forget}
               (let [{:keys []} value]
                 (println ::init)
                 (try
@@ -196,16 +194,17 @@
                     (reset! ipfs* ipfs)
                     (swap! state* assoc ::app.spec/peer-id (.-id (<p! (.id ipfs))))
                     (reset! orbitdb* (<p! (.createInstance OrbitDB ipfs (clj->js {"directory" "/root/.orbitdb"}))))
-                    (reset! app-eventlog* (<p! (.eventlog @orbitdb*
-                                                          TOPIC-ID
-                                                          (clj->js {"accessController"
-                                                                    {"write" ["*"]}})))))
+                    (swap! app-eventlog* assoc ::app.spec/eventlog (<p! (.eventlog @orbitdb*
+                                                                                   TOPIC-ID
+                                                                                   (clj->js {"accessController"
+                                                                                             {"write" ["*"]}})))))
                   (let [app-eventlog (::app.spec/eventlog @app-eventlog*)
                         done| (chan 1)]
                     #_(<p! (.drop (::app.spec/eventlog @app-eventlog*)))
                     (<p! (.load app-eventlog))
                     (-> app-eventlog
-                        (.iterator  #js {"limit" -1})
+                        (.iterator  #js {"limit" -1
+                                         "reverse" true})
                         (.collect)
                         (.map (fn [e]
                                 (let [value (read-string (.-value (.-payload e)))]
@@ -346,44 +345,103 @@
 
               {::op.spec/op-key ::app.chan/create-tournament
                ::op.spec/op-type ::op.spec/fire-and-forget}
-              (let [frequency (str (cljc.core/rand-uuid))
-                    tournament {::app.spec/frequency frequency
-                                ::app.spec/host-id (get @state* ::app.spec/peer-id)}]
-                (swap! state* update ::app.spec/tournaments assoc frequency tournament)
-                #_(.set (::app.spec/eventlog @app-eventlog*) frequency (pr-str tournament))
-                (app.chan/op
-                 {::op.spec/op-key ::app.chan/join-tournament
-                  ::op.spec/op-type ::op.spec/fire-and-forget}
-                 channels
-                 {::app.spec/frequency frequency})
-                #_(ui.chan/op
-                   {::op.spec/op-key ::ui.chan/update-state
+              (let [{:keys [::app.spec/peer-name]
+                     :or {peer-name (str "peer" (rand-int 1000))}} value
+                    frequency (str (cljc.core/rand-uuid))
+                    peer-id (get @state* ::app.spec/peer-id)]
+                #_(.add (::app.spec/eventlog @app-eventlog*)
+                        (pr-str (merge
+                                 {::op.spec/op-key ::app.chan/created-tournament
+                                  ::op.spec/op-type ::op.spec/fire-and-forget}
+                                 {::app.spec/tournament tournament})))
+                #_(app.chan/op
+                   {::op.spec/op-key ::app.chan/created-tournament
                     ::op.spec/op-type ::op.spec/fire-and-forget}
                    channels
-                   @state*))
+                   {::app.spec/tournament tournament})
+                (app.chan/op
+                 {::op.spec/op-key ::app.chan/joined-tournament
+                  ::op.spec/op-type ::op.spec/fire-and-forget}
+                 channels
+                 {::app.spec/frequency frequency
+                  ::app.spec/peer-name peer-name
+                  ::app.spec/peer-id peer-id
+                  ::app.spec/host-id peer-id}))
 
               {::op.spec/op-key ::app.chan/join-tournament
                ::op.spec/op-type ::op.spec/fire-and-forget}
-              (let [{:keys [::app.spec/frequency]} value]
-                (println ::app.chan/join-tournament)
-                (when-not (get @tournament-channels* frequency)
-                  (let [pubsub| (chan (sliding-buffer 64))
-                        peer-id (get @state* ::app.spec/peer-id)
+              (let [{:keys [::app.spec/frequency
+                            ::app.spec/peer-name]} value
+                    peer-id (get @state* ::app.spec/peer-id)]
+                (println ::join-tournament)
+                (app.chan/op
+                 {::op.spec/op-key ::app.chan/joined-tournament
+                  ::op.spec/op-type ::op.spec/fire-and-forget}
+                 channels
+                 {::app.spec/frequency frequency
+                  ::app.spec/peer-name peer-name
+                  ::app.spec/peer-id peer-id}))
+
+              {::op.spec/op-key ::app.chan/joined-tournament
+               ::op.spec/op-type ::op.spec/fire-and-forget}
+              (let [{:keys [::app.spec/frequency
+                            ::app.spec/peer-name
+                            ::app.spec/host-id
+                            ::app.spec/peer-id]} value]
+                (println ::joined-tournament)
+                (when-not (get @tournament-eventlogs* frequency)
+                  (let [eventlog* (atom {::app.spec/eventlog nil
+                                         ::app.spec/eventlog-prev-hash nil})
+                        tournament (merge {::app.spec/frequency frequency
+                                           ::app.spec/peer-metas {}}
+                                          (select-keys value [::app.spec/host-id]))
                         eventlog (<p! (.eventlog @orbitdb*
                                                  frequency
                                                  (clj->js {"accessController"
-                                                           {"write" ["*"] #_[(.. orbitdb -identity -publicKey)]}})))]
+                                                           {"write" ["*"] #_[(.. orbitdb -identity -publicKey)]}})))
+                        done| (chan 1)]
                     (<p! (.load eventlog))
-                    (.on (.-events eventlog) "replicated" (fn [address]
-                                                            (println ::replicated frequency)
-                                                            (-> eventlog
-                                                                (.iterator  #js {"limit" 1})
-                                                                (.collect)
-                                                                (.map (fn [e]
-                                                                        (swap! state* update ::app.spec/tournaments assoc frequency
-                                                                               (read-string (.-value (.-payload e)))))))))
-                    (swap! tournament-channels* assoc frequency pubsub|)
-                    (swap! tournament-eventlogs* assoc frequency eventlog)
+                    (-> eventlog
+                        (.iterator  #js {"limit" -1
+                                         "reverse" true})
+                        (.collect)
+                        (.map (fn [e]
+                                (let [value (read-string (.-value (.-payload e)))]
+                                  (put! ops| value))
+                                (when (empty? (.-next e))
+                                  (swap! eventlog*
+                                         assoc
+                                         ::app.spec/eventlog-prev-hash
+                                         (.-hash e))
+                                  (close! done|)))))
+                    (<! done|)
+                    (swap! state* update ::app.spec/tournaments assoc frequency tournament)
+                    (swap! eventlog* assoc ::app.spec/eventlog eventlog)
+                    (swap! tournament-eventlogs* assoc frequency eventlog*)
+                    (.add (::app.spec/eventlog @app-eventlog*)
+                          (pr-str (merge
+                                   value
+                                   {::op.spec/op-key ::app.chan/joined-tournament
+                                    ::op.spec/op-type ::op.spec/fire-and-forget})))
+                    (.add eventlog
+                          (pr-str (merge
+                                   value
+                                   {::op.spec/op-key ::app.chan/joined-tournament
+                                    ::op.spec/op-type ::op.spec/fire-and-forget})))
+                    (.on (.-events eventlog)
+                         "replicated"
+                         (fn [address]
+                           (-> eventlog
+                               (.iterator  #js {"gt" (::app.spec/eventlog-prev-hash @eventlog*)})
+                               (.collect)
+                               (.map (fn [e]
+                                       (let [value (read-string (.-value (.-payload e)))]
+                                         (put! ops| value))
+                                       (when (empty? (.-next e))
+                                         (swap! eventlog*
+                                                assoc
+                                                ::app.spec/eventlog-prev-hash
+                                                (.-hash e))))))))
                     #_(ipfs.pubsub.subscribe
                        frequency
                        (fn [msg]
@@ -392,7 +450,15 @@
                              (put! pubsub| (merge
                                             (read-string (.decode text-decoder  (.-data msg)))
                                             {::app.spec/peer-id (.-from msg)
-                                             ::app.spec/received-at (.now js/Date)})))))))))
+                                             ::app.spec/received-at (.now js/Date)}))))))))
+                (let [{:keys [::app.spec/frequency
+                              ::app.spec/peer-name
+                              ::app.spec/peer-id]}  value]
+                  (swap! state* update-in
+                         [::app.spec/tournaments frequency ::app.spec/peer-metas]
+                         assoc peer-id {::app.spec/peer-name peer-name
+                                        ::app.spec/peer-id peer-id})))
+
 
               {::op.spec/op-key ::app.chan/leave-tournament
                ::op.spec/op-type ::op.spec/fire-and-forget}
