@@ -26,7 +26,8 @@
   (s/keys :req []))
 (derive ::init ::op)
 (defmethod op
-  {::op.spec/op-key ::init}
+  {::op.spec/op-key ::init
+   ::op.spec/op-type ::op.spec/fire-and-forget}
   [op-meta channels value]
   (put! (::ops| channels) (merge op-meta
                                  value)))

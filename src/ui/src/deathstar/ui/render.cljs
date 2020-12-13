@@ -183,36 +183,37 @@
   [channels state*]
   [{:title "action"
     :key "action"
-    :width "48px"
+    :width "256px"
     :render (fn [text record index]
-              (reagent.core/as-element
-               [ant-button-group
-                {:size "small"}
-                [ant-button
-                 {:type "default"
-                  :on-click (fn [evt]
-                              (app.chan/op
-                               {::op.spec/op-key ::app.chan/leave-tournament
-                                ::op.spec/op-type ::op.spec/fire-and-forget}
-                               channels
-                               {::app.spec/frequency (aget record "frequency")}))}
-                 "leave"]
-                (when (not= (::app.spec/peer-id @state*) (aget record "host-id"))
-                  [ant-button
-                   {:type "default"
-                    :on-click (fn [evt]
-                                (app.chan/op
-                                 {::op.spec/op-key ::app.chan/join-tournament
-                                  ::op.spec/op-type ::op.spec/fire-and-forget}
-                                 channels
-                                 {::app.spec/frequency (aget record "frequency")}))}
-                   "join"])
-                [ant-button
-                 {:type "default"
-                  :on-click (fn [evt]
-                              (println ::record)
-                              (println record))}
-                 "open tab"]]))}
+              (let [frequency (aget record "frequency")
+                    host-id (aget record "host-id")
+                    own-peer-id (::app.spec/peer-id @state*)]
+                (reagent.core/as-element
+                 [:<>
+                  [ant-button-group
+                   {:size "small"}
+                   (when (get-in @state* [::app.spec/tournaments frequency ::app.spec/peer-metas own-peer-id])
+                     [ant-button
+                      {:type "default"
+                       :on-click (fn [evt]
+                                   (app.chan/op
+                                    {::op.spec/op-key ::app.chan/leave-tournament
+                                     ::op.spec/op-type ::op.spec/fire-and-forget}
+                                    channels
+                                    {::app.spec/frequency frequency}))}
+                      "leave"])
+                   (when (not= own-peer-id host-id)
+                     [ant-button
+                      {:type "default"
+                       :on-click (fn [evt]
+                                   (app.chan/op
+                                    {::op.spec/op-key ::app.chan/join-tournament
+                                     ::op.spec/op-type ::op.spec/fire-and-forget}
+                                    channels
+                                    {::app.spec/frequency frequency}))}
+                      "join"])]
+                  [:r> Link #js  {:to (format "/tournament/%s" frequency)
+                                  :target "_blank"} "open tab"]])))}
    #_{:title ""
       :key "empty"}])
 
@@ -285,6 +286,8 @@
                                 ;  :y 256
                            }
                   :pagination false}])))
+
+
 
 
 (defn rc-iframe
@@ -474,6 +477,43 @@
         [ant-col {:offset 0 :span 2}
          [ant-button {:type "default" :on-click on-create} "create"]]]]]]))
 
+
+(defn table-tournament-peer-metas-columns
+  [channels state*]
+  [{:title "peer-id"
+    :key ::app.spec/peer-id
+    :dataIndex ::app.spec/peer-id}
+   {:title "counter"
+    :key ::app.spec/counter
+    :dataIndex ::app.spec/counter}])
+
+(defn table-tournament-peer-metas
+  [channels state*]
+  (reagent.core/with-let
+    [{:keys [:path :url :isExact :params]} (js->clj (useRouteMatch)
+                                                    :keywordize-keys true)
+     frequency (:frequency params)
+     peer-metas* (reagent.core/cursor state* [::app.spec/tournaments frequency ::app.spec/peer-metas])
+     columns (vec (concat (table-tournament-peer-metas-columns channels state*)))]
+    (let [dataSource (vec (vals @peer-metas*))
+          total (count dataSource)]
+      [ant-table {:show-header true
+                  :size "small"
+                  :row-key ::app.spec/peer-id
+                  :style {:height "50%" :width "100%"}
+                  :columns columns
+                  :dataSource dataSource
+                  :on-change (fn [pag fil sor ext]
+                               #_(js->clj {:pagination pag
+                                           :filters fil
+                                           :sorter sor
+                                           :extra ext} :keywordize-keys true))
+                  :scroll {;  :x "max-content" 
+                                ;  :y 256
+                           }
+                  :pagination false}])))
+
+
 (defn rc-page-tournament
   [channels state*]
   (reagent.core/with-let
@@ -487,7 +527,14 @@
                                 {::op.spec/op-key ::app.chan/create-game
                                  ::op.spec/op-type ::op.spec/fire-and-forget}
                                 channels
-                                {}))} "create game"]]]))
+                                {}))} "create game"]
+      [ant-row {:justify "center"
+                :align "top" #_"middle"
+                :style {:height "40%"}
+                    ;; :gutter [16 24]
+                }
+       [ant-col {:span 24}
+        [:f> table-tournament-peer-metas channels state*]]]]]))
 
 (defn rc-page-game
   [channels state*]
