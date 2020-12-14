@@ -202,7 +202,7 @@
                                     channels
                                     {::app.spec/frequency frequency}))}
                       "leave"])
-                   (when (not= own-peer-id host-id)
+                   (when-not (get-in @state* [::app.spec/tournaments frequency ::app.spec/peer-metas own-peer-id])
                      [ant-button
                       {:type "default"
                        :on-click (fn [evt]
@@ -225,6 +225,7 @@
      columns (vec (concat (table-tournaments-columns channels state*) (table-tournaments-columns-extra channels state*)))]
     (let [data (vec (vals @tournaments*))
           total (count data)]
+      (println data)
       [ant-table {:show-header true
                   :size "small"
                   :title (fn [] (reagent.core/as-element
