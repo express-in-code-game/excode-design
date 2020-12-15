@@ -192,7 +192,9 @@
                  [:<>
                   [ant-button-group
                    {:size "small"}
-                   (when (get-in @state* [::app.spec/tournaments frequency ::app.spec/peer-metas own-peer-id])
+                   (when (and
+                          (get-in @state* [::app.spec/tournaments frequency ::app.spec/peer-metas own-peer-id])
+                          (not (= host-id own-peer-id)))
                      [ant-button
                       {:type "default"
                        :on-click (fn [evt]
@@ -202,6 +204,16 @@
                                     channels
                                     {::app.spec/frequency frequency}))}
                       "leave"])
+                   (when (= host-id own-peer-id)
+                     [ant-button
+                      {:type "default"
+                       :on-click (fn [evt]
+                                   (app.chan/op
+                                    {::op.spec/op-key ::app.chan/close-tournament
+                                     ::op.spec/op-type ::op.spec/fire-and-forget}
+                                    channels
+                                    {::app.spec/frequency frequency}))}
+                      "close"])
                    (when-not (get-in @state* [::app.spec/tournaments frequency ::app.spec/peer-metas own-peer-id])
                      [ant-button
                       {:type "default"

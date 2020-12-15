@@ -34,84 +34,6 @@
 
 
 (defmethod op*
-  {::op.spec/op-key ::create-tournament
-   ::op.spec/op-type ::op.spec/fire-and-forget} [_]
-  (s/keys :req []))
-(derive ::create-tournament ::op)
-(defmethod op
-  {::op.spec/op-key ::create-tournament
-   ::op.spec/op-type ::op.spec/fire-and-forget}
-  [op-meta channels value]
-  (put! (::ops| channels) (merge op-meta
-                                 value)))
-
-
-(defmethod op*
-  {::op.spec/op-key ::created-tournament
-   ::op.spec/op-type ::op.spec/fire-and-forget} [_]
-  (s/keys :req []))
-(derive ::created-tournament ::op)
-(defmethod op
-  {::op.spec/op-key ::created-tournament
-   ::op.spec/op-type ::op.spec/fire-and-forget}
-  [op-meta channels value]
-  (put! (::ops| channels) (merge op-meta
-                                 value)))
-
-
-(defmethod op*
-  {::op.spec/op-key ::leave-tournament
-   ::op.spec/op-type ::op.spec/fire-and-forget} [_]
-  (s/keys :req [::app.spec/frequency]))
-(derive ::leave-tournament ::op)
-(defmethod op
-  {::op.spec/op-key ::leave-tournament
-   ::op.spec/op-type ::op.spec/fire-and-forget}
-  [op-meta channels value]
-  (put! (::ops| channels) (merge op-meta
-                                 value)))
-
-
-(defmethod op*
-  {::op.spec/op-key ::left-tournament
-   ::op.spec/op-type ::op.spec/fire-and-forget} [_]
-  (s/keys :req [::app.spec/frequency]))
-(derive ::left-tournament ::op)
-(defmethod op
-  {::op.spec/op-key ::left-tournament
-   ::op.spec/op-type ::op.spec/fire-and-forget}
-  [op-meta channels value]
-  (put! (::ops| channels) (merge op-meta
-                                 value)))
-
-
-(defmethod op*
-  {::op.spec/op-key ::join-tournament
-   ::op.spec/op-type ::op.spec/fire-and-forget} [_]
-  (s/keys :req [::app.spec/frequency]))
-(derive ::join-tournament ::op)
-(defmethod op
-  {::op.spec/op-key ::join-tournament
-   ::op.spec/op-type ::op.spec/fire-and-forget}
-  [op-meta channels value]
-  (put! (::ops| channels) (merge op-meta
-                                 value)))
-
-(defmethod op*
-  {::op.spec/op-key ::joined-tournament
-   ::op.spec/op-type ::op.spec/fire-and-forget} [_]
-  (s/keys :req [::app.spec/frequency]))
-(derive ::joined-tournament ::op)
-(defmethod op
-  {::op.spec/op-key ::joined-tournament
-   ::op.spec/op-type ::op.spec/fire-and-forget}
-  [op-meta channels value]
-  (put! (::ops| channels) (merge op-meta
-                                 value)))
-
-
-
-(defmethod op*
   {::op.spec/op-key ::request-state-update
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
   (s/keys :req []))
@@ -122,3 +44,5 @@
   [op-meta channels value]
   (put! (::ops| channels) (merge op-meta
                                  value)))
+
+

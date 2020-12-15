@@ -23,6 +23,10 @@
    [deathstar.app.spec :as app.spec]
    [deathstar.app.chan :as app.chan]
 
+   [deathstar.app.tournament.spec :as app.tournament.spec]
+   [deathstar.app.tournament.chan :as app.tournament.chan]
+   [deathstar.app.tournament.impl :as app.tournament.impl]
+
    [cljctools.peernode.spec :as peernode.spec]
    [cljctools.peernode.chan :as peernode.chan]
 
@@ -42,6 +46,7 @@
 (defonce channels (merge
                    (app.chan/create-channels)
                    (ui.chan/create-channels)
+                   (app.tournament.chan/create-channels)
                    (peernode.chan/create-channels)))
 
 #_(defonce channels-rsocket-peernode (rsocket.chan/create-channels))
@@ -58,6 +63,8 @@
                                 ::rsocket.spec/host "peernode"
                                 ::rsocket.spec/port 7000
                                 ::rsocket.spec/transport ::rsocket.spec/websocket})))
+
+(pipe (::app.tournament.chan/ops| channels) (::app.chan/ops| channels))
 
 (pipe (::ui.chan/ops| channels) (::rsocket.chan/ops| channels-rsocket-ui))
 (go (loop []
@@ -98,26 +105,26 @@
                       ::rsocket.spec/port 7003
                       ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
-(defonce ctx {::state*
+(defonce ctx {::app.spec/state*
               (atom
                {::app.spec/peer-id nil
                 ::app.spec/tournaments {}
                 ::app.spec/games {}
                 ::app.spec/scenarios {}
+                ::app.spec/tournament-metas {}
                 ::app.spec/peer-metas {}})
-              
-              ::tournaments* (atom {})
-              ::games* (atom {})
-              ::scenarios* (atom {})
 
-              ::app-eventlog* (atom {::eventlog nil
-                                              ::eventlog-prev-hash nil})
-              ::browser* (atom nil)
-              ::ipfs* (atom nil)
-              ::orbitdb* (atom nil)
+              ::app.spec/tournaments* (atom {})
+              ::app.spec/games* (atom {})
+              ::app.spec/scenarios* (atom {})
+
+              ::app.spec/app-eventlog* (atom nil)
+              ::app.spec/browser* (atom nil)
+              ::app.spec/ipfs* (atom nil)
+              ::app.spec/orbitdb* (atom nil)
               ::app.spec/TOPIC-ID "deathstar-1a58070"})
 
-(defonce _ (add-watch (::state* ctx) ::watch
+(defonce _ (add-watch (::app.spec/state* ctx) ::watch
                       (fn [k atom-ref oldstate newstate]
                         (ui.chan/op
                          {::op.spec/op-key ::ui.chan/update-state
@@ -138,12 +145,12 @@
       (println (format "id is %s" id))))
 
 
-  (def orbitdb @(::orbitdb* ctx))
+  (def orbitdb @(::app.spec/orbitdb* ctx))
   (go
     (def eventlog (<p! (.eventlog orbitdb "foo")))
     (<p! (.load eventlog)))
   (go
-    (println (<p! (.add eventlog (pr-str {::app.spec/peer-id (::app.spec/peer-id @(::state* ctx))
+    (println (<p! (.add eventlog (pr-str {::app.spec/peer-id (::app.spec/peer-id @(::app.spec/state* ctx))
                                           ::random-int 1  #_(rand-int 1000)})))))
   (-> eventlog
       (.iterator  #js {"limit" -1})
@@ -163,9 +170,9 @@
   (empty? #js [])
 
 
-  (count @(::tournaments* ctx))
+  (count @(::app.spec/tournaments* ctx))
   
-  (let [events (-> (::eventlog @(get @(::tournaments* ctx) "fbd5d2fb-6452-4546-8202-5280bfb8ffdc") )
+  (let [events (-> (::eventlog @(get @(::app.spec/tournaments* ctx) "fbd5d2fb-6452-4546-8202-5280bfb8ffdc") )
                    (.iterator  #js {"limit" -1
                                     "reverse" false})
                    (.collect)
@@ -175,19 +182,68 @@
   ;;
   )
 
-(declare init-puppeteer create-tournament*)
+(declare init-puppeteer)
 
 (defn create-proc-ops
   [channels ctx opts]
   (let [{:keys [::app.chan/ops|]} channels
-        {:keys [::state*
-                ::ipfs*
-                ::orbitdb*
-                ::tournaments*
-                ::games*
-                ::scenarios*
-                ::app-eventlog*
-                ::app.spec/TOPIC-ID]} ctx]
+        {:keys [::app.spec/state*
+                ::app.spec/ipfs*
+                ::app.spec/orbitdb*
+                ::app.spec/tournaments*
+                ::app.spec/games*
+                ::app.spec/scenarios*
+                ::app.spec/app-eventlog*
+                ::app.spec/TOPIC-ID]} ctx
+
+        create-tournament-proc
+        (fn [opts]
+          (go
+            (let [{:keys [::app.spec/frequency
+                          ::app.spec/peer-name
+                          ::app.spec/peer-id
+                          ::app.spec/host-id]} opts
+                  own-peer-id (get @state* ::app.spec/peer-id)]
+              (let [tournament|| (app.tournament.chan/create-channels)
+                    tournament-proc (app.tournament.impl/create-proc-ops
+                                     tournament|| ctx opts)]
+                (swap! tournaments* assoc frequency tournament||)))))
+
+        create-tournament-meta
+        (fn [opts]
+          (let [{:keys [::app.spec/frequency
+                        ::app.spec/peer-name
+                        ::app.spec/peer-id
+                        ::app.spec/host-id]} opts
+                tournament-meta (select-keys opts [::app.spec/frequency
+                                                   ::app.spec/host-id])]
+            (swap! state* update-in [::app.spec/tournament-metas]
+                   assoc frequency tournament-meta)))
+
+        remove-tournament-meta
+        (fn [opts]
+          (let [{:keys [::app.spec/frequency
+                        ::app.spec/peer-id]} opts]
+            (swap! state* update-in [::app.spec/tournament-metas]
+                   dissoc frequency)))
+
+        close-tournament-proc
+        (fn [opts]
+          (go
+            (let [{:keys [::app.spec/frequency
+                          ::app.spec/peer-id]} opts
+                  own-peer-id (get @state* ::app.spec/peer-id)
+                  tournament|| (get @tournaments* frequency)]
+              (<! (app.tournament.chan/op
+                   {::op.spec/op-key ::app.tournament.chan/release
+                    ::op.spec/op-type ::op.spec/request-response
+                    ::op.spec/op-orient ::op.spec/request}
+                   tournament||
+                   {::app.spec/frequency frequency
+                    ::app.spec/peer-id peer-id}))
+              (swap! tournaments* dissoc frequency)
+              (swap! state* update-in [::app.spec/tournament-metas]
+                     dissoc frequency))))]
     (go
       (loop []
         (when-let [[value port] (alts! [ops|])]
@@ -204,12 +260,11 @@
                     (reset! ipfs* ipfs)
                     (swap! state* assoc ::app.spec/peer-id (.-id (<p! (.id ipfs))))
                     (reset! orbitdb* (<p! (.createInstance OrbitDB ipfs (clj->js {"directory" "/root/.orbitdb"}))))
-                    (swap! app-eventlog* assoc ::eventlog (<p! (.eventlog @orbitdb*
-                                                                          TOPIC-ID
-                                                                          (clj->js {"accessController"
-                                                                                    {"write" ["*"]}})))))
-                  (let [app-eventlog (::eventlog @app-eventlog*)
-                        done| (chan 1)]
+                    (reset! app-eventlog* (<p! (.eventlog @orbitdb*
+                                                          TOPIC-ID
+                                                          (clj->js {"accessController"
+                                                                    {"write" ["*"]}})))))
+                  (let [app-eventlog @app-eventlog*]
                     #_(<p! (.drop (::eventlog @app-eventlog*)))
                     (<p! (.load app-eventlog))
                     (let [entries (-> app-eventlog
@@ -218,22 +273,17 @@
                                       (.collect)
                                       (vec))]
                       (println ::count-app-events (count entries))
-                      (cond
-                        (empty? entries)
-                        (close! done|)
+                      (doseq [entry entries]
+                        (let [value (read-string (.-value (.-payload entry)))]
+                          (put! ops| (merge value
+                                            {::replay? true})))
+                        #_(when (empty? (.-next entry))
+                            (swap! app-eventlog*
+                                   assoc
+                                   ::eventlog-prev-hash
+                                   (.-hash entry))
+                            (close! done|))))
 
-                        :else
-                        (doseq [entry entries]
-                          (let [value (read-string (.-value (.-payload entry)))]
-                            (println ::op-key (name (::op.spec/op-key value)))
-                            (put! ops| value))
-                          (when (empty? (.-next entry))
-                            #_(swap! app-eventlog*
-                                     assoc
-                                     ::eventlog-prev-hash
-                                     (.-hash entry))
-                            (close! done|)))))
-                    (<! done|)
                     #_(.on (.-events app-eventlog)
                            "replicated"
                            (fn [address]
@@ -306,74 +356,6 @@
                           (swap! state* update-in [::app.spec/peer-metas] dissoc peer-id))
                         (recur)))))
 
-              #_(let [{:keys []} value]
-                  (println ::init)
-                  (try
-                    (let [options (clj->js {"accessController"
-                                            {"write" ["*"] #_[(.. orbitdb -identity -publicKey)]}})]
-                      (set! ipfs (IpfsClient "http://ipfs:5001"))
-                      (set! orbitdb (<p! (.createInstance OrbitDB ipfs (clj->js {"directory" "/root/.orbitdb"}))))
-                      (set! dblog (<p! (.log orbitdb TOPIC-ID options)))
-                      (<p! (.load dblog))
-                      (set! dbdocs (<p! (.docs orbitdb "foo")))
-                      (<p! (.load dbdocs))
-                      (do
-                        #_(println (.. orbitdb -identity -publicKey))
-                        #_(println (.-address dblog))
-                        (println (.toString (.-address dblog)))
-                        #_(println (.. dblog -identity -publicKey))
-                        #_(println (.. dbdocs -identity -publicKey)))
-                      (let [id (.-id (<p! (ipfs.id)))]
-                        (go (loop []
-                              (<! (timeout 2000))
-                              (.add dblog (pr-str {::app.spec/peer-id id
-                                                   ::locale-time-string (.toLocaleTimeString (js/Date.))
-                                                   ::random-int (rand-int 1000)}))
-                              (recur))))
-                      (.on (.-events dblog) "replicated" (fn [address]
-                                                           (-> dblog
-                                                               (.iterator  #js {"limit" 1})
-                                                               (.collect)
-                                                               (.map (fn [e] (.-value (.-payload e))))
-                                                               (println)))))
-                    (catch js/Error err (println err)))
-
-
-
-                  #_(<! (init-puppeteer))
-
-
-                  #_(go (loop []
-                          (<! (timeout 2000))
-                          #_(swap! state* update ::app.spec/counter inc)
-                          (ui.chan/op
-                           {::op.spec/op-key ::ui.chan/update-state
-                            ::op.spec/op-type ::op.spec/fire-and-forget}
-                           channels
-                           @state*)
-                          (recur)))
-                  #_(go
-                      (let [out| (chan 64)]
-                        (peernode.chan/op
-                         {::op.spec/op-key ::peernode.chan/request-pubsub-stream
-                          ::op.spec/op-type ::op.spec/request-stream
-                          ::op.spec/op-orient ::op.spec/request}
-                         channels
-                         out|)
-                        (loop []
-                          (when-let [value  (<! out|)]
-                            (println ::request-pubsub-stream)
-                            (println value)
-                            (recur)))))
-                  #_(go (loop []
-                          (<! (timeout (* 1000 (+ 1 (rand-int 2)))))
-                          (peernode.chan/op
-                           {::op.spec/op-key ::peernode.chan/pubsub-publish
-                            ::op.spec/op-type ::op.spec/fire-and-forget}
-                           channels
-                           {::some ::value})
-                          (recur))))
-
               {::op.spec/op-key ::app.chan/request-state-update
                ::op.spec/op-type ::op.spec/fire-and-forget}
               (let [{:keys []} value]
@@ -383,138 +365,169 @@
                  channels
                  @state*))
 
-              {::op.spec/op-key ::app.chan/create-tournament
-               ::op.spec/op-type ::op.spec/fire-and-forget}
-              (let [{:keys [::app.spec/peer-name]
-                     :or {peer-name (str "peer" (rand-int 1000))}} value
-                    frequency (str (cljc.core/rand-uuid))
-                    peer-id (get @state* ::app.spec/peer-id)]
-                #_(.add (::eventlog @app-eventlog*)
-                        (pr-str (merge
-                                 {::op.spec/op-key ::app.chan/created-tournament
-                                  ::op.spec/op-type ::op.spec/fire-and-forget}
-                                 {::app.spec/tournament tournament})))
-                #_(app.chan/op
-                   {::op.spec/op-key ::app.chan/created-tournament
-                    ::op.spec/op-type ::op.spec/fire-and-forget}
-                   channels
-                   {::app.spec/tournament tournament})
-                (app.chan/op
-                 {::op.spec/op-key ::app.chan/join-tournament
-                  ::op.spec/op-type ::op.spec/fire-and-forget}
-                 channels
-                 {::app.spec/frequency frequency
-                  ::app.spec/peer-name peer-name
-                  ::app.spec/peer-id peer-id
-                  ::app.spec/host-id peer-id}))
-
-              {::op.spec/op-key ::app.chan/join-tournament
-               ::op.spec/op-type ::op.spec/fire-and-forget}
-              (let [{:keys [::app.spec/frequency
-                            ::app.spec/peer-name
+              {::op.spec/op-key ::app.tournament.chan/create-tournament
+               ::op.spec/op-type ::op.spec/request-response
+               ::op.spec/op-orient ::op.spec/request}
+              (let [own-peer-id (get @state* ::app.spec/peer-id)
+                    {:keys [::app.spec/peer-name
+                            ::app.spec/frequency
                             ::app.spec/peer-id
-                            ::app.spec/host-id]} value
-                    peer-id (get @state* ::app.spec/peer-id)]
-                (println ::join-tournament)
-                (when-not (get @tournaments* frequency)
-                  (let [{:keys [::tournament*
-                                ::app.spec/tournament]} (<! (create-tournament* channels ctx value))]
-                    (swap! tournaments* assoc frequency tournament*)
-                    (swap! state* update ::app.spec/tournaments assoc frequency tournament)
-                    (<p! (.add (::eventlog @app-eventlog*)
-                               (pr-str (merge
-                                        {::op.spec/op-key ::app.chan/joined-tournament
-                                         ::op.spec/op-type ::op.spec/fire-and-forget}
-                                        {::app.spec/frequency frequency
-                                         ::app.spec/peer-name peer-name
-                                         ::app.spec/peer-id peer-id
-                                         ::app.spec/host-id host-id}))))
-                    (<p! (.add (::eventlog @tournament*)
-                               (pr-str (merge
-                                        {::op.spec/op-key ::app.chan/joined-tournament
-                                         ::op.spec/op-type ::op.spec/fire-and-forget}
-                                        {::app.spec/frequency frequency
-                                         ::app.spec/peer-name peer-name
-                                         ::app.spec/peer-id peer-id
-                                         ::app.spec/host-id host-id})))))
-                  (app.chan/op
-                   {::op.spec/op-key ::app.chan/joined-tournament
-                    ::op.spec/op-type ::op.spec/fire-and-forget}
-                   channels
-                   {::app.spec/frequency frequency
-                    ::app.spec/peer-name peer-name
-                    ::app.spec/peer-id peer-id
-                    ::app.spec/host-id host-id})))
-
-              {::op.spec/op-key ::app.chan/joined-tournament
-               ::op.spec/op-type ::op.spec/fire-and-forget}
-              (let [{:keys [::app.spec/frequency
-                            ::app.spec/peer-name
                             ::app.spec/host-id
-                            ::app.spec/peer-id]} value]
-                (println ::joined-tournament)
-                (when  (not (get @tournaments* frequency))
-                  (if (= peer-id (get @state* ::app.spec/peer-id))
-                    (let [{:keys [::tournament*
-                                  ::app.spec/tournament]} (<! (create-tournament* channels ctx value))]
-                      (swap! tournaments* assoc frequency tournament*)
-                      (swap! state* update ::app.spec/tournaments assoc frequency tournament))
-                    (let []
-                      (swap! state* update ::app.spec/tournaments assoc frequency (merge {::app.spec/frequency frequency
-                                                                                          ::app.spec/peer-metas {}}
-                                                                                         (select-keys value [::app.spec/host-id]))))))
-                (swap! state* update-in
-                       [::app.spec/tournaments frequency ::app.spec/peer-metas]
-                       assoc peer-id (select-keys value [::app.spec/host-id
-                                                         ::app.spec/peer-name
-                                                         ::app.spec/peer-id])))
+                            ::replay?
+                            ::op.spec/out|]
+                     :or {peer-name (str "peer" (rand-int 1000))
+                          frequency (str (cljc.core/rand-uuid))
+                          peer-id own-peer-id
+                          host-id own-peer-id}} value]
+                (when (not (get @tournaments* frequency))
+                  (when (= own-peer-id peer-id)
+                    (<! (create-tournament-proc {::app.spec/frequency frequency
+                                                 ::app.spec/peer-name peer-name
+                                                 ::app.spec/peer-id peer-id
+                                                 ::app.spec/host-id peer-id})))
+                  (when-not replay?
+                    (let [tournament|| (get @tournaments* frequency)]
+                      (<! (app.tournament.chan/op
+                           {::op.spec/op-key ::app.tournament.chan/create-tournament
+                            ::op.spec/op-type ::op.spec/request-response
+                            ::op.spec/op-orient ::op.spec/request}
+                           tournament||
+                           {::app.spec/frequency frequency
+                            ::app.spec/peer-name peer-name
+                            ::app.spec/peer-id peer-id
+                            ::app.spec/host-id peer-id}))
+                      (<! (app.tournament.chan/op
+                           {::op.spec/op-key ::app.tournament.chan/join-tournament
+                            ::op.spec/op-type ::op.spec/request-response
+                            ::op.spec/op-orient ::op.spec/request}
+                           tournament||
+                           {::app.spec/frequency frequency
+                            ::app.spec/peer-name peer-name
+                            ::app.spec/peer-id peer-id
+                            ::app.spec/host-id peer-id})))))
+                (create-tournament-meta {::app.spec/frequency frequency
+                                         ::app.spec/host-id peer-id})
+                (when-not replay?
+                  (<p! (.add @app-eventlog*
+                             (pr-str (merge
+                                      {::op.spec/op-key ::app.tournament.chan/create-tournament
+                                       ::op.spec/op-type ::op.spec/request-response
+                                       ::op.spec/op-orient ::op.spec/request}
+                                      {::app.spec/frequency frequency
+                                       ::app.spec/peer-name peer-name
+                                       ::app.spec/peer-id peer-id
+                                       ::app.spec/host-id host-id}))))
+                  (<p! (.add @app-eventlog*
+                             (pr-str (merge
+                                      {::op.spec/op-key ::app.tournament.chan/join-tournament
+                                       ::op.spec/op-type ::op.spec/request-response
+                                       ::op.spec/op-orient ::op.spec/request}
+                                      {::app.spec/frequency frequency
+                                       ::app.spec/peer-name peer-name
+                                       ::app.spec/peer-id peer-id
+                                       ::app.spec/host-id host-id})))))
+                (close! out|))
 
 
-              {::op.spec/op-key ::app.chan/leave-tournament
-               ::op.spec/op-type ::op.spec/fire-and-forget}
-              (let [{:keys [::app.spec/frequency]} value]
-                (println ::leave-tournament )
+              {::op.spec/op-key ::app.tournament.chan/join-tournament
+               ::op.spec/op-type ::op.spec/request-response
+               ::op.spec/op-orient ::op.spec/request}
+              (let [own-peer-id (get @state* ::app.spec/peer-id)
+                    {:keys [::app.spec/peer-name
+                            ::app.spec/frequency
+                            ::app.spec/peer-id
+                            ::replay?
+                            ::op.spec/out|]} value]
+                (when (not (get @tournaments* frequency))
+                  (when (= own-peer-id peer-id)
+                    (<! (create-tournament-proc {::app.spec/frequency frequency
+                                                 ::app.spec/peer-name peer-name
+                                                 ::app.spec/peer-id peer-id})))
+                  (when-not replay?
+                    (let [tournament|| (get @tournaments* frequency)]
+                      (<! (app.tournament.chan/op
+                           {::op.spec/op-key ::app.tournament.chan/join-tournament
+                            ::op.spec/op-type ::op.spec/request-response
+                            ::op.spec/op-orient ::op.spec/request}
+                           tournament||
+                           {::app.spec/frequency frequency
+                            ::app.spec/peer-name peer-name
+                            ::app.spec/peer-id peer-id})))))
+                (when-not replay?
+                  (<p! (.add @app-eventlog*
+                             (pr-str (merge
+                                      {::op.spec/op-key ::app.tournament.chan/join-tournament
+                                       ::op.spec/op-type ::op.spec/request-response
+                                       ::op.spec/op-orient ::op.spec/request}
+                                      {::app.spec/frequency frequency
+                                       ::app.spec/peer-name peer-name
+                                       ::app.spec/peer-id peer-id})))))
+                (close! out|))
+
+              {::op.spec/op-key ::app.tournament.chan/leave-tournament
+               ::op.spec/op-type ::op.spec/request-response
+               ::op.spec/op-orient ::op.spec/request}
+              (let [own-peer-id (get @state* ::app.spec/peer-id)
+                    {:keys [::app.spec/peer-name
+                            ::app.spec/frequency
+                            ::app.spec/peer-id
+                            ::replay?
+                            ::op.spec/out|]} value]
                 (when (get @tournaments* frequency)
-                  (let [{:keys [::release
-                                ::eventlog]} @(get @tournaments* frequency)
-                        peer-id (get @state* ::app.spec/peer-id)]
-                    (<p! (.add eventlog
-                               (pr-str
-                                (merge {::op.spec/op-key ::app.chan/left-tournament
-                                        ::op.spec/op-type ::op.spec/fire-and-forget}
-                                       {::app.spec/frequency frequency
-                                        ::app.spec/peer-id peer-id}))))
-                    (<p! (.add (::eventlog @app-eventlog*)
-                               (pr-str
-                                (merge {::op.spec/op-key ::app.chan/left-tournament
-                                        ::op.spec/op-type ::op.spec/fire-and-forget}
-                                       {::app.spec/frequency frequency
-                                        ::app.spec/peer-id peer-id}))))
-                    (<! (release))
-                    (swap! tournaments* dissoc frequency)
-                    #_(swap! state* update ::app.spec/tournaments dissoc frequency)
-                    (app.chan/op
-                     {::op.spec/op-key ::app.chan/left-tournament
-                      ::op.spec/op-type ::op.spec/fire-and-forget}
-                     channels
-                     {::app.spec/frequency frequency
-                      ::app.spec/peer-id peer-id}))))
+                  (when-not replay?
+                    (let [tournament|| (get @tournaments* frequency)]
+                      (<! (app.tournament.chan/op
+                           {::op.spec/op-key ::app.tournament.chan/leave-tournament
+                            ::op.spec/op-type ::op.spec/request-response
+                            ::op.spec/op-orient ::op.spec/request}
+                           tournament||
+                           {::app.spec/frequency frequency
+                            ::app.spec/peer-id peer-id}))))
+                  (when (= own-peer-id peer-id)
+                    (<! (close-tournament-proc {::app.spec/frequency frequency
+                                                ::app.spec/peer-id peer-id}))))
+                (when-not replay?
+                  (<p! (.add @app-eventlog*
+                             (pr-str (merge
+                                      {::op.spec/op-key ::app.tournament.chan/leave-tournament
+                                       ::op.spec/op-type ::op.spec/request-response
+                                       ::op.spec/op-orient ::op.spec/request}
+                                      {::app.spec/frequency frequency
+                                       ::app.spec/peer-name peer-name
+                                       ::app.spec/peer-id peer-id})))))
+                (close! out|))
 
-              {::op.spec/op-key ::app.chan/left-tournament
-               ::op.spec/op-type ::op.spec/fire-and-forget}
+
+              {::op.spec/op-key ::app.tournament.chan/close-tournament
+               ::op.spec/op-type ::op.spec/request-response
+               ::op.spec/op-orient ::op.spec/request}
               (let [{:keys [::app.spec/frequency
-                            ::app.spec/peer-id]} value]
-                (println ::left-tournament)
-                (when (and
-                       (= peer-id (get @state* ::app.spec/peer-id))
-                       (get @tournaments* frequency))
-                  (let [{:keys [::release
-                                ::eventlog]} @(get @tournaments* frequency)]
-                    (<! (release))
-                    (swap! tournaments* dissoc frequency)))
-                (swap! state* update-in
-                       [::app.spec/tournaments frequency ::app.spec/peer-metas]
-                       dissoc peer-id))))
+                            ::app.spec/peer-id
+                            ::replay?
+                            ::op.spec/out|]} value]
+                (when (get @tournaments* frequency)
+                  (when-not replay?
+                    (let [tournament|| (get @tournaments* frequency)]
+                      (<! (app.tournament.chan/op
+                           {::op.spec/op-key ::app.tournament.chan/close-tournament
+                            ::op.spec/op-type ::op.spec/request-response
+                            ::op.spec/op-orient ::op.spec/request}
+                           tournament||
+                           {::app.spec/frequency frequency
+                            ::app.spec/peer-id peer-id}))))
+                  (<! (close-tournament-proc {::app.spec/frequency frequency
+                                              ::app.spec/peer-id peer-id}))
+                  (remove-tournament-meta {::app.spec/frequency frequency
+                                           ::app.spec/peer-id peer-id}))
+                (when-not replay?
+                  (<p! (.add @app-eventlog*
+                             (pr-str (merge
+                                      {::op.spec/op-key ::app.tournament.chan/close-tournament
+                                       ::op.spec/op-type ::op.spec/request-response
+                                       ::op.spec/op-orient ::op.spec/request}
+                                      {::app.spec/frequency frequency
+                                       ::app.spec/peer-id peer-id})))))
+                (close! out|))))
           (recur))))))
 
 
@@ -532,163 +545,6 @@
 
 (when (exists? js/module)
   (set! js/module.exports exports))
-
-
-(defn create-tournament*
-  [channels ctx opts]
-  (go
-    (let [{:keys [::app.chan/ops|]} channels
-          {:keys [::state*
-                  ::ipfs*
-                  ::orbitdb*
-                  ::tournaments*
-                  ::games*
-                  ::scenarios*
-                  ::app-eventlog*
-                  ::app.spec/TOPIC-ID]} ctx
-          {:keys [::app.spec/frequency
-                  ::app.spec/peer-name
-                  ::app.spec/host-id
-                  ::app.spec/peer-id]} opts
-          tournament (merge {::app.spec/frequency frequency
-                             ::app.spec/peer-metas {}}
-                            (select-keys opts [::app.spec/host-id]))
-          ipfs @ipfs*
-          eventlog (<p! (.eventlog @orbitdb*
-                                   frequency
-                                   (clj->js {"accessController"
-                                             {"write" ["*"] #_[(.. orbitdb -identity -publicKey)]}})))
-          close-emit-meta| (chan 1)
-          close-iterate-metas| (chan 1)
-          release
-          (fn []
-            (go
-              (close! close-emit-meta|)
-              (close! close-iterate-metas|)
-              (<p! (.unsubscribe (.-pubsub ipfs) frequency))
-              #_(<p! (.drop eventlog))
-              (<p! (.close eventlog))))
-          tournanment* (atom {::eventlog eventlog
-                              ::eventlog-prev-hash nil
-                              ::release release})]
-      (<p! (.load eventlog))
-      #_(let [done| (chan 1)
-              events (-> eventlog
-                         (.iterator  #js {"limit" -1
-                                          "reverse" false})
-                         (.collect)
-                         (vec))]
-          (println ::count-tournament-events (count events))
-          (cond
-            (empty? events)
-            (close! done|)
-
-            :else
-            (doseq [event events]
-              (let [value (read-string (.-value (.-payload event)))]
-                (put! ops| value))
-              (when (empty? (.-next event))
-                #_(swap! tournanment*
-                         assoc
-                         ::eventlog-prev-hash
-                         (.-hash event))
-                (close! done|))))
-          (<! done|))
-
-
-      #_(.on (.-events eventlog)
-             "replicated"
-             (fn [address]
-               (-> eventlog
-                   (.iterator  #js {"gt" (::eventlog-prev-hash @tournanment*)})
-                   (.collect)
-                   (.map (fn [entry]
-                           (let [value (read-string (.-value (.-payload entry)))]
-                             (put! ops| value))
-                           (when (empty? (.-next entry))
-                             (swap! tournanment*
-                                    assoc
-                                    ::eventlog-prev-hash
-                                    (.-hash entry))))))))
-      #_(.on (.-events eventlog)
-             "write"
-             (fn [address entry heads]
-               (swap! tournanment*
-                      assoc
-                      ::eventlog-prev-hash
-                      (.-hash entry))))
-      (.on (.-events eventlog)
-           "replicate.progress"
-           (fn [address hash entry progress have]
-             (let [value (read-string (.-value (.-payload entry)))]
-               (put! ops| value))))
-      (let [{:keys [::app.spec/frequency
-                    ::app.spec/peer-name
-                    ::app.spec/host-id
-                    ::app.spec/peer-id]} opts
-            peer-id (get @state* ::app.spec/peer-id)
-            text-encoder (js/TextEncoder.)
-            text-decoder (js/TextDecoder.)]
-        (<p! (.subscribe (.-pubsub ipfs)
-                         frequency
-                         (fn [msg]
-                           (when-not (= peer-id (.-from msg))
-                             (let [peer-id (.-from msg)]
-                               (swap! state* update-in
-                                      [::app.spec/tournaments frequency ::app.spec/peer-metas peer-id]
-                                      merge (merge
-                                             (read-string (.decode text-decoder  (.-data msg)))
-                                             {::app.spec/peer-id peer-id
-                                              ::app.spec/received-at (.now js/Date)})))
-                             #_(do
-                                 (println (format "id: %s" id))
-                                 (println (format "from: %s" (.-from msg)))
-                                 (println (format "data: %s" (.decode text-decoder  (.-data msg))))
-                                 (println (format "topicIDs: %s" msg.topicIDs)))))))
-        (go (loop [counter 0]
-              (<p! (.publish (.-pubsub ipfs)
-                             frequency
-                             (-> text-encoder
-                                 (.encode  (pr-str {::app.spec/peer-id peer-id
-                                                    ::app.spec/counter counter})))))
-              (alt!
-                [(timeout 2000)]
-                ([value c|]
-                 (recur (inc counter)))
-                [close-emit-meta|]
-                ([_ _]
-                 (do nil)))))
-        (go (loop []
-              (alt!
-                [(timeout 4000)]
-                ([value c|]
-                 (let [own-peer-id (get @state* ::app.spec/peer-id)]
-                   (doseq [[peer-id {:keys [::app.spec/received-at]
-                                     :as peer-meta}] (get-in @state* [::app.spec/tournaments frequency ::app.spec/peer-metas])
-                           :when (not= peer-id own-peer-id)
-                           :when (> (- (.now js/Date) received-at) 8000)]
-                     (println ::removing-peer-from-tournament)
-                     (swap! state* update-in
-                            [::app.spec/tournaments frequency ::app.spec/peer-metas]
-                            dissoc peer-id)))
-                 (recur))
-                [close-iterate-metas|]
-                ([_ _]
-                 (do nil))))))
-
-      #_(ipfs.pubsub.subscribe
-         frequency
-         (fn [msg]
-           (when-not (= peer-id (.-from msg))
-             (do
-               (put! pubsub| (merge
-                              (read-string (.decode text-decoder  (.-data msg)))
-                              {::app.spec/peer-id (.-from msg)
-                               ::app.spec/received-at (.now js/Date)}))))))
-      {::tournament* tournanment*
-       ::app.spec/tournament tournament})))
-
-
 
 
 (comment
