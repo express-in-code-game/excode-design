@@ -305,6 +305,46 @@ services:
           cpus: '4'
           memory: 4096M
 
+  electron:
+    image: deathstar.electron
+    build:
+      context: ./electron
+      dockerfile: ./Dockerfile
+      args:
+        workdir: /ctx/DeathStarGame/bin/electron
+    command: tail -f /dev/null
+    # command: bash f dev
+    # expose:
+    #   - 7788
+    ports:
+      - ${PORTS_PREFIX}080:8000
+      - ${PORTS_PREFIX}081:8001
+      - ${PORTS_PREFIX}555:9500
+      - ${PORTS_PREFIX}999:8899
+      - ${PORTS_PREFIX}963:9630
+    environment:
+      - RSOCKET_PORT=${PORTS_PREFIX}071
+      - RSOCKET_PORT_SCENARIO=${PORTS_PREFIX}072
+      - RSOCKET_PORT_PLAYER=${PORTS_PREFIX}073
+      - SHADOWCLJS_DEVTOOLS_URL=http://localhost:${PORTS_PREFIX}963
+      - SCENARIO_ORIGIN=http://localhost:${PORTS_PREFIX}081
+    networks:
+      - base-network
+    # user: 1000:1000
+    volumes:
+      - ./electron/.user:/root
+      - type: volume
+        source: ctx
+        target: /ctx
+        volume:
+          nocopy: true
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
 
   code-server:
     image: deathstar.code-server

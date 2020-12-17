@@ -1,0 +1,30 @@
+
+.ui-logo {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 128px;
+  /* height: 31px; */
+  background: rgba(255, 255, 255, 0.2);
+  /* margin: 16px 24px 16px 0; */
+  float: left;
+  margin: 0 32px 0 0 ;
+  /* border-right:1px solid #dedede; */
+
+  color: #000;
+}
+
+.main-content.ant-layout-content {
+  height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
+.ant-layout {
+  background: none !important;
+}
+
+.ant-tabs-content {
+  height: 100% !important;
+}
