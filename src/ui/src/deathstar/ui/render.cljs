@@ -22,6 +22,9 @@
    [deathstar.scenario-api.spec :as scenario-api.spec]
    [deathstar.scenario-api.chan :as scenario-api.chan]
 
+   [deathstar.ui.tournament.render :as ui.tournament.render]
+   [deathstar.ui.scenario.render :as ui.scenario.render]
+
    ["react" :as React]
    ["react-router-dom" :as ReactRouter :refer [BrowserRouter
                                                HashRouter
@@ -301,107 +304,6 @@
                   :pagination false}])))
 
 
-
-
-(defn rc-iframe
-  [channels state* opts-iframe]
-  (reagent.core/with-let
-    [force-updater (reagent.core/atom (random-uuid))]
-    [:div {:style {}#_{:display "none"}}
-     [ant-row 
-      [ant-button {:icon (reagent.core/as-element [ant-icon-reload-outlined])
-                   :size "small"
-                   :title "button"
-                   :on-click (fn [] (reset! force-updater (random-uuid)))}]]
-     [ant-row
-      [:iframe (merge
-                {:src "http://localhost:11950/render.html"
-                 :key @force-updater
-                 :width "100%"
-                 :height "400"}
-                opts-iframe)]]]))
-
-
-(defn rc-iframe-scenario
-  [channels state*]
-  (reagent.core/with-let
-    [force-updater (reagent.core/atom (random-uuid))
-     scenario-origin (reagent.core/cursor state* [::ui.spec/scenario-origin])]
-    [:<>
-     [ant-row
-      [ant-button-group
-       {:size "small"}
-       [ant-button {:icon (reagent.core/as-element [ant-icon-reload-outlined])
-                    :size "small"
-                    :title "reload page"
-                    :on-click (fn [] (reset! force-updater (random-uuid)))}]
-       [ant-button {:size "small"
-                    :title "generate"
-                    :on-click (fn []
-                                (scenario-api.chan/op
-                                 {::op.spec/op-key ::scenario-api.chan/generate
-                                  ::op.spec/op-type ::op.spec/fire-and-forget}
-                                 channels
-                                 {}))} "generate"]
-       [ant-button {:size "small"
-                    :title "reset"
-                    :on-click (fn []
-                                (scenario-api.chan/op
-                                 {::op.spec/op-key ::scenario-api.chan/reset
-                                  ::op.spec/op-type ::op.spec/fire-and-forget}
-                                 channels
-                                 {}))} "reset"]
-       [ant-button {:size "small"
-                    :title "resume"
-                    :on-click (fn []
-                                (scenario-api.chan/op
-                                 {::op.spec/op-key ::scenario-api.chan/resume
-                                  ::op.spec/op-type ::op.spec/fire-and-forget}
-                                 channels
-                                 {}))} "resume"]
-       [ant-button {:size "small"
-                    :title "pause"
-                    :on-click (fn []
-                                (scenario-api.chan/op
-                                 {::op.spec/op-key ::scenario-api.chan/pause
-                                  ::op.spec/op-type ::op.spec/fire-and-forget}
-                                 channels
-                                 {}))} "pause"]
-       [ant-button {:size "small"
-                    :title "replay"
-                    :on-click (fn []
-                                (scenario-api.chan/op
-                                 {::op.spec/op-key ::scenario-api.chan/replay
-                                  ::op.spec/op-type ::op.spec/fire-and-forget}
-                                 channels
-                                 {}))} "replay"]
-       [ant-button {:size "small"
-                    :title "next-step"
-                    :on-click (fn []
-                                (scenario-api.chan/op
-                                 {::op.spec/op-key ::scenario-api.chan/next-step
-                                  ::op.spec/op-type ::op.spec/fire-and-forget}
-                                 channels
-                                 {}))} "next-step"]]]
-     [ant-row {:style {:height "100%"}}
-      [ant-tabs {:style {:width "100%"
-                         :height "100%"}
-                 :defaultActiveKey "player"}
-       [ant-tab-pane {:style {:width "100%"
-                              :height "100%"}
-                      :tab "player" :key "player"}
-        [:iframe {:src (format "%s/scenario.html" @scenario-origin)
-                  :key @force-updater
-                  :width "100%"
-                  :height "100%"}]]
-       [ant-tab-pane {:style {:width "100%"
-                              :height "100%"}
-                      :tab "peers" :key "peers"}
-        #_[:iframe {:src (format "%s/scenario.html" @scenario-origin)
-                    :key @force-updater
-                    :width "100%"
-                    :height "100%"}]]]]]))
-
 (defn rc-page-main
   [channels state*]
   [layout channels state*
@@ -491,95 +393,29 @@
          [ant-button {:type "default" :on-click on-create} "create"]]]]]]))
 
 
-(defn table-tournament-peer-metas-columns
-  [channels state*]
-  [{:title "peer-id"
-    :key ::app.spec/peer-id
-    :dataIndex ::app.spec/peer-id}
-   {:title "counter"
-    :key ::app.spec/counter
-    :dataIndex ::app.spec/counter}])
-
-(defn table-tournament-peer-metas
-  [channels state*]
-  (reagent.core/with-let
-    [{:keys [:path :url :isExact :params]} (js->clj (useRouteMatch)
-                                                    :keywordize-keys true)
-     frequency (:frequency params)
-     peer-metas* (reagent.core/cursor state* [::app.spec/tournaments frequency ::app.spec/peer-metas])
-     columns (vec (concat (table-tournament-peer-metas-columns channels state*)))]
-    (let [dataSource (vec (vals @peer-metas*))
-          total (count dataSource)]
-      [ant-table {:show-header true
-                  :size "small"
-                  :row-key ::app.spec/peer-id
-                  :style {:height "50%" :width "100%"}
-                  :columns columns
-                  :dataSource dataSource
-                  :on-change (fn [pag fil sor ext]
-                               #_(js->clj {:pagination pag
-                                           :filters fil
-                                           :sorter sor
-                                           :extra ext} :keywordize-keys true))
-                  :scroll {;  :x "max-content" 
-                                ;  :y 256
-                           }
-                  :pagination false}])))
-
-
 (defn rc-page-tournament
   [channels state*]
   (reagent.core/with-let
-    [scenario-origin (reagent.core/cursor state* [::ui.spec/scenario-origin])]
+    []
     [layout channels state*
-     [:<>
-      [ant-button {:type "default"
-                   :size "small"
-                   :on-click (fn []
-                               (app.chan/op
-                                {::op.spec/op-key ::app.chan/create-game
-                                 ::op.spec/op-type ::op.spec/fire-and-forget}
-                                channels
-                                {}))} "create game"]
-      [ant-row {:justify "center"
-                :align "top" #_"middle"
-                :style {:height "40%"}
-                    ;; :gutter [16 24]
-                }
-       [ant-col {:span 24}
-        [:f> table-tournament-peer-metas channels state*]]]]]))
-
-(defn rc-page-game
-  [channels state*]
-  (reagent.core/with-let
-    [scenario-origin (reagent.core/cursor state* [::ui.spec/scenario-origin])]
-    [layout channels state*
-     [:<>
-      [:div ::rc-page-game]]]))
+     [ui.tournament.render/rc-page channels state*]]))
 
 (defn rc-page-scenario
   [channels state*]
   (reagent.core/with-let
-    [scenario-origin (reagent.core/cursor state* [::ui.spec/scenario-origin])]
+    []
+    [layout channels state*
+     [ui.scenario.render/rc-page channels state*]]))
+
+
+(defn rc-page-game
+  [channels state*]
+  (reagent.core/with-let
+    []
     [layout channels state*
      [:<>
-      [ant-row {:justify "center"
-                :align "top" #_"middle"
-                :style {:height "94%"}
-                    ;; :gutter [16 24]
-                }
-       [ant-col {:span 8}
-        #_[table-tournaments channels state*]]
-       [ant-col {:span 16 :style {:height "100%"}}
-        [rc-iframe-scenario channels state*]
-        [ant-row {:justify "start"
-                  :align "top" #_"middle"
-                    ;; :gutter [16 24]
-                  }
-         [ant-col {:span 4}
-          [rc-iframe channels state* {:width "80px"
-                                      :height "32px"
-                                      :src (format "%s/player.html" @scenario-origin)}]]]]]]]))
+      [:div ::rc-page-game]]]))
+
 
 (defn rc-page-not-found
   [channels state*]
