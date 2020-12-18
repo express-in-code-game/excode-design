@@ -35,7 +35,7 @@
   ([op-meta channels value]
    (op op-meta channels value (chan 1)))
   ([op-meta channels value out|]
-   (put! (::ops| channels) (merge op-meta
+   (put! (::release| channels) (merge op-meta
                                   value
                                   {::op.spec/out| out|}))
    out|))
