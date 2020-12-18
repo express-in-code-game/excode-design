@@ -38,15 +38,10 @@
 
 (defonce fs (js/require "fs"))
 (defonce path (js/require "path"))
-#_(defonce axios (.-default (js/require "axios")))
+(defonce axios (.-default (js/require "axios")))
 (defonce puppeteer (js/require "puppeteer-core"))
 (defonce OrbitDB (js/require "orbit-db"))
 (defonce IpfsClient (js/require "ipfs-http-client"))
-(defonce IpfsdCtl (js/require "ipfsd-ctl"))
-(defonce GoIpfs (js/require "go-ipfs"))
-(defonce Electron (js/require "electron"))
-(def ElectronApp (.-app Electron))
-(def ElectronBrowserWindow (.-BrowserWindow Electron))
 
 (defonce channels (merge
                    (app.chan/create-channels)
@@ -126,7 +121,6 @@
               ::app.spec/app-eventlog* (atom nil)
               ::app.spec/browser* (atom nil)
               ::app.spec/ipfs* (atom nil)
-              ::app.spec/ipfsd* (atom nil)
               ::app.spec/orbitdb* (atom nil)
               ::app.spec/TOPIC-ID "deathstar-1a58070"})
 
@@ -195,7 +189,6 @@
   (let [{:keys [::app.chan/ops|]} channels
         {:keys [::app.spec/state*
                 ::app.spec/ipfs*
-                ::app.spec/ipfsd*
                 ::app.spec/orbitdb*
                 ::app.spec/tournaments*
                 ::app.spec/games*
@@ -259,39 +252,6 @@
             (condp = (select-keys value [::op.spec/op-key ::op.spec/op-type ::op.spec/op-orient])
 
               {::op.spec/op-key ::app.chan/init
-               ::op.spec/op-type ::op.spec/fire-and-forget}
-              #_(let [ipfsd (<p! (.createController IpfsdCtl
-                                                    (clj->js {"ipfsHttpModule" IpfsClient
-                                                              "ipfsBin" (.path GoIpfs)
-                                                              "env" {"IPFS_PATH" "/data/ipfs"}
-                                                              "ipfsOptions" {"start" false}})))
-                      ipfs (<p! (.start ipfsd))]
-                  (reset! ipfsd* ipfsd)
-                  (reset! ipfs* ipfs))
-              (let [_ (<p! (.whenReady ElectronApp))
-                    create-window
-                    (fn []
-                      (let [main-window (ElectronBrowserWindow.
-                                         (clj->js {"width" 800
-                                                   "height" 600
-                                                   "icon" (.join path
-                                                                 js/__dirname
-                                                                 "../../../../"
-                                                                 "logo" "svg"
-                                                                 "logo_bottom_right-colors-green-4-728-square.png")
-                                                   "webPreferences" {}}))]
-                        (.loadFile main-window "../public/index.html")))]
-                (create-window)
-                (.on ElectronApp "activate"
-                     (fn []
-                       (when (empty? (.getAllWindows ElectronBrowserWindow))
-                         (create-window))))
-                (.on ElectronApp "window-all-closed"
-                     (fn []
-                       (when (not= js/global.process.platform "darwin")
-                         (.quit ElectronApp)))))
-
-              {::op.spec/op-key ::app.chan/init0
                ::op.spec/op-type ::op.spec/fire-and-forget}
               (let [{:keys []} value]
                 (println ::init)
@@ -626,23 +586,23 @@
   )
 
 
-#_(defn create-puppeteer
-    []
-    (go
-      (try
-        (let [data (<p! (.request axios
-                                  (clj->js
-                                   {"url" "http://puppeteer:9222/json/version"
-                                    "method" "get"
-                                    "headers" {"Host" "localhost:9222"}})))
+(defn create-puppeteer
+  []
+  (go
+    (try
+      (let [data (<p! (.request axios
+                                (clj->js
+                                 {"url" "http://puppeteer:9222/json/version"
+                                  "method" "get"
+                                  "headers" {"Host" "localhost:9222"}})))
 
-              webSocketDebuggerUrl (-> (aget (.-data data) "webSocketDebuggerUrl")
-                                       (str/replace "localhost" "puppeteer"))]
-          (<p! (.connect puppeteer
-                         (clj->js
-                          {"browserWSEndpoint" webSocketDebuggerUrl
-                           #_"browserURL" #_"http://puppeteer:9222"}))))
-        (catch js/Error err (println err)))))
+            webSocketDebuggerUrl (-> (aget (.-data data) "webSocketDebuggerUrl")
+                                     (str/replace "localhost" "puppeteer"))]
+        (<p! (.connect puppeteer
+                       (clj->js
+                        {"browserWSEndpoint" webSocketDebuggerUrl
+                         #_"browserURL" #_"http://puppeteer:9222"}))))
+      (catch js/Error err (println err)))))
 
 (comment
 
