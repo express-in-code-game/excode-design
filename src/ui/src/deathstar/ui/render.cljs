@@ -23,9 +23,12 @@
    [deathstar.scenario-api.chan :as scenario-api.chan]
 
    [deathstar.ui.tournament.render :as ui.tournament.render]
-   [deathstar.ui.scenario.render :as ui.scenario.render]
+   [deathstar.ui.tournament.impl :as ui.tournament.impl]
 
-   ["react" :as React]
+   [deathstar.ui.scenario.render :as ui.scenario.render]
+   [deathstar.ui.scenario.impl :as ui.scenario.impl]
+
+   ["react" :as React :refer [useEffect]]
    ["react-router-dom" :as ReactRouter :refer [BrowserRouter
                                                HashRouter
                                                Switch
@@ -123,9 +126,9 @@
 (defn menu
   [channels state*]
   (reagent.core/with-let
-    [{:keys [:path :url :isExact :params]} (js->clj (useRouteMatch)
-                                                    :keywordize-keys true)]
-    (let []
+    []
+    (let [{:keys [:path :url :isExact :params]} (js->clj (useRouteMatch)
+                                                         :keywordize-keys true)]
       [ant-menu {:theme "light"
                  :mode "horizontal"
                  :size "small"
@@ -306,11 +309,11 @@
 
 (defn rc-page-main
   [channels state*]
-  [layout channels state*
-   [:<>
-    [:div ::rc-page-main]]]
   (reagent.core/with-let
-    []
+    [_ (useEffect (fn []
+                    (println ::rc-page-main-mount)
+                    (fn useEffect-cleanup []
+                      (println ::rc-page-main-unmount))))]
     [layout channels state*
      [:<>
       [ant-row {:justify "center"
@@ -397,8 +400,15 @@
   [channels state*]
   (reagent.core/with-let
     []
-    [layout channels state*
-     [ui.tournament.render/rc-page channels state*]]))
+    (let [{:keys [:path :url :isExact :params]} (js->clj (useRouteMatch)
+                                                         :keywordize-keys true)
+          _ (useEffect (fn []
+                         (println ::rc-page-tournament-mount)
+                         (println path params)
+                         (fn useEffect-cleanup []
+                           (println ::rc-page-tournament-unmount))))]
+      [layout channels state*
+       [ui.tournament.render/rc-page channels state*]])))
 
 (defn rc-page-scenario
   [channels state*]
@@ -411,7 +421,10 @@
 (defn rc-page-game
   [channels state*]
   (reagent.core/with-let
-    []
+    [_ (useEffect (fn []
+                    (println ::rc-page-game-mount)
+                    (fn useEffect-cleanup []
+                      (println ::rc-page-game-unmount))))]
     [layout channels state*
      [:<>
       [:div ::rc-page-game]]]))

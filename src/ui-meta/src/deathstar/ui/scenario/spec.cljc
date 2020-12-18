@@ -1,5 +1,5 @@
-(ns deathstar.ui.spec
-  #?(:cljs (:require-macros [deathstar.ui.spec]))
+(ns deathstar.ui.scenario.spec
+  #?(:cljs (:require-macros [deathstar.ui.scenario.spec]))
   (:require
    [clojure.spec.alpha :as s]))
 

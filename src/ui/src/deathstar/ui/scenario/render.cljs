@@ -55,7 +55,33 @@
    ["@ant-design/icons/SyncOutlined" :default AntIconSyncOutlined]
    ["@ant-design/icons/ReloadOutlined" :default AntIconReloadOutlined]))
 
+(do
+  (def ant-row (reagent.core/adapt-react-class AntRow))
+  (def ant-col (reagent.core/adapt-react-class AntCol))
+  (def ant-divider (reagent.core/adapt-react-class AntDivider))
+  (def ant-layout (reagent.core/adapt-react-class AntLayout))
+  (def ant-layout-content (reagent.core/adapt-react-class (.-Content AntLayout)))
+  (def ant-layout-header (reagent.core/adapt-react-class (.-Header AntLayout)))
 
+  (def ant-menu (reagent.core/adapt-react-class AntMenu))
+  (def ant-menu-item (reagent.core/adapt-react-class (.-Item AntMenu)))
+  (def ant-icon (reagent.core/adapt-react-class AntIcon))
+  (def ant-button (reagent.core/adapt-react-class AntButton))
+  (def ant-button-group (reagent.core/adapt-react-class (.-Group AntButton)))
+  (def ant-list (reagent.core/adapt-react-class AntList))
+  (def ant-input (reagent.core/adapt-react-class AntInput))
+  (def ant-input-password (reagent.core/adapt-react-class (.-Password AntInput)))
+  (def ant-checkbox (reagent.core/adapt-react-class AntCheckbox))
+  (def ant-form (reagent.core/adapt-react-class AntForm))
+  (def ant-table (reagent.core/adapt-react-class AntTable))
+  (def ant-form-item (reagent.core/adapt-react-class (.-Item AntForm)))
+  (def ant-tabs (reagent.core/adapt-react-class AntTabs))
+  (def ant-tab-pane (reagent.core/adapt-react-class (.-TabPane AntTabs)))
+
+  (def ant-icon-smile-outlined (reagent.core/adapt-react-class AntIconSmileOutlined))
+  (def ant-icon-loading-outlined (reagent.core/adapt-react-class AntIconLoadingOutlined))
+  (def ant-icon-sync-outlined (reagent.core/adapt-react-class AntIconSyncOutlined))
+  (def ant-icon-reload-outlined (reagent.core/adapt-react-class AntIconReloadOutlined)))
 
 
 (defn rc-iframe

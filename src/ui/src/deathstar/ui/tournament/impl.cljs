@@ -18,6 +18,9 @@
    [deathstar.ui.spec :as ui.spec]
    [deathstar.ui.chan :as ui.chan]
 
+   [deathstar.ui.tournament.spec :as ui.tournament.spec]
+   [deathstar.ui.tournament.chan :as ui.tournament.chan]
+
    [deathstar.app.spec :as app.spec]
    [deathstar.app.chan :as app.chan]
 
@@ -28,7 +31,7 @@
 (defn create-proc-ops
   [channels ctx opts]
   (let [{:keys [::ui.tournament.chan/ops|
-                ::app.tournament.chan/release|]} channels
+                ::ui.tournament.chan/release|]} channels
         release
         (fn []
           (go
@@ -46,7 +49,7 @@
             ops|
             (condp = (select-keys value [::op.spec/op-key ::op.spec/op-type ::op.spec/op-orient])
 
-              {::op.spec/op-key ::app.tournament.chan/init
+              {::op.spec/op-key ::ui.tournament.chan/init
                ::op.spec/op-type ::op.spec/fire-and-forget}
               (let [{:keys []} value]
                 (println ::init))))
