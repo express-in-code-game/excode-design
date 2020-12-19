@@ -66,7 +66,8 @@
             ops|
             (condp = (select-keys value [::op.spec/op-key ::op.spec/op-type ::op.spec/op-orient])
 
-              {::op.spec/op-key ::ui.chan/init}
+              {::op.spec/op-key ::ui.chan/init
+               ::op.spec/op-type ::op.spec/fire-and-forget}
               (let [{:keys []} value]
                 (println ::init)
                 (ui.render/render-ui channels state* {})
@@ -75,6 +76,53 @@
                   ::op.spec/op-type ::op.spec/fire-and-forget}
                  channels
                  {}))
+
+              {::op.spec/op-key ::ui.chan/mount-tournament
+               ::op.spec/op-type ::op.spec/request-response
+               ::op.spec/op-orient ::op.spec/request}
+              (let [{:keys [::op.spec/out|]} value]
+                (println ::mount-tournament)
+                (close! out|))
+
+              {::op.spec/op-key ::ui.chan/unmount-tournament
+               ::op.spec/op-type ::op.spec/request-response
+               ::op.spec/op-orient ::op.spec/request}
+              (let [{:keys [::op.spec/out|]} value]
+                (println ::unmount-tournament)
+                (close! out|))
+
+
+              {::op.spec/op-key ::ui.chan/mount-game
+               ::op.spec/op-type ::op.spec/request-response
+               ::op.spec/op-orient ::op.spec/request}
+              (let [{:keys [::op.spec/out|]} value]
+                (println ::mount-game)
+                
+                (close! out|))
+
+              {::op.spec/op-key ::ui.chan/unmount-game
+               ::op.spec/op-type ::op.spec/request-response
+               ::op.spec/op-orient ::op.spec/request}
+              (let [{:keys [::op.spec/out|]} value]
+                (println ::unmount-game)
+                (close! out|))
+
+
+              {::op.spec/op-key ::ui.chan/mount-scenario
+               ::op.spec/op-type ::op.spec/request-response
+               ::op.spec/op-orient ::op.spec/request}
+              (let [{:keys [::op.spec/out|]} value]
+                (println ::mount-scenario)
+                (close! out|))
+
+              {::op.spec/op-key ::ui.chan/mount-scenario
+               ::op.spec/op-type ::op.spec/request-response
+               ::op.spec/op-orient ::op.spec/request}
+              (let [{:keys [::op.spec/out|]} value]
+                (println ::unmount-scenario)
+                
+                (close! out|))
+
 
               {::op.spec/op-key ::ui.chan/update-state
                ::op.spec/op-type ::op.spec/fire-and-forget}
@@ -97,7 +145,8 @@
   (println ::main)
   (println ::RSOCKET_PORT RSOCKET_PORT)
   (ui.chan/op
-   {::op.spec/op-key ::ui.chan/init}
+   {::op.spec/op-key ::ui.chan/init
+    ::op.spec/op-type ::op.spec/fire-and-forget}
    channels
    {}))
 

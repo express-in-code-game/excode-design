@@ -18,15 +18,15 @@
    [cljctools.cljc.core :as cljc.core]
 
    [deathstar.ui.spec :as ui.spec]
+   [deathstar.ui.chan :as ui.chan]
 
    [deathstar.scenario-api.spec :as scenario-api.spec]
    [deathstar.scenario-api.chan :as scenario-api.chan]
 
    [deathstar.ui.tournament.render :as ui.tournament.render]
-   [deathstar.ui.tournament.impl :as ui.tournament.impl]
 
    [deathstar.ui.scenario.render :as ui.scenario.render]
-   [deathstar.ui.scenario.impl :as ui.scenario.impl]
+   
 
    ["react" :as React :refer [useEffect]]
    ["react-router-dom" :as ReactRouter :refer [BrowserRouter
@@ -403,31 +403,68 @@
     (let [{:keys [:path :url :isExact :params]} (js->clj (useRouteMatch)
                                                          :keywordize-keys true)
           _ (useEffect (fn []
-                         (println ::rc-page-tournament-mount)
-                         (println path params)
-                         (fn useEffect-cleanup []
-                           (println ::rc-page-tournament-unmount))))]
+                         (ui.chan/op
+                          {::op.spec/op-key ::ui.chan/mount-tournament
+                           ::op.spec/op-type ::op.spec/request-response
+                           ::op.spec/op-orient ::op.spec/request}
+                          channels
+                          {})
+                         (fn []
+                           (ui.chan/op
+                            {::op.spec/op-key ::ui.chan/unmount-tournament
+                             ::op.spec/op-type ::op.spec/request-response
+                             ::op.spec/op-orient ::op.spec/request}
+                            channels
+                            {}))))]
       [layout channels state*
        [ui.tournament.render/rc-page channels state*]])))
+
+(defn rc-page-game
+  [channels state*]
+  (reagent.core/with-let
+    []
+    (let [{:keys [:path :url :isExact :params]} (js->clj (useRouteMatch)
+                                                         :keywordize-keys true)
+          _ (useEffect (fn []
+                         (ui.chan/op
+                          {::op.spec/op-key ::ui.chan/mount-game
+                           ::op.spec/op-type ::op.spec/request-response
+                           ::op.spec/op-orient ::op.spec/request}
+                          channels
+                          {})
+                         (fn []
+                           (ui.chan/op
+                            {::op.spec/op-key ::ui.chan/unmount-game
+                             ::op.spec/op-type ::op.spec/request-response
+                             ::op.spec/op-orient ::op.spec/request}
+                            channels
+                            {}))))]
+      [layout channels state*
+       [:<>
+        [:div ::rc-page-game]]])))
 
 (defn rc-page-scenario
   [channels state*]
   (reagent.core/with-let
     []
-    [layout channels state*
-     [ui.scenario.render/rc-page channels state*]]))
-
-
-(defn rc-page-game
-  [channels state*]
-  (reagent.core/with-let
-    [_ (useEffect (fn []
-                    (println ::rc-page-game-mount)
-                    (fn useEffect-cleanup []
-                      (println ::rc-page-game-unmount))))]
-    [layout channels state*
-     [:<>
-      [:div ::rc-page-game]]]))
+    (let [{:keys [:path :url :isExact :params]} (js->clj (useRouteMatch)
+                                                         :keywordize-keys true)
+          _ (useEffect (fn []
+                         (ui.chan/op
+                          {::op.spec/op-key ::ui.chan/mount-scenario
+                           ::op.spec/op-type ::op.spec/request-response
+                           ::op.spec/op-orient ::op.spec/request}
+                          channels
+                          {})
+                         (fn []
+                           (ui.chan/op
+                            {::op.spec/op-key ::ui.chan/unmount-scenario
+                             ::op.spec/op-type ::op.spec/request-response
+                             ::op.spec/op-orient ::op.spec/request}
+                            channels
+                            {}))))]
+      [layout channels state*
+       [ui.scenario.render/rc-page channels state*]])))
 
 
 (defn rc-page-not-found

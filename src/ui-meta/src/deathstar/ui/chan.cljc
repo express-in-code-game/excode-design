@@ -22,11 +22,13 @@
     {::ops| ops|}))
 
 (defmethod op*
-  {::op.spec/op-key ::init} [_]
+  {::op.spec/op-key ::init
+   ::op.spec/op-type ::op.spec/fire-and-forget} [_]
   (s/keys :req []))
-
+(derive ::init ::op)
 (defmethod op
-  {::op.spec/op-key ::init}
+  {::op.spec/op-key ::init
+   ::op.spec/op-type ::op.spec/fire-and-forget}
   [op-meta channels value]
   (put! (::ops| channels) (merge op-meta
                                  value)))
@@ -36,10 +38,201 @@
   {::op.spec/op-key ::update-state
    ::op.spec/op-type ::op.spec/fire-and-forget} [_]
   (s/keys :req []))
-
 (defmethod op
   {::op.spec/op-key ::update-state
    ::op.spec/op-type ::op.spec/fire-and-forget}
   [op-meta channels value]
   (put! (::ops| channels) (merge op-meta
                                  value)))
+
+
+(defmethod op*
+  {::op.spec/op-key ::mount-tournament
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/request} [_]
+  (s/keys :req []))
+(derive ::mount-tournament ::op)
+(defmethod op
+  {::op.spec/op-key ::mount-tournament
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/request}
+  ([op-meta channels value]
+   (op op-meta channels value (chan 1)))
+  ([op-meta channels value out|]
+   (put! (::ops| channels) (merge op-meta
+                                  value
+                                  {::op.spec/out| out|}))
+   out|))
+(defmethod op*
+  {::op.spec/op-key ::mount-tournament
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/response} [_]
+  (s/keys :req []))
+(derive ::mount-tournament ::op)
+(defmethod op
+  {::op.spec/op-key ::mount-tournament
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/response}
+  [op-meta out| value]
+  (put! out| (merge op-meta
+                    value)))
+
+
+(defmethod op*
+  {::op.spec/op-key ::unmount-tournament
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/request} [_]
+  (s/keys :req []))
+(derive ::unmount-tournament ::op)
+(defmethod op
+  {::op.spec/op-key ::unmount-tournament
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/request}
+  ([op-meta channels value]
+   (op op-meta channels value (chan 1)))
+  ([op-meta channels value out|]
+   (put! (::ops| channels) (merge op-meta
+                                  value
+                                  {::op.spec/out| out|}))
+   out|))
+(defmethod op*
+  {::op.spec/op-key ::unmount-tournament
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/response} [_]
+  (s/keys :req []))
+(derive ::unmount-tournament ::op)
+(defmethod op
+  {::op.spec/op-key ::unmount-tournament
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/response}
+  [op-meta out| value]
+  (put! out| (merge op-meta
+                    value)))
+
+
+(defmethod op*
+  {::op.spec/op-key ::mount-game
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/request} [_]
+  (s/keys :req []))
+(derive ::mount-game ::op)
+(defmethod op
+  {::op.spec/op-key ::mount-game
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/request}
+  ([op-meta channels value]
+   (op op-meta channels value (chan 1)))
+  ([op-meta channels value out|]
+   (put! (::ops| channels) (merge op-meta
+                                  value
+                                  {::op.spec/out| out|}))
+   out|))
+(defmethod op*
+  {::op.spec/op-key ::mount-game
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/response} [_]
+  (s/keys :req []))
+(derive ::mount-game ::op)
+(defmethod op
+  {::op.spec/op-key ::mount-game
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/response}
+  [op-meta out| value]
+  (put! out| (merge op-meta
+                    value)))
+
+
+(defmethod op*
+  {::op.spec/op-key ::unmount-game
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/request} [_]
+  (s/keys :req []))
+(derive ::unmount-game ::op)
+(defmethod op
+  {::op.spec/op-key ::unmount-game
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/request}
+  ([op-meta channels value]
+   (op op-meta channels value (chan 1)))
+  ([op-meta channels value out|]
+   (put! (::ops| channels) (merge op-meta
+                                  value
+                                  {::op.spec/out| out|}))
+   out|))
+(defmethod op*
+  {::op.spec/op-key ::unmount-game
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/response} [_]
+  (s/keys :req []))
+(derive ::unmount-game ::op)
+(defmethod op
+  {::op.spec/op-key ::unmount-game
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/response}
+  [op-meta out| value]
+  (put! out| (merge op-meta
+                    value)))
+
+
+(defmethod op*
+  {::op.spec/op-key ::mount-scenario
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/request} [_]
+  (s/keys :req []))
+(derive ::mount-scenario ::op)
+(defmethod op
+  {::op.spec/op-key ::mount-scenario
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/request}
+  ([op-meta channels value]
+   (op op-meta channels value (chan 1)))
+  ([op-meta channels value out|]
+   (put! (::ops| channels) (merge op-meta
+                                  value
+                                  {::op.spec/out| out|}))
+   out|))
+(defmethod op*
+  {::op.spec/op-key ::mount-scenario
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/response} [_]
+  (s/keys :req []))
+(derive ::mount-scenario ::op)
+(defmethod op
+  {::op.spec/op-key ::mount-scenario
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/response}
+  [op-meta out| value]
+  (put! out| (merge op-meta
+                    value)))
+
+
+(defmethod op*
+  {::op.spec/op-key ::unmount-scenario
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/request} [_]
+  (s/keys :req []))
+(derive ::unmount-scenario ::op)
+(defmethod op
+  {::op.spec/op-key ::unmount-scenario
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/request}
+  ([op-meta channels value]
+   (op op-meta channels value (chan 1)))
+  ([op-meta channels value out|]
+   (put! (::ops| channels) (merge op-meta
+                                  value
+                                  {::op.spec/out| out|}))
+   out|))
+(defmethod op*
+  {::op.spec/op-key ::unmount-scenario
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/response} [_]
+  (s/keys :req []))
+(derive ::unmount-scenario ::op)
+(defmethod op
+  {::op.spec/op-key ::unmount-scenario
+   ::op.spec/op-type ::op.spec/request-response
+   ::op.spec/op-orient ::op.spec/response}
+  [op-meta out| value]
+  (put! out| (merge op-meta
+                    value)))
