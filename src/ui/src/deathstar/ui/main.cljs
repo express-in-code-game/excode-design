@@ -26,6 +26,8 @@
    [deathstar.app.spec :as app.spec]
    [deathstar.app.chan :as app.chan]
 
+   [deathstar.ui.tournament.chan :as ui.tournament.chan]
+   [deathstar.ui.tournament.impl :as ui.tournament.impl]
 
    [deathstar.scenario-api.spec :as scenario-api.spec]
    [deathstar.scenario-api.chan :as scenario-api.chan]
@@ -51,14 +53,17 @@
 (pipe (::app.chan/ops| channels) (::rsocket.chan/ops| channels))
 (pipe (::scenario-api.chan/ops| channels) (::rsocket.chan/ops| channels))
 
-(def state* (ui.render/create-state*
-            {::ui.spec/scenario-origin SCENARIO_ORIGIN
-             ::app.spec/peer-metas {}}))
+(def ctx {::ui.spec/state* (ui.render/create-state*
+                            {::ui.spec/scenario-origin SCENARIO_ORIGIN
+                             ::app.spec/peer-metas {}})
 
+          ::ui.spec/tournaments* (atom {})})
 
 (defn create-proc-ops
-  [channels opts]
-  (let [{:keys [::ui.chan/ops|]} channels]
+  [channels ctx opts]
+  (let [{:keys [::ui.chan/ops|]} channels
+        {:keys [::ui.spec/state*
+                ::ui.spec/tournaments*]} ctx]
     (go
       (loop []
         (when-let [[value port] (alts! [ops|])]
@@ -80,24 +85,36 @@
               {::op.spec/op-key ::ui.chan/mount-tournament
                ::op.spec/op-type ::op.spec/request-response
                ::op.spec/op-orient ::op.spec/request}
-              (let [{:keys [::op.spec/out|]} value]
-                (println ::mount-tournament)
-                (close! out|))
+              (let [{:keys [::op.spec/out|
+                            ::app.spec/frequency]} value]
+                (when-not (get @tournaments* frequency)
+                  (let [tournament|| (ui.tournament.chan/create-channels)
+                        tournament-proc (ui.tournament.impl/create-proc-ops tournament|| ctx {})]
+                    (swap! tournaments* assoc frequency tournament||)
+                    (close! out|))))
 
               {::op.spec/op-key ::ui.chan/unmount-tournament
                ::op.spec/op-type ::op.spec/request-response
                ::op.spec/op-orient ::op.spec/request}
-              (let [{:keys [::op.spec/out|]} value]
-                (println ::unmount-tournament)
-                (close! out|))
-
-
+              (let [{:keys [::op.spec/out|
+                            ::app.spec/frequency]} value]
+                (when (get @tournaments* frequency)
+                  (let [tournament|| (get @tournaments* frequency)]
+                    (<! (ui.tournament.chan/op
+                         {::op.spec/op-key ::ui.tournament.chan/release
+                          ::op.spec/op-type ::op.spec/request-response
+                          ::op.spec/op-orient ::op.spec/request}
+                         tournament||
+                         {}))
+                    (swap! tournaments* dissoc frequency)
+                    (close! out|))))
+              
               {::op.spec/op-key ::ui.chan/mount-game
                ::op.spec/op-type ::op.spec/request-response
                ::op.spec/op-orient ::op.spec/request}
               (let [{:keys [::op.spec/out|]} value]
                 (println ::mount-game)
-                
+
                 (close! out|))
 
               {::op.spec/op-key ::ui.chan/unmount-game
@@ -120,7 +137,7 @@
                ::op.spec/op-orient ::op.spec/request}
               (let [{:keys [::op.spec/out|]} value]
                 (println ::unmount-scenario)
-                
+
                 (close! out|))
 
 
@@ -138,7 +155,7 @@
                ::rsocket.spec/port RSOCKET_PORT
                ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
-(def ops (create-proc-ops channels {}))
+(def ops (create-proc-ops channels ctx {}))
 
 (defn ^:export main
   []

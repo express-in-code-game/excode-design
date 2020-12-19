@@ -47,11 +47,12 @@
               (close! out|))
 
             ops|
-            (condp = (select-keys value [::op.spec/op-key ::op.spec/op-type ::op.spec/op-orient])
+            (do
+              (condp = (select-keys value [::op.spec/op-key ::op.spec/op-type ::op.spec/op-orient])
 
-              {::op.spec/op-key ::ui.tournament.chan/init
-               ::op.spec/op-type ::op.spec/fire-and-forget}
-              (let [{:keys []} value]
-                (println ::init))))
-
-          (recur))))))
+                {::op.spec/op-key ::ui.tournament.chan/foo
+                 ::op.spec/op-type ::op.spec/fire-and-forget}
+                (let [{:keys []} value]
+                  (println ::foo)))
+              (recur)))))
+      (println ::go-block-exits))))

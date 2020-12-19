@@ -34,7 +34,7 @@
                 ::app.spec/ipfs*
                 ::app.spec/orbitdb*]} ctx
 
-        {:keys [::app.tournament.spec/frequency
+        {:keys [::app.spec/frequency
                 ::app.spec/peer-name
                 ::app.spec/peer-id
                 ::app.spec/host-id]} opts
@@ -45,7 +45,7 @@
                      (fn [k atom-ref oldstate newstate]
                        (swap! state* update-in [::tournaments] assoc frequency newstate)))
         _ (reset! tournament* (merge
-                               (select-keys opts [::app.tournament.spec/frequency])
+                               (select-keys opts [::app.spec/frequency])
                                {::app.spec/peer-metas {}
                                 ::app.spec/host-id nil}))
         ipfs @ipfs*

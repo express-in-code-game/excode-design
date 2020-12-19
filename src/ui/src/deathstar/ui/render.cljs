@@ -403,19 +403,20 @@
     (let [{:keys [:path :url :isExact :params]} (js->clj (useRouteMatch)
                                                          :keywordize-keys true)
           _ (useEffect (fn []
+                         (println (:frequency params))
                          (ui.chan/op
                           {::op.spec/op-key ::ui.chan/mount-tournament
                            ::op.spec/op-type ::op.spec/request-response
                            ::op.spec/op-orient ::op.spec/request}
                           channels
-                          {})
+                          {::app.spec/frequency (:frequency params)})
                          (fn []
                            (ui.chan/op
                             {::op.spec/op-key ::ui.chan/unmount-tournament
                              ::op.spec/op-type ::op.spec/request-response
                              ::op.spec/op-orient ::op.spec/request}
                             channels
-                            {}))))]
+                            {::app.spec/frequency (:frequency params)}))))]
       [layout channels state*
        [ui.tournament.render/rc-page channels state*]])))
 
