@@ -527,7 +527,22 @@
                                        ::op.spec/op-orient ::op.spec/request}
                                       {::app.spec/frequency frequency
                                        ::app.spec/peer-id peer-id})))))
-                (close! out|))))
+                (close! out|))
+
+
+              {::op.spec/op-key ::app.chan/request-tournament-stream
+               ::op.spec/op-type ::op.spec/request-stream
+               ::op.spec/op-orient ::op.spec/request}
+              (let [{:keys [::app.spec/frequency
+                            ::op.spec/out|]} value]
+                (go (loop [counter 0]
+                      (if-not (closed? out|)
+                        (do
+                          (put! out| counter)
+                          (<! (timeout 1000))
+                          (recur (inc counter)))
+                        (do
+                          (println ::stream-complete))))))))
           (recur))))))
 
 

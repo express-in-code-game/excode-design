@@ -32,11 +32,31 @@
   [channels ctx opts]
   (let [{:keys [::ui.tournament.chan/ops|
                 ::ui.tournament.chan/release|]} channels
+        
+        {:keys [::app.spec/frequency]} opts
+        
+        out| (chan 64)
+
         release
         (fn []
           (go
+            (close! out|)
             (do nil)))]
+    
     (go
+      (let []
+        (app.chan/op
+         {::op.spec/op-key ::app.chan/request-tournament-stream
+          ::op.spec/op-type ::op.spec/request-stream
+          ::op.spec/op-orient ::op.spec/request}
+         channels
+         {::app.spec/frequency frequency}
+         out|)
+        (go (loop []
+              (when-let [value (<! out|)]
+                (println ::counter value)
+                (recur))
+              (println ::tournament-stream-complete))))
       (loop []
         (when-let [[value port] (alts! [ops| release|])]
           (condp = port

@@ -46,3 +46,36 @@
                                  value)))
 
 
+(defmethod op*
+  {::op.spec/op-key ::request-tournament-stream
+   ::op.spec/op-type ::op.spec/request-stream
+   ::op.spec/op-orient ::op.spec/request} [_]
+  (s/keys :req []))
+(derive ::request-tournament-stream ::op)
+(defmethod op
+  {::op.spec/op-key ::request-tournament-stream
+   ::op.spec/op-type ::op.spec/request-stream
+   ::op.spec/op-orient ::op.spec/request}
+  ([op-meta channels value]
+   (op op-meta channels value (chan 64)))
+  ([op-meta channels value out|]
+   (put! (::ops| channels) (merge op-meta
+                                  value
+                                  {::op.spec/out| out|}))
+   out|))
+(defmethod op*
+  {::op.spec/op-key ::request-tournament-stream
+   ::op.spec/op-type ::op.spec/request-stream
+   ::op.spec/op-orient ::op.spec/response} [_]
+  (s/keys :req []))
+(derive ::request-tournament-stream ::op)
+(defmethod op
+  {::op.spec/op-key ::request-tournament-stream
+   ::op.spec/op-type ::op.spec/request-stream
+   ::op.spec/op-orient ::op.spec/response}
+  [op-meta out| value]
+  (put! out| (merge op-meta
+                    value)))
+
+
+

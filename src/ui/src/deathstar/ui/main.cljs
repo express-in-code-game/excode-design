@@ -89,7 +89,7 @@
                             ::app.spec/frequency]} value]
                 (when-not (get @tournaments* frequency)
                   (let [tournament|| (ui.tournament.chan/create-channels)
-                        tournament-proc (ui.tournament.impl/create-proc-ops tournament|| ctx {})]
+                        tournament-proc (ui.tournament.impl/create-proc-ops tournament|| ctx value)]
                     (swap! tournaments* assoc frequency tournament||)
                     (close! out|))))
 
