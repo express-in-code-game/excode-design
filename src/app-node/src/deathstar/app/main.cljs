@@ -44,6 +44,8 @@
 (defonce IpfsClient (js/require "ipfs-http-client"))
 (defonce http (js/require "http"))
 (defonce express (js/require "express"))
+(defonce cors (js/require "cors"))
+(defonce bodyParser (js/require "body-parser"))
 
 (defonce channels (merge
                    (app.chan/create-channels)
@@ -60,12 +62,29 @@
 
 (def app (express))
 
-(.get app "/" (fn [request response]
-                (.send response "hello world")))
-
+(.use app (cors))
+(.use app (.text bodyParser #js {"type" "text/plain" #_"*/*"
+                                 "limit" "100kb"}))
 (-> http
     (.createServer  app)
     (.listen HTTP_PORT))
+
+(.get app "/"
+      (fn [request response next]
+        (go
+          (<! (timeout 2000))
+          (.send response "hello world"))))
+
+(.get app "/tournament-rsocket/:id"
+      (fn [request response next]
+        (let [{:keys [id]
+               :as params} (js->clj (.-params request)
+                                    :keywordize-keys true)]
+          (go
+            (<! (timeout 1000))
+            (.send response id)))))
+
+
 
 #_(do
     (pipe (::peernode.chan/ops| channels) (::rsocket.chan/ops| channels-rsocket-peernode))
