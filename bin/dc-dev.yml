@@ -239,6 +239,7 @@ services:
       - ${PORTS_PREFIX}071:7001
       - ${PORTS_PREFIX}072:7002
       - ${PORTS_PREFIX}073:7003
+      - ${PORTS_PREFIX}000:8000
       # - 8085:8080
     networks:
       - base-network

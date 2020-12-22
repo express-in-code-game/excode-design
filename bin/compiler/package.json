@@ -2,6 +2,7 @@
 	"dependencies": {
 		"@flatten-js/core": "1.2.16",
 		"antd": "4.9.2",
+		"express": "5.0.0-alpha.8",
 		"konva": "7.2.0",
 		"react": "17.0.1",
 		"react-dom": "17.0.1",

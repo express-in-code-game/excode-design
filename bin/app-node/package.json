@@ -1,6 +1,7 @@
 {
 	"dependencies": {
 		"axios": "0.21.0",
+		"express": "5.0.0-alpha.8",
 		"fbjs": "2.0.0",
 		"ipfs-http-client": "48.1.2",
 		"orbit-db": "0.26.0",

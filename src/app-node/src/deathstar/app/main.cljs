@@ -42,6 +42,8 @@
 (defonce puppeteer (js/require "puppeteer-core"))
 (defonce OrbitDB (js/require "orbit-db"))
 (defonce IpfsClient (js/require "ipfs-http-client"))
+(defonce http (js/require "http"))
+(defonce express (js/require "express"))
 
 (defonce channels (merge
                    (app.chan/create-channels)
@@ -53,6 +55,17 @@
 (defonce channels-rsocket-ui (rsocket.chan/create-channels))
 (defonce channels-rsocket-scenario (rsocket.chan/create-channels))
 (defonce channels-rsocket-player (rsocket.chan/create-channels))
+
+(def HTTP_PORT 8000)
+
+(def app (express))
+
+(.get app "/" (fn [request response]
+                (.send response "hello world")))
+
+(-> http
+    (.createServer  app)
+    (.listen HTTP_PORT))
 
 #_(do
     (pipe (::peernode.chan/ops| channels) (::rsocket.chan/ops| channels-rsocket-peernode))
@@ -75,7 +88,7 @@
             (isa? op-key ::scenario-api.chan/op) (put! (::rsocket.chan/ops| channels-rsocket-scenario) value)))
         (recur))))
 
-(defonce rsocket-ui (rsocket.impl/create-proc-ops
+#_(defonce rsocket-ui (rsocket.impl/create-proc-ops
                  channels-rsocket-ui
                  {::rsocket.spec/connection-side ::rsocket.spec/accepting
                   ::rsocket.spec/host "0.0.0.0"
@@ -83,7 +96,7 @@
                   ::rsocket.spec/transport ::rsocket.spec/websocket}))
 
 (pipe (::rsocket.chan/requests| channels-rsocket-player) (::rsocket.chan/ops| channels-rsocket-scenario))
-(defonce rsocket-scenario (rsocket.impl/create-proc-ops
+#_(defonce rsocket-scenario (rsocket.impl/create-proc-ops
                        channels-rsocket-scenario
                        {::rsocket.spec/connection-side ::rsocket.spec/accepting
                         ::rsocket.spec/host "0.0.0.0"
@@ -98,7 +111,7 @@
             :else (put! (::rsocket.chan/ops| channels-rsocket-player) value)))
         (recur))))
 
-(defonce rsocket-player (rsocket.impl/create-proc-ops
+#_(defonce rsocket-player (rsocket.impl/create-proc-ops
                      channels-rsocket-player
                      {::rsocket.spec/connection-side ::rsocket.spec/accepting
                       ::rsocket.spec/host "0.0.0.0"
@@ -253,108 +266,109 @@
 
               {::op.spec/op-key ::app.chan/init
                ::op.spec/op-type ::op.spec/fire-and-forget}
-              (let [{:keys []} value]
-                (println ::init)
-                (try
-                  (let [ipfs (IpfsClient "http://ipfs:5001")]
-                    (reset! ipfs* ipfs)
-                    (swap! state* assoc ::app.spec/peer-id (.-id (<p! (.id ipfs))))
-                    (reset! orbitdb* (<p! (.createInstance OrbitDB ipfs (clj->js {"directory" "/root/.orbitdb"}))))
-                    (reset! app-eventlog* (<p! (.eventlog @orbitdb*
-                                                          TOPIC-ID
-                                                          (clj->js {"accessController"
-                                                                    {"write" ["*"]}})))))
-                  (let [app-eventlog @app-eventlog*]
-                    #_(<p! (.drop (::eventlog @app-eventlog*)))
-                    (<p! (.load app-eventlog))
-                    (let [entries (-> app-eventlog
-                                      (.iterator  #js {"limit" -1
-                                                       "reverse" false})
-                                      (.collect)
-                                      (vec))]
-                      (println ::count-app-events (count entries))
-                      (doseq [entry entries]
-                        (let [value (read-string (.-value (.-payload entry)))]
-                          (put! ops| (merge value
-                                            {::replay? true})))
-                        #_(when (empty? (.-next entry))
-                            (swap! app-eventlog*
-                                   assoc
-                                   ::eventlog-prev-hash
-                                   (.-hash entry))
-                            (close! done|))))
+              (println ::init)
+              #_(let [{:keys []} value]
+                  (println ::init)
+                  (try
+                    (let [ipfs (IpfsClient "http://ipfs:5001")]
+                      (reset! ipfs* ipfs)
+                      (swap! state* assoc ::app.spec/peer-id (.-id (<p! (.id ipfs))))
+                      (reset! orbitdb* (<p! (.createInstance OrbitDB ipfs (clj->js {"directory" "/root/.orbitdb"}))))
+                      (reset! app-eventlog* (<p! (.eventlog @orbitdb*
+                                                            TOPIC-ID
+                                                            (clj->js {"accessController"
+                                                                      {"write" ["*"]}})))))
+                    (let [app-eventlog @app-eventlog*]
+                      #_(<p! (.drop (::eventlog @app-eventlog*)))
+                      (<p! (.load app-eventlog))
+                      (let [entries (-> app-eventlog
+                                        (.iterator  #js {"limit" -1
+                                                         "reverse" false})
+                                        (.collect)
+                                        (vec))]
+                        (println ::count-app-events (count entries))
+                        (doseq [entry entries]
+                          (let [value (read-string (.-value (.-payload entry)))]
+                            (put! ops| (merge value
+                                              {::replay? true})))
+                          #_(when (empty? (.-next entry))
+                              (swap! app-eventlog*
+                                     assoc
+                                     ::eventlog-prev-hash
+                                     (.-hash entry))
+                              (close! done|))))
 
-                    #_(.on (.-events app-eventlog)
-                           "replicated"
-                           (fn [address]
-                             (println ::replicated)
-                             #_(println  (->>
-                                          (-> app-eventlog
-                                              (.iterator  #js {"gt" (::eventlog-prev-hash @app-eventlog*)})
-                                              (.collect))
-                                          (map (fn [entry] (select-keys (read-string (.-value (.-payload entry)))
-                                                                        [::app.spec/frequency
-                                                                         ::app.spec/op-type])))))
-                             (-> app-eventlog
-                                 (.iterator  #js {"lt" (::eventlog-prev-hash @app-eventlog*)})
-                                 (.collect)
-                                 (.map (fn [entry]
-                                         (let [value (read-string (.-value (.-payload entry)))]
-                                           (put! ops| value))
-                                         (when (empty? (.-next entry))
-                                           (swap! app-eventlog*
-                                                  assoc
-                                                  ::eventlog-prev-hash
-                                                  (.-hash entry))))))))
-                    (.on (.-events app-eventlog)
-                         "replicate.progress"
-                         (fn [address hash entry progress have]
-                           (println ::replicate-progress)
-                           (println (read-string (.-value (.-payload entry))))
-                           (let [value (read-string (.-value (.-payload entry)))]
-                             (put! ops| value))))
-                    #_(.on (.-events app-eventlog)
-                           "write"
-                           (fn [address entry heads]
-                             #_(swap! app-eventlog*
-                                      assoc
-                                      ::eventlog-prev-hash
-                                      (.-hash entry)))))
-                  (catch js/Error err (println err)))
-                (let [ipfs @ipfs*
-                      id (.-id (<p! (.id ipfs)))
-                      text-encoder (js/TextEncoder.)
-                      text-decoder (js/TextDecoder.)]
-                  (.subscribe (.-pubsub ipfs)
-                              TOPIC-ID
-                              (fn [msg]
-                                (when-not (= id (.-from msg))
-                                  (swap! state* assoc-in [::app.spec/peer-metas (.-from msg)]
-                                         (merge
-                                          (read-string (.decode text-decoder  (.-data msg)))
-                                          {::app.spec/peer-id (.-from msg)
-                                           ::app.spec/received-at (.now js/Date)}))
-                                  (do
-                                    #_(println (format "id: %s" id))
-                                    #_(println (format "from: %s" (.-from msg)))
-                                    #_(println (format "data: %s" (.decode text-decoder  (.-data msg))))
-                                    #_(println (format "topicIDs: %s" msg.topicIDs))))))
-                  (go (loop [counter 0]
-                        (.publish (.-pubsub ipfs)
-                                  TOPIC-ID
-                                  (-> text-encoder
-                                      (.encode  (pr-str {::app.spec/peer-id id
-                                                         ::app.spec/counter counter}))))
-                        (<! (timeout 2000))
-                        (recur (inc counter))))
-                  (go (loop []
-                        (<! (timeout 4000))
-                        (doseq [[peer-id {:keys [::app.spec/received-at]
-                                          :as peer-meta}] (::app.spec/peer-metas   @state*)
-                                :when (> (- (.now js/Date) received-at) 8000)]
-                          (println ::removing-peer)
-                          (swap! state* update-in [::app.spec/peer-metas] dissoc peer-id))
-                        (recur)))))
+                      #_(.on (.-events app-eventlog)
+                             "replicated"
+                             (fn [address]
+                               (println ::replicated)
+                               #_(println  (->>
+                                            (-> app-eventlog
+                                                (.iterator  #js {"gt" (::eventlog-prev-hash @app-eventlog*)})
+                                                (.collect))
+                                            (map (fn [entry] (select-keys (read-string (.-value (.-payload entry)))
+                                                                          [::app.spec/frequency
+                                                                           ::app.spec/op-type])))))
+                               (-> app-eventlog
+                                   (.iterator  #js {"lt" (::eventlog-prev-hash @app-eventlog*)})
+                                   (.collect)
+                                   (.map (fn [entry]
+                                           (let [value (read-string (.-value (.-payload entry)))]
+                                             (put! ops| value))
+                                           (when (empty? (.-next entry))
+                                             (swap! app-eventlog*
+                                                    assoc
+                                                    ::eventlog-prev-hash
+                                                    (.-hash entry))))))))
+                      (.on (.-events app-eventlog)
+                           "replicate.progress"
+                           (fn [address hash entry progress have]
+                             (println ::replicate-progress)
+                             (println (read-string (.-value (.-payload entry))))
+                             (let [value (read-string (.-value (.-payload entry)))]
+                               (put! ops| value))))
+                      #_(.on (.-events app-eventlog)
+                             "write"
+                             (fn [address entry heads]
+                               #_(swap! app-eventlog*
+                                        assoc
+                                        ::eventlog-prev-hash
+                                        (.-hash entry)))))
+                    (catch js/Error err (println err)))
+                  (let [ipfs @ipfs*
+                        id (.-id (<p! (.id ipfs)))
+                        text-encoder (js/TextEncoder.)
+                        text-decoder (js/TextDecoder.)]
+                    (.subscribe (.-pubsub ipfs)
+                                TOPIC-ID
+                                (fn [msg]
+                                  (when-not (= id (.-from msg))
+                                    (swap! state* assoc-in [::app.spec/peer-metas (.-from msg)]
+                                           (merge
+                                            (read-string (.decode text-decoder  (.-data msg)))
+                                            {::app.spec/peer-id (.-from msg)
+                                             ::app.spec/received-at (.now js/Date)}))
+                                    (do
+                                      #_(println (format "id: %s" id))
+                                      #_(println (format "from: %s" (.-from msg)))
+                                      #_(println (format "data: %s" (.decode text-decoder  (.-data msg))))
+                                      #_(println (format "topicIDs: %s" msg.topicIDs))))))
+                    (go (loop [counter 0]
+                          (.publish (.-pubsub ipfs)
+                                    TOPIC-ID
+                                    (-> text-encoder
+                                        (.encode  (pr-str {::app.spec/peer-id id
+                                                           ::app.spec/counter counter}))))
+                          (<! (timeout 2000))
+                          (recur (inc counter))))
+                    (go (loop []
+                          (<! (timeout 4000))
+                          (doseq [[peer-id {:keys [::app.spec/received-at]
+                                            :as peer-meta}] (::app.spec/peer-metas   @state*)
+                                  :when (> (- (.now js/Date) received-at) 8000)]
+                            (println ::removing-peer)
+                            (swap! state* update-in [::app.spec/peer-metas] dissoc peer-id))
+                          (recur)))))
 
               {::op.spec/op-key ::app.chan/request-state-update
                ::op.spec/op-type ::op.spec/fire-and-forget}
