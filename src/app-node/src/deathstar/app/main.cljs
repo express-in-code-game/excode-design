@@ -43,6 +43,7 @@
 (defonce OrbitDB (js/require "orbit-db"))
 (defonce IpfsClient (js/require "ipfs-http-client"))
 (defonce http (js/require "http"))
+(defonce Url (js/require "url"))
 (defonce express (js/require "express"))
 (defonce cors (js/require "cors"))
 (defonce bodyParser (js/require "body-parser"))
@@ -61,13 +62,22 @@
 (def HTTP_PORT 8000)
 
 (def app (express))
+(def server (.createServer  app))
 
 (.use app (cors))
 (.use app (.text bodyParser #js {"type" "text/plain" #_"*/*"
                                  "limit" "100kb"}))
-(-> http
-    (.createServer  app)
-    (.listen HTTP_PORT))
+
+(.listen server HTTP_PORT)
+
+(.on server "upgrade"
+     (fn [request socket head]
+       (let [{:keys [pathname searchParams]} (js->clj (.parse Url (.-url request)) :keywordize-keys true)]
+         (cond
+           (= pathname "/tournament-rsocket")
+           (println (.get searchParams "frequency"))
+
+           :else (.destroy socket)))))
 
 (.get app "/"
       (fn [request response next]
