@@ -27,6 +27,10 @@
    [deathstar.app.tournament.chan :as app.tournament.chan]
    [deathstar.app.tournament.impl :as app.tournament.impl]
 
+
+   [deathstar.ui.tournament.spec :as ui.tournament.spec]
+   [deathstar.ui.tournament.chan :as ui.tournament.chan]
+
    [cljctools.peernode.spec :as peernode.spec]
    [cljctools.peernode.chan :as peernode.chan]
 
@@ -184,18 +188,46 @@
     (swap! websocket-servers* assoc frequency websocket-server)
     (swap! rsockets* assoc frequency rsocket||)))
 
+(defn create-tournament-proc
+  [ctx opts]
+  (go
+    (let [{:keys [::app.spec/state*
+                  ::app.spec/ipfs*
+                  ::app.spec/orbitdb*
+                  ::app.spec/tournaments*
+                  ::app.spec/games*
+                  ::app.spec/scenarios*
+                  ::app.spec/app-eventlog*
+                  ::app.spec/TOPIC-ID]} ctx
+          {:keys [::app.spec/frequency
+                  ::app.spec/peer-name
+                  ::app.spec/peer-id
+                  ::app.spec/host-id]} opts
+          own-peer-id (get @state* ::app.spec/peer-id)]
+      (let [tournament|| (merge
+                          (app.tournament.chan/create-channels)
+                          (ui.tournament.chan/create-channels))
+            tournament-proc (app.tournament.impl/create-proc-ops
+                             tournament|| ctx opts)]
+
+        (swap! tournaments* assoc frequency tournament||)))))
+
 (.on server "upgrade"
      (fn [request socket head]
        (let [{:keys [pathname searchParams]}
              (js->clj (.parse Url (.-url request)) :keywordize-keys true)
              {:keys [::app.spec/websocket-servers*
-                     ::app.spec/rsockets*]} ctx]
+                     ::app.spec/rsockets*
+                     ::app.spec/tournaments*]} ctx]
          (cond
            (= pathname "/tournament-rsocket")
            (let [frequency (.get searchParams "frequency")
                  _ (create-rsocket request socket head {::app.spec/frequency frequency})
-                 rsocket|| (get @rsockets* frequency)]
-             )
+                 rsocket|| (get @rsockets* frequency)
+                 _ (when-not (get @tournaments* frequency)
+                     (create-tournament-proc ctx {::app.spec/frequency frequency}))
+                 tournament|| (get @tournaments* frequency)]
+             (pipe  (tap (::ui.tournament.chan/ops|m tournament||) (chan 10)) (::rsocket.chan/ops| rsocket||)))
            :else (.destroy socket)))))
 
 (.get app "/"
