@@ -47,6 +47,8 @@
 (defonce express (js/require "express"))
 (defonce cors (js/require "cors"))
 (defonce bodyParser (js/require "body-parser"))
+(defonce ws (js/require "ws"))
+(defonce WSServer (.-Server ws))
 
 (defonce channels (merge
                    (app.chan/create-channels)
@@ -58,43 +60,6 @@
 (defonce channels-rsocket-ui (rsocket.chan/create-channels))
 (defonce channels-rsocket-scenario (rsocket.chan/create-channels))
 (defonce channels-rsocket-player (rsocket.chan/create-channels))
-
-(def HTTP_PORT 8000)
-
-(def app (express))
-(def server (.createServer  app))
-
-(.use app (cors))
-(.use app (.text bodyParser #js {"type" "text/plain" #_"*/*"
-                                 "limit" "100kb"}))
-
-(.listen server HTTP_PORT)
-
-(.on server "upgrade"
-     (fn [request socket head]
-       (let [{:keys [pathname searchParams]} (js->clj (.parse Url (.-url request)) :keywordize-keys true)]
-         (cond
-           (= pathname "/tournament-rsocket")
-           (println (.get searchParams "frequency"))
-
-           :else (.destroy socket)))))
-
-(.get app "/"
-      (fn [request response next]
-        (go
-          (<! (timeout 2000))
-          (.send response "hello world"))))
-
-(.get app "/tournament-rsocket/:id"
-      (fn [request response next]
-        (let [{:keys [id]
-               :as params} (js->clj (.-params request)
-                                    :keywordize-keys true)]
-          (go
-            (<! (timeout 1000))
-            (.send response id)))))
-
-
 
 #_(do
     (pipe (::peernode.chan/ops| channels) (::rsocket.chan/ops| channels-rsocket-peernode))
@@ -160,6 +125,9 @@
               ::app.spec/games* (atom {})
               ::app.spec/scenarios* (atom {})
 
+              ::app.spec/websocket-servers* (atom {})
+              ::app.spec/rsockets* (atom {})
+              
               ::app.spec/app-eventlog* (atom nil)
               ::app.spec/browser* (atom nil)
               ::app.spec/ipfs* (atom nil)
@@ -173,6 +141,77 @@
                           ::op.spec/op-type ::op.spec/fire-and-forget}
                          channels
                          newstate))))
+
+(def HTTP_PORT 8000)
+
+(def app (express))
+(def server (.createServer  app))
+
+(.use app (cors))
+(.use app (.text bodyParser #js {"type" "text/plain" #_"*/*"
+                                 "limit" "100kb"}))
+
+(.listen server HTTP_PORT)
+
+
+(defn create-rsocket
+  [request socket head opts]
+  (let [{:keys [::app.spec/frequency]} opts
+        {:keys [::app.spec/websocket-servers*
+                ::app.spec/rsockets*]} ctx
+        websocket-server (WSServer. #js {"noServer" true})
+        rsocket|| (rsocket.chan/create-channels)
+        (rsocket.impl/create-proc-ops
+         channels-rsocket-scenario
+         {::rsocket.spec/connection-side ::rsocket.spec/accepting
+          ::rsocket.spec/transport ::rsocket.spec/websocket
+          ::rsocket.spec/create-websocket-server (fn [options]
+                                                   websocket-server)})]
+    (.on socket "close"
+         (fn []
+           (go
+             (<! (rsocket.chan/op
+                  {::op.spec/op-key ::rsocket.spec/release
+                   ::op.spec/op-type ::op.spec/request-response
+                   ::op.spec/op-orient ::op.spec/request}
+                  rsocket||
+                  {}))
+             (swap! websocket-servers* dissoc frequency)
+             (swap! rsockets* dissoc frequency))))
+    (.handleUpgrade websocket-server request socket head
+                    (fn done [ws]
+                      (.emit websocket-server "connection" ws request)))
+    (swap! websocket-servers* assoc frequency websocket-server)
+    (swap! rsockets* assoc frequency rsocket||)))
+
+(.on server "upgrade"
+     (fn [request socket head]
+       (let [{:keys [pathname searchParams]}
+             (js->clj (.parse Url (.-url request)) :keywordize-keys true)
+             {:keys [::app.spec/websocket-servers*
+                     ::app.spec/rsockets*]} ctx]
+         (cond
+           (= pathname "/tournament-rsocket")
+           (let [frequency (.get searchParams "frequency")
+                 _ (create-rsocket request socket head {::app.spec/frequency frequency})
+                 rsocket|| (get @rsockets* frequency)]
+             )
+           :else (.destroy socket)))))
+
+(.get app "/"
+      (fn [request response next]
+        (go
+          (<! (timeout 2000))
+          (.send response "hello world"))))
+
+(.get app "/tournament-rsocket/:id"
+      (fn [request response next]
+        (let [{:keys [id]
+               :as params} (js->clj (.-params request)
+                                    :keywordize-keys true)]
+          (go
+            (<! (timeout 1000))
+            (.send response id)))))
 
 
 (comment
