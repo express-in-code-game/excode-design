@@ -165,12 +165,12 @@
                 ::app.spec/rsockets*]} ctx
         websocket-server (WSServer. #js {"noServer" true})
         rsocket|| (rsocket.chan/create-channels)
-        (rsocket.impl/create-proc-ops
-         channels-rsocket-scenario
-         {::rsocket.spec/connection-side ::rsocket.spec/accepting
-          ::rsocket.spec/transport ::rsocket.spec/websocket
-          ::rsocket.spec/create-websocket-server (fn [options]
-                                                   websocket-server)})]
+        rsocket-proc (rsocket.impl/create-proc-ops
+                      channels-rsocket-scenario
+                      {::rsocket.spec/connection-side ::rsocket.spec/accepting
+                       ::rsocket.spec/transport ::rsocket.spec/websocket
+                       ::rsocket.spec/create-websocket-server (fn [options]
+                                                                websocket-server)})]
     (.on socket "close"
          (fn []
            (go
