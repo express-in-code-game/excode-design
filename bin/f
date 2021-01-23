@@ -59,6 +59,12 @@ dev(){
   "$@"
 }
 
+dev2(){
+  UID_GID="$(id -u):$(id -g)" docker-compose --compatibility \
+  -f dc-dev2.yml \
+  "$@"
+}
+
 images(){
   docker-compose --compatibility \
   -f dc-images.yml \
