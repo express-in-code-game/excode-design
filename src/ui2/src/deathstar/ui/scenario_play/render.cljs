@@ -53,7 +53,20 @@
    ["@ant-design/icons/SmileOutlined" :default AntIconSmileOutlined]
    ["@ant-design/icons/LoadingOutlined" :default AntIconLoadingOutlined]
    ["@ant-design/icons/SyncOutlined" :default AntIconSyncOutlined]
-   ["@ant-design/icons/ReloadOutlined" :default AntIconReloadOutlined]))
+   ["@ant-design/icons/ReloadOutlined" :default AntIconReloadOutlined]
+
+   #_["react-monaco-editor" :as ReactMonacoEditor]
+
+   ["react-ace/lib/index.js" :default ReactAce]
+   ["ace-builds/src-noconflict/mode-clojure.js"]
+   ["ace-builds/src-noconflict/theme-github.js"]
+   ["ace-builds/src-noconflict/theme-solarized_light.js"]
+
+  ;  ["paredit.js" :as Pareditjs]
+   ))
+
+; (println ::Pareditjs)
+; (println Pareditjs)
 
 (do
   (def ant-row (reagent.core/adapt-react-class AntRow))
@@ -189,7 +202,9 @@
     [{:keys [:path :url :isExact :params]} (js->clj (useRouteMatch)
                                                     :keywordize-keys true)
      scenario-origin* (reagent.core/cursor state* [::ui.spec/scenario-origin])
-     scenario-origin (@scenario-origin* (:name params))]
+     scenario-origin (@scenario-origin* (:name params))
+     editor* (atom nil)
+     ace-editor-ref (React/createRef)]
     [:<>
      [ant-row {:justify "center"
                :align "top" #_"middle"
@@ -197,6 +212,52 @@
                     ;; :gutter [16 24]
                }
       [ant-col {:span 8}
+       [ant-button {:on-click (fn [evt]
+                                (println (.getSelectedText ace-editor-ref.current.editor)))} "selection"]
+       #_[:> ReactMonacoEditor {"width" "100%"
+                              "height" 600
+                              "language" "clojure"
+                              "theme" "vs-light"
+                              "value" (str '(ns foo.bar
+
+                                              (defn average
+                                                [x y]
+                                                (/ (+ x y) 2))
+
+                                              (let [x 3]
+                                                (when 123
+                                                  (println "asd")))))
+                              "options" {"selectOnLineNumbers" true}
+                              "onChange" (fn [newvalue evt]
+                                           (println newvalue))
+                              "editorDidMount" (fn [editor monaco]
+                                                 (reset! editor* editor))}]
+       
+       [:> ReactAce {:mode "clojure"
+                     :theme #_"solarized_light" "github"
+                     :ref ace-editor-ref
+                     :style {:width "100%"
+                             :height 600}
+                     :value (str '(ns foo.bar
+
+                                    (defn average
+                                      [x y]
+                                      (/ (+ x y) 2))
+
+                                    (let [x 3]
+                                      (when 123
+                                        (println "asd")))))
+                     :name "UNIQUE_ID_OF_DIV"
+                     :editorProps #js {"$blockScrolling" ##Inf}
+                     :enableBasicAutocompletion true
+                     :enableSnippets true
+                     :showGutter false
+                     :highlightActiveLine false
+                     :showPrintMargin false
+                     :fontSize 14
+                     :on-change (fn [value]
+                                  (println ::on-change)
+                                  (println value))}]
        #_[table-tournaments channels state*]]
       [ant-col {:span 16 :style {:height "100%"}}
        [rc-iframe-scenario channels state* {::ui.spec/scenario-origin scenario-origin}]
