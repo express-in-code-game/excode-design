@@ -21,6 +21,7 @@ node_modules/
 .calva
 resources/public/js-out
 resources/public/rovers/js-out
+resources/public/rovers2/js-out
 resources/public/starnet/js-out
 tmp/
 .user

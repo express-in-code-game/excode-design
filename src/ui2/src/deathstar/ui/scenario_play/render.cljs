@@ -85,7 +85,7 @@
 
 
 (defn rc-iframe
-  [channels state* opts-iframe]
+  [channels state* opts]
   (reagent.core/with-let
     [force-updater (reagent.core/atom (random-uuid))]
     [:div {:style {} #_{:display "none"}}
@@ -100,14 +100,14 @@
                  :key @force-updater
                  :width "100%"
                  :height "400"}
-                opts-iframe)]]]))
+                opts)]]]))
 
 
 (defn rc-iframe-scenario
-  [channels state*]
+  [channels state* opts]
   (reagent.core/with-let
     [force-updater (reagent.core/atom (random-uuid))
-     scenario-origin (reagent.core/cursor state* [::ui.spec/scenario-origin])]
+     {:keys [::ui.spec/scenario-origin]} opts]
     [:<>
      [ant-row
       [ant-button-group
@@ -171,14 +171,14 @@
        [ant-tab-pane {:style {:width "100%"
                               :height "100%"}
                       :tab "player" :key "player"}
-        [:iframe {:src (format "%s/scenario.html" @scenario-origin)
+        [:iframe {:src (format "%s/scenario.html" scenario-origin)
                   :key @force-updater
                   :width "100%"
                   :height "100%"}]]
        [ant-tab-pane {:style {:width "100%"
                               :height "100%"}
                       :tab "peers" :key "peers"}
-        #_[:iframe {:src (format "%s/scenario.html" @scenario-origin)
+        #_[:iframe {:src (format "%s/scenario.html" scenario-origin)
                     :key @force-updater
                     :width "100%"
                     :height "100%"}]]]]]))
@@ -186,7 +186,10 @@
 (defn rc-page
   [channels state*]
   (reagent.core/with-let
-    [scenario-origin (reagent.core/cursor state* [::ui.spec/scenario-origin])]
+    [{:keys [:path :url :isExact :params]} (js->clj (useRouteMatch)
+                                                    :keywordize-keys true)
+     scenario-origin* (reagent.core/cursor state* [::ui.spec/scenario-origin])
+     scenario-origin (@scenario-origin* (:name params))]
     [:<>
      [ant-row {:justify "center"
                :align "top" #_"middle"
@@ -196,7 +199,7 @@
       [ant-col {:span 8}
        #_[table-tournaments channels state*]]
       [ant-col {:span 16 :style {:height "100%"}}
-       [rc-iframe-scenario channels state*]
+       [rc-iframe-scenario channels state* {::ui.spec/scenario-origin scenario-origin}]
        [ant-row {:justify "start"
                  :align "top" #_"middle"
                     ;; :gutter [16 24]
@@ -204,4 +207,4 @@
         [ant-col {:span 4}
          [rc-iframe channels state* {:width "80px"
                                      :height "32px"
-                                     :src (format "%s/player.html" @scenario-origin)}]]]]]]))
+                                     :src (format "%s/player.html" scenario-origin)}]]]]]]))

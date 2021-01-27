@@ -37,7 +37,7 @@
 (goog-define SCENARIO_ORIGIN "")
 
 (set! RSOCKET_PORT (str (subs js/location.port 0 2) (subs (str RSOCKET_PORT) 2)))
-(set! SCENARIO_ORIGIN (format "http://localhost:%s081" (subs js/location.port 0 2)))
+(set! SCENARIO_ORIGIN "http://localhost:8001")
 
 (def channels (merge
                (app.chan/create-channels)
@@ -52,7 +52,8 @@
 (pipe (::scenario-api.chan/ops| channels) (::rsocket.chan/ops| channels))
 
 (def ctx {::ui.spec/state* (ui.render/create-state*
-                            {::ui.spec/scenario-origin SCENARIO_ORIGIN
+                            {::ui.spec/scenario-origin (fn [scenario-name]
+                                                         (format "http://localhost:8001/%s" scenario-name))
                              ::app.spec/peer-metas {}})
 
           ::ui.spec/tournaments* (atom {})})

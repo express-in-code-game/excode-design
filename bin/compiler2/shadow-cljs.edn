@@ -44,7 +44,7 @@
                  :devtools-url #shadow/env ["SHADOWCLJS_DEVTOOLS_URL" :default "http://localhost:9630"]}}
 
           :rovers-scenario {:target :browser
-                            :output-dir "/ctx/DeathStarGame/bin/compiler2/resources/public/rovers/js-out/scenario"
+                            :output-dir "/ctx/DeathStarGame/bin/compiler2/resources/public/rovers2/js-out/scenario"
                             :asset-path "./rovers/js-out/scenario"
                             :module-loader true
                             :modules {:main {:entries [github.sergeiudris.rovers.scenario.main]}}
@@ -58,7 +58,7 @@
                                        :devtools-url #shadow/env ["SHADOWCLJS_DEVTOOLS_URL" :default "http://localhost:9630"]}}
 
           :rovers-player {:target :browser
-                          :output-dir "/ctx/DeathStarGame/bin/compiler2/resources/public/rovers/js-out/player"
+                          :output-dir "/ctx/DeathStarGame/bin/compiler2/resources/public/rovers2/js-out/player"
                           :asset-path "./rovers/js-out/player"
                           :module-loader true
                           :modules {:main {:entries [github.sergeiudris.rovers.player.main]}}

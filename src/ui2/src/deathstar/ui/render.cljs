@@ -23,7 +23,8 @@
    [deathstar.scenario-api.spec :as scenario-api.spec]
    [deathstar.scenario-api.chan :as scenario-api.chan]
 
-   
+   [deathstar.ui.scenario-play.render :as ui.scenario-play.render]
+
    ["react" :as React :refer [useEffect]]
    ["react-router-dom" :as ReactRouter :refer [BrowserRouter
                                                HashRouter
@@ -500,10 +501,9 @@
     [{:keys [:path :url :isExact :params]} (js->clj (useRouteMatch)
                                                     :keywordize-keys true)]
     (let []
+      (println ::rc-page-scenarios-play (:name params))
       [layout channels state*
-       [:<>
-        [:div "rc-page-scenarios-play"]
-        [:div (:name params)]]])))
+       [:f> ui.scenario-play.render/rc-page channels state*]])))
 
 (defn rc-page-not-found
   [channels state*]
