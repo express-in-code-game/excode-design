@@ -28,20 +28,20 @@
                               :after-load deathstar.app.main/reload}}
 
           :ui {:target :browser
-                :output-dir "/ctx/DeathStarGame/bin/ui2/resources/public/js-out"
-                :asset-path "./js-out"
-                :module-loader true
-                :modules {:main {:entries [deathstar.ui.main]}}
-                :compiler-options {:infer-externs   false  #_:auto
-                                   :closure-warnings {:global-this :off}
-                                   :closure-defines
-                                   {deathstar.ui.main/RSOCKET_PORT #shadow/env ["RSOCKET_PORT" :as :int :default 7000]
-                                    deathstar.ui.main/SCENARIO_ORIGIN #shadow/env ["SCENARIO_ORIGIN" :default "http://localhost:8000"]}}
-                :devtools
-                {:repl-init-ns deathstar.ui.main
-                 :repl-pprint true
-                 :autobuild true
-                 :devtools-url #shadow/env ["SHADOWCLJS_DEVTOOLS_URL" :default "http://localhost:9630"]}}
+               :output-dir "/ctx/DeathStarGame/bin/ui2/resources/public/js-out"
+               :asset-path "./js-out"
+               :module-loader true
+               :modules {:main {:entries [deathstar.ui.main]}}
+               :compiler-options {:infer-externs   false  #_:auto
+                                  :closure-warnings {:global-this :off}
+                                  :closure-defines
+                                  {deathstar.ui.main/RSOCKET_PORT #shadow/env ["RSOCKET_PORT" :as :int :default 7000]
+                                   deathstar.ui.main/SCENARIO_ORIGIN #shadow/env ["SCENARIO_ORIGIN" :default "http://localhost:8000"]}}
+               :devtools
+               {:repl-init-ns deathstar.ui.main
+                :repl-pprint true
+                :autobuild true
+                :devtools-url #shadow/env ["SHADOWCLJS_DEVTOOLS_URL" :default "http://localhost:9630"]}}
 
           :rovers-scenario {:target :browser
                             :output-dir "/ctx/DeathStarGame/bin/compiler2/resources/public/rovers2/js-out/scenario"
@@ -56,6 +56,13 @@
                                        :repl-pprint true
                                        :autobuild true
                                        :devtools-url #shadow/env ["SHADOWCLJS_DEVTOOLS_URL" :default "http://localhost:9630"]}}
+
+          :rovers-scenario-bootstrap {:target :bootstrap
+                                      :output-dir "/ctx/DeathStarGame/bin/compiler2/resources/public/rovers2/js-out/scenario-bootstrap"
+                                      :exclude #{cljs.js}
+                                      :compiler-options {:infer-externs   false #_:auto}
+                                      :entries [cljs.js github.sergeiudris.rovers.scenario.main clojure.core.async]
+                                      :macros []}
 
           :rovers-player {:target :browser
                           :output-dir "/ctx/DeathStarGame/bin/compiler2/resources/public/rovers2/js-out/player"

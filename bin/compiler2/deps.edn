@@ -5,7 +5,8 @@
         org.clojure/clojurescript {:mvn/version "1.10.758"}
         org.clojure/spec.alpha {:mvn/version "0.2.187"}
         org.clojure/test.check {:mvn/version "1.0.0"}
-        org.clojure/core.async {:mvn/version "1.1.587"}}
+       ;;  org.clojure/core.async {:mvn/version "1.1.587"}
+        andare/andare {:mvn/version "1.1.587"}}
  :aliases {:app-node {:extra-deps {github.DeathStarGame.bin/app-node {:local/root "/ctx/DeathStarGame/bin/app-node"}}}
            :ui {:extra-deps {github.DeathStarGame.bin/ui2 {:local/root "/ctx/DeathStarGame/bin/ui2"}}}
            :scenario-list {:extra-deps {github.DeathStarGame.bin/compiler2.scenario-list {:local/root "/ctx/DeathStarGame/bin/compiler2/scenario-list"}}}

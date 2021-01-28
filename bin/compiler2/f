@@ -21,7 +21,7 @@ server(){
 dev(){
 
     npm i
-    shadow -A:dev:ui:scenario-list watch :ui :rovers-scenario :rovers-player
+    shadow -A:dev:ui:scenario-list watch :ui :rovers-scenario :rovers-scenario-bootstrap :rovers-player
 
 }
 

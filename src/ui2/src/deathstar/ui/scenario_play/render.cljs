@@ -116,6 +116,8 @@
                 opts)]]]))
 
 
+(def ^:dynamic iframe-ref (React/createRef))
+
 (defn rc-iframe-scenario
   [channels state* opts]
   (reagent.core/with-let
@@ -185,6 +187,7 @@
                               :height "100%"}
                       :tab "player" :key "player"}
         [:iframe {:src (format "%s/scenario.html" scenario-origin)
+                  :ref iframe-ref
                   :key @force-updater
                   :width "100%"
                   :height "100%"}]]
@@ -213,7 +216,10 @@
                }
       [ant-col {:span 8}
        [ant-button {:on-click (fn [evt]
-                                (println (.getSelectedText ace-editor-ref.current.editor)))} "selection"]
+                                (let [selection (.getSelectedText ace-editor-ref.current.editor)]
+                                  (println selection)
+                                  (-> (.-contentWindow (.-current iframe-ref))
+                                      (.postMessage selection "*"))))} "selection"]
        #_[:> ReactMonacoEditor {"width" "100%"
                               "height" 600
                               "language" "clojure"
