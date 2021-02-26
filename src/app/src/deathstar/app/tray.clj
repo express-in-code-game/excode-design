@@ -27,7 +27,7 @@
 (defn create
   []
   (let [name "deathstar-system-tray"
-        image (io/resource "logo_bottom_right-colors-green-4-728.png")
+        image (io/resource "logo_bottom_right-colors-green-1-728.png")
         _ (println (type image))
         _ (set! SystemTray/DEBUG true)
         _ (println SystemTray/DEBUG)

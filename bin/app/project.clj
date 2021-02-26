@@ -62,8 +62,8 @@
   :main ^{:skip-aot false} ~MAIN
   :jvm-opts ["-Xms768m" "-Xmx11998m"]
 
-  :source-paths ["src"]
-  :java-source-paths ["src"]
+  :source-paths [#_"src"]
+  :java-source-paths [#_"src"]
   :test-paths [] #_["test"]
   :resource-paths ["resources" "../ui/resources"]
   :auto-clean false)
