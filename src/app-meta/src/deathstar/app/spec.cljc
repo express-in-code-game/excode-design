@@ -10,13 +10,3 @@
                                  ::peer-name]))
 (s/def ::peer-metas (s/map-of ::peer-id ::peer-meta))
 (s/def ::received-at some?)
-
-
-(s/def ::frequency string?)
-(s/def ::host-id ::peer-id)
-
-(s/def ::tournament (s/keys :req [::frequency
-                                  ::host-id
-                                  ::peer-metas]))
-
-(s/def ::tournaments (s/map-of string? ::tournament))

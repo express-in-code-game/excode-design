@@ -19,10 +19,8 @@ server(){
 }
 
 dev(){
-
     npm i
     shadow -A:dev watch :main
-
 }
 
 compile(){

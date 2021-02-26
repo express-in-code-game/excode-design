@@ -11,8 +11,7 @@
                  :compiler-options {:infer-externs   false  #_:auto
                                     :closure-warnings {:global-this :off}
                                     :closure-defines
-                                    {deathstar.ui.main/RSOCKET_PORT #shadow/env ["RSOCKET_PORT" :as :int :default 7000]
-                                     deathstar.ui.main/SCENARIO_ORIGIN #shadow/env ["SCENARIO_ORIGIN" :default "http://localhost:9501"]}}
+                                    {deathstar.ui.main/BAR_PORT #shadow/env ["BAR_PORT" :as :int :default 7000]}}
                  :devtools
                  {:repl-init-ns deathstar.ui.main
                   :repl-pprint true

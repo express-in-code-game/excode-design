@@ -1,0 +1,12 @@
+.cpcache
+.lein-repl-history
+.data
+target
+tmp
+src
+.user
+!target/app.native
+!target/app.upx.native
+!target/app.standalone.jar
+
+

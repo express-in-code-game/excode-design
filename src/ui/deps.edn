@@ -4,13 +4,16 @@
         org.clojure/spec.alpha {:mvn/version "0.2.187"}
         org.clojure/test.check {:mvn/version "1.0.0"}
         org.clojure/core.async {:mvn/version "1.1.587"}
+       ;;  andare/andare {:mvn/version "1.1.587"}
         reagent/reagent {:mvn/version "1.0.0-rc1" :exclusions [cljsjs/react cljsjs/react-dom]}
 
-        github.cljctools/cljc {:local/root "/ctx/cljctools/cljc"}
-        github.cljctools/csp {:local/root "/ctx/cljctools/csp"}
-        github.cljctools/rsocket-js {:local/root  "/ctx/cljctools/rsocket-js"}
-        github.cljctools/tournament-render-antd {:local/root  "/ctx/cljctools/tournament-render-antd"}
+        metosin/reitit {:mvn/version "0.5.12"}
+        metosin/reitit-spec {:mvn/version "0.5.12"}
+        metosin/reitit-frontend {:mvn/version "0.5.12"}
+        ;; Just for pretty printting the match
+        fipp {:mvn/version "0.6.23"}
 
-        github.DeathStarGame/ui-meta {:local/root  "/ctx/DeathStarGame/src/ui-meta"}
-        github.DeathStarGame/app-meta {:local/root  "/ctx/DeathStarGame/src/app-meta"}
-        github.DeathStarGame/scenario-api-meta {:local/root  "/ctx/DeathStarGame/src/scenario-api-meta"}}}
+        github.cljctools/cljc {:local/root "../../../cljctools/cljc"}
+        github.cljctools/csp {:local/root "../../../cljctools/csp"}
+
+        github.DeathStarGame/ui-meta {:local/root  "../ui-meta"}}}
