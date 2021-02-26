@@ -52,9 +52,7 @@
    [cljctools.cljc.core :as cljc.core]
 
    [deathstar.ui.spec :as ui.spec]
-   [deathstar.ui.chan :as ui.chan]
-
-   [notepad.docker-from-browser1]))
+   [deathstar.ui.chan :as ui.chan]))
 
 (goog-define BAR_PORT 0)
 (goog-define FOO_ORIGIN "")
@@ -66,9 +64,6 @@
                (ui.chan/create-channels)))
 
 (def state* (reagent.core/atom {}))
-
-(defonce match (r/atom nil))
-
 
 (defn home-page []
   [:div
