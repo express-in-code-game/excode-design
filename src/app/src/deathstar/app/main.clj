@@ -41,12 +41,9 @@
    [spec-tools.core]
    [manifold.deferred :as d]
    ;;
-   [cljctools.csp.op.spec :as op.spec]
-   [cljctools.cljc.core :as cljc.core]
-
-
+   
+   [deathstar.data.spec :as data.spec]
    [deathstar.app.spec :as app.spec]
-   [deathstar.app.chan :as app.chan]
 
    [deathstar.app.tray]
    [clj-docker-client.core :as docker]))
@@ -54,22 +51,22 @@
 (def ^:const docker-api-version "v1.41")
 
 (def channels (merge
-               (app.chan/create-channels)))
+               (let [ops| (chan 10)]
+                 {::ops| ops|})))
 
 (def ctx {::app.spec/state* (atom {})})
 
 (defn create-proc-ops
   [channels ctx]
-  (let [{:keys [::app.chan/ops|]} channels]
+  (let [{:keys [::ops|]} channels]
     (go
       (loop []
         (when-let [[value port] (alts! [ops|])]
           (condp = port
             ops|
-            (condp = (select-keys value [::op.spec/op-key ::op.spec/op-type ::op.spec/op-orient])
+            (condp = (:op value)
 
-              {::op.spec/op-key ::app.chan/init
-               ::op.spec/op-type ::op.spec/fire-and-forget}
+              ::init
               (let [{:keys []} value]
                 (println ::init)
 
@@ -270,11 +267,7 @@
     #_(jetty/run-jetty #'app {:port port :host "0.0.0.0" :join? false :async? true})
     (aleph.http/start-server (aleph.http/wrap-ring-async-handler #'app) {:port port :host "0.0.0.0"})
     (println (format "server running in port %d" port)))
-  (app.chan/op
-   {::op.spec/op-key ::app.chan/init
-    ::op.spec/op-type ::op.spec/fire-and-forget}
-   channels
-   {}))
+  (put! (::ops| channels) {:op ::init}))
 
 
 (comment

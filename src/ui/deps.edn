@@ -13,7 +13,4 @@
         ;; Just for pretty printting the match
         fipp {:mvn/version "0.6.23"}
 
-        github.cljctools/cljc {:local/root "../../../cljctools/cljc"}
-        github.cljctools/csp {:local/root "../../../cljctools/csp"}
-
-        github.DeathStarGame/ui-meta {:local/root  "../ui-meta"}}}
+        github.DeathStarGame/data {:local/root  "../data"}}}

@@ -5,9 +5,6 @@
         org.clojure/spec.alpha {:mvn/version "0.2.187"}
         org.clojure/test.check {:mvn/version "1.0.0"}
 
-        github.cljctools/cljc {:local/root  "../../../cljctools/cljc"}
-        github.cljctools/csp {:local/root  "../../../cljctools/csp"}
-
         ring/ring-jetty-adapter {:mvn/version "1.8.1"}
         metosin/reitit  {:mvn/version "0.5.12"}
         aleph/aleph {:mvn/version "0.4.7-alpha5"}
@@ -21,4 +18,4 @@
         com.dorkbox/SystemTray {:mvn/version "3.17"}
         com.dorkbox/Utilities {:mvn/version "1.8.3"}
 
-        github.DeathStarGame/app-meta {:local/root  "../app-meta"}}}
+        github.DeathStarGame/data {:local/root  "../data"}}}

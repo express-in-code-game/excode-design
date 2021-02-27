@@ -48,11 +48,8 @@
    ["@ant-design/icons/SyncOutlined" :default AntIconSyncOutlined]
    ["@ant-design/icons/ReloadOutlined" :default AntIconReloadOutlined]
 
-   [cljctools.csp.op.spec :as op.spec]
-   [cljctools.cljc.core :as cljc.core]
-
    [deathstar.ui.spec :as ui.spec]
-   [deathstar.ui.chan :as ui.chan]))
+   [deathstar.data.spec :as data.spec]))
 
 (goog-define BAR_PORT 0)
 (goog-define FOO_ORIGIN "")
@@ -61,7 +58,8 @@
 #_(set! FOO_ORIGIN "http://localhost:3001")
 
 (def channels (merge
-               (ui.chan/create-channels)))
+               (let [ops| (chan 10)]
+                 {::ops| ops|})))
 
 (def state* (reagent.core/atom {}))
 
@@ -140,25 +138,19 @@
 
 #_(defn create-proc-ops
     [channels ctx opts]
-    (let [{:keys [::ui.chan/ops|]} channels
+    (let [{:keys [::ops|]} channels
           {:keys [::ui.spec/state*]} ctx]
       (go
         (loop []
           (when-let [[value port] (alts! [ops|])]
             (condp = port
               ops|
-              (condp = (select-keys value [::op.spec/op-key ::op.spec/op-type ::op.spec/op-orient])
+              (condp = (:op value)
 
-                {::op.spec/op-key ::ui.chan/init
-                 ::op.spec/op-type ::op.spec/fire-and-forget}
+                ::init
                 (let [{:keys []} value]
                   (println ::init)
-                  (ui.render/render-ui channels state* {}))
-
-                {::op.spec/op-key ::ui.chan/update-state
-                 ::op.spec/op-type ::op.spec/fire-and-forget}
-                (let [{:keys []} value]
-                  (swap! state* merge value))))
+                  (ui.render/render-ui channels state* {}))))
 
             (recur))))))
 
@@ -176,11 +168,7 @@
    {:use-fragment true})
   (reagent.dom/render [current-page] (.getElementById js/document "ui"))
   #_(reagent.dom/render [:f> rc-current-page channels state*]  (.getElementById js/document "ui"))
-  #_(ui.chan/op
-     {::op.spec/op-key ::ui.chan/init
-      ::op.spec/op-type ::op.spec/fire-and-forget}
-     channels
-     {}))
+  (put! (::ops| channels) {:op ::init}))
 
 (do (main))
 

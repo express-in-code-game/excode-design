@@ -3,6 +3,4 @@
   (:require
    [clojure.spec.alpha :as s]))
 
-(s/def ::page-events keyword?)
-(s/def ::page-game keyword?)
-(s/def ::scenario-origin string?)
+(s/def ::foo keyword?)
