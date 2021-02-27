@@ -15,6 +15,8 @@
 
 - [project in a nutshell](#project-in-a-nutshell)
 - [CONTRIBUTING.md](./CONTRIBUTING.md)
+- [install](#install)
+- [install from source](#install-from-source)
 - [mailing list](#mailing-list)
 - [discussion](#discussion)
 - [design](https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md)
@@ -91,6 +93,27 @@
     - clojure, because https://github.com/cljctools/readme#rationale
 - what will the system look like?
     - [design](https://github.com/sergeiudris/deathstar.lab/blob/main/docs/design/design.md)
+
+
+## install
+
+- install `java` (11+) and `docker`
+- download latest `deathstar.jar` from [releases](https://github.com/DeathStarGame/DeathStarGame/releases), make it executable (right click -> properties), then double click to run (or run `java -jar deathstar.jar`)
+- DeathStarGame icon will be in app tray, click it to `quit`
+- open UI on http://localhost:8080
+
+## install from source
+
+- install `java` (11+) and `docker`
+- build `DeathStarGame/bin/app/target/deathstar.jar`
+```shell
+git clone https://github.com/DeathStarGame/DeathStarGame
+cd DeathStarGame/bin/ui && bash f release && cd ../../
+cd DeathStarGame/bin/app && bash f uberjar
+```
+- make `deathstar.jar` executable (right click -> properties), then double click to run (or run `java -jar deathstar.jar`)
+- DeathStarGame icon will be in app tray, click it to `quit`
+- open UI on http://localhost:8080
 
 ## mailing list
 
