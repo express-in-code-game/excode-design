@@ -47,7 +47,8 @@
 
    [deathstar.app.tray]
    [deathstar.app.lacinia]
-   [deathstar.app.docker]))
+   [deathstar.app.docker]
+   [deathstar.app.dgraph]))
 
 (declare start-dgraph)
 
@@ -80,6 +81,7 @@
                 (println ::init)
                 (<! (deathstar.app.docker/count-images))
                 (<! (deathstar.app.docker/start-dgraph))
+                (<! (deathstar.app.dgraph/load-schema))
                 (println ::init-done)))))
         (recur)))))
 

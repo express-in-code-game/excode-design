@@ -95,7 +95,9 @@
       (docker/invoke containers {:op     :ContainerCreate
                                  :params {:name "deathstar-dgraph-alpha"
                                           :body {:Image dgraph-image-name
-                                                 :Cmd   ["dgraph" "alpha" "--my=alpha:7080" "--zero=zero:5080"]
+                                                 :Cmd   ["dgraph" "alpha"
+                                                         "--my=alpha:7080" "--zero=zero:5080"
+                                                         "--whitelist" "0.0.0.0/0"]
                                                  :ExposedPorts {"8080/tcp" {}
                                                                 "9080/tcp" {}}
                                                  :HostConfig {:Binds
