@@ -14,7 +14,7 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
 
-   ;; http
+   ;; reitit
    [reitit.http]
    [reitit.ring]
    [sieppari.async.core-async] ;; needed for core.async
@@ -41,40 +41,45 @@
    [spec-tools.core]
    [manifold.deferred :as d]
    ;;
-   
+
    [deathstar.data.spec :as data.spec]
    [deathstar.app.spec :as app.spec]
 
    [deathstar.app.tray]
-   [clj-docker-client.core :as docker]))
+   [deathstar.app.lacinia]
+   [deathstar.app.docker]))
 
-(def ^:const docker-api-version "v1.41")
+(declare start-dgraph)
 
 (def channels (merge
                (let [ops| (chan 10)]
-                 {::ops| ops|})))
+                 {::ops| ops|
+                  ::exit| (chan 1)})))
 
 (def ctx {::app.spec/state* (atom {})})
 
 (defn create-proc-ops
   [channels ctx]
-  (let [{:keys [::ops|]} channels]
+  (let [{:keys [::ops| ::exit|]} channels]
     (go
       (loop []
-        (when-let [[value port] (alts! [ops|])]
+        (when-let [[value port] (alts! [ops| exit|])]
           (condp = port
+            exit|
+            (let []
+              (println ::exit|)
+              (<! (deathstar.app.docker/stop-dgraph))
+              (println ::exiting)
+              (System/exit 0))
+
             ops|
             (condp = (:op value)
 
               ::init
               (let [{:keys []} value]
                 (println ::init)
-
-                (go (let [images (docker/client {:category :images
-                                                 :api-version docker-api-version
-                                                 :conn     {:uri "unix:///var/run/docker.sock"}})
-                          image-list (docker/invoke images {:op     :ImageList})]
-                      (println ::docker-images (count image-list))))
+                (<! (deathstar.app.docker/count-images))
+                (<! (deathstar.app.docker/start-dgraph))
                 (println ::init-done)))))
         (recur)))))
 
@@ -259,36 +264,17 @@
     (reitit.ring/create-default-handler))
    {:executor reitit.interceptor.sieppari/executor}))
 
+(defn start
+  []
+  (let [port 3080]
+    #_(jetty/run-jetty #'app {:port port :host "0.0.0.0" :join? false :async? true})
+    (aleph.http/start-server (aleph.http/wrap-ring-async-handler #'app) {:port port :host "0.0.0.0"})
+    (println (format "server running in port %d" port))))
+
 (defn -main [& args]
   (println ::-main)
   (create-proc-ops channels {})
-  (deathstar.app.tray/create)
-  (let [port 8080]
-    #_(jetty/run-jetty #'app {:port port :host "0.0.0.0" :join? false :async? true})
-    (aleph.http/start-server (aleph.http/wrap-ring-async-handler #'app) {:port port :host "0.0.0.0"})
-    (println (format "server running in port %d" port)))
+  (deathstar.app.tray/create {:deathstar.app.tray/exit| (::exit| channels)})
+  (start)
+  (deathstar.app.lacinia/start)
   (put! (::ops| channels) {:op ::init}))
-
-
-(comment
-
-  (docker/categories docker-api-version)
-
-  (def images (docker/client {:category :images
-                              :api-version docker-api-version
-                              :conn     {:uri "unix:///var/run/docker.sock"}}))
-
-  (docker/ops images)
-
-  (def image-list (docker/invoke images {:op     :ImageList}))
-  (count image-list)
-
-  (->> image-list
-       (drop 5)
-       (take 5))
-
-  (filter (fn [img]
-            (some #(str/includes? % "app") (:RepoTags img))) image-list)
-
- ;;
-  )

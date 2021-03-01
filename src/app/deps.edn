@@ -9,6 +9,12 @@
         metosin/reitit  {:mvn/version "0.5.12"}
         aleph/aleph {:mvn/version "0.4.7-alpha5"}
 
+        io.pedestal/pedestal.service {:mvn/version "0.5.8"}
+        io.pedestal/pedestal.jetty {:mvn/version "0.5.8"}
+        metosin/reitit-pedestal {:mvn/version "0.5.12"}
+        com.walmartlabs/lacinia {:mvn/version "v0.39-alpha-5"}
+        com.walmartlabs/lacinia-pedestal {:mvn/version "0.15.0"}
+
         github.into-docker/clj-docker-client {:git/url "https://github.com/into-docker/clj-docker-client"
                                               :sha "5d3f1a3568c24b9029eb193fd3ff5daf16f32bd2"
                                               :tag "1.0.2"}

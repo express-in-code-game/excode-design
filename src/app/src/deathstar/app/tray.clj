@@ -25,7 +25,7 @@
 
 
 (defn create
-  []
+  [{:keys [::exit|] :as opts}]
   (let [name "deathstar-system-tray"
         image (io/resource "logo_bottom_right-colors-green-1-728.png")
         _ (println (type image))
@@ -49,9 +49,10 @@
                                        (println ::bar))))
         _ (.add menu bar-entry)
         quit-entry (MenuItem. "quit" (reify ActionListener
-                                       (actionPerformed [_ event]
+                                       (actionPerformed
+                                         [_ event]
                                          (println ::quit)
-                                         (System/exit 0))))
+                                         (close! exit|))))
         _ (.add menu quit-entry)]
     #_(Desktop/browseURL "https://git.dorkbox.com/dorkbox/SystemTray")
     (println ::system-tray-created)))
