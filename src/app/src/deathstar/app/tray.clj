@@ -23,37 +23,37 @@
    dorkbox.util.CacheUtil
    dorkbox.util.Desktop))
 
-
-(defn create
+(defn start
   [{:keys [::exit|] :as opts}]
-  (let [name "deathstar-system-tray"
-        image (clojure.java.io/resource "logo_bottom_right-colors-green-1-728.png")
-        _ (println (type image))
-        _ (set! SystemTray/DEBUG true)
-        _ (println SystemTray/DEBUG)
+  (go
+    (let [name "deathstar-system-tray"
+          image (clojure.java.io/resource "logo_bottom_right-colors-green-1-728.png")
+          _ (println (type image))
+          _ (set! SystemTray/DEBUG true)
+          _ (println SystemTray/DEBUG)
         ;; _ (CacheUtil/clear name)
-        system-tray (SystemTray/get)
-        _ (when (nil? system-tray)
-            (throw (RuntimeException. "Unable to load SystemTray!")))
-        _ (.setTooltip system-tray "Mail Checker")
-        _ (.setImage system-tray image)
-        _ (.setStatus system-tray "no mail")
-        menu (.getMenu system-tray)
-        foo-entry (MenuItem. "foo" (reify ActionListener
-                                     (actionPerformed [_ event]
-                                       (println ::foo))))
-        _ (.add menu foo-entry)
-        _ (.add menu (Separator.))
-        bar-entry (MenuItem. "bar" (reify ActionListener
-                                     (actionPerformed [_ event]
-                                       (println ::bar))))
-        _ (.add menu bar-entry)
-        quit-entry (MenuItem. "quit" (reify ActionListener
-                                       (actionPerformed
-                                         [_ event]
-                                         (println ::quit)
-                                         (close! exit|))))
-        _ (.add menu quit-entry)]
-    #_(Desktop/browseURL "https://git.dorkbox.com/dorkbox/SystemTray")
-    (println ::system-tray-created)))
+          system-tray (SystemTray/get)
+          _ (when (nil? system-tray)
+              (throw (RuntimeException. "Unable to load SystemTray!")))
+          _ (.setTooltip system-tray "Mail Checker")
+          _ (.setImage system-tray image)
+          _ (.setStatus system-tray "no mail")
+          menu (.getMenu system-tray)
+          foo-entry (MenuItem. "foo" (reify ActionListener
+                                       (actionPerformed [_ event]
+                                         (println ::foo))))
+          _ (.add menu foo-entry)
+          _ (.add menu (Separator.))
+          bar-entry (MenuItem. "bar" (reify ActionListener
+                                       (actionPerformed [_ event]
+                                         (println ::bar))))
+          _ (.add menu bar-entry)
+          quit-entry (MenuItem. "quit" (reify ActionListener
+                                         (actionPerformed
+                                           [_ event]
+                                           (println ::quit)
+                                           (close! exit|))))
+          _ (.add menu quit-entry)]
+      #_(Desktop/browseURL "https://git.dorkbox.com/dorkbox/SystemTray")
+      (println ::system-tray-created))))
 

@@ -1,5 +1,9 @@
 (ns deathstar.app.lacinia
   (:require
+   [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
+                                     pub sub unsub mult tap untap mix admix unmix pipe
+                                     timeout to-chan  sliding-buffer dropping-buffer
+                                     pipeline pipeline-async]]
    [io.pedestal.http]
    [clojure.java.io]
    [com.walmartlabs.lacinia.pedestal2 :as lacinia.pedestal2]
@@ -23,9 +27,10 @@
 (defonce runnable-service (io.pedestal.http/create-server service))
 
 (defn start
-  []
-  (println "starting lacinia")
-  (io.pedestal.http/start runnable-service))
+  [channels]
+  (go
+    (println "starting lacinia")
+    (io.pedestal.http/start runnable-service)))
 
 
 (comment
