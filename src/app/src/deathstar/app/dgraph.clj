@@ -7,9 +7,14 @@
                                      pipeline pipeline-async]]
    [clojure.string :as str]
    [clojure.spec.alpha :as s]
+   [clojure.spec.gen.alpha :as sgen]
+   #_[clojure.spec.test.alpha :as stest]
+   [clojure.test.check.generators :as gen]
+   [clojure.test.check.properties :as prop]
    [clojure.java.io :as io]
    [byte-streams]
-   [aleph.http]))
+   [aleph.http]
+   [jsonista.core :as j]))
 
 
 (defn load-schema
@@ -20,6 +25,38 @@
            @(aleph.http/post
              "http://localhost:8080/admin/schema"
              {:body (clojure.java.io/file (io/resource "schema.gql"))})
+           :body
+           byte-streams/to-string)]
+      (println response))))
+
+(defn query-users
+  []
+  (go
+    (let [response
+          (->
+           @(aleph.http/post
+             "http://localhost:8080/graphql"
+             {:body (j/write-value-as-string
+                     {"query"  (slurp (io/resource "query-users.gql"))
+                      "variables" {}})
+              :headers {:content-type "application/json"}})
+           :body
+           byte-streams/to-string)]
+      (println response))))
+
+(defn add-random-user
+  []
+  (go
+    (let [response
+          (->
+           @(aleph.http/post
+             "http://localhost:8080/graphql"
+             {:body (j/write-value-as-string
+                     {"query"  (slurp (io/resource "add-user.gql"))
+                      "variables" {"user" {"username" (gen/generate (s/gen string?))
+                                           "name" (gen/generate (s/gen string?))
+                                           "password" (gen/generate (s/gen string?))}}})
+              :headers {:content-type "application/json"}})
            :body
            byte-streams/to-string)]
       (println response))))

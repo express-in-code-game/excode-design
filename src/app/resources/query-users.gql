@@ -1,0 +1,8 @@
+query {
+  queryUser () {
+    username
+  }
+  aggregateUser {
+    count
+  }
+}
