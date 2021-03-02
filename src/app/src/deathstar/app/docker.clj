@@ -5,9 +5,9 @@
                                      pub sub unsub mult tap untap mix admix unmix pipe
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
-   [clojure.string :as str]
+   [clojure.string]
    [clojure.spec.alpha :as s]
-   [clojure.java.io :as io]
+   [clojure.java.io]
 
    [clj-docker-client.core :as docker]))
 
@@ -51,7 +51,7 @@
        (take 5))
 
   (filter (fn [img]
-            (some #(str/includes? % "app") (:RepoTags img))) image-list)
+            (some #(clojure.string/includes? % "app") (:RepoTags img))) image-list)
 
  ;;
   )

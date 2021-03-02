@@ -5,10 +5,10 @@
                                      pub sub unsub mult tap untap mix admix unmix pipe
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
-   [clojure.string :as str]
+   [clojure.string]
    [clojure.spec.alpha :as s]
    [ring.middleware.cors :as cors]
-   [clojure.java.io :as io]))
+   [clojure.java.io]))
 
 ; by @kennyjwilli from this issue:
 ; https://github.com/metosin/reitit/issues/236

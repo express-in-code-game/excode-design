@@ -5,8 +5,8 @@
                                      pub sub unsub mult tap untap mix admix unmix pipe
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
-   [clojure.string :as str]
-   [clojure.java.io :as io])
+   [clojure.string]
+   [clojure.java.io])
 
   (:import
    java.awt.event.ActionListener
@@ -27,7 +27,7 @@
 (defn create
   [{:keys [::exit|] :as opts}]
   (let [name "deathstar-system-tray"
-        image (io/resource "logo_bottom_right-colors-green-1-728.png")
+        image (clojure.java.io/resource "logo_bottom_right-colors-green-1-728.png")
         _ (println (type image))
         _ (set! SystemTray/DEBUG true)
         _ (println SystemTray/DEBUG)

@@ -5,9 +5,9 @@
                                      pub sub unsub mult tap untap mix admix unmix pipe
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
-   [clojure.string :as str]
+   [clojure.string]
    [clojure.spec.alpha :as s]
-   [clojure.java.io :as io]
+   [clojure.java.io]
 
    [clojure.spec.gen.alpha :as sgen]
    #_[clojure.spec.test.alpha :as stest]
@@ -149,8 +149,8 @@
               :handler (fn [_]
                          {:status 200
                           :headers {"Content-Type" "image/png"}
-                          :body (io/input-stream
-                                 (io/resource "reitit.png"))})}}]]
+                          :body (clojure.java.io/input-stream
+                                 (clojure.java.io/resource "reitit.png"))})}}]]
 
      ["/random-user"
       {:get {:swagger {:tags ["random-user"]}

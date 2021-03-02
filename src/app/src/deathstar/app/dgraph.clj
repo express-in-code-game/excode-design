@@ -5,13 +5,14 @@
                                      pub sub unsub mult tap untap mix admix unmix pipe
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
-   [clojure.string :as str]
+   [clojure.string]
+   [clojure.java.io]
    [clojure.spec.alpha :as s]
    [clojure.spec.gen.alpha :as sgen]
    #_[clojure.spec.test.alpha :as stest]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-   [clojure.java.io :as io]
+   
    [byte-streams]
    [aleph.http]
    [jsonista.core :as j]))
@@ -24,7 +25,7 @@
           (->
            @(aleph.http/post
              "http://localhost:8080/admin/schema"
-             {:body (clojure.java.io/file (io/resource "schema.gql"))})
+             {:body (clojure.java.io/file (clojure.java.io/resource "schema.gql"))})
            :body
            byte-streams/to-string)]
       (println response))))
