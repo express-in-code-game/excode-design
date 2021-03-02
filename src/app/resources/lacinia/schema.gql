@@ -1,0 +1,9 @@
+"""
+Query type is an entry point
+"""
+type Query {
+  """
+  Returns 'world' string
+  """
+  hello: String!
+}

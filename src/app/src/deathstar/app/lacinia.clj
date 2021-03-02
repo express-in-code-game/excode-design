@@ -19,18 +19,31 @@
       :resolve (constantly "world")}}}))
 
 ;; Use default options:
-(def service (lacinia.pedestal2/default-service hello-schema {:port 8888
-                                                              :host "0.0.0.0"}))
+#_(def service (lacinia.pedestal2/default-service
+               hello-schema
+               {:port 8888
+                :host "0.0.0.0"}))
 
 ;; This is an adapted service map, that can be started and stopped
 ;; From the REPL you can call server/start and server/stop on this service
-(defonce runnable-service (io.pedestal.http/create-server service))
+#_(defonce runnable-service (io.pedestal.http/create-server service))
 
 (defn start
   [channels]
   (go
-    (println "starting lacinia")
-    (io.pedestal.http/start runnable-service)))
+    (let [schema (->
+                  (slurp (clojure.java.io/resource "lacinia/schema.gql"))
+                  lacinia.parser.schema/parse-schema
+                  lacinia.schema/compile)
+          service (lacinia.pedestal2/default-service
+                    schema
+                    {:port 8888
+                     :host "0.0.0.0"
+                     :api-path "/graphql"
+                     :ide-path "/ide"})
+          runnable-service (io.pedestal.http/create-server service)]
+      (println ::starting)
+      (io.pedestal.http/start runnable-service))))
 
 
 (comment

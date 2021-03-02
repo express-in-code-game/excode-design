@@ -25,7 +25,7 @@
           (->
            @(aleph.http/post
              "http://localhost:8080/admin/schema"
-             {:body (clojure.java.io/file (clojure.java.io/resource "schema.gql"))})
+             {:body (clojure.java.io/file (clojure.java.io/resource "dgraph/schema.gql"))})
            :body
            byte-streams/to-string)]
       (println response))))
@@ -38,7 +38,7 @@
            @(aleph.http/post
              "http://localhost:8080/graphql"
              {:body (j/write-value-as-string
-                     {"query"  (slurp (clojure.java.io/resource "query-users.gql"))
+                     {"query"  (slurp (clojure.java.io/resource "dgraph/query-users.gql"))
                       "variables" {}})
               :headers {:content-type "application/json"}})
            :body
@@ -53,7 +53,7 @@
            @(aleph.http/post
              "http://localhost:8080/graphql"
              {:body (j/write-value-as-string
-                     {"query"  (slurp (clojure.java.io/resource "add-user.gql"))
+                     {"query"  (slurp (clojure.java.io/resource "dgraph/add-user.gql"))
                       "variables" {"user" {"username" (gen/generate (s/gen string?))
                                            "name" (gen/generate (s/gen string?))
                                            "password" (gen/generate (s/gen string?))}}})
