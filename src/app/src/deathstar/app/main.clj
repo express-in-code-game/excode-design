@@ -31,6 +31,9 @@
    [reitit.http.interceptors.exception]
    [reitit.http.interceptors.multipart]
    [ring.util.response]
+   #_[ring.middleware.cors :refer [wrap-cors]]
+   [simple-cors.reitit.interceptor]
+   [deathstar.app.cors-interceptor]
             ;; Uncomment to use
             ; [reitit.ring.middleware.dev :as dev]
             ; [reitit.ring.spec :as spec]
@@ -207,7 +210,7 @@
                :handler (fn [{{{:keys [x y]} :body} :parameters}]
                           {:status 200
                            :body {:total (+ x y)}})}}]
-      
+
       ["/minus"
        {:get {:summary "minus with clojure.spec query parameters"
               :parameters {:query (s/keys :req-un [::x ::y])}
@@ -227,6 +230,8 @@
        ;;:reitit.spec/wrap spell/closed ;; strict top-level validation
      :exception reitit.dev.pretty/exception
      :data {:coercion reitit.coercion.spec/coercion
+            :access-control {:access-control-allow-origin [#".*"]
+                             :access-control-allow-methods #{:get :put :post :delete}}
             :muuntaja muuntaja.core/instance
             :interceptors [;; swagger feature
                            reitit.swagger/swagger-feature
@@ -245,7 +250,9 @@
                              ;; coercing request parameters
                            (reitit.http.coercion/coerce-request-interceptor)
                              ;; multipart
-                           (reitit.http.interceptors.multipart/multipart-interceptor)]}})
+                           (reitit.http.interceptors.multipart/multipart-interceptor)
+                             ;; cors
+                           (deathstar.app.cors-interceptor/cors-interceptor)]}})
    (reitit.ring/routes
     (reitit.swagger-ui/create-swagger-ui-handler
      {:path "/swagger-ui"

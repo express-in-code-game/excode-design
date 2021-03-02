@@ -8,7 +8,7 @@
         ring/ring-jetty-adapter {:mvn/version "1.8.1"}
         metosin/reitit  {:mvn/version "0.5.12"}
         aleph/aleph {:mvn/version "0.4.7-alpha5"}
-
+        ring-cors/ring-cors {:mvn/version "0.1.13"}
         io.pedestal/pedestal.service {:mvn/version "0.5.8"}
         io.pedestal/pedestal.jetty {:mvn/version "0.5.8"}
         metosin/reitit-pedestal {:mvn/version "0.5.12"}
