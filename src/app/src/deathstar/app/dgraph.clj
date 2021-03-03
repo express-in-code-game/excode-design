@@ -18,13 +18,15 @@
    [jsonista.core :as j]))
 
 
+(def base-url "http://localhost:3088")
+
 (defn load-schema
   []
   (go
     (let [response
           (->
            @(aleph.http/post
-             "http://localhost:8080/admin/schema"
+             (str base-url "/admin/schema")
              {:body (clojure.java.io/file (clojure.java.io/resource "dgraph/schema.gql"))})
            :body
            byte-streams/to-string)]
@@ -36,7 +38,7 @@
     (let [response
           (->
            @(aleph.http/post
-             "http://localhost:8080/graphql"
+             (str base-url "/graphql")
              {:body (j/write-value-as-string
                      {"query"  (slurp (clojure.java.io/resource "dgraph/query-users.gql"))
                       "variables" {}})
@@ -51,7 +53,7 @@
     (let [response
           (->
            @(aleph.http/post
-             "http://localhost:8080/graphql"
+             (str base-url "/graphql")
              {:body (j/write-value-as-string
                      {"query"  (slurp (clojure.java.io/resource "dgraph/add-user.gql"))
                       "variables" {"user" {"username" (gen/generate (s/gen string?))

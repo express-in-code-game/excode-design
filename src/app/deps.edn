@@ -24,4 +24,4 @@
         com.dorkbox/SystemTray {:mvn/version "3.17"}
         com.dorkbox/Utilities {:mvn/version "1.8.3"}
 
-        github.DeathStarGame/data {:local/root  "../data"}}}
+        github.DeathStarGame/spec {:local/root  "../spec"}}}

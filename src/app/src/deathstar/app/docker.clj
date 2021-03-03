@@ -104,7 +104,7 @@
                                                               [(format "%s:/dgraph" dgraph-volume-name)]
                                                               :PortBindings
                                                               {"8080/tcp"
-                                                               [{"HostPort" "8080"}]}}
+                                                               [{"HostPort" "3088"}]}}
                                                  :NetworkingConfig  {:EndpointsConfig
                                                                      {dgraph-network-name
                                                                       {"Aliases" ["alpha"]}}}}}})

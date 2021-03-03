@@ -49,7 +49,7 @@
    ["@ant-design/icons/ReloadOutlined" :default AntIconReloadOutlined]
 
    [deathstar.ui.spec :as ui.spec]
-   [deathstar.data.spec :as data.spec]))
+   [deathstar.spec]))
 
 (goog-define BAR_PORT 0)
 (goog-define FOO_ORIGIN "")

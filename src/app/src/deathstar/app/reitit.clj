@@ -44,7 +44,7 @@
    ;;
    ;;
    [deathstar.app.cors-interceptor]
-   [deathstar.data.spec :as data.spec]))
+   [deathstar.spec]))
 
 (s/def ::file reitit.http.interceptors.multipart/temp-file-part)
 (s/def ::file-params (s/keys :req-un [::file]))
@@ -87,6 +87,52 @@
       {:get {:no-doc true
              :swagger {:info {:title "my-api"}}
              :handler (reitit.swagger/create-swagger-handler)}}]
+
+     ["/sign-up"
+      {:post {:summary "user sign-up"
+              :parameters {:body (s/keys :req [:deathstar.spec/username
+                                               :deathstar.spec/password])}
+              :responses {200 {:body :deathstar.spec/user-info}}
+              :handler (fn [{{{:keys [:deathstar.spec/username
+                                      :deathstar.spec/password]} :body} :parameters}]
+                         (go
+                           (<! (timeout 1000))
+                           {:status 200
+                            :body {:deathstar.spec/username "hello"}}))}}]
+
+     ["/sign-in"
+      {:post {:summary "user sign-in"
+              :parameters {:body (s/keys :req [:deathstar.spec/username
+                                               :deathstar.spec/password])}
+              :responses {200 {:body :deathstar.spec/user-info}}
+              :handler (fn [{{{:keys [:deathstar.spec/username
+                                      :deathstar.spec/password]} :body} :parameters}]
+                         (go
+                           (<! (timeout 1000))
+                           {:status 200
+                            :body {:deathstar.spec/username "hello"}}))}}]
+
+     ["/sign-out"
+      {:post {:summary "user sign-out"
+              :parameters {:body (s/keys :req [:deathstar.spec/username
+                                               :deathstar.spec/password])}
+              :responses {200 {:body :deathstar.spec/user-info}}
+              :handler (fn [{{{:keys [:deathstar.spec/username
+                                      :deathstar.spec/password]} :body} :parameters}]
+                         (go
+                           (<! (timeout 1000))
+                           {:status 200
+                            :body {:deathstar.spec/username "hello"}}))}}]
+
+     ["/user-info"
+      {:post {:summary "get information about user by username"
+              :parameters {:body (s/keys :req [:deathstar.spec/username])}
+              :responses {200 {:body :deathstar.spec/user-info}}
+              :handler (fn [{{{:keys [:deathstar.spec/username]} :body} :parameters}]
+                         (go
+                           (<! (timeout 1000))
+                           {:status 200
+                            :body {:deathstar.spec/username "hello"}}))}}]
 
      ["/files"
       {:swagger {:tags ["files"]}}
@@ -236,4 +282,61 @@
     (let [port 3080]
       #_(jetty/run-jetty #'app {:port port :host "0.0.0.0" :join? false :async? true})
       (aleph.http/start-server (aleph.http/wrap-ring-async-handler (app channels)  #_#'app) {:port port :host "0.0.0.0"})
+      (println (format "server running in port %d" port)))))
+
+(defn app-static
+  []
+  (reitit.http/ring-handler
+   (reitit.http/router
+    []
+    {;;:reitit.middleware/transform dev/print-request-diffs ;; pretty diffs
+       ;;:validate spec/validate ;; enable spec validation for route data
+       ;;:reitit.spec/wrap spell/closed ;; strict top-level validation
+     :exception reitit.dev.pretty/exception
+     :data {:coercion reitit.coercion.spec/coercion
+            :access-control {:access-control-allow-origin [#".*"]
+                             :access-control-allow-methods #{:get :put :post :delete}}
+            :muuntaja muuntaja.core/instance
+            :interceptors [;; swagger feature
+                           reitit.swagger/swagger-feature
+                             ;; query-params & form-params
+                           (reitit.http.interceptors.parameters/parameters-interceptor)
+                             ;; content-negotiation
+                           (reitit.http.interceptors.muuntaja/format-negotiate-interceptor)
+                             ;; encoding response body
+                           (reitit.http.interceptors.muuntaja/format-response-interceptor)
+                             ;; exception handling
+                           (reitit.http.interceptors.exception/exception-interceptor)
+                             ;; decoding request body
+                           (reitit.http.interceptors.muuntaja/format-request-interceptor)
+                             ;; coercing response bodys
+                           (reitit.http.coercion/coerce-response-interceptor)
+                             ;; coercing request parameters
+                           (reitit.http.coercion/coerce-request-interceptor)
+                             ;; multipart
+                           (reitit.http.interceptors.multipart/multipart-interceptor)
+                             ;; cors
+                           (deathstar.app.cors-interceptor/cors-interceptor)]}})
+   (reitit.ring/routes
+    (reitit.ring/redirect-trailing-slash-handler #_{:method :add})
+    (fn handle-index
+      ([request]
+       (when (= (:uri request) "/")
+         (->
+          (ring.util.response/resource-response "index.html" {:root "public"})
+          (ring.util.response/content-type "text/html"))))
+      ([request respond raise]
+       (respond (handle-index request))))
+    (reitit.ring/create-resource-handler {:path "/"
+                                          :root "public"
+                                          :index-files ["index.html"]})
+    (reitit.ring/create-default-handler))
+   {:executor reitit.interceptor.sieppari/executor}))
+
+(defn start-static
+  [port]
+  (go
+    (let []
+      #_(jetty/run-jetty #'app {:port port :host "0.0.0.0" :join? false :async? true})
+      (aleph.http/start-server (aleph.http/wrap-ring-async-handler (app-static)  #_#'app) {:port port :host "0.0.0.0"})
       (println (format "server running in port %d" port)))))

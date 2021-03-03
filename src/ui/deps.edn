@@ -13,4 +13,4 @@
         ;; Just for pretty printting the match
         fipp {:mvn/version "0.6.23"}
 
-        github.DeathStarGame/data {:local/root  "../data"}}}
+        github.DeathStarGame/spec {:local/root  "../spec"}}}
