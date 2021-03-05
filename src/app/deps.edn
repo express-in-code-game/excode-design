@@ -24,4 +24,10 @@
         com.dorkbox/SystemTray {:mvn/version "3.17"}
         com.dorkbox/Utilities {:mvn/version "1.8.3"}
 
+        buddy/buddy-auth {:mvn/version "2.2.0"}
+        buddy/buddy-sign {:mvn/version "3.1.0"}
+        buddy/buddy-hashers {:mvn/version "1.4.0"}
+
+        clj-time {:mvn/version "0.15.2"}
+
         github.DeathStarGame/spec {:local/root  "../spec"}}}

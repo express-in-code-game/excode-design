@@ -12,10 +12,11 @@
    #_[clojure.spec.test.alpha :as stest]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-   
+
    [byte-streams]
    [aleph.http]
-   [jsonista.core :as j]))
+   [jsonista.core :as j]
+   [deathstar.spec]))
 
 
 (def base-url "http://localhost:3088")
@@ -41,6 +42,25 @@
              (str base-url "/graphql")
              {:body (j/write-value-as-string
                      {"query"  (slurp (clojure.java.io/resource "dgraph/query-users.gql"))
+                      "variables" {}})
+              :headers {:content-type "application/json"}})
+           :body
+           byte-streams/to-string)]
+      (println response))))
+
+(defn query-user
+  [{:keys [:deathstar.spec/username] :as opts}]
+  (go
+    (let [response
+          (->
+           @(aleph.http/post
+             (str base-url "/graphql")
+             {:body (j/write-value-as-string
+                     {"query"  "
+                                 queryUser () {
+                                  username
+                                 }
+                                "
                       "variables" {}})
               :headers {:content-type "application/json"}})
            :body
