@@ -53,6 +53,8 @@
    [deathstar.spec]
    [deathstar.app.dgraph]))
 
+(defonce ^:private registry-ref (atom {}))
+
 (s/def ::file reitit.http.interceptors.multipart/temp-file-part)
 (s/def ::file-params (s/keys :req-un [::file]))
 
@@ -320,12 +322,24 @@
    {:executor reitit.interceptor.sieppari/executor}))
 
 (defn start
-  [channels]
+  [channels {:keys [::port] :or {port 3080} :as opts}]
   (go
-    (let [port 3080]
-      #_(jetty/run-jetty #'app {:port port :host "0.0.0.0" :join? false :async? true})
-      (aleph.http/start-server (aleph.http/wrap-ring-async-handler (app channels)  #_#'app) {:port port :host "0.0.0.0"})
-      (println (format "server running in port %d" port)))))
+    (when-not (get @registry-ref port)
+      (let [server (aleph.http/start-server
+                    (aleph.http/wrap-ring-async-handler (app channels)  #_#'app)
+                    {:port port :host "0.0.0.0"})]
+        #_(jetty/run-jetty #'app {:port port :host "0.0.0.0" :join? false :async? true})
+        (swap! registry-ref assoc port server)
+        (println (format "started server on port %d" port))))))
+
+(defn stop
+  [channels {:keys [::port] :or {port 3080} :as opts}]
+  (go
+    (let [server (get @registry-ref port)]
+      (when server
+        (.close server)
+        (swap! registry-ref dissoc port)
+        (println (format "stopeed server on port %d" port))))))
 
 (defn app-static
   []
@@ -377,9 +391,21 @@
    {:executor reitit.interceptor.sieppari/executor}))
 
 (defn start-static
-  [port]
+  [{:keys [::port] :or {port 3081} :as opts}]
   (go
-    (let []
-      #_(jetty/run-jetty #'app {:port port :host "0.0.0.0" :join? false :async? true})
-      (aleph.http/start-server (aleph.http/wrap-ring-async-handler (app-static)  #_#'app) {:port port :host "0.0.0.0"})
-      (println (format "server running in port %d" port)))))
+    (when-not (get @registry-ref port)
+      (let [server
+            (aleph.http/start-server (aleph.http/wrap-ring-async-handler
+                                      (app-static)  #_#'app)
+                                     {:port port :host "0.0.0.0"})]
+        (swap! registry-ref assoc port server)
+        (println (format "server running in port %d" port))))))
+
+(defn stop-static
+  [{:keys [::port] :or {port 3081} :as opts}]
+  (go
+    (let [server (get @registry-ref port)]
+      (when server
+        (.close server)
+        (swap! registry-ref dissoc port)
+        (println (format "stopeed server on port %d" port))))))

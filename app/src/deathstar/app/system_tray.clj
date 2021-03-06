@@ -1,7 +1,7 @@
-(ns deathstar.app.tray
+(ns deathstar.app.system-tray
   (:gen-class)
   (:require
-   [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
+   [clojure.core.async :as a :refer [chan go go-loop <! >! take! put! offer! poll! alt! alts! close!
                                      pub sub unsub mult tap untap mix admix unmix pipe
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
@@ -23,11 +23,12 @@
    dorkbox.util.CacheUtil
    dorkbox.util.Desktop))
 
-(defn start
-  [{:keys [::exit|] :as opts}]
+(defonce ^:private registry-ref (atom {}))
+
+(defn mount
+  [{:keys [::quit| ::id] :or {id "deathstar-system-tray"} :as opts}]
   (go
-    (let [name "deathstar-system-tray"
-          image (clojure.java.io/resource "logo_bottom_right-colors-green-1-728.png")
+    (let [image (clojure.java.io/resource "logo_bottom_right-colors-green-1-728.png")
           _ (println (type image))
           _ (set! SystemTray/DEBUG true)
           _ (println SystemTray/DEBUG)
@@ -52,8 +53,16 @@
                                          (actionPerformed
                                            [_ event]
                                            (println ::quit)
-                                           (close! exit|))))
+                                           (close! quit|))))
           _ (.add menu quit-entry)]
+      (swap! registry-ref assoc id system-tray)
       #_(Desktop/browseURL "https://git.dorkbox.com/dorkbox/SystemTray")
-      (println ::system-tray-created))))
+      (println ::created))))
 
+(defn unmount
+  [{:keys [::id] :or {id "deathstar-system-tray"} :as opts}]
+  (go
+    (let [system-tray (get @registry-ref id)]
+      (when system-tray
+        (.shutdown system-tray) ;; does not work, needs look-into
+        (swap! registry-ref dissoc id)))))

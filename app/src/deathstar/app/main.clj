@@ -9,54 +9,93 @@
 
    [deathstar.app.spec :as app.spec]
 
-   [deathstar.app.tray]
+   [deathstar.app.system-tray]
    [deathstar.app.reitit]
    [deathstar.app.docker-dgraph]
    [deathstar.app.dgraph]))
 
-(def channels (merge
-               (let [ops| (chan 10)]
-                 {::app.spec/ops| ops|
-                  ::app.spec/exit| (chan 1)})))
+(defonce ^:private registry-ref (atom {}))
 
-(def ctx {::app.spec/state* (atom {})})
+(defn create-channels
+  []
+  (merge
+   (let [ops| (chan 10)]
+     {::app.spec/ops| ops|
+      ::app.spec/system-exit| (chan 1)})))
 
-(def dgraph-opts (deathstar.app.docker-dgraph/create-opts
-                  {:deathstar.app.docker-dgraph/suffix "-main"}))
+(defn create-ctx
+  [opts]
+  {::id :main-deployment
+   ::app.spec/state* (atom {})
+   ::system-tray? true
+   ::dgraph-opts (deathstar.app.docker-dgraph/create-opts
+                  {:deathstar.app.docker-dgraph/suffix "-main"
+                   :deathstar.app.docker-dgraph/remove-volume? false})})
 
-(defn create-proc-ops
-  [channels ctx]
-  (let [{:keys [::app.spec/ops| ::app.spec/exit|]} channels]
-    (go
-      (loop []
-        (when-let [[value port] (alts! [ops| exit|])]
-          (condp = port
-            exit|
-            (let []
-              (println ::exit|)
-              (<! (deathstar.app.docker-dgraph/down dgraph-opts))
-              (println ::exiting)
-              (System/exit 0))
+(defn mount
+  [{:keys [::id ::ctx ::channels] :as opts}]
+  (go
+    (let [ctx (or ctx (create-ctx opts))
+          channels (or channels (create-channels))
+          {:keys [::app.spec/system-exit|]} channels
+          {:keys [::system-tray? ::dgraph-opts]} opts
+          procs (atom [])
+          procs-exit (fn []
+                       (doseq [[exit| proc|] @procs]
+                         (close! exit|))
+                       (a/merge (mapv second @procs)))]
+      (swap! registry-ref assoc id {::ctx ctx
+                                    ::channels channels
+                                    ::procs-exit procs-exit})
+      (when system-tray?
+        (<! (deathstar.app.system-tray/mount {:deathstar.app.system-tray/quit| (::app.spec/system-exit| channels)})))
+      (<! (deathstar.app.reitit/start channels {:deathstar.app.reitit/port 3080}))
+      (<! (deathstar.app.reitit/start-static {:deathstar.app.reitit/port 3081}))
+      (<! (deathstar.app.reitit/start-static {:deathstar.app.reitit/port 3082}))
+      (<! (deathstar.app.docker-dgraph/count-images))
+      (<! (deathstar.app.docker-dgraph/up dgraph-opts))
+      (<! (deathstar.app.dgraph/load-schema))
 
-            ops|
-            (condp = (:op value)
+      (let [exit| (chan 1)
+            proc|
+            (go
+              (loop []
+                (when-let [[value port] (alts! [ops| exit|])]
+                  (condp = port
 
-              ::init
-              (let [{:keys []} value]
-                (println ::init)
-                (<! (deathstar.app.tray/start {:deathstar.app.tray/exit| (::app.spec/exit| channels)}))
-                (<! (deathstar.app.reitit/start channels))
-                (<! (deathstar.app.reitit/start-static 3081))
-                (<! (deathstar.app.reitit/start-static 3082))
-                (<! (deathstar.app.docker-dgraph/count-images))
-                (<! (deathstar.app.docker-dgraph/up dgraph-opts))
-                (<! (deathstar.app.dgraph/load-schema))
-                (println ::init-done)))))
-        (recur)))))
+                    exit|
+                    (do nil)
 
-;; (def _ (create-proc-ops channels {})) ;; cuases native image to fail
+                    system-exit|
+                    (do
+                      (let []
+                        (println ::exit|)
+                        (<! (unmount channels ctx))
+                        (println ::exiting)
+                        (System/exit 0))))))
+              (println ::go-block-exits))]
+        (swap! procs conj [exit| proc|]))
+
+      (println ::mount-done))))
+
+(defn unmount
+  [{:keys [::id] :as opts}]
+  (go
+    (let [{:keys [::app.spec/ops|
+                  ::app.spec/exit|]} channels
+          {:keys [::system-tray?
+                  ::dgraph-opts]} ctx
+          deployment (get @registry-ref id)]
+      (when system-tray?
+        (<! (deathstar.app.system-tray/unmount {:deathstar.app.system-tray/exit| (::app.spec/exit| channels)})))
+      (<! (deathstar.app.reitit/stop channels {:deathstar.app.reitit/port 3080}))
+      (<! (deathstar.app.reitit/stop-static {:deathstar.app.reitit/port 3081}))
+      (<! (deathstar.app.reitit/stop-static {:deathstar.app.reitit/port 3082}))
+      (<! (deathstar.app.docker-dgraph/down dgraph-opts))
+      (<! (::procs-exit deployment))
+      (swap! registry-ref dissoc id)
+      (println ::unmount-done))))
 
 (defn -main [& args]
   (println ::-main)
-  (create-proc-ops channels {})
-  (put! (::app.spec/ops| channels) {:op ::init}))
+  (mount))

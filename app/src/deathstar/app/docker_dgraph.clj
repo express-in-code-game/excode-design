@@ -30,15 +30,18 @@
                               :api-version docker-api-version}))
 
 (defn create-opts
-  [{:keys [::suffix] {:or {suffix ""}} :as opts}]
-  {::image-name "dgraph/dgraph:v20.11.2"
-   ::volume-name (str "deathstar-dgraph" suffix)
-   ::network-name (str "deathstar-network" suffix)
-   ::zero-name (str "deathstar-dgraph-zero" suffix)
-   ::alpha-name (str "deathstar-dgraph-alpha" suffix)
-   ::ratel-name (str "deathstar-dgraph-ratel" suffix)
-   ::alpha-port 3288
-   ::ratel-port 8000})
+  [{:keys [::suffix] :or {suffix ""} :as opts}]
+  (merge
+   {::image-name "dgraph/dgraph:v20.11.2"
+    ::volume-name (str "deathstar-dgraph" suffix)
+    ::network-name (str "deathstar-network" suffix)
+    ::zero-name (str "deathstar-dgraph-zero" suffix)
+    ::alpha-name (str "deathstar-dgraph-alpha" suffix)
+    ::ratel-name (str "deathstar-dgraph-ratel" suffix)
+    ::alpha-port 3288
+    ::ratel-port 8000
+    ::remove-volume? false}
+   opts))
 
 (defn create-image
   [opts]
@@ -115,7 +118,7 @@
                                                            {"Aliases" ["alpha"]}}}}}})
       (docker/invoke containers
                      {:op     :ContainerCreate
-                      :params {:name ratel-name
+                      :params {:name (::ratel-name opts)
                                :body {:Image (::image-name opts)
                                       :Cmd    ["dgraph-ratel"]
                                       ;; :ExposedPorts {"8000/tcp" {}}
@@ -163,7 +166,7 @@
                                :v true}})
       (docker/invoke containers
                      {:op     :ContainerDelete
-                      :params {:id (::alpha-name opts)create-volume
+                      :params {:id (::alpha-name opts)
                                :v true}})
       (docker/invoke containers
                      {:op     :ContainerDelete
@@ -186,14 +189,17 @@
       (println ::started-containers))))
 
 (defn down
-  [opts]
+  [{:keys [::remove-volumes?] :as opts}]
   (go
     (<! (stop-containers opts))
     (println ::stoped-containers)
     (<! (remove-containers opts))
     (println ::removed-containers)
     (<! (remove-network opts))
-    (println ::removed-network)))
+    (println ::removed-network)
+    (when remove-volume?
+      (<! (remove-volume opts))
+      (println ::removed-volume))))
 
 (comment
 
