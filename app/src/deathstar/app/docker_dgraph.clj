@@ -11,7 +11,36 @@
 
    [clj-docker-client.core :as docker]))
 
-(def ^:const docker-api-version "v1.41")
+(defonce ^:private registry-ref (atom {}))
+
+(defn create-opts
+  [{:keys [::id] :or {id :main} :as opts}]
+  (let [suffix (str "-" (name id))]
+    (merge
+     {::image-name "dgraph/dgraph:v20.11.2"
+      ::volume-name (str "deathstar-dgraph" suffix)
+      ::network-name (str "deathstar-network" suffix)
+      ::zero-name (str "deathstar-dgraph-zero" suffix)
+      ::alpha-name (str "deathstar-dgraph-alpha" suffix)
+      ::ratel-name (str "deathstar-dgraph-ratel" suffix)
+      ::alpha-port 3088
+      ::ratel-port 8000
+      ::remove-volume? false}
+     opts)))
+
+(def dev-preset (create-opts
+                 {::id :main}))
+
+(comment
+
+  (up dev-preset)
+  (down dev-preset)
+  
+  ;;
+  )
+
+
+(def docker-api-version "v1.41")
       
 (def containers (docker/client {:category    :containers
                                 :conn        {:uri "unix:///var/run/docker.sock"}
@@ -28,20 +57,6 @@
 (def networks (docker/client {:category    :networks
                               :conn        {:uri "unix:///var/run/docker.sock"}
                               :api-version docker-api-version}))
-
-(defn create-opts
-  [{:keys [::suffix] :or {suffix ""} :as opts}]
-  (merge
-   {::image-name "dgraph/dgraph:v20.11.2"
-    ::volume-name (str "deathstar-dgraph" suffix)
-    ::network-name (str "deathstar-network" suffix)
-    ::zero-name (str "deathstar-dgraph-zero" suffix)
-    ::alpha-name (str "deathstar-dgraph-alpha" suffix)
-    ::ratel-name (str "deathstar-dgraph-ratel" suffix)
-    ::alpha-port 3288
-    ::ratel-port 8000
-    ::remove-volume? false}
-   opts))
 
 (defn create-image
   [opts]
@@ -189,17 +204,18 @@
       (println ::started-containers))))
 
 (defn down
-  [{:keys [::remove-volumes?] :as opts}]
+  [{:keys [::remove-volume?] :as opts}]
   (go
     (<! (stop-containers opts))
     (println ::stoped-containers)
     (<! (remove-containers opts))
     (println ::removed-containers)
-    (<! (remove-network opts))
-    (println ::removed-network)
+    #_(<! (remove-network opts))
+    #_(println ::removed-network)
     (when remove-volume?
       (<! (remove-volume opts))
       (println ::removed-volume))))
+
 
 (comment
 

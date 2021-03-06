@@ -18,7 +18,6 @@
    [jsonista.core :as j]
    [deathstar.spec]))
 
-
 (def base-url "http://localhost:3088")
 
 (defn load-schema
@@ -83,3 +82,22 @@
            :body
            byte-streams/to-string)]
       (println response))))
+
+
+
+(defn ready?
+  []
+  (go
+    (let [timeout| (timeout 10000)]
+      (loop []
+        (let [response (->
+                        @(aleph.http/get
+                          (str base-url "/health")
+                          {:headers {:content-type "application/json"}})
+                        :body
+                        byte-streams/to-string)])
+        (alt!
+          timeout| false)))))
+
+(defn down?
+  [])
