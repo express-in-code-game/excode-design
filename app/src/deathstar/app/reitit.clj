@@ -51,7 +51,7 @@
    ;;
    [deathstar.app.cors-interceptor]
    [deathstar.spec]
-   [deathstar.dgraph]))
+   [deathstar.app.dgraph]))
 
 (s/def ::file reitit.http.interceptors.multipart/temp-file-part)
 (s/def ::file-params (s/keys :req-un [::file]))
@@ -89,7 +89,7 @@
 
 (def secret "foo")
 (def backend (buddy.auth.backends/jws {:secret secret}))
-(def create-token
+(defn create-token
   [data]
   (let [claims {:data data
                 :exp (time/plus (time/now) (time/seconds (* 24 60 60)))}
@@ -139,7 +139,7 @@
                            (<! (timeout 1000))
                            (let [token (create-token (select-keys body [:deathstar.spec/username
                                                                         :deathstar.spec/password]))
-                                 user (<! (deathstar.dgraph/query-user (select-keys body [:deathstar.spec/username])))
+                                 user (<! (deathstar.app.dgraph/query-user (select-keys body [:deathstar.spec/username])))
                                  passord-valid? (and user (buddy.hashers/check (:deathstar.spec/password user) (:u/password user)))]
                              (cond
                                (nil? user)

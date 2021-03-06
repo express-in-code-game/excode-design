@@ -11,7 +11,6 @@
 
    [deathstar.app.tray]
    [deathstar.app.reitit]
-   [deathstar.app.lacinia]
    [deathstar.app.docker]
    [deathstar.app.dgraph]))
 
