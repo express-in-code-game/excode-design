@@ -16,6 +16,14 @@
    [deathstar.app.dgraph]
    [deathstar.app.main]))
 
+(defn the-whole-app-fixture
+  [f]
+  (let [opts (deathstar.app.main/create-opts {:deathstar.app.main/id :test})]
+    (a/<!! (deathstar.app.main/mount opts))
+    (f)
+    (a/<!! (deathstar.app.main/unmount opts))))
+
+(clojure.test/use-fixtures :once the-whole-app-fixture)
 
 (comment
 
@@ -45,7 +53,7 @@
       (is (= :bar :baz)))))
 
 
-(deftest mount-unmount
+#_(deftest mount-unmount
   (testing "mount and unmount of the whole app"
     (let [opts (deathstar.app.main/create-opts {:deathstar.app.main/id :test})
           app (a/<!! (deathstar.app.main/mount opts))
@@ -54,3 +62,10 @@
       (println ::count-schema-types (count schema-types))
       (is (true? (every? #(some (fn [type-info] (= (:name type-info) %)) schema-types) ["User" "UserFilter"])))
       (a/<!! (deathstar.app.main/unmount opts)))))
+
+(deftest dgraph-api
+  (testing "graphql schema is uploaded"
+    (let [schema-types (get-in (a/<!! (deathstar.app.dgraph/query-types))
+                               [:data :__schema :types])]
+      (println ::count-schema-types (count schema-types))
+      (is (true? (every? #(some (fn [type-info] (= (:name type-info) %)) schema-types) ["User" "UserFilter"]))))))
