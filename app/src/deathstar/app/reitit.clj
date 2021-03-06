@@ -339,7 +339,7 @@
       (when server
         (.close server)
         (swap! registry-ref dissoc port)
-        (println (format "stopeed server on port %d" port))))))
+        (println (format "stopped server on port %d" port))))))
 
 (defn app-static
   []
@@ -408,4 +408,4 @@
       (when server
         (.close server)
         (swap! registry-ref dissoc port)
-        (println (format "stopeed server on port %d" port))))))
+        (println (format "stopped server on port %d" port))))))

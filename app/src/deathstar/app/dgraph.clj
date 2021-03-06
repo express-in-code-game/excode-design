@@ -20,17 +20,35 @@
 
 (def base-url "http://localhost:3088")
 
-(defn load-schema
+(defn upload-schema
   []
   (go
-    (let [response
-          (->
-           @(aleph.http/post
-             (str base-url "/admin/schema")
-             {:body (clojure.java.io/file (clojure.java.io/resource "dgraph/schema.gql"))})
-           :body
-           byte-streams/to-string)]
-      (println response))))
+    (println ::uploading-schema)
+    (let [timeout| (timeout 10000)]
+      (loop []
+        (let [response| (go
+                          (try
+                            (->
+                             @(aleph.http/post
+                               (str base-url "/admin/schema")
+                               {:body (clojure.java.io/file (clojure.java.io/resource "dgraph/schema.gql"))})
+                             :body
+                             byte-streams/to-string
+                             (j/read-value j/keyword-keys-object-mapper))
+                            (catch Exception e (do nil))))]
+          (alt!
+            timeout| (do
+                       (println ::uploading-schema-timed-out)
+                       false)
+            response| ([value]
+                       #_(println value)
+                       (if (= (-> value :data :code) "Success")
+                         (do
+                           (println ::uploaded-schema)
+                           true)
+                         (do
+                           (<! (timeout 1000))
+                           (recur))))))))))
 
 (defn query-users
   []
@@ -85,19 +103,32 @@
 
 
 
-(defn ready?
+(defn healthy?
   []
   (go
     (let [timeout| (timeout 10000)]
       (loop []
-        (let [response (->
-                        @(aleph.http/get
-                          (str base-url "/health")
-                          {:headers {:content-type "application/json"}})
-                        :body
-                        byte-streams/to-string)])
-        (alt!
-          timeout| false)))))
+        (let [response| (go
+                          (try
+                            (->
+                             @(aleph.http/get
+                               (str base-url "/state")
+                               {:headers {:content-type "application/json"}})
+                             :body
+                             byte-streams/to-string
+                             (j/read-value j/keyword-keys-object-mapper))
+                            (catch Exception e (do nil))))]
+          (alt!
+            timeout| false
+            response| ([value]
+                       (if (= (-> value first :status) "healthy")
+                         (do
+                           (println value)
+                           true)
+                         (do
+                           (println value)
+                           (<! (timeout 1000))
+                           (recur))))))))))
 
 (defn down?
   [])
