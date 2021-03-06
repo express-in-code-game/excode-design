@@ -86,20 +86,17 @@
   [opts]
   (go
     (let []
-      ;; does not work {:message "got EOF while reading request body"}
       (docker/invoke networks
                      {:op     :NetworkCreate
-                      :params {:networkConfig {:Name (::network-name opts)}}
-                      #_{:body {:Name (::network-name opts)
-                                :Internal false}}}))))
+                      :params {:networkConfig {:Name (::network-name opts)}}}))))
 
 (defn remove-network
   [opts]
   (go
     (let []
       (docker/invoke networks
-                     {:op     :NetworkRemove
-                      :params {:id (::network-name opts)}}))))
+                     {:op     :NetworkDelete
+                      :params {:id "deathstar-network-test"}}))))
 
 (defn create-containers
   [opts]
@@ -211,8 +208,8 @@
     (println ::stoped-containers)
     (<! (remove-containers opts))
     (println ::removed-containers)
-    #_(<! (remove-network opts))
-    #_(println ::removed-network)
+    (<! (remove-network opts))
+    (println ::removed-network)
     (when remove-volume?
       (<! (remove-volume opts))
       (println ::removed-volume))))
