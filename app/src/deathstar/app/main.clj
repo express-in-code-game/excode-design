@@ -6,12 +6,12 @@
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
    [clojure.string]
-   
+
    [deathstar.app.spec :as app.spec]
 
    [deathstar.app.tray]
    [deathstar.app.reitit]
-   [deathstar.app.docker]
+   [deathstar.app.docker-dgraph]
    [deathstar.app.dgraph]))
 
 (def channels (merge
@@ -20,6 +20,9 @@
                   ::app.spec/exit| (chan 1)})))
 
 (def ctx {::app.spec/state* (atom {})})
+
+(def dgraph-opts (deathstar.app.docker-dgraph/create-opts
+                  {:deathstar.app.docker-dgraph/suffix "-main"}))
 
 (defn create-proc-ops
   [channels ctx]
@@ -31,7 +34,7 @@
             exit|
             (let []
               (println ::exit|)
-              (<! (deathstar.app.docker/stop-dgraph))
+              (<! (deathstar.app.docker-dgraph/down dgraph-opts))
               (println ::exiting)
               (System/exit 0))
 
@@ -45,8 +48,8 @@
                 (<! (deathstar.app.reitit/start channels))
                 (<! (deathstar.app.reitit/start-static 3081))
                 (<! (deathstar.app.reitit/start-static 3082))
-                (<! (deathstar.app.docker/count-images))
-                (<! (deathstar.app.docker/start-dgraph))
+                (<! (deathstar.app.docker-dgraph/count-images))
+                (<! (deathstar.app.docker-dgraph/up dgraph-opts))
                 (<! (deathstar.app.dgraph/load-schema))
                 (println ::init-done)))))
         (recur)))))
