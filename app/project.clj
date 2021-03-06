@@ -1,4 +1,5 @@
 (def MAIN 'deathstar.app.main)
+(def REPL-INIT-NS 'deathstar.app.main-test)
 #_(prn (clojure-version))
 #_(prn *command-line-args*)
 
@@ -23,9 +24,9 @@
 
   :lein-tools-deps/config {:config-files [:install :user :project]}
 
-  :repl-options {:init-ns          ~MAIN
-                 :main             ~MAIN
-                 :init ~(macroexpand  `(init-fn ~MAIN ~*command-line-args*))
+  :repl-options {:init-ns          ~REPL-INIT-NS
+                ;; do not init - we want to run start/stop, tests etc. from REPL
+                ;;  :init ~(macroexpand  `(init-fn ~MAIN ~*command-line-args*))
                  #_~(macroexpand `(clojure.core/apply project.app.main/-main '~*command-line-args*))
                  :host             "0.0.0.0"
                  :port             7788}
@@ -62,8 +63,8 @@
   :main ^{:skip-aot false} ~MAIN
   :jvm-opts ["-Xms768m" "-Xmx11998m"]
 
-  :source-paths [#_"src"]
-  :java-source-paths [#_"src"]
-  :test-paths [] #_["test"]
+  :source-paths ["src" "test"]
+  :java-source-paths ["src"]
+  :test-paths ["test"]
   :resource-paths ["resources" "../ui/resources"]
   :auto-clean false)
