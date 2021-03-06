@@ -89,8 +89,9 @@
       ;; does not work {:message "got EOF while reading request body"}
       (docker/invoke networks
                      {:op     :NetworkCreate
-                      :params {:body {:Name (::network-name opts)
-                                      :Internal false}}}))))
+                      :params {:networkConfig {:Name (::network-name opts)}}
+                      #_{:body {:Name (::network-name opts)
+                                :Internal false}}}))))
 
 (defn remove-network
   [opts]
