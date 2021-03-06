@@ -13,7 +13,9 @@
    [clojure.test.check.properties :as prop]
    [clojure.test :refer [is run-all-tests testing deftest run-tests]]
 
+   [deathstar.app.dgraph]
    [deathstar.app.main]))
+
 
 (comment
 
@@ -41,3 +43,14 @@
       (is (= :foo :foo)))
     (testing "is bar"
       (is (= :bar :baz)))))
+
+
+(deftest mount-unmount
+  (testing "mount and unmount of the whole app"
+    (let [opts (deathstar.app.main/create-opts {:deathstar.app.main/id :test})
+          app (a/<!! (deathstar.app.main/mount opts))
+          schema-types (get-in (a/<!! (deathstar.app.dgraph/query-types))
+                               [:data :__schema :types])]
+      (println ::count-schema-types (count schema-types))
+      (is (true? (every? #(some (fn [type-info] (= (:name type-info) %)) schema-types) ["User" "UserFilter"])))
+      (a/<!! (deathstar.app.main/unmount opts)))))

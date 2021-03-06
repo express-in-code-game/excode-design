@@ -24,7 +24,7 @@
   []
   (go
     (println ::uploading-schema)
-    (let [timeout| (timeout 10000)]
+    (let [timeout| (timeout 20000)]
       (loop []
         (let [response| (go
                           (try
@@ -49,6 +49,24 @@
                          (do
                            (<! (timeout 1000))
                            (recur))))))))))
+
+(defn query-types
+  []
+  (go
+    (let [response
+          (->
+           @(aleph.http/post
+             (str base-url "/graphql")
+             {:body (j/write-value-as-string
+                     {"query"  "
+                                {__schema {types {name}}}
+                                "
+                      "variables" {}})
+              :headers {:content-type "application/json"}})
+           :body
+           byte-streams/to-string
+           (j/read-value j/keyword-keys-object-mapper))]
+      response)))
 
 (defn query-users
   []

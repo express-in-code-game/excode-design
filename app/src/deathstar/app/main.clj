@@ -17,13 +17,13 @@
 (defonce ^:private registry-ref (atom {}))
 
 (defn create-opts
-  [opts]
-  {::id :main
+  [{:keys [::id] :as opts}]
+  {::id id
    ::app.spec/state* (atom {})
    ::channels {::app.spec/system-exit| (chan 1)}
    ::system-tray? false
    ::dgraph-opts (deathstar.app.docker-dgraph/create-opts
-                  {:deathstar.app.docker-dgraph/id :main
+                  {:deathstar.app.docker-dgraph/id id
                    :deathstar.app.docker-dgraph/remove-volume? false})})
 
 (def dev-preset (create-opts
