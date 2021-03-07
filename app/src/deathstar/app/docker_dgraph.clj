@@ -88,7 +88,8 @@
     (let []
       (docker/invoke networks
                      {:op     :NetworkCreate
-                      :params {:networkConfig {:Name (::network-name opts)}}}))))
+                      :params {:networkConfig {:Name (::network-name opts)
+                                               :CheckDuplicate true}}}))))
 
 (defn remove-network
   [opts]
@@ -96,7 +97,7 @@
     (let []
       (docker/invoke networks
                      {:op     :NetworkDelete
-                      :params {:id "deathstar-network-test"}}))))
+                      :params {:id (::network-name opts)}}))))
 
 (defn create-containers
   [opts]
