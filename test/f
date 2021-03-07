@@ -1,0 +1,60 @@
+#!/bin/bash
+
+dev(){
+
+  # lein repl :start :host 0.0.0.0 :port 7788
+  # lein repl :headless :host 0.0.0.0 :port 7788
+  # lein repl :connect 0.0.0.0:7878
+  lein repl :headless
+
+}
+
+run_dev(){
+  lein run dev
+}
+
+run_uberjar(){
+  java -jar target/app.standalone.jar
+}
+
+uberjar(){
+  lein with-profiles +prod uberjar
+  # java -jar target/app.uber.jar 
+}
+
+native(){
+  # rm -rf resources/public
+  # cp -r /ctx/ipfs-cube/bin/ui2/resources/public ./resources
+  lein native-image
+}
+
+native_deps(){
+  clojure -A:native-image 
+}
+
+native_cli(){
+  native-image \
+  --no-server \
+  --report-unsupported-elements-at-runtime \
+  --allow-incomplete-classpath \
+  --initialize-at-build-time \
+  --enable-url-protocols=http \
+  -H:IncludeResources=.*public.* \
+  -H:Log=registerResource: \
+  --verbose \
+  --no-fallback \
+  -jar ./target/app.standalone.jar
+}
+
+upx_compress(){
+  # https://github.com/upx/upx
+  rm ./target/app.upx.native
+  upx -9 -o ./target/app.upx.native ./target/app.native
+}
+
+docker_run_release(){
+  docker build -t ipfs-cube.daemon-release -f release.Dockerfile .
+  docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock ipfs-cube.daemon-release
+}
+
+"$@"
