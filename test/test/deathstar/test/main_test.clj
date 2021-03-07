@@ -13,14 +13,14 @@
    [clojure.test.check.properties :as prop]
    [clojure.test :refer [is run-all-tests testing deftest run-tests]]))
 
-#_(defn the-whole-app-fixture
+(defn the-whole-app-fixture
   [f]
   (let [opts (deathstar.app.main/create-opts {:deathstar.app.main/id :test})]
     (a/<!! (deathstar.app.main/mount opts))
     (f)
     (a/<!! (deathstar.app.main/unmount opts))))
 
-#_(clojure.test/use-fixtures :once the-whole-app-fixture)
+(clojure.test/use-fixtures :once the-whole-app-fixture)
 
 (comment
 
