@@ -9,6 +9,10 @@ dev(){
 
 }
 
+main(){
+  lein run -- $@
+}
+
 run_dev(){
   lein run dev
 }

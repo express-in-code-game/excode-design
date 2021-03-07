@@ -1,5 +1,4 @@
 (def MAIN 'deathstar.app.main)
-(def REPL-INIT-NS 'deathstar.app.main-test)
 #_(prn (clojure-version))
 #_(prn *command-line-args*)
 
@@ -24,7 +23,7 @@
 
   :lein-tools-deps/config {:config-files [:install :user :project]}
 
-  :repl-options {:init-ns          ~REPL-INIT-NS
+  :repl-options {:init-ns          ~MAIN
                 ;; do not init - we want to run start/stop, tests etc. from REPL
                 ;;  :init ~(macroexpand  `(init-fn ~MAIN ~*command-line-args*))
                  #_~(macroexpand `(clojure.core/apply project.app.main/-main '~*command-line-args*))
