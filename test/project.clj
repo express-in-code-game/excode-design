@@ -66,5 +66,5 @@
   :source-paths [] #_["src"]
   :java-source-paths [] #_["src"]
   :test-paths ["test"]
-  :resource-paths [] #_["resources"]
+  :resource-paths ["resources"]
   :auto-clean false)
