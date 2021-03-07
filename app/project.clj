@@ -11,7 +11,8 @@
 
   ;; :repositories [["central" {:url "https://repo1.maven.org/maven2/"}]
   ;;                ["clojars" {:url "https://clojars.org/repo/"}]
-  ;;                ["conjars" {:url "https://conjars.org/repo"}]]
+  ;;                ["conjars" {:url "https://conjars.org/repo"}]
+  ;;                ["libp2p-jvm-libp2p" {:url "https://dl.cloudsmith.io/public/libp2p/jvm-libp2p/maven/"}]]
 
   :min-lein-version "2.9.3"
 

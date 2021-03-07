@@ -12,7 +12,8 @@
    [deathstar.app.system-tray]
    [deathstar.app.reitit]
    [deathstar.app.docker-dgraph]
-   [deathstar.app.dgraph]))
+   [deathstar.app.dgraph]
+   [deathstar.app.libp2p]))
 
 (defonce ^:private registry-ref (atom {}))
 
@@ -40,6 +41,7 @@
       (<! (deathstar.app.reitit/stop channels {:deathstar.app.reitit/port 3080}))
       (<! (deathstar.app.reitit/stop-static {:deathstar.app.reitit/port 3081}))
       (<! (deathstar.app.reitit/stop-static {:deathstar.app.reitit/port 3082}))
+      (<! (deathstar.app.libp2p/stop))
       (<! (deathstar.app.docker-dgraph/down dgraph-opts))
       (let [opts-in-registry (get @registry-ref id)]
         (when (::procs-exit opts-in-registry)
@@ -66,6 +68,7 @@
       (<! (deathstar.app.reitit/start channels {:deathstar.app.reitit/port 3080}))
       (<! (deathstar.app.reitit/start-static {:deathstar.app.reitit/port 3081}))
       (<! (deathstar.app.reitit/start-static {:deathstar.app.reitit/port 3082}))
+      (<! (deathstar.app.libp2p/start))
       (<! (deathstar.app.docker-dgraph/count-images))
       (<! (deathstar.app.docker-dgraph/up dgraph-opts))
       #_(<! (deathstar.app.dgraph/ready?))
