@@ -14,8 +14,7 @@
    [clojure.test :refer [is run-all-tests testing deftest run-tests]]
 
    [deathstar.app.dgraph]
-   [deathstar.app.main]
-   [deathstar.test.docker]))
+   [deathstar.app.main]))
 
 (defn the-whole-app-fixture
   [f]
