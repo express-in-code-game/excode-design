@@ -1,4 +1,4 @@
-(ns deathstar.app.docker-dgraph
+(ns deathstar.test.docker
   (:gen-class)
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >! <!! >!!  take! put! offer! poll! alt! alts! close!
@@ -29,8 +29,8 @@
       ::remove-volume? false}
      opts)))
 
-(def dev-preset (create-opts
-                 {::id :main}))
+(def peer1-preset (create-opts
+                   {::id :main}))
 
 (def docker-api-version "v1.41")
 
@@ -54,7 +54,7 @@
 (defn build-dind-image
   []
   (go
-    (let [context-dirpath (-> (clojure.java.io/resource "dind.Dockerfile")
+    (let [context-dirpath (-> (clojure.java.io/resource "test/dind.Dockerfile")
                               (clojure.java.io/file)
                               (.getParent))]
       (clojure.java.shell/sh
@@ -63,4 +63,16 @@
        "-f" "dind.Dockerfile" context-dirpath
        :dir context-dirpath
        :env {}))))
+
+(defn create-image
+  [opts]
+  (go
+    (let []
+      (docker/invoke images
+                     {:op     :ImageCreate
+                      :params {:fromImage (::image-name opts)}}))))
+
+(defn create-peer-container
+  [opts]
+  (go))
 

@@ -11,7 +11,11 @@
    [clojure.test.check :as tc]
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
-   [clojure.test :refer [is run-all-tests testing deftest run-tests]]))
+   [clojure.test :refer [is run-all-tests testing deftest run-tests]]
+
+   [deathstar.app.dgraph]
+   [deathstar.app.main]
+   [deathstar.test.docker]))
 
 (defn the-whole-app-fixture
   [f]
@@ -60,7 +64,7 @@
       (is (true? (every? #(some (fn [type-info] (= (:name type-info) %)) schema-types) ["User" "UserFilter"])))
       (a/<!! (deathstar.app.main/unmount opts)))))
 
-#_(deftest dgraph-api
+(deftest dgraph-api
   (testing "graphql schema is uploaded"
     (let [schema-types (get-in (a/<!! (deathstar.app.dgraph/query-types))
                                [:data :__schema :types])]
