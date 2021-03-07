@@ -15,12 +15,6 @@
         ;; com.walmartlabs/lacinia {:mvn/version "v0.39-alpha-5"}
         ;; com.walmartlabs/lacinia-pedestal {:mvn/version "0.15.0"}
 
-        github.into-docker/clj-docker-client {:git/url "https://github.com/into-docker/clj-docker-client"
-                                              :sha "5d3f1a3568c24b9029eb193fd3ff5daf16f32bd2"
-                                              :tag "1.0.2"}
-       ;;  com.github.docker-java/docker-java-core  {:mvn/version "3.2.7"}
-       ;;  com.github.docker-java/docker-java-transport-httpclient5  {:mvn/version "3.2.7"}
-
         com.dorkbox/SystemTray {:mvn/version "3.17"}
         com.dorkbox/Utilities {:mvn/version "1.8.3"}
 
