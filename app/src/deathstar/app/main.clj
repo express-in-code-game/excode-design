@@ -104,4 +104,4 @@
 
 (defn -main [& args]
   (println ::-main)
-  (a/<!! (mount dev-preset)))
+  (a/<!! (mount peer1-preset)))
