@@ -11,13 +11,8 @@
    [byte-streams]
    [aleph.http]
    [jsonista.core :as j]
-   [deathstar.spec])
-  (:import
-   io.libp2p.core.Host
-   io.libp2p.core.dsl.HostBuilder
-   io.libp2p.core.multiformats.Multiaddr
-   io.libp2p.protocol.Ping
-   io.libp2p.protocol.PingController))
+   [deathstar.spec]
+   [cljctools.libp2p.core]))
 
 (defonce ^:private registry-ref (atom {}))
 
@@ -33,30 +28,9 @@
 
 (defn start
   [{:keys [::id] :or {id :main} :as opts}]
-  (go
-    (let [node (-> (HostBuilder.)
-                   (.protocol (into-array
-                               io.libp2p.core.multistream.ProtocolBinding
-                               [(Ping.)]))
-                   (.listen (into-array ["/ip4/127.0.0.1/tcp/0"]))
-                   (.build))]
-      (-> node
-          (.start)
-          (.get))
-      (swap! registry-ref assoc id node)
-      (println ::started-node)
-      (println (.listenAddresses node))
-      (let []))))
+  (go))
 
 
 (defn stop
   [{:keys [::id] :or {id :main} :as opts}]
-  (go
-    (let [node (get @registry-ref id)]
-      (when node
-        (println ::stopping-node)
-        (println (.listenAddresses node))
-        (-> node
-            (.stop)
-            (.get))
-        (swap! registry-ref dissoc id)))))
+  (go))

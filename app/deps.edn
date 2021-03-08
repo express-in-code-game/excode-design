@@ -34,6 +34,5 @@
 
         clj-time {:mvn/version "0.15.2"}
 
-        io.libp2p/jvm-libp2p-minimal {:mvn/version "0.7.0-RELEASE"}
-
-        github.DeathStarGame/spec {:local/root  "../spec"}}}
+        github.DeathStarGame/spec {:local/root  "../spec"}
+        github.cljctool/libp2p {:local/root  "../../libp2p"}}}
