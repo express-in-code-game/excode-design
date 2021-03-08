@@ -2,7 +2,7 @@
  :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
              "clojars" {:url "https://clojars.org/repo/"}
              "conjars" {:url "https://conjars.org/repo"}
-             "libp2p-jvm-libp2p" {:url "https://dl.cloudsmith.io/public/libp2p/jvm-libp2p/maven/"}}
+             "jcenter" {:url "http://jcenter.bintray.com"}}
  :deps {org.clojure/clojure {:mvn/version "1.10.3-rc1"}
         org.clojure/core.async {:mvn/version "1.3.610"}
 
