@@ -1,4 +1,8 @@
 {:paths ["src" "test" "resources"]
+ :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
+             "clojars" {:url "https://clojars.org/repo/"}
+             "conjars" {:url "https://conjars.org/repo"}
+             "libp2p-jvm-libp2p" {:url "https://dl.cloudsmith.io/public/libp2p/jvm-libp2p/maven/"}}
  :deps {org.clojure/clojure {:mvn/version "1.10.3-rc1"}
         org.clojure/core.async {:mvn/version "1.3.610"}
 
@@ -29,5 +33,7 @@
         buddy/buddy-hashers {:mvn/version "1.4.0"}
 
         clj-time {:mvn/version "0.15.2"}
+
+        io.libp2p/jvm-libp2p-minimal {:mvn/version "0.7.0-RELEASE"}
 
         github.DeathStarGame/spec {:local/root  "../spec"}}}
