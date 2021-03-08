@@ -23,24 +23,29 @@
    ::app.spec/state* (atom {})
    ::channels {::app.spec/system-exit| (chan 1)}
    ::system-tray? false
+   ::port 3080
    ::dgraph-opts (deathstar.app.docker-dgraph/create-opts
                   {:deathstar.app.docker-dgraph/id id
                    :deathstar.app.docker-dgraph/remove-volume? false})})
 
-(def dev-preset (create-opts
-                 {::id :main}))
+(def peer1-preset (create-opts
+                   {::id :peer1
+                    ::port 3081}))
+
+(def peer2-preset (create-opts
+                   {::id :peer2
+                    ::port 3082}))
 
 (defn unmount
   [{:keys [::id] :as opts}]
   (go
     (let [{:keys [::system-tray?
                   ::dgraph-opts
-                  ::channels]} opts]
+                  ::channels
+                  ::port]} opts]
       (when system-tray?
         (<! (deathstar.app.system-tray/unmount {})))
-      (<! (deathstar.app.reitit/stop channels {:deathstar.app.reitit/port 3080}))
-      (<! (deathstar.app.reitit/stop-static {:deathstar.app.reitit/port 3081}))
-      (<! (deathstar.app.reitit/stop-static {:deathstar.app.reitit/port 3082}))
+      (<! (deathstar.app.reitit/stop channels {:deathstar.app.reitit/port port}))
       (<! (deathstar.app.libp2p/stop))
       (<! (deathstar.app.docker-dgraph/down dgraph-opts))
       (let [opts-in-registry (get @registry-ref id)]
@@ -53,7 +58,10 @@
   [{:keys [::id] :as opts}]
   (go
     (let [opts (merge (create-opts opts) opts)
-          {:keys [::system-tray? ::dgraph-opts ::channels]
+          {:keys [::system-tray?
+                  ::dgraph-opts
+                  ::channels
+                  ::port]
            {:keys [::app.spec/system-exit|]} ::channels} opts
           procs (atom [])
           procs-exit (fn []
@@ -65,9 +73,7 @@
                                     {::procs-exit procs-exit}))
       (when system-tray?
         (<! (deathstar.app.system-tray/mount {:deathstar.app.system-tray/quit| (::app.spec/system-exit| channels)})))
-      (<! (deathstar.app.reitit/start channels {:deathstar.app.reitit/port 3080}))
-      (<! (deathstar.app.reitit/start-static {:deathstar.app.reitit/port 3081}))
-      (<! (deathstar.app.reitit/start-static {:deathstar.app.reitit/port 3082}))
+      (<! (deathstar.app.reitit/start channels {:deathstar.app.reitit/port port}))
       (<! (deathstar.app.libp2p/start))
       (<! (deathstar.app.docker-dgraph/count-images))
       (<! (deathstar.app.docker-dgraph/up dgraph-opts))
