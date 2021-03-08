@@ -30,7 +30,7 @@
                 ;;  :init ~(macroexpand  `(init-fn ~MAIN ~*command-line-args*))
                  #_~(macroexpand `(clojure.core/apply project.app.main/-main '~*command-line-args*))
                  :host             "0.0.0.0"
-                 :port             7788}
+                 :port             0}
   :profiles {:dev  {:main         ^{:skip-aot false} ~MAIN
                     :aot          nil #_[datastore.serdes]
                     :aliases      {"dev" ["trampoline" "run" "-m" (format "%s/-main" ~MAIN)]}
