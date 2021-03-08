@@ -21,19 +21,31 @@
 
 (defonce ^:private registry-ref (atom {}))
 
+(defn create-opts
+  [{:keys [::id]}]
+  {::id id})
+
+(def peer1-preset
+  (create-opts {::id :peer1}))
+
+(def peer2-preset
+  (create-opts {::id :peer2}))
+
 (defn start
   [{:keys [::id] :or {id :main} :as opts}]
   (go
     (let [node (-> (HostBuilder.)
-                   (.protocol (Ping.))
-                   (.listen "/ip4/127.0.0.1/tcp/0")
+                   (.protocol (into-array
+                               io.libp2p.core.multistream.ProtocolBinding
+                               [(Ping.)]))
+                   (.listen (into-array ["/ip4/127.0.0.1/tcp/0"]))
                    (.build))]
       (-> node
           (.start)
           (.get))
-      (println "libp2p node listening on:")
-      (println (.listenAdresses node))
       (swap! registry-ref assoc id node)
+      (println ::started-node)
+      (println (.listenAddresses node))
       (let []))))
 
 
@@ -42,6 +54,9 @@
   (go
     (let [node (get @registry-ref id)]
       (when node
+        (println ::stopping-node)
+        (println (.listenAddresses node))
         (-> node
             (.stop)
-            (.get))))))
+            (.get))
+        (swap! registry-ref dissoc id)))))
