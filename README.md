@@ -15,8 +15,7 @@
 
 - [project in a nutshell](#project-in-a-nutshell)
 - [CONTRIBUTING.md](./CONTRIBUTING.md)
-- [install](#install)
-- [install from source](#install-from-source)
+- [development](#development)
 
 ## project in a nutshell
 
@@ -89,7 +88,7 @@ cd DeathStarGame/app
 lein repl # REPL into app
 ```
 - DeathStarGame icon will be in app tray, click it to `quit`
-- UI on http://localhost:9500
+- UI on http://localhost:9500 or 3080
 - to make an uberjar `bash f uberjar`
 
 
