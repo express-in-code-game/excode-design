@@ -78,22 +78,18 @@
 - what programming lanugage will the game use?
     - clojure
 
-## install
+## development
 
-- install `java` (11+) and `docker`
-- download latest `deathstar.jar` from [releases](https://github.com/DeathStarGame/DeathStarGame/releases), make it executable (right click -> properties), then double click to run (or run `java -jar deathstar.jar`)
-- DeathStarGame icon will be in app tray, click it to `quit`
-- open UI on http://localhost:8080
-
-## install from source
-
-- install `java` (11+) and `docker`
-- build `DeathStarGame/bin/app/target/deathstar.jar`
+- requires `git`, `nodejs`, `java` (11+), `docker`
 ```shell
 git clone https://github.com/DeathStarGame/DeathStarGame
-cd DeathStarGame/bin/ui && bash f release && cd ../../
-cd DeathStarGame/bin/app && bash f uberjar
+cd DeathStarGame/ui
+bash f dev # starts shadow-cljs dev server for ui
+cd DeathStarGame/app
+lein repl # REPL into app
 ```
-- make `deathstar.jar` executable (right click -> properties), then double click to run (or run `java -jar deathstar.jar`)
 - DeathStarGame icon will be in app tray, click it to `quit`
-- open UI on http://localhost:8080
+- UI on http://localhost:9500
+- to make an uberjar `bash f uberjar`
+
+
