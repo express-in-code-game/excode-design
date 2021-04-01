@@ -14,7 +14,6 @@
 ## contents
 
 - [project in a nutshell](#project-in-a-nutshell)
-- [CONTRIBUTING.md](./CONTRIBUTING.md)
 - [development](#development)
 
 ## project in a nutshell
