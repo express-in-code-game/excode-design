@@ -26,8 +26,6 @@
                 metosin/reitit  {:mvn/version "0.5.12"}
                 aleph/aleph {:mvn/version "0.4.7-alpha5"}
                 ring-cors/ring-cors {:mvn/version "0.1.13"}
-                com.dorkbox/SystemTray {:mvn/version "3.17"}
-                com.dorkbox/Utilities {:mvn/version "1.8.3"}
                 tick/tick {}}}
 
   :shadow
