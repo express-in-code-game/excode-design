@@ -1,6 +1,6 @@
 node_modules/
 .cpcache/
 .shadow-cljs/
-resources/js-out/
+resources/public/js-out/
 target/
 package-lock.json

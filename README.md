@@ -81,10 +81,9 @@
 - requires `git`, `nodejs`, `java` (11+), `docker`
 ```shell
 git clone https://github.com/DeathStarGame/DeathStarGame
-cd DeathStarGame/ui
-bash f dev # starts shadow-cljs dev server for ui
-cd DeathStarGame/app
-lein repl # REPL into app
+cd DeathStarGame
+bash f watch # starts shadow-cljs dev server for ui
+bash f repl # REPL into app
 ```
 - DeathStarGame icon will be in app tray, click it to `quit`
 - UI on http://localhost:9500 or 3080

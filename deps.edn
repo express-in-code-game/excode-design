@@ -39,15 +39,15 @@
    :main-opts ["-m" "deathstar.app.main"]}
 
   :shadow
-  {:extra-deps {:extra-deps {thheller/shadow-cljs {:mvn/version "2.11.7"
-                                                   :exclusions [nrepl/nrepl
-                                                                cider/piggieback
-                                                                org.clojure/clojure
-                                                                org.clojure/clojurescript
-                                                                org.clojure/core.async]}
-                             nrepl/nrepl {:mvn/version "0.6.0"}
-                             cider/cider-nrepl {:mvn/version "0.24.0"}
-                             cider/piggieback {:mvn/version "0.4.2"}}}}
+  {:extra-deps {thheller/shadow-cljs {:mvn/version "2.11.7"
+                                      :exclusions [nrepl/nrepl
+                                                   cider/piggieback
+                                                   org.clojure/clojure
+                                                   org.clojure/clojurescript
+                                                   org.clojure/core.async]}
+                nrepl/nrepl {:mvn/version "0.6.0"}
+                cider/cider-nrepl {:mvn/version "0.24.0"}
+                cider/piggieback {:mvn/version "0.4.2"}}}
 
   :repl
   {:extra-deps {github.cljctools/deps-repl {:git/url "https://github.com/cljctools/deps-repl"
@@ -56,7 +56,7 @@
                 nrepl/nrepl {:mvn/version "0.8.3"}
                 cider/cider-nrepl {:mvn/version "0.25.5"}}
    :main-opts ["-m" "lambdaisland.nrepl.main"
-               "--init-ns" "cljctools.edit.core-test"
+               "--init-ns" "deathstar.app.main"
                "--port" "7788"
                "--bind" "0.0.0.0"
                "--middleware" "cider.nrepl/cider-middleware"]}

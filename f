@@ -1,7 +1,7 @@
 #!/bin/bash
 
 repl(){
-    clj -A:core:clj:repl
+    clj -A:core:app:repl
 }
 
 shadow(){
@@ -14,22 +14,22 @@ main(){
 
 watch(){
   npm i
-  shadow -A:dev watch :main
+  shadow -A:shadow:core:ui watch :main
 }
 
 server(){
-    shadow -A:dev server
+    shadow -A:shadow:core:ui server
     # yarn server
 }
 
 compile(){
     npm i
-    shadow -A:dev compile  :main
+    shadow -A:shadow:core:ui compile  :main
 }
 
 release(){
     npm i
-    shadow -A:dev release :main
+    shadow -A:shadow:core:ui release :main
 }
 
 uberjar(){

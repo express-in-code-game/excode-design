@@ -10,6 +10,7 @@
    [goog.string :refer [format]]
    [goog.object]
    [clojure.string :as str]
+   [clojure.pprint :refer [pprint]]
    [cljs.reader :refer [read-string]]
 
    ;; reitit
@@ -19,8 +20,6 @@
    [reitit.coercion.spec :as rss]
    [reitit.frontend.controllers :as rfc]
    [spec-tools.data-spec :as ds]
-   ;; Just for pretty printting the match
-   [fipp.edn]
 
    ;; render
 
@@ -91,7 +90,7 @@
    (if @match
      (let [view (:view (:data @match))]
        [view @match]))
-   [:pre (with-out-str (fipp.edn/pprint @match))]])
+   [:pre (with-out-str (pprint @match))]])
 
 (defn log-fn [& params]
   (fn [_]
