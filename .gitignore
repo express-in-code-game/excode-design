@@ -3,3 +3,4 @@ node_modules/
 .shadow-cljs/
 resources/js-out/
 target/
+package-lock.json

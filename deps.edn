@@ -31,6 +31,9 @@
                 com.dorkbox/SystemTray {:mvn/version "3.17"}
                 com.dorkbox/Utilities {:mvn/version "1.8.3"}
                 tick/tick {}
+                github.into-docker/clj-docker-client {:git/url "https://github.com/into-docker/clj-docker-client"
+                                                      :sha "953cec1fe3b7d81f598e2c2451c148308c73f304"
+                                                      :tag "1.0.3"}
                 github.DeathStarGame/deathstar-spec {:local/root "./src/deathstar-spec"}
                 github.DeathStarGame/deathstar-app {:local/root "./src/deathstar-app"}}
    :main-opts ["-m" "deathstar.app.main"]}
