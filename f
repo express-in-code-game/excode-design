@@ -8,6 +8,10 @@ shadow(){
     ./node_modules/.bin/shadow-cljs "$@"
 }
 
+main(){
+  clojure -A:core:app
+}
+
 watch(){
   npm i
   shadow -A:dev watch :main
@@ -28,5 +32,12 @@ release(){
     shadow -A:dev release :main
 }
 
+uberjar(){
+  clojure -X:depstar uberjar \
+    :aot true \
+    :jar target/deathstar.jar \
+    :aliases '[:core :app]' \
+    :main-class deathstar.app.main
+}
 
 "$@"

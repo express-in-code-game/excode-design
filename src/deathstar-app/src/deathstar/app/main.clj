@@ -10,10 +10,7 @@
    [deathstar.app.spec :as app.spec]
 
    [deathstar.app.system-tray]
-   [deathstar.app.reitit]
-   [deathstar.app.docker-dgraph]
-   [deathstar.app.dgraph]
-   [deathstar.app.libp2p]))
+   [deathstar.app.reitit]))
 
 (defonce ^:private registry-ref (atom {}))
 
@@ -23,10 +20,7 @@
    ::app.spec/state* (atom {})
    ::channels {::app.spec/system-exit| (chan 1)}
    ::system-tray? false
-   ::port 3080
-   ::dgraph-opts (deathstar.app.docker-dgraph/create-opts
-                  {:deathstar.app.docker-dgraph/id id
-                   :deathstar.app.docker-dgraph/remove-volume? false})})
+   ::port 3080})
 
 (def peer1-preset (create-opts
                    {::id :peer1
@@ -46,8 +40,6 @@
       (when system-tray?
         (<! (deathstar.app.system-tray/unmount {})))
       (<! (deathstar.app.reitit/stop channels {:deathstar.app.reitit/port port}))
-      (<! (deathstar.app.libp2p/stop))
-      (<! (deathstar.app.docker-dgraph/down dgraph-opts))
       (let [opts-in-registry (get @registry-ref id)]
         (when (::procs-exit opts-in-registry)
           (<! ((::procs-exit opts-in-registry)))))
@@ -74,11 +66,6 @@
       (when system-tray?
         (<! (deathstar.app.system-tray/mount {:deathstar.app.system-tray/quit| (::app.spec/system-exit| channels)})))
       (<! (deathstar.app.reitit/start channels {:deathstar.app.reitit/port port}))
-      (<! (deathstar.app.libp2p/start))
-      (<! (deathstar.app.docker-dgraph/count-images))
-      (<! (deathstar.app.docker-dgraph/up dgraph-opts))
-      #_(<! (deathstar.app.dgraph/ready?))
-      (<! (deathstar.app.dgraph/upload-schema))
 
       (let [exit| (chan 1)
             proc|

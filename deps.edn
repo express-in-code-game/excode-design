@@ -4,31 +4,36 @@
 
  :aliases
  {:core
-  {:extra-deps {org.clojure/clojure {:mvn/version "1.10.3"}
-                org.clojure/clojurescript {:mvn/version "1.10.758"}
-                org.clojure/core.async {:mvn/version "1.3.610"}
-                org.clojure/spec.alpha {:mvn/version "0.2.187"}
-                org.clojure/test.check {:mvn/version "1.0.0"}}
-   :override-deps {tick/tick {:git/url "https://github.com/juxt/tick"
+  {:extra-deps {org.clojure/core.async {:mvn/version "1.3.610"}
+                org.clojure/spec.alpha {:mvn/version "0.2.187"}}
+   :override-deps {org.clojure/test.check {:mvn/version "1.0.0"}
+                   tick/tick {:git/url "https://github.com/juxt/tick"
                               :sha "4438103d96e00927f777229bc22576bf4fd6c901"
                               :tag "0.4.31-alpha"}}}
 
   :ui
-  {:extra-deps {reagent/reagent {:mvn/version "1.0.0-rc1"
+  {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.758"}
+                reagent/reagent {:mvn/version "1.0.0-rc1"
                                  :exclusions [cljsjs/react cljsjs/react-dom]}
 
                 metosin/reitit {:mvn/version "0.5.12"}
                 metosin/reitit-spec {:mvn/version "0.5.12"}
-                metosin/reitit-frontend {:mvn/version "0.5.12"}}}
+                metosin/reitit-frontend {:mvn/version "0.5.12"}
+                github.DeathStarGame/deathstar-spec {:local/root "./src/deathstar-spec"}
+                github.DeathStarGame/deathstar-ui {:local/root "./src/deathstar-ui"}}}
 
   :app
-  {:extra-deps {ring/ring-jetty-adapter {:mvn/version "1.8.1"}
+  {:extra-deps {org.clojure/clojure {:mvn/version "1.10.3"}
+                ring/ring-jetty-adapter {:mvn/version "1.8.1"}
                 metosin/reitit  {:mvn/version "0.5.12"}
                 aleph/aleph {:mvn/version "0.4.7-alpha5"}
                 ring-cors/ring-cors {:mvn/version "0.1.13"}
                 com.dorkbox/SystemTray {:mvn/version "3.17"}
                 com.dorkbox/Utilities {:mvn/version "1.8.3"}
-                tick/tick {}}}
+                tick/tick {}
+                github.DeathStarGame/deathstar-spec {:local/root "./src/deathstar-spec"}
+                github.DeathStarGame/deathstar-app {:local/root "./src/deathstar-app"}}
+   :main-opts ["-m" "deathstar.app.main"]}
 
   :shadow
   {:extra-deps {:extra-deps {thheller/shadow-cljs {:mvn/version "2.11.7"
@@ -51,4 +56,11 @@
                "--init-ns" "cljctools.edit.core-test"
                "--port" "7788"
                "--bind" "0.0.0.0"
-               "--middleware" "cider.nrepl/cider-middleware"]}}}
+               "--middleware" "cider.nrepl/cider-middleware"]}
+
+  :depstar
+  {:replace-deps {com.github.seancorfield/depstar {:git/url "https://github.com/seancorfield/depstar"
+                                                   :sha "89d6557a868ff475063558e0199485f28fba403b"
+                                                   :tag "2.0.211"}}
+   :ns-default hf.depstar
+   :exec-args {}}}}

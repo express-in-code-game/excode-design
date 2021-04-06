@@ -41,17 +41,10 @@
    [muuntaja.core]
    [spec-tools.core]
    [manifold.deferred :as d]
-   ;; buddy
-   [buddy.auth]
-   [buddy.auth.backends]
-   [buddy.auth.middleware]
-   [buddy.hashers]
-   [buddy.sign.jwt]
-   [clj-time.core :as time]
+
    ;;
    [deathstar.app.cors-interceptor]
-   [deathstar.spec]
-   [deathstar.app.dgraph]))
+   [deathstar.spec]))
 
 (defonce ^:private registry-ref (atom {}))
 
@@ -89,25 +82,6 @@
 (def <deferred> d/success-deferred)
 
 
-(def secret "foo")
-(def backend (buddy.auth.backends/jws {:secret secret}))
-(defn create-token
-  [data]
-  (let [claims {:data data
-                :exp (time/plus (time/now) (time/seconds (* 24 60 60)))}
-        token (buddy.sign.jwt/sign claims
-                                   secret)]
-    token))
-
-(defn auth-interceptor
-  [ctx]
-  {:enter (fn [ctx]
-            (let [request (buddy.auth.middleware/authentication-request (:request ctx) backend)]
-              (println (:identity request))
-              (if (buddy.auth/authenticated? request)
-                (assoc ctx :request request)
-                (assoc ctx :response {:status 401 :body {:error "Unauthorized"}}))))})
-
 (defn app
   [channels]
   (reitit.http/ring-handler
@@ -139,10 +113,9 @@
                                       :deathstar.spec/password]} :body} :parameters}]
                          (go
                            (<! (timeout 1000))
-                           (let [token (create-token (select-keys body [:deathstar.spec/username
-                                                                        :deathstar.spec/password]))
-                                 user (<! (deathstar.app.dgraph/query-user (select-keys body [:deathstar.spec/username])))
-                                 passord-valid? (and user (buddy.hashers/check (:deathstar.spec/password user) (:u/password user)))]
+                           (let [token  nil
+                                 user nil
+                                 passord-valid? (and user true)]
                              (cond
                                (nil? user)
                                {:status 404
