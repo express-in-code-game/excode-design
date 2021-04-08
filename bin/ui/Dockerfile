@@ -13,6 +13,8 @@ RUN apt-get update && \
             zlib1g-dev gcc libc6-dev \
             build-essential
 
+RUN sudo apt update && sudo apt install -y xvfb libgtk2.0-0 libxss1 libgconf-2-4
+
 WORKDIR /tmp
 
 ## openjdk
@@ -60,8 +62,6 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg |  apt-key add - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" |  tee /etc/apt/sources.list.d/yarn.list && \
     apt-get update && apt-get -y install yarn
 
-RUN sudo apt update && sudo apt install -y xvfb libgtk2.0-0 libxss1 libgconf-2-4
 
 ARG workdir
-
 WORKDIR ${workdir}
