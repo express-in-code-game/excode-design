@@ -1,0 +1,21 @@
+#!/bin/bash
+
+repl(){
+    clj -A:core:peer:repl
+}
+
+
+main(){
+  clojure -A:core:peer
+}
+
+
+uberjar(){
+  clojure -X:depstar uberjar \
+    :aot true \
+    :jar target/tiefighter.jar \
+    :aliases '[:core :peer]' \
+    :main-class tiefighter.peer.main
+}
+
+"$@"

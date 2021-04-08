@@ -1,0 +1,237 @@
+# based on github's schema
+# https://github.com/octokit/graphql-schema/blob/master/schema.graphql
+# https://docs.github.com/en/graphql/overview/explorer
+
+# """
+# An ISO-8601 encoded date string.
+# """
+# scalar Date
+
+# """
+# An ISO-8601 encoded UTC date string.
+# """
+# scalar DateTime
+
+# """
+# A date in the format "2021-03-02T07:47:14.224-00:00"
+# """
+# scalar Inst
+
+"""
+An object with an ID
+"""
+interface Node {
+  """
+  ID of an entity
+  """
+  id: ID!
+}
+
+"""
+An entity (user, bot,...) that can act in the system
+"""
+interface Actor {
+  """
+  The username of an actor
+  """
+  username: String!
+
+  """
+  TMP: the password 
+  """
+  password: String!
+}
+
+"""
+An entity that has a profile page
+"""
+interface ProfileOwner {
+  """
+  Public profile name
+  """
+  name: String!
+}
+
+"""
+A user
+"""
+type User implements Actor & Node & ProfileOwner {
+  id: ID!
+  username: String! @search(by: [term])
+  password: String! 
+  name: String! @search(by: [term])
+}
+
+"""
+A subset of repository info
+"""
+interface GameInfo {
+  createdAt: String!
+  updatedAt: String!
+  description: String!
+  playerCount: Int!
+  observerCount: Int!
+  isArchived: Boolean!
+  isPrivate: Boolean!
+  name: String!
+  host: GameHost
+}
+
+"""
+The privacy of a game
+"""
+enum GamePrivacy {
+  """
+  Private
+  """
+  PRIVATE
+  """
+  Public
+  """
+  PUBLIC
+}
+
+"""
+Possible directions in which to order a list of items when provided an orderBy argument
+"""
+enum OrderDirection {
+  """
+  Specifies an ascending order for a given orderBy argument
+  """
+  ASC
+  """
+  Specifies a descending order for a given orderBy argument
+  """
+  DESC
+}
+
+"""
+Ordering options for game connections
+"""
+input GameOrderOptions {
+  """
+  The ordering direction.
+  """
+  direction: OrderDirection!
+  """
+  The field to order games by.
+  """
+  field: GameOrderField!
+}
+
+"""
+Properties by which game connections can be ordered.
+"""
+enum GameOrderField {
+  """
+  Order games by creation time
+  """
+  CREATED_AT
+  """
+  Order games by name
+  """
+  NAME
+  """
+  Order games by update time
+  """
+  UPDATED_AT
+}
+
+"""
+Properties by which game connections can be ordered.
+"""
+enum GameAffiliation {
+  """
+  Games that are hosted by user.
+  """
+  HOST
+  """
+  Games that are user plays in 
+  """
+  PLAYER
+  """
+  Order games by name
+  """
+  NAME
+  """
+  Order games by update time
+  """
+  UPDATED_AT
+}
+
+"""
+An edge in a connection
+"""
+type GameEdge {
+  cursor: String!
+  node: Game
+}
+
+"""
+Information about pagination in a connection.
+"""
+type PageInfo {
+  """
+  When paginating forwards, the cursor to continue.
+  """
+  endCursor: String
+
+  """
+  When paginating forwards, are there more items?
+  """
+  hasNextPage: Boolean!
+  """
+  When paginating backwards, are there more items?
+  """
+  hasPreviousPage: Boolean!
+  """
+  When paginating backwards, the cursor to continue.
+  """
+  startCursor: String
+}
+
+
+"""
+A list of games owned by the subject.
+"""
+type GameConnection {
+  edges: [GameEdge]
+  nodes: [Game]
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+
+"""
+Represents a host of a Game
+"""
+interface GameHost {
+  id: ID!
+  username: String!
+  games(
+    privacy: GamePrivacy
+    orderBy: GameOrderOptions
+    affiliations: [GameAffiliation] 
+    hostAffiliations:  [GameAffiliation] = [HOST, PLAYER]
+    after: String
+    before: String
+    firstN: Int
+    lastN: Int
+  ): GameConnection!
+}
+
+"""
+Game is like a repository
+"""
+type Game implements Actor & Node & GameInfo {
+  id: ID!
+  createdAt: String!
+  updatedAt: String!
+  description: String!
+  playerCount: Int!
+  observerCount: Int!
+  isArchived: Boolean!
+  isPrivate: Boolean!
+  name: String!
+  host: GameHost
+}
