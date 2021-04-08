@@ -8,4 +8,4 @@ a quiz/trivia game, peer-to-peer global decentralized, always simple and entirel
 - experimental: tie-fighter is a scout of DeathStarGame, it takes risks, is being played right away, unready, unfinished
 - closely 1-to-1 follows and applies DeathStarGame design choices
 - competetive: there are games and eventually there are tournaments
-- solo and teams
+- 1v1s and teams
