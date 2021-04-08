@@ -2,5 +2,5 @@ node_modules/
 .cpcache/
 .shadow-cljs/
 resources/public/js-out/
-target/
 package-lock.json
+.user/

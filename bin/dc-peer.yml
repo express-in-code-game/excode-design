@@ -1,0 +1,82 @@
+version: "3.8"
+
+networks:
+  main-network:
+    driver: bridge
+    name: deathstar-peer${DEATHSTAR_PEER_INDEX}
+  # ipfs-network:
+  #   driver: bridge
+  #   name: ipfs-network
+
+volumes:
+  ctx:
+    driver: local
+    driver_opts:
+      type: none
+      device: ../../
+      o: bind
+  dgraph-volume:
+    name: deathstar-dgraph-peer${DEATHSTAR_PEER_INDEX}
+
+services:
+
+  peer:
+    image: deathstar.peer
+    build:
+      context: ./peer
+      dockerfile: ./Dockerfile
+      args:
+        workdir:  /ctx/DeathStarGame/bin/peer
+    command: tail -f /dev/null
+    # command: bash f dev
+    ports:
+      - ${DEATHSTAR_REPL_PORT}:7781
+      - ${DEATHSTAR_HTTP_PORT}:3080
+    networks:
+      - main-network
+    volumes:
+      - ./peer/.peer${DEATHSTAR_PEER_INDEX}:/root
+      - type: volume
+        source: ctx
+        target: /ctx
+        volume:
+          nocopy: true
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
+  zero:
+    image: dgraph/dgraph:latest
+    volumes:
+      - dgraph-volume:/dgraph
+    networks:
+      - main-network
+    # ports:
+    #   - 5080:5080
+    #   - 6080:6080
+    restart: on-failure
+    command: dgraph zero --my=zero:5080
+  
+  alpha:
+    image: dgraph/dgraph:latest
+    volumes:
+      - dgraph-volume:/dgraph
+    networks:
+      - main-network
+    # ports:
+    #   - 8080:8080
+    #   - 9080:9080
+    restart: on-failure
+    command: dgraph alpha --my=alpha:7080 --zero=zero:5080
+  
+  ratel:
+    image: dgraph/dgraph:latest
+    networks:
+      - main-network
+    ports:
+      - 800${DEATHSTAR_PEER_INDEX}:8000
+    command: dgraph-ratel

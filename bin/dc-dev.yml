@@ -1,0 +1,41 @@
+version: "3.8"
+
+volumes:
+  ctx:
+    driver: local
+    driver_opts:
+      type: none
+      device: ../../
+      o: bind
+
+services:
+  ui:
+    image: deathstar.ui
+    build:
+      context: ./ui
+      dockerfile: ./Dockerfile
+      args:
+        workdir: /ctx/DeathStarGame/bin/ui
+    command: tail -f /dev/null
+    # command: bash f dev
+    # expose:
+    #   - 7788
+    ports:
+      - 9500:9500
+      - 8899:8899
+      - 9630:9630
+    # user: 1000:1000
+    volumes:
+      - ./ui/.user:/root
+      - type: volume
+        source: ctx
+        target: /ctx
+        volume:
+          nocopy: true
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M

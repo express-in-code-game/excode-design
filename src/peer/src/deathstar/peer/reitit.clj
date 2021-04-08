@@ -1,4 +1,4 @@
-(ns deathstar.app.reitit
+(ns deathstar.peer.reitit
   (:gen-class)
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >! <!! >!!  take! put! offer! poll! alt! alts! close!
@@ -43,7 +43,7 @@
    [manifold.deferred :as d]
 
    ;;
-   [deathstar.app.cors-interceptor]
+   [deathstar.peer.cors-interceptor]
    [deathstar.spec]))
 
 (defonce ^:private registry-ref (atom {}))
@@ -273,7 +273,7 @@
                              ;; multipart
                            (reitit.http.interceptors.multipart/multipart-interceptor)
                              ;; cors
-                           (deathstar.app.cors-interceptor/cors-interceptor)]}})
+                           (deathstar.peer.cors-interceptor/cors-interceptor)]}})
    (reitit.ring/routes
     (reitit.swagger-ui/create-swagger-ui-handler
      {:path "/swagger-ui"
@@ -346,7 +346,7 @@
                              ;; multipart
                            (reitit.http.interceptors.multipart/multipart-interceptor)
                              ;; cors
-                           (deathstar.app.cors-interceptor/cors-interceptor)]}})
+                           (deathstar.peer.cors-interceptor/cors-interceptor)]}})
    (reitit.ring/routes
     (reitit.ring/redirect-trailing-slash-handler #_{:method :add})
     (fn handle-index

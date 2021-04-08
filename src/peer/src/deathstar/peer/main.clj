@@ -1,4 +1,4 @@
-(ns deathstar.app.main
+(ns deathstar.peer.main
   (:gen-class)
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >! <!! >!!  take! put! offer! poll! alt! alts! close!
@@ -7,12 +7,10 @@
                                      pipeline pipeline-async]]
    [clojure.string]
 
-   [deathstar.app.spec :as app.spec]
+   [deathstar.peer.spec :as app.spec]
 
-   [deathstar.app.system-tray]
-   [deathstar.app.reitit]
-   [deathstar.app.docker-dgraph]
-   [deathstar.app.dgraph]))
+   [deathstar.peer.reitit]
+   [deathstar.peer.dgraph]))
 
 (defonce ^:private registry-ref (atom {}))
 
@@ -21,11 +19,7 @@
   {::id id
    ::app.spec/state* (atom {})
    ::channels {::app.spec/system-exit| (chan 1)}
-   ::system-tray? false
-   ::port 3080
-   ::dgraph-opts (deathstar.app.docker-dgraph/create-opts
-                  {:deathstar.app.docker-dgraph/id id
-                   :deathstar.app.docker-dgraph/remove-volume? false})})
+   ::port 3080})
 
 (def peer1-preset (create-opts
                    {::id :peer1
@@ -38,14 +32,10 @@
 (defn unmount
   [{:keys [::id] :as opts}]
   (go
-    (let [{:keys [::system-tray?
-                  ::dgraph-opts
+    (let [{:keys [::dgraph-opts
                   ::channels
                   ::port]} opts]
-      (when system-tray?
-        (<! (deathstar.app.system-tray/unmount {})))
-      (<! (deathstar.app.reitit/stop channels {:deathstar.app.reitit/port port}))
-      (<! (deathstar.app.docker-dgraph/down dgraph-opts))
+      (<! (deathstar.peer.reitit/stop channels {:deathstar.peer.reitit/port port}))
       (let [opts-in-registry (get @registry-ref id)]
         (when (::procs-exit opts-in-registry)
           (<! ((::procs-exit opts-in-registry)))))
@@ -56,8 +46,7 @@
   [{:keys [::id] :as opts}]
   (go
     (let [opts (merge (create-opts opts) opts)
-          {:keys [::system-tray?
-                  ::dgraph-opts
+          {:keys [::dgraph-opts
                   ::channels
                   ::port]
            {:keys [::app.spec/system-exit|]} ::channels} opts
@@ -69,13 +58,9 @@
       (swap! registry-ref assoc id (merge
                                     opts
                                     {::procs-exit procs-exit}))
-      (when system-tray?
-        (<! (deathstar.app.system-tray/mount {:deathstar.app.system-tray/quit| (::app.spec/system-exit| channels)})))
-      (<! (deathstar.app.reitit/start channels {:deathstar.app.reitit/port port}))
-      (<! (deathstar.app.docker-dgraph/count-images))
-      (<! (deathstar.app.docker-dgraph/up dgraph-opts))
-      #_(<! (deathstar.app.dgraph/ready?))
-      (<! (deathstar.app.dgraph/upload-schema))
+      (<! (deathstar.peer.reitit/start channels {:deathstar.peer.reitit/port port}))
+      #_(<! (deathstar.peer.dgraph/ready?))
+      (<! (deathstar.peer.dgraph/upload-schema))
 
       (let [exit| (chan 1)
             proc|
