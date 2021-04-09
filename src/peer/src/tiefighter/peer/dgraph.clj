@@ -14,7 +14,7 @@
    [clojure.test.check.properties :as prop]
 
    [clj-http.client]
-   [jsonista.core :as j]
+   [jsonista.core]
    [tiefighter.spec]))
 
 (def base-url "http://alpha:8080")
@@ -27,13 +27,14 @@
       (loop []
         (let [response| (go
                           (try
-                            (let [response (->
-                                            (clj-http.client/request
-                                             {:url (str base-url "/admin/schema")
-                                              :method :post
-                                              :body (clojure.java.io/file (clojure.java.io/resource "dgraph/schema.gql"))})
-                                            :body
-                                            (j/read-value j/keyword-keys-object-mapper))]
+                            (let [response
+                                  (->
+                                   (clj-http.client/request
+                                    {:url (str base-url "/admin/schema")
+                                     :method :post
+                                     :body (clojure.java.io/file (clojure.java.io/resource "dgraph/schema.gql"))})
+                                   :body
+                                   (jsonista.core/read-value jsonista.core/keyword-keys-object-mapper))]
                               (println :response response)
                               response)
                             (catch Exception e (println (ex-message e)))))]
@@ -60,13 +61,13 @@
             {:url (str base-url "/graphql")
              :method :post
              :headers {:content-type "application/json"}
-             :body (j/write-value-as-string
+             :body (jsonista.core/write-value-as-string
                     {"query"  "
                                 {__schema {types {name}}}
                                 "
                      "variables" {}})})
            :body
-           (j/read-value j/keyword-keys-object-mapper))]
+           (jsonista.core/read-value jsonista.core/keyword-keys-object-mapper))]
       response)))
 
 (defn query-users
@@ -78,11 +79,11 @@
             {:url (str base-url "/graphql")
              :method :post
              :headers {:content-type "application/json"}
-             :body (j/write-value-as-string
+             :body (jsonista.core/write-value-as-string
                     {"query"  (slurp (clojure.java.io/resource "dgraph/query-users.gql"))
                      "variables" {}})})
            :body
-           (j/read-value j/keyword-keys-object-mapper))]
+           (jsonista.core/read-value jsonista.core/keyword-keys-object-mapper))]
       response)))
 
 (defn query-user
@@ -94,7 +95,7 @@
             {:url (str base-url "/graphql")
              :method :post
              :headers {:content-type "application/json"}
-             :body (j/write-value-as-string
+             :body (jsonista.core/write-value-as-string
                     {"query"  "
                                  queryUser () {
                                   username
@@ -102,7 +103,7 @@
                                 "
                      "variables" {}})})
            :body
-           (j/read-value j/keyword-keys-object-mapper))]
+           (jsonista.core/read-value jsonista.core/keyword-keys-object-mapper))]
       response)))
 
 (defn add-random-user
@@ -114,13 +115,13 @@
             {:url (str base-url "/graphql")
              :method :post
              :headers {:content-type "application/json"}
-             :body (j/write-value-as-string
+             :body (jsonista.core/write-value-as-string
                     {"query"  (slurp (clojure.java.io/resource "dgraph/add-user.gql"))
                      "variables" {"user" {"username" (gen/generate (s/gen string?))
                                           "name" (gen/generate (s/gen string?))
                                           "password" (gen/generate (s/gen string?))}}})})
            :body
-           (j/read-value j/keyword-keys-object-mapper))]
+           (jsonista.core/read-value jsonista.core/keyword-keys-object-mapper))]
       response)))
 
 (defn healthy?
@@ -128,17 +129,18 @@
   (go
     (let [timeout| (timeout 10000)]
       (loop []
-        (let [response| (go
-                          (try
-                            (->
-                             (clj-http.client/request
-                              {:url (str base-url "/state")
-                               :method :get
-                               :headers {:content-type "application/json"}})
-                             :body
-                             (j/read-value j/keyword-keys-object-mapper)
-                             keys)
-                            (catch Exception e (do nil))))]
+        (let [response|
+              (go
+                (try
+                  (->
+                   (clj-http.client/request
+                    {:url (str base-url "/state")
+                     :method :get
+                     :headers {:content-type "application/json"}})
+                   :body
+                   (jsonista.core/read-value jsonista.core/keyword-keys-object-mapper)
+                   keys)
+                  (catch Exception e (do nil))))]
           (alt!
             timeout| false
             response| ([value]

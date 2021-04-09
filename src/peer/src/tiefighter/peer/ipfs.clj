@@ -6,5 +6,38 @@
                                      pipeline pipeline-async]]
    [clojure.string]
    [clojure.spec.alpha :as s]
-   [clj-http.client :as clj-http.client]))
+   [clojure.java.io :as io]
+   [clj-http.client :as clj-http.client]
+   [jsonista.core]))
 
+(def base-url "http://ipfs:5001")
+
+(s/def ::pubsub-topic string?)
+
+(defn version
+  []
+  (go
+    (let [response
+          (->
+           (clj-http.client/request
+            {:url (str base-url "/api/v0/version")
+             :method :post
+             :headers {:content-type "application/json"}})
+           :body
+           (jsonista.core/read-value jsonista.core/keyword-keys-object-mapper))]
+      response)))
+
+(defn pubsub-sub
+  [{:keys [::pubsub-topic] :or {pubsub-topic "123"}}]
+  (go
+    (with-open [stream (->
+                        (clj-http.client/request
+                         {:url (str base-url "/api/v0/pubsub/sub")
+                          :method :post
+                          :as :stream
+                          :query-params {"arg" pubsub-topic}})
+                        :body)]
+      (let [lines (-> stream io/reader line-seq)]
+        (doseq [line lines]
+          (println :line
+                   (jsonista.core/read-value line jsonista.core/keyword-keys-object-mapper)))))))
