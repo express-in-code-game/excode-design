@@ -2,11 +2,11 @@ version: "3.8"
 
 networks:
   main-network:
-    driver: bridge
+    driver: overlay
     name: deathstar-peer${DEATHSTAR_PEER_INDEX}
-  # ipfs-network:
-  #   driver: bridge
-  #   name: ipfs-network
+  ipfs-network:
+    driver: bridge
+    name: deathstar-ipfs
 
 volumes:
   ctx:
@@ -17,6 +17,8 @@ volumes:
       o: bind
   dgraph-volume:
     name: deathstar-dgraph-peer${DEATHSTAR_PEER_INDEX}
+  ipfs-volume:
+    name: deathstar-ipfs-peer${DEATHSTAR_PEER_INDEX}
 
 services:
 
@@ -33,7 +35,7 @@ services:
       - ${DEATHSTAR_REPL_PORT}:7781
       - ${DEATHSTAR_HTTP_PORT}:3080
     networks:
-      - main-network
+      main-network:
     volumes:
       - ./peer/.peer${DEATHSTAR_PEER_INDEX}:/root
       - type: volume
@@ -50,11 +52,11 @@ services:
           memory: 4096M
 
   zero:
-    image: dgraph/dgraph:latest
+    image: dgraph/dgraph:v20.11.2
     volumes:
       - dgraph-volume:/dgraph
     networks:
-      - main-network
+      main-network:
     # ports:
     #   - 5080:5080
     #   - 6080:6080
@@ -62,21 +64,61 @@ services:
     command: dgraph zero --my=zero:5080
   
   alpha:
-    image: dgraph/dgraph:latest
+    image: dgraph/dgraph:v20.11.2
     volumes:
       - dgraph-volume:/dgraph
     networks:
-      - main-network
+      main-network:
     # ports:
     #   - 8080:8080
     #   - 9080:9080
     restart: on-failure
-    command: dgraph alpha --my=alpha:7080 --zero=zero:5080
+    command: dgraph alpha --my=alpha:7080 --zero=zero:5080 --whitelist "0.0.0.0/0"
   
   ratel:
-    image: dgraph/dgraph:latest
+    image: dgraph/dgraph:v20.11.2
     networks:
-      - main-network
+      main-network:
     ports:
       - 800${DEATHSTAR_PEER_INDEX}:8000
     command: dgraph-ratel
+
+  ipfs:
+    image: deathstar.ipfs
+    build:
+      context: ./ipfs
+      dockerfile: ./Dockerfile
+    ports:
+      - 430${DEATHSTAR_PEER_INDEX}:4001
+      - 530${DEATHSTAR_PEER_INDEX}:5001
+      - 830${DEATHSTAR_PEER_INDEX}:8080
+      - 838${DEATHSTAR_PEER_INDEX}:8081
+      # - 4001:4001
+    #   - 127.0.0.1:5001:5001
+    #   # - 127.0.0.1:8080:8080
+    #   # - 127.0.0.1:8081:8081
+    environment:
+      # - IPFS_PROFILE=server
+      # - IPFS_PROFILE=local-discovery
+      - IPFS_PATH=/data/ipfs
+    networks:
+      main-network:
+      ipfs-network:
+        aliases:
+          - ipfs${DEATHSTAR_PEER_INDEX}
+    volumes:
+      - type: volume
+        source: ctx
+        target: /ctx
+        volume:
+          nocopy: true
+      - type: volume
+        source: ipfs-volume
+        target: /data/ipfs
+        volume:
+          nocopy: true
+      # - type: volume
+      #   source: ipfs-export
+      #   target: /export
+      #   volume:
+      #     nocopy: true
