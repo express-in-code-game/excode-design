@@ -9,8 +9,9 @@
 
    [deathstar.peer.spec :as app.spec]
 
-   [deathstar.peer.reitit]
-   [deathstar.peer.dgraph]))
+   [deathstar.peer.reitit :as peer.reitit]
+   [deathstar.peer.dgraph :as peer.dgraph]
+   [deathstar.peer.ipfs :as peer.ipfs]))
 
 (defonce ^:private registry-ref (atom {}))
 
@@ -35,7 +36,7 @@
     (let [{:keys [::dgraph-opts
                   ::channels
                   ::port]} opts]
-      (<! (deathstar.peer.reitit/stop channels {:deathstar.peer.reitit/port port}))
+      (<! (peer.reitit/stop channels {::peer.reitit/port port}))
       (let [opts-in-registry (get @registry-ref id)]
         (when (::procs-exit opts-in-registry)
           (<! ((::procs-exit opts-in-registry)))))
@@ -58,9 +59,9 @@
       (swap! registry-ref assoc id (merge
                                     opts
                                     {::procs-exit procs-exit}))
-      (<! (deathstar.peer.reitit/start channels {:deathstar.peer.reitit/port port}))
-      #_(<! (deathstar.peer.dgraph/ready?))
-      (<! (deathstar.peer.dgraph/upload-schema))
+      (<! (peer.reitit/start channels {::peer.reitit/port port}))
+      #_(<! (peer.dgraph/ready?))
+      (<! (peer.dgraph/upload-schema))
 
       (let [exit| (chan 1)
             proc|

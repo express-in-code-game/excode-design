@@ -18,7 +18,6 @@
    [reitit.http]
    [reitit.ring]
    [sieppari.async.core-async] ;; needed for core.async
-   [sieppari.async.manifold]   ;; needed for manifold
    [muuntaja.interceptor]
    [reitit.coercion.spec]
    [reitit.swagger]
@@ -32,15 +31,15 @@
    [reitit.http.interceptors.multipart]
    [ring.util.response]
    #_[ring.middleware.cors :refer [wrap-cors]]
-            ;; Uncomment to use
-            ; [reitit.ring.middleware.dev :as dev]
-            ; [reitit.ring.spec :as spec]
-            ; [spec-tools.spell :as spell]
+  ;; Uncomment to use
+  ; [reitit.ring.middleware.dev :as dev]
+  ; [reitit.ring.spec :as spec]
+  ; [spec-tools.spell :as spell]
    [ring.adapter.jetty]
-   [aleph.http]
    [muuntaja.core]
    [spec-tools.core]
-   [manifold.deferred :as d]
+
+   [clj-http.client :as hc]
 
    ;;
    [deathstar.peer.cors-interceptor]
@@ -79,8 +78,6 @@
         :body (conj via :handler)})))
 
 (def <async> #(go %))
-(def <deferred> d/success-deferred)
-
 
 (defn app
   [channels]
@@ -181,16 +178,16 @@
              :handler (fn [{{{:keys [seed results]} :query} :parameters}]
                         (go
                           (<! (timeout 1000))
-                          @(d/chain
-                            (aleph.http/get
-                             "https://randomuser.me/api/"
-                             {:query-params {:seed seed, :results results}})
-                            :body
-                            (partial muuntaja.core/decode "application/json")
-                            :results
-                            (fn [results]
-                              {:status 200
-                               :body results}))))}}]
+                          (let [data (->
+                                      (hc/request
+                                       {:url "https://randomuser.me/api/"
+                                        :method :get
+                                        :query-params {:seed seed, :results results}})
+                                      :body
+                                      (as-> body (muuntaja.core/decode "application/json" body))
+                                      :results)]
+                            {:status 200
+                             :body data})))}}]
 
      ["/async2"
       {:interceptors [(interceptor <async> :async)]
@@ -206,12 +203,6 @@
       {:interceptors [(interceptor <async> :async)]
        :get {:interceptors [(interceptor <async> :get)]
              :handler (handler <async>)}}]
-
-     ["/deferred"
-      {:interceptors [(interceptor <deferred> :deferred)]
-       :get {:swagger {:tags ["deferred"]}
-             :interceptors [(interceptor <deferred> :get)]
-             :handler (handler <deferred>)}}]
 
      ["/math"
       {:swagger {:tags ["math"]}}
@@ -298,10 +289,11 @@
   [channels {:keys [::port] :or {port 3080} :as opts}]
   (go
     (when-not (get @registry-ref port)
-      (let [server (aleph.http/start-server
-                    (aleph.http/wrap-ring-async-handler (app channels)  #_#'app)
-                    {:port port :host "0.0.0.0"})]
-        #_(jetty/run-jetty #'app {:port port :host "0.0.0.0" :join? false :async? true})
+      (let [server
+            (ring.adapter.jetty/run-jetty
+             #_#'app
+             (app channels)
+             {:port port :host "0.0.0.0" :join? false :async? true})]
         (swap! registry-ref assoc port server)
         (println (format "started server on port %d" port))))))
 
@@ -310,7 +302,8 @@
   (go
     (let [server (get @registry-ref port)]
       (when server
-        (.close server)
+        #_(.close server)
+        (.stop server)
         (swap! registry-ref dissoc port)
         (println (format "stopped server on port %d" port))))))
 
@@ -368,9 +361,10 @@
   (go
     (when-not (get @registry-ref port)
       (let [server
-            (aleph.http/start-server (aleph.http/wrap-ring-async-handler
-                                      (app-static)  #_#'app)
-                                     {:port port :host "0.0.0.0"})]
+            (ring.adapter.jetty/run-jetty
+             #_#'app
+             (app-static)
+             {:port port :host "0.0.0.0" :join? false :async? true})]
         (swap! registry-ref assoc port server)
         (println (format "server running in port %d" port))))))
 
@@ -379,6 +373,7 @@
   (go
     (let [server (get @registry-ref port)]
       (when server
-        (.close server)
+        #_(.close server)
+        (.stop server)
         (swap! registry-ref dissoc port)
         (println (format "stopped server on port %d" port))))))
