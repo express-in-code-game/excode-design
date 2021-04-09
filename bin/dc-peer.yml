@@ -26,7 +26,7 @@ services:
       context: ./peer
       dockerfile: ./Dockerfile
       args:
-        workdir:  /ctx/TIE-Fighter/bin/peer
+        workdir:  /ctx/tie-fighter/bin/peer
     command: tail -f /dev/null
     # command: bash f dev
     ports:

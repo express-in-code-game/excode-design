@@ -15,7 +15,7 @@ services:
       context: ./ui
       dockerfile: ./Dockerfile
       args:
-        workdir: /ctx/TIE-Fighter/bin/ui
+        workdir: /ctx/tie-fighter/bin/ui
     command: tail -f /dev/null
     # command: bash f dev
     # expose:

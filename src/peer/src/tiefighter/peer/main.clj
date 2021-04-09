@@ -10,7 +10,8 @@
    [tiefighter.peer.spec :as app.spec]
 
    [tiefighter.peer.reitit]
-   [tiefighter.peer.dgraph]))
+   [tiefighter.peer.dgraph]
+   [tiefighter.peer.libp2p]))
 
 (defonce ^:private registry-ref (atom {}))
 

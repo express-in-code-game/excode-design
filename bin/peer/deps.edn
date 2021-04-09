@@ -18,8 +18,8 @@
                 aleph/aleph {:mvn/version "0.4.7-alpha5"}
                 ring-cors/ring-cors {:mvn/version "0.1.13"}
                 tick/tick {}
-                github.DeathStarGame.TIE-Fighter/spec {:local/root "../../src/spec"}
-                github.DeathStarGame.TIE-Fighter/peer {:local/root "../../src/peer"}}
+                github.DeathStarGame.tie-fighter/spec {:local/root "../../src/spec"}
+                github.DeathStarGame.tie-fighter/peer {:local/root "../../src/peer"}}
    :extra-paths ["../ui/resources"]
    :main-opts ["-m" "tiefighter.peer.main"]}
 
