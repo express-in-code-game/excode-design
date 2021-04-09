@@ -2,11 +2,11 @@ version: "3.8"
 
 networks:
   main-network:
-    driver: bridge
+    driver: overlay
     name: tiefighter-peer${TIEFIGHTER_PEER_INDEX}
-  # ipfs-network:
-  #   driver: bridge
-  #   name: ipfs-network
+  ipfs-network:
+    driver: bridge
+    name: tiefighter-ipfs
 
 volumes:
   ctx:
@@ -17,8 +17,50 @@ volumes:
       o: bind
   dgraph-volume:
     name: tiefighter-dgraph-peer${TIEFIGHTER_PEER_INDEX}
+  ipfs-volume:
+    name: tiefighter-ipfs-peer${TIEFIGHTER_PEER_INDEX}
 
 services:
+
+  ipfs:
+    image: tiefighter.ipfs
+    build:
+      context: ./go-ipfs
+      dockerfile: ./Dockerfile
+    ports:
+      - 400${TIEFIGHTER_PEER_INDEX}:4001
+      - 500${TIEFIGHTER_PEER_INDEX}:5001
+      - 800${TIEFIGHTER_PEER_INDEX}:8080
+      - 808${TIEFIGHTER_PEER_INDEX}:8081
+      # - 4001:4001
+    #   - 127.0.0.1:5001:5001
+    #   # - 127.0.0.1:8080:8080
+    #   # - 127.0.0.1:8081:8081
+    environment:
+      # - IPFS_PROFILE=server
+      # - IPFS_PROFILE=local-discovery
+      - IPFS_PATH=/data/ipfs
+    networks:
+      main-network:
+      ipfs-network:
+        aliases:
+          - ipfs${TIEFIGHTER_PEER_INDEX}
+    volumes:
+      - type: volume
+        source: ctx
+        target: /ctx
+        volume:
+          nocopy: true
+      - type: volume
+        source: ipfs-volume
+        target: /data/ipfs
+        volume:
+          nocopy: true
+      # - type: volume
+      #   source: ipfs-export
+      #   target: /export
+      #   volume:
+      #     nocopy: true
 
   peer:
     image: tiefighter.peer
@@ -33,7 +75,7 @@ services:
       - ${TIEFIGHTER_REPL_PORT}:7781
       - ${TIEFIGHTER_HTTP_PORT}:3080
     networks:
-      - main-network
+      main-network:
     volumes:
       - ./peer/.peer${TIEFIGHTER_PEER_INDEX}:/root
       - type: volume
@@ -54,7 +96,7 @@ services:
     volumes:
       - dgraph-volume:/dgraph
     networks:
-      - main-network
+      main-network:
     # ports:
     #   - 5080:5080
     #   - 6080:6080
@@ -66,7 +108,7 @@ services:
     volumes:
       - dgraph-volume:/dgraph
     networks:
-      - main-network
+      main-network:
     # ports:
     #   - 8080:8080
     #   - 9080:9080
@@ -76,7 +118,7 @@ services:
   ratel:
     image: dgraph/dgraph:latest
     networks:
-      - main-network
+      main-network:
     ports:
       - 800${TIEFIGHTER_PEER_INDEX}:8000
     command: dgraph-ratel
