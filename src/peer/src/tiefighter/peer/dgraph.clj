@@ -13,12 +13,11 @@
    [clojure.test.check.generators :as gen]
    [clojure.test.check.properties :as prop]
 
-   [byte-streams]
-   [aleph.http]
+   [clj-http.client]
    [jsonista.core :as j]
    [tiefighter.spec]))
 
-(def base-url "http://localhost:3088")
+(def base-url "http://alpha:8080")
 
 (defn upload-schema
   []
@@ -28,14 +27,16 @@
       (loop []
         (let [response| (go
                           (try
-                            (->
-                             @(aleph.http/post
-                               (str base-url "/admin/schema")
-                               {:body (clojure.java.io/file (clojure.java.io/resource "dgraph/schema.gql"))})
-                             :body
-                             byte-streams/to-string
-                             (j/read-value j/keyword-keys-object-mapper))
-                            (catch Exception e (do nil))))]
+                            (let [response (->
+                                            (clj-http.client/request
+                                             {:url (str base-url "/admin/schema")
+                                              :method :post
+                                              :body (clojure.java.io/file (clojure.java.io/resource "dgraph/schema.gql"))})
+                                            :body
+                                            (j/read-value j/keyword-keys-object-mapper))]
+                              (println :response response)
+                              response)
+                            (catch Exception e (println (ex-message e)))))]
           (alt!
             timeout| (do
                        (println ::uploading-schema-timed-out)
@@ -55,16 +56,16 @@
   (go
     (let [response
           (->
-           @(aleph.http/post
-             (str base-url "/graphql")
-             {:body (j/write-value-as-string
-                     {"query"  "
+           (clj-http.client/request
+            {:url (str base-url "/graphql")
+             :method :post
+             :headers {:content-type "application/json"}
+             :body (j/write-value-as-string
+                    {"query"  "
                                 {__schema {types {name}}}
                                 "
-                      "variables" {}})
-              :headers {:content-type "application/json"}})
+                     "variables" {}})})
            :body
-           byte-streams/to-string
            (j/read-value j/keyword-keys-object-mapper))]
       response)))
 
@@ -73,53 +74,54 @@
   (go
     (let [response
           (->
-           @(aleph.http/post
-             (str base-url "/graphql")
-             {:body (j/write-value-as-string
-                     {"query"  (slurp (clojure.java.io/resource "dgraph/query-users.gql"))
-                      "variables" {}})
-              :headers {:content-type "application/json"}})
+           (clj-http.client/request
+            {:url (str base-url "/graphql")
+             :method :post
+             :headers {:content-type "application/json"}
+             :body (j/write-value-as-string
+                    {"query"  (slurp (clojure.java.io/resource "dgraph/query-users.gql"))
+                     "variables" {}})})
            :body
-           byte-streams/to-string)]
-      (println response))))
+           (j/read-value j/keyword-keys-object-mapper))]
+      response)))
 
 (defn query-user
   [{:keys [:tiefighter.spec/username] :as opts}]
   (go
     (let [response
           (->
-           @(aleph.http/post
-             (str base-url "/graphql")
-             {:body (j/write-value-as-string
-                     {"query"  "
+           (clj-http.client/request
+            {:url (str base-url "/graphql")
+             :method :post
+             :headers {:content-type "application/json"}
+             :body (j/write-value-as-string
+                    {"query"  "
                                  queryUser () {
                                   username
                                  }
                                 "
-                      "variables" {}})
-              :headers {:content-type "application/json"}})
+                     "variables" {}})})
            :body
-           byte-streams/to-string)]
-      (println response))))
+           (j/read-value j/keyword-keys-object-mapper))]
+      response)))
 
 (defn add-random-user
   []
   (go
     (let [response
           (->
-           @(aleph.http/post
-             (str base-url "/graphql")
-             {:body (j/write-value-as-string
-                     {"query"  (slurp (clojure.java.io/resource "dgraph/add-user.gql"))
-                      "variables" {"user" {"username" (gen/generate (s/gen string?))
-                                           "name" (gen/generate (s/gen string?))
-                                           "password" (gen/generate (s/gen string?))}}})
-              :headers {:content-type "application/json"}})
+           (clj-http.client/request
+            {:url (str base-url "/graphql")
+             :method :post
+             :headers {:content-type "application/json"}
+             :body (j/write-value-as-string
+                    {"query"  (slurp (clojure.java.io/resource "dgraph/add-user.gql"))
+                     "variables" {"user" {"username" (gen/generate (s/gen string?))
+                                          "name" (gen/generate (s/gen string?))
+                                          "password" (gen/generate (s/gen string?))}}})})
            :body
-           byte-streams/to-string)]
-      (println response))))
-
-
+           (j/read-value j/keyword-keys-object-mapper))]
+      response)))
 
 (defn healthy?
   []
@@ -129,17 +131,18 @@
         (let [response| (go
                           (try
                             (->
-                             @(aleph.http/get
-                               (str base-url "/state")
-                               {:headers {:content-type "application/json"}})
+                             (clj-http.client/request
+                              {:url (str base-url "/state")
+                               :method :get
+                               :headers {:content-type "application/json"}})
                              :body
-                             byte-streams/to-string
-                             (j/read-value j/keyword-keys-object-mapper))
+                             (j/read-value j/keyword-keys-object-mapper)
+                             keys)
                             (catch Exception e (do nil))))]
           (alt!
             timeout| false
             response| ([value]
-                       (if (= (-> value first :status) "healthy")
+                       (if (= (-> value first :status) "healthy") ; outdated
                          (do
                            (println value)
                            true)

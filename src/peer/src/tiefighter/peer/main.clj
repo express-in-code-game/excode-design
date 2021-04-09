@@ -9,9 +9,9 @@
 
    [tiefighter.peer.spec :as app.spec]
 
-   [tiefighter.peer.reitit]
-   [tiefighter.peer.dgraph]
-   [tiefighter.peer.libp2p]))
+   [tiefighter.peer.reitit :as peer.reitit]
+   [tiefighter.peer.dgraph :as peer.dgraph]
+   [tiefighter.peer.ipfs :as peer.ipfs]))
 
 (defonce ^:private registry-ref (atom {}))
 
@@ -36,7 +36,7 @@
     (let [{:keys [::dgraph-opts
                   ::channels
                   ::port]} opts]
-      (<! (tiefighter.peer.reitit/stop channels {:tiefighter.peer.reitit/port port}))
+      (<! (peer.reitit/stop channels {::peer.reitit/port port}))
       (let [opts-in-registry (get @registry-ref id)]
         (when (::procs-exit opts-in-registry)
           (<! ((::procs-exit opts-in-registry)))))
@@ -59,9 +59,9 @@
       (swap! registry-ref assoc id (merge
                                     opts
                                     {::procs-exit procs-exit}))
-      (<! (tiefighter.peer.reitit/start channels {:tiefighter.peer.reitit/port port}))
+      (<! (peer.reitit/start channels {::peer.reitit/port port}))
       #_(<! (tiefighter.peer.dgraph/ready?))
-      (<! (tiefighter.peer.dgraph/upload-schema))
+      (<! (peer.dgraph/upload-schema))
 
       (let [exit| (chan 1)
             proc|
