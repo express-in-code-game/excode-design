@@ -14,7 +14,6 @@
 ## contents
 
 - [project in a nutshell](#project-in-a-nutshell)
-- [development](#development)
 
 ## project in a nutshell
 
@@ -24,7 +23,15 @@
     - designed for e-sports: users compete in tournaments
     - never stale: scenarios like extensions, can be installed via a link, each being a game of its own with its own ui
     - better scenarios overtime will become the standard for e-sports scene and tournaments
-    - eventually, it should run on web 3.0 (peer-to-peer internet) as decentralized global app
+    - peer to peer : it should run on web 3.0 (peer-to-peer internet) as decentralized global app
+      - user computers (laptops) run the game
+      - users can turn game on/off, yet it's a global app
+      - the users currently online are the network
+      - when node goes online, it fetches updates into local global db
+      - when 1000 people participate in event, their machines will host games
+      - like git and forks: if 8 peers are playing and host goes down, games continues
+      - game is cold and efficient: the global app is formed by laptops running it only, that constantly go on and off
+      - core mechanism - pubsub (gossip etc.) for network dataflow
 - aren't there enough games already ?
     - ok, there were chess and go and stuff
     - then internet came about
