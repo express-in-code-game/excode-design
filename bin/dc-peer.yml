@@ -22,46 +22,6 @@ volumes:
 
 services:
 
-  ipfs:
-    image: tiefighter.ipfs
-    build:
-      context: ./go-ipfs
-      dockerfile: ./Dockerfile
-    ports:
-      - 400${TIEFIGHTER_PEER_INDEX}:4001
-      - 500${TIEFIGHTER_PEER_INDEX}:5001
-      - 800${TIEFIGHTER_PEER_INDEX}:8080
-      - 808${TIEFIGHTER_PEER_INDEX}:8081
-      # - 4001:4001
-    #   - 127.0.0.1:5001:5001
-    #   # - 127.0.0.1:8080:8080
-    #   # - 127.0.0.1:8081:8081
-    environment:
-      # - IPFS_PROFILE=server
-      # - IPFS_PROFILE=local-discovery
-      - IPFS_PATH=/data/ipfs
-    networks:
-      main-network:
-      ipfs-network:
-        aliases:
-          - ipfs${TIEFIGHTER_PEER_INDEX}
-    volumes:
-      - type: volume
-        source: ctx
-        target: /ctx
-        volume:
-          nocopy: true
-      - type: volume
-        source: ipfs-volume
-        target: /data/ipfs
-        volume:
-          nocopy: true
-      # - type: volume
-      #   source: ipfs-export
-      #   target: /export
-      #   volume:
-      #     nocopy: true
-
   peer:
     image: tiefighter.peer
     build:
@@ -122,3 +82,43 @@ services:
     ports:
       - 800${TIEFIGHTER_PEER_INDEX}:8000
     command: dgraph-ratel
+
+  ipfs:
+    image: tiefighter.ipfs
+    build:
+      context: ./ipfs
+      dockerfile: ./Dockerfile
+    ports:
+      - 430${TIEFIGHTER_PEER_INDEX}:4001
+      - 530${TIEFIGHTER_PEER_INDEX}:5001
+      - 830${TIEFIGHTER_PEER_INDEX}:8080
+      - 838${TIEFIGHTER_PEER_INDEX}:8081
+      # - 4001:4001
+    #   - 127.0.0.1:5001:5001
+    #   # - 127.0.0.1:8080:8080
+    #   # - 127.0.0.1:8081:8081
+    environment:
+      # - IPFS_PROFILE=server
+      # - IPFS_PROFILE=local-discovery
+      - IPFS_PATH=/data/ipfs
+    networks:
+      main-network:
+      ipfs-network:
+        aliases:
+          - ipfs${TIEFIGHTER_PEER_INDEX}
+    volumes:
+      - type: volume
+        source: ctx
+        target: /ctx
+        volume:
+          nocopy: true
+      - type: volume
+        source: ipfs-volume
+        target: /data/ipfs
+        volume:
+          nocopy: true
+      # - type: volume
+      #   source: ipfs-export
+      #   target: /export
+      #   volume:
+      #     nocopy: true
