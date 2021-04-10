@@ -28,6 +28,11 @@
 
 - browser
 
+## links
+
+- open game in a browser tab via a link
+- can browse history and stats - all like web app, with links that can be shared
+
 ## identity
 
 - if we don't solve identity from start, someone will make Voobly's and run cloud servers - and we'll get not a global decentralized peer game, but services that charge people to play; the idea of the game will be trashed; unacceptable
@@ -40,3 +45,8 @@
 - minus: need another container (not really a minus)
 - plus: networking is literally decoupled from app via http
 - plus: can connect to existing ipfs node (e.g. user already runs ipfs-desktop)
+
+## tournaments
+
+- create an event (match, tournament)
+- create tennis/starcraft -like tour - series of tournaments, points with a finale 
