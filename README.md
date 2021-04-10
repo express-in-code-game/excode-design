@@ -14,6 +14,7 @@
 ## contents
 
 - [project in a nutshell](#project-in-a-nutshell)
+- [design](./docs/design.md)
 
 ## project in a nutshell
 
