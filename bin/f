@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# curl -X POST "http://127.0.0.1:5302/api/v0/pubsub/sub?arg=123"
-# peer2 exec ipfs ipfs pubsub sub 123
-# peer1 exec ipfs ipfs pubsub pub 123 qwe
-
 peer(){
   export DEATHSTAR_PEER_INDEX=$1
   export COMPOSE_PROJECT_NAME="deathstar-peer${DEATHSTAR_PEER_INDEX}"
@@ -163,42 +159,6 @@ export_env_vars(){
 
 test_env_vars(){
   echo $HELLO
-}
-
-# if we source bash script with `source script_file`
-# fucntions from script can be called from shell directly
-# and if a function does `export FOO=bar` FOO will be exported to shell as well 
-
-
-#### https://hub.docker.com/r/linuxserver/ipfs
-
-dock_linuxserver_ipfs(){
-  docker run \
-  --rm \
-  --name=ipfs \
-  -e PUID=1000 \
-  -e PGID=1000 \
-  -e TZ=Europe/London \
-  -p 80:80 \
-  -p 4001:4001 \
-  -p 5002:5001 \
-  -p 8080:8080 \
-  ghcr.io/linuxserver/ipfs
-}
-
-#### https://github.com/ipfs/go-ipfs/#running-ipfs-inside-docker
-
-dock_ipfs(){
-  export IPFS_PROFILE=server
-  docker run \
-  --rm \
-  --name ipfs \
-  -p 4001:4001 \
-  -p 4001:4001/udp \
-  -p 127.0.0.1:8080:8080 \
-  -p 127.0.0.1:5001:5001 \
-  ipfs/go-ipfs:latest daemon --writable --enable-pubsub-experiment --migrate=true
-
 }
 
 

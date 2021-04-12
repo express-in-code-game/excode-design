@@ -11,7 +11,7 @@
 
    [deathstar.peer.reitit :as peer.reitit]
    [deathstar.peer.dgraph :as peer.dgraph]
-   [deathstar.peer.ipfs :as peer.ipfs]))
+   [deathstar.peer.libp2p :as peer.libp2p]))
 
 (defonce ^:private registry-ref (atom {}))
 
