@@ -24,14 +24,7 @@
     - never stale: scenarios like extensions, can be installed via a link, each being a game of its own with its own ui
     - better scenarios overtime will become the standard for e-sports scene and tournaments
     - peer to peer, global, decentralized
-      - user computers (laptops) run the game
-      - users can turn game on/off, yet it's a global app
-      - the users currently online are the network
-      - when node goes online, it fetches updates into local global db
-      - when 1000 people participate in event, their machines will host games
-      - like git and forks: if 8 peers are playing and host goes down, games continues
-      - game is cold and efficient: the global app is formed by laptops running it only, that constantly go on and off
-      - core mechanism - pubsub (gossip etc.) for network dataflow
+    - installation: should be volunteer peer-to-peer self-forming cluster of server nodes for computation, user laptops browser only, just connect to one of the nodes - 100 nodes, 10000 users
 - aren't there enough games already ?
     - ok, there were chess and go and stuff
     - then internet came about
