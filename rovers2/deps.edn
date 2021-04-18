@@ -1,0 +1,18 @@
+{:paths ["src"]
+ :deps {github.DeathStarGame/scenario-api-meta {:local/root  "/ctx/DeathStarGame/src/scenario-api-meta"}
+
+        github.sergeiudris.rovers/scenario-main {:local/root "./scenario-main"}
+        github.sergeiudris.rovers/scenario-main-meta {:local/root  "./scenario-main-meta"}
+        github.sergeiudris.rovers/scenario-meta {:local/root  "./scenario-meta"}
+        github.sergeiudris.rovers/scenario {:local/root  "./scenario"}
+
+        github.sergeiudris.rovers/scenario-core {:local/root  "./scenario-core"}
+
+        github.sergeiudris.rovers/player-main {:local/root "./player-main"}
+        github.sergeiudris.rovers/player-main-meta {:local/root "./player-main-meta"}
+        github.sergeiudris.rovers/player-meta {:local/root  "./player-meta"}
+        github.sergeiudris.rovers/player {:local/root "./player"}
+
+        github.sergeiudris.deathstar.lab.src/pad {:local/root  "/ctx/deathstar.lab/src/pad"}
+
+        github.cljctools/self-hosted-browser {:local/root  "/ctx/cljctools/self-hosted-compiler-shadow-browser"}}}
