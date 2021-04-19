@@ -17,13 +17,13 @@ volumes:
 
 services:
 
-  peer:
-    image: deathstar.peer
+  app:
+    image: deathstar.app
     build:
-      context: ./peer
+      context: ./app
       dockerfile: ./Dockerfile
       args:
-        workdir:  /ctx/DeathStarGame/bin/peer
+        workdir:  /ctx/DeathStarGame/bin/app
     command: tail -f /dev/null
     # command: bash f dev
     ports:
@@ -32,7 +32,7 @@ services:
     networks:
       main-network:
     volumes:
-      - ./peer/.peer${DEATHSTAR_PEER_INDEX}:/root
+      - ./app/volumes/.root${DEATHSTAR_PEER_INDEX}:/root
       - type: volume
         source: ctx
         target: /ctx

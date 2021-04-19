@@ -1,4 +1,4 @@
-(ns deathstar.peer.main
+(ns deathstar.app.main
   (:gen-class)
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >! <!! >!!  take! put! offer! poll! alt! alts! close!
@@ -7,11 +7,11 @@
                                      pipeline pipeline-async]]
    [clojure.string]
 
-   [deathstar.peer.spec :as app.spec]
+   [deathstar.app.spec :as app.spec]
 
-   [deathstar.peer.reitit :as peer.reitit]
-   [deathstar.peer.dgraph :as peer.dgraph]
-   [deathstar.peer.libp2p :as peer.libp2p]))
+   [deathstar.app.reitit :as app.reitit]
+   [deathstar.app.dgraph :as app.dgraph]
+   [deathstar.app.libp2p :as app.libp2p]))
 
 (defonce ^:private registry-ref (atom {}))
 
@@ -36,7 +36,7 @@
     (let [{:keys [::dgraph-opts
                   ::channels
                   ::port]} opts]
-      (<! (peer.reitit/stop channels {::peer.reitit/port port}))
+      (<! (app.reitit/stop channels {::app.reitit/port port}))
       (let [opts-in-registry (get @registry-ref id)]
         (when (::procs-exit opts-in-registry)
           (<! ((::procs-exit opts-in-registry)))))
@@ -59,9 +59,9 @@
       (swap! registry-ref assoc id (merge
                                     opts
                                     {::procs-exit procs-exit}))
-      (<! (peer.reitit/start channels {::peer.reitit/port port}))
-      #_(<! (peer.dgraph/ready?))
-      (<! (peer.dgraph/upload-schema))
+      (<! (app.reitit/start channels {::app.reitit/port port}))
+      #_(<! (app.dgraph/ready?))
+      (<! (app.dgraph/upload-schema))
 
       (let [exit| (chan 1)
             proc|

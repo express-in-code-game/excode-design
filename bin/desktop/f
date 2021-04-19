@@ -1,0 +1,11 @@
+#!/bin/bash
+
+
+main(){
+
+    ./node_modules/.bin/electron resources/out/main.js
+
+}
+
+
+"$@"

@@ -1,0 +1,14 @@
+{
+	"dependencies": {
+		"antd": "4.9.2",
+		"axios": "0.21.0",
+		"body-parser": "1.19.0",
+		"cors": "2.8.5",
+		"electron": "11.1.0",
+		"express": "5.0.0-alpha.8",
+		"ipfs-http-client": "48.1.2"
+	},
+	"devDependencies": {
+		"shadow-cljs": "2.11.7"
+	}
+}

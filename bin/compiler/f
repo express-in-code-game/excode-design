@@ -1,0 +1,28 @@
+#!/bin/bash
+
+shadow(){
+    ./node_modules/.bin/shadow-cljs "$@"
+}
+
+dev(){
+  npm i
+  shadow -A:shadow:core:ui:desktop watch :ui :desktop
+}
+
+server(){
+    shadow -A:shadow:core:ui:desktop server
+    # yarn server
+}
+
+compile(){
+    npm i
+    shadow -A:shadow:core:ui:desktop compile :ui :desktop
+}
+
+release(){
+    npm i
+    shadow -A:shadow:core:ui:desktop release :ui :desktop
+}
+
+
+"$@"

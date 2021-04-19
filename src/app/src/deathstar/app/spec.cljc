@@ -1,5 +1,5 @@
-(ns deathstar.peer.spec
-  #?(:cljs (:require-macros [deathstar.peer.spec]))
+(ns deathstar.app.spec
+  #?(:cljs (:require-macros [deathstar.app.spec]))
   (:require
    [clojure.spec.alpha :as s]))
 
