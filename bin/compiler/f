@@ -6,22 +6,22 @@ shadow(){
 
 dev(){
   npm i
-  shadow -A:shadow:core:ui:desktop:p2p watch :ui :desktop :p2p
+  shadow -A:shadow:core:ui:p2p watch :ui :p2p
 }
 
 server(){
-    shadow -A:shadow:core:ui:desktop:p2p server
+    shadow -A:shadow:core:ui:p2p server
     # yarn server
 }
 
 compile(){
     npm i
-    shadow -A:shadow:core:ui:desktop:p2p compile :ui :desktop :p2p
+    shadow -A:shadow:core:ui:p2p compile :ui :p2p
 }
 
 release(){
     npm i
-    shadow -A:shadow:core:ui:desktop:p2p release :ui :desktop :p2p
+    shadow -A:shadow:core:ui:p2p release :ui :p2p
 }
 
 

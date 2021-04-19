@@ -32,6 +32,7 @@
       - like git and forks: if 8 peers are playing and host goes down, games continues
       - game is cold and efficient: the global app is formed by laptops running it only, that constantly go on and off
       - core mechanism - pubsub (gossip etc.) for network dataflow
+    - installation - docker, use - browser on localhost:port
 - aren't there enough games already ?
     - ok, there were chess and go and stuff
     - then internet came about

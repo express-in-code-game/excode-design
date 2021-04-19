@@ -9,13 +9,13 @@ volumes:
       o: bind
 
 services:
-  ui:
-    image: deathstar.ui
+  compiler:
+    image: deathstar.compiler
     build:
-      context: ./ui
+      context: ./compiler
       dockerfile: ./Dockerfile
       args:
-        workdir: /ctx/DeathStarGame/bin/ui
+        workdir: /ctx/DeathStarGame/bin/compiler
     command: tail -f /dev/null
     # command: bash f dev
     # expose:
@@ -26,7 +26,7 @@ services:
       - 9630:9630
     # user: 1000:1000
     volumes:
-      - ./ui/.user:/root
+      - ./compiler/volumes/root:/root
       - type: volume
         source: ctx
         target: /ctx
