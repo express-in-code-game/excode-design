@@ -32,7 +32,9 @@
       - like git and forks: if 8 peers are playing and host goes down, games continues
       - game is cold and efficient: the global app is formed by laptops running it only, that constantly go on and off
       - core mechanism - pubsub (gossip etc.) for network dataflow
-    - installation - docker, use - browser on localhost:port
+    - installation:
+      - peer node is installed in docker, use - browser on localhost:port
+      - and no installation: users can just open browser and connect to one of the nodes, 100 nodes, 10000 users
 - aren't there enough games already ?
     - ok, there were chess and go and stuff
     - then internet came about
