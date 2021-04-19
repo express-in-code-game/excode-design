@@ -25,6 +25,26 @@
                                :devtools-url #shadow/env ["SHADOWCLJS_DEVTOOLS_URL" :default "http://compiler:9630"]
                                :after-load deathstar.desktop.main/reload}}
 
+          :p2p {:target #_:node-library :node-script
+                :main deathstar.p2p.main/main
+                :exports-var deathstar.p2p.main/exports
+                :output-to "../p2p/resources/out/main.js"
+                :compiler-options {:optimizations :simple
+                                   :infer-externs   false
+                                   :stable-names true
+                                   :recompile-dependents true
+                                   :source-maps true
+                                   :cross-chunk-method-motion false}
+                :js-options
+                {:js-provider :shadow
+                 :keep-native-requires true
+                 :keep-as-require #{}}
+                :devtools {:repl-init-ns deathstar.p2p.main
+                           :repl-pprint true
+                           :autobuild true
+                           :devtools-url #shadow/env ["SHADOWCLJS_DEVTOOLS_URL" :default "http://compiler:9630"]
+                           :after-load deathstar.p2p.main/reload}}
+
           :ui {:target :browser
                :output-dir "../ui/resources/public/out"
                :asset-path "./out"

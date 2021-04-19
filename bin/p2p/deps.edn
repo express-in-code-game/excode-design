@@ -1,0 +1,2 @@
+{:paths ["resources"]
+ :deps {github.DeathStarGame/p2p {:local/root "../../src/p2p"}}}
