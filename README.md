@@ -68,7 +68,8 @@
         - a global decentralized app on web 3.0 IPFS ..
     - when the system is global
         - tournaments are up for people, users will be able to create their own tournaments, everyone equal, like on github
-        - there also will be a global money-free league - GMFL - like tennis ATP-tour, where players compete for world championship title
+        - there also will be a global money-free league - (GMFL) - like tennis ATP-tour, where players compete for world championship title
+        - GMFL's logo is (GMFL)
 - there are already lots and lots of games based on this idea, plus some more specialized (analogous to e-sports you might say) events, like ICFP and similar ones. How exactly is this different?
     - please, share a link to such games!
     - for example 
