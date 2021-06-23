@@ -1,0 +1,3 @@
+        github.into-docker/clj-docker-client {:git/url "https://github.com/into-docker/clj-docker-client"
+                                              :sha "953cec1fe3b7d81f598e2c2451c148308c73f304"
+                                              :tag "1.0.3"}
