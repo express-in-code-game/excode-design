@@ -4,8 +4,8 @@
  :http {:port #shadow/env ["SHADOWCLJS_HTTP_PORT" :as :int :default 9630]
         :host "0.0.0.0"}
  :builds {:main {:target :browser
-                 :output-dir "resources/public/js-out"
-                 :asset-path "./js-out"
+                 :output-dir "resources/public/out"
+                 :asset-path "./out"
                  :module-loader true
                  :modules {:main {:entries [deathstar.ui.main]}}
                  :compiler-options {:infer-externs   false  #_:auto

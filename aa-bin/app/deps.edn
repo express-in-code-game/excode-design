@@ -11,17 +11,17 @@
                               :sha "4438103d96e00927f777229bc22576bf4fd6c901"
                               :tag "0.4.31-alpha"}}}
 
-  :peer
+  :app
   {:extra-deps {org.clojure/clojure {:mvn/version "1.10.3"}
                 ring/ring-jetty-adapter {:mvn/version "1.8.1"}
                 metosin/reitit  {:mvn/version "0.5.12"}
                 clj-http/clj-http {:mvn/version "3.12.1"}
                 ring-cors/ring-cors {:mvn/version "0.1.13"}
                 tick/tick {}
-                github.DeathStarGame/spec {:local/root "../../src/spec"}
-                github.DeathStarGame/peer {:local/root "../../src/peer"}}
+                github.DeathStarGame/spec {:local/root "../../spec"}
+                github.DeathStarGame/app {:local/root "../../app"}}
    :extra-paths ["../ui/resources"]
-   :main-opts ["-m" "deathstar.peer.main"]}
+   :main-opts ["-m" "deathstar.app.main"]}
 
   :repl
   {:extra-deps {github.cljctools/deps-repl {:git/url "https://github.com/cljctools/deps-repl"

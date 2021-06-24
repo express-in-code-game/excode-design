@@ -1,10 +1,12 @@
-{:paths ["src" "resources"]
+{:paths []
 
  :deps {}
 
  :aliases
  {:core
-  {:extra-deps {org.clojure/core.async {:mvn/version "1.3.610"}
+  {:extra-deps {org.clojure/clojure {:mvn/version "1.10.3"}
+                org.clojure/clojurescript {:mvn/version "1.10.758"}
+                org.clojure/core.async {:mvn/version "1.3.610"}
                 org.clojure/spec.alpha {:mvn/version "0.2.187"}}
    :override-deps {org.clojure/test.check {:mvn/version "1.0.0"}
                    tick/tick {:git/url "https://github.com/juxt/tick"
@@ -12,15 +14,20 @@
                               :tag "0.4.31-alpha"}}}
 
   :ui
-  {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.758"}
-                reagent/reagent {:mvn/version "1.0.0-rc1"
+  {:extra-deps {reagent/reagent {:mvn/version "1.0.0-rc1"
                                  :exclusions [cljsjs/react cljsjs/react-dom]}
-
                 metosin/reitit {:mvn/version "0.5.12"}
                 metosin/reitit-spec {:mvn/version "0.5.12"}
                 metosin/reitit-frontend {:mvn/version "0.5.12"}
-                github.DeathStarGame/spec {:local/root "../../src/spec"}
-                github.DeathStarGame/ui {:local/root "../../src/ui"}}}
+                github.DeathStarGame/spec {:local/root "../../spec"}
+                github.DeathStarGame/ui {:local/root "../../ui"}}}
+
+  :desktop
+  {:extra-deps {github.DeathStarGame/spec {:local/root "../../spec"}
+                github.DeathStarGame/desktop {:local/root "../../src/desktop"}}}
+
+  :p2p
+  {:extra-deps {github.DeathStarGame/p2p {:local/root "../../p2p"}}}
 
   :shadow
   {:extra-deps {thheller/shadow-cljs {:mvn/version "2.11.7"
