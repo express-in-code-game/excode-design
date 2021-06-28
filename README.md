@@ -21,8 +21,10 @@
     - build a game and play events(tournaments)
     - thinking over micro/mechanics: players use programming language to complete scenarios' objectives
     - designed for e-sports: users compete in tournaments
-    - never stale: scenarios like extensions, can be installed via a link, each being a game of its own with its own ui
-    - better scenarios overtime will become the standard for e-sports scene and tournaments
+    - <s>never stale: scenarios like extensions, can be installed via a link, each being a game of its own with its own ui</s>
+    - <s>better scenarios overtime will become the standard for e-sports scene and tournaments</s>
+    - should be one game, not many scenarios, a sport, designed for players to perform - one game, one of, like basketball, tennis, starcraft etc.
+    - matches: like in tennis or big starcraft/aoe2 torunaments, or basketball - players should play a match a day, bo5/bo7, give a performance, and game should be designed for players to perform, quality over quantity, a mathc is an event
     - peer to peer, global, decentralized
       - user computers (laptops) run the game
       - users can turn game on/off, yet it's a global app
@@ -46,9 +48,9 @@
     - still, great games like Age of Empires, Starcraft have impressive scenes and are fun to watch
     - but we can do better by contributing to the world of games a new kind of games
 - what kind of games ?
-    - players use a programming language to build/create a composition/solution within a scenario
-    - scenarios are created by people and are installable via a link (from github for example), best scenarios will become standard for tournaments
-    - a scenario is like a game in itself with it's own idea and objectives
+    - players use a programming language to build/create a composition/solution within a game <s>scenario</s>
+    - <s>scenarios are created by people and are installable via a link (from github for example), best scenarios will become standard for tournaments</s>
+    - <s>a scenario is like a game in itself with it's own idea and objectives
     - scenario is randomly generated at the start, but there will be no randomness afterwards, so that there will be no RNG-complaints
     - for example
         - a scenario where players should build drones to explore a planet
@@ -57,13 +59,14 @@
         - the system(drones or multiple, it's up to player what to build) will explore the map(planet) according to the program
         - the system that explores/achieves the most winss
         - no in-game RNG, players are in absolutely equal positions, yet competing
-    - games should be configurable to be run in fixed time, for example 10-15 minutes, or maybe longer
+    - games should be configurable to be run in fixed time, for example 10-15 minutes, or maybe longer</s>
     - players can evaluate code interactively in the REPL to explore resource and solution space
     - players have a real language to express logic, not just clicks and hotkeys
-    - scenarios should be designed not for fast-typer-wins, but for clearer-thinker-wins
+    - <s>scenarios</s> game should be designed not for fast-typer-wins, but for clearer-thinker-wins
 - what about events(tournaments) ?
     - should be possible to host a server, tournament on your laptop
-    - should be possible to select a tournament format and what scenarios will be used in which rounds
+    - <s>should be possible to select a tournament format and what scenarios will be used in which rounds</s>
+    - should be a simple bracket, like in tennis or NBA playoffs, single elimintation - no double elimination crap, players meeting each other once, it's an event
     - later would be awesome to create a new type of volunteer cluster (cloud), so that computers can be volunterily added and system could run decentralized
         - a global decentralized app on web 3.0 IPFS ..
     - when the system is global
@@ -79,7 +82,7 @@
     - and better than Microsoft, that just released Age of Empires 2: Definitive Edition and are investing into tournaments and game updates to catch up with Blizzard
     - not mentioning Dota, LoL , CS:GO and stuff like that
     - those are scenes, those are games; they gather 100 000 viewer streams on twitch
-    - this game should do all that, but be open source and not stale
+    - this game should do all that, but be open source <s>and not stale</s>
     - and not like Heroes of Might and Magic 3 scene on twitch, where some dudes got the source code, maintain a server and although do it for free, it is again, happening under the carpet, and again, all tournaments are organized via forums and happen rarely
     - and existing e-sports games are closed source, most dark and click driven, most moneytized
     - hidden, hidden, private, hidden... so such games do not exist yet, otherwise we would have noticed it
