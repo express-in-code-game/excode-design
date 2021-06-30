@@ -10,7 +10,6 @@
    [deathstar.app.spec :as app.spec]
 
    [deathstar.app.reitit :as app.reitit]
-   [deathstar.app.dgraph :as app.dgraph]
    [deathstar.app.libp2p :as app.libp2p]))
 
 (defonce ^:private registry-ref (atom {}))
@@ -60,8 +59,6 @@
                                     opts
                                     {::procs-exit procs-exit}))
       (<! (app.reitit/start channels {::app.reitit/port port}))
-      #_(<! (app.dgraph/ready?))
-      (<! (app.dgraph/upload-schema))
 
       (let [exit| (chan 1)
             proc|
