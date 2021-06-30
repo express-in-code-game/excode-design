@@ -14,9 +14,6 @@ build-dind:
 	@ echo "buidling docker iamge needed for testing"
 	@ docker build -t $(DOCKER_DIND_IMAGE_NAME) -f $(shell pwd)/test/docker/dind.Dockerfile $(shell pwd)/test/docker
 
-test: build-dind
-	@ echo "test passes" 
-
 clean:
 	@ echo "clean"
 
