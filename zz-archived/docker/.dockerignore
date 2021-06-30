@@ -4,3 +4,8 @@ node_modules/
 resources/public/out/
 package-lock.json
 volumes/
+
+
+.cpcache/
+target/
+volumes/
