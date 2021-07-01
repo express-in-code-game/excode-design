@@ -1,5 +1,5 @@
-(ns deathstar.app.spec
-  #?(:cljs (:require-macros [deathstar.app.spec]))
+(ns deathstar.spec
+  #?(:cljs (:require-macros [deathstar.spec]))
   (:require
    [clojure.spec.alpha :as s]))
 
@@ -10,3 +10,9 @@
                                  ::peer-name]))
 (s/def ::peer-metas (s/map-of ::peer-id ::peer-meta))
 (s/def ::received-at some?)
+
+
+(s/def ::username string?)
+(s/def ::password string?)
+
+(s/def ::user-info (s/keys :req [::username]))
