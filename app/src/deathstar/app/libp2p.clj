@@ -6,7 +6,5 @@
                                      pipeline pipeline-async]]
    [clojure.string]
    [clojure.spec.alpha :as s]
-   [clojure.java.io :as io]
-   [clj-http.client :as clj-http.client]
-   [jsonista.core]))
+   [clojure.java.io :as io]))
 
