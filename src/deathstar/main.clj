@@ -1,4 +1,4 @@
-(ns deathstar.app.main
+(ns deathstar.main
   (:gen-class)
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >! <!! >!!  take! put! offer! poll! alt! alts! close!
@@ -6,8 +6,11 @@
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
    [clojure.string]
-   [deathstar.app.spec :as app.spec]
-   [deathstar.app.libp2p :as app.libp2p]))
+
+   [deathstar.spec]
+   [deathstar.libp2p]
+   [deathstar.cljfx]
+   [deathstar.db]))
 
 (defn -main [& args]
   (println ::-main)
@@ -16,4 +19,7 @@
     (go
       (<! system-exit|)
       (println ::exiting)
-      (System/exit 0))))
+      (System/exit 0))
+
+    (<!! (go
+           (deathstar.cljfx/start)))))

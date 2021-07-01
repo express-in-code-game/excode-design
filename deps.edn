@@ -5,7 +5,11 @@
         org.clojure/spec.alpha {:mvn/version "0.2.187"}
         tick/tick {:git/url "https://github.com/juxt/tick"
                    :sha "4438103d96e00927f777229bc22576bf4fd6c901"
-                   :tag "0.4.31-alpha"}}
+                   :tag "0.4.31-alpha"}
+
+        github.cljfx/cljfx {:git/url "https://github.com/cljfx/cljfx"
+                            :sha "ec3c34e619b2408026b9f2e2ff8665bebf70bf56"}
+        io.replikativ/datahike {:mvn/version "0.3.6"}}
 
  :main-opts ["-m" "deathstar.main"]
 
