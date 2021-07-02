@@ -12,10 +12,6 @@
 - DeathStarGame is a children's playground, an inspiration-driven development
 - we are bulding a spacious, epic, designed for e-sports, yet elegant and simple game for people to be inspired, somehting Jesus would play
 
-## contents
-
-- [program in a nutshell](#program-in-a-nutshell)
-
 ## program in a nutshell
 
 - what's the point of the program ?
@@ -88,3 +84,7 @@
     - hidden, hidden, private, hidden... so such games do not exist yet, otherwise we would have noticed it
 - what programming lanugage will the game use?
     - clojure
+- docs?
+    - no, just the program and readme with goal and compile
+- tests?
+    - no
