@@ -26,7 +26,7 @@
     - <s>better scenarios overtime will become the standard for e-sports scene and tournaments</s>
     - should be one game, not many scenarios, a sport, designed for players to perform - one game, one of, like basketball, tennis, starcraft etc.
     - matches: like in tennis or big starcraft/aoe2 torunaments, or basketball - players should play a match a day, bo5/bo7, give a performance, and game should be designed for players to perform, quality over quantity, a match is an event
-    - <s>peer to peer  global, decentralized
+    - peer to peer, global, decentralized
       - user computers (laptops) run the game
       - users can turn game on/off, yet it's a global program
       - the users currently online are the network
@@ -34,8 +34,7 @@
       - when 1000 people participate in event, their machines will host games
       - like git and forks: if 8 peers are playing and host goes down, games continues
       - game is cold and efficient: the global program is formed by laptops running it only, that constantly go on and off
-      - core mechanism - pubsub (gossip etc.) for network dataflow</s>
-      - game is not global - users host and connect as usual, but through peer-to-peer network, program stores data locally only, on user computer it runs on
+      - core mechanism - pubsub (gossip etc.) for network dataflow
     - installation:
       - <s>peer node is installed in docker, use - browser on localhost:port
       - and no installation: users can just open browser and connect to one of the nodes, 100 nodes, 10000 users</s>
@@ -81,7 +80,7 @@
     - and better than Microsoft, that just released Age of Empires 2: Definitive Edition and are investing into tournaments and game updates to catch up with Blizzard
     - not mentioning Dota, LoL , CS:GO and stuff like that
     - those are scenes, those are games; they gather 100 000 viewer streams on twitch
-    - this game should be a much better game than those <s>do all that</s>, be open source <s>and not stale</s>
+    - this game should do all that, but be open source <s>and not stale</s>
     - and not like Heroes of Might and Magic 3 scene on twitch, where some dudes got the source code, maintain a server and although do it for free, it is again, happening under the carpet <s> and again, all tournaments are organized via forums and happen rarely </s>
     - and existing e-sports games are closed source, most dark and click driven, most moneytized
     - hidden, hidden, private, hidden... so such games do not exist yet, otherwise we would have noticed it
