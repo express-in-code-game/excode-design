@@ -88,3 +88,5 @@
     - no, just the program and readme with goal and compile
 - tests?
     - no
+- runtime?
+    - program's runtime is JVM, no GraalVM compilation
