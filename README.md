@@ -22,6 +22,7 @@
     - build a game for e-sport, for players to perform <s>and play events(tournaments)</s>
     - thinking over micro/mechanics: players use programming language to complete scenarios' objectives
     - designed for e-sports <s>users compete in tournaments</s>
+    - DeathStarGame is exclusively a 1v1 game
     - <s>never stale: scenarios like extensions, can be installed via a link, each being a game of its own with its own ui</s>
     - <s>better scenarios overtime will become the standard for e-sports scene and tournaments</s>
     - should be one game, not many scenarios, a sport, designed for players to perform - one game, one of, like basketball, tennis, starcraft etc.
