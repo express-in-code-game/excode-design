@@ -1,23 +1,24 @@
 
 # DeathStarGame
 
-- the game, multiplayer, ever non-commercial money-free project
+- the game, multiplayer, ever non-commercial money-free program
 
 ## ever free and non-commercial
 
-- DeathStarGame is *ever any-money-concerns-free project*, openly created and contributed
+- DeathStarGame is *ever any-money-concerns-free program*, openly created and contributed
+- it's not a org, not a project, not a namespace - it's just a program
 - no funds, no pots, purely volunteer creating process, no strings attached or hidden
-- commercial insterests and "safety" income expectations make projects a routine, a drag, money suck freedom and excitement out of creation process, so desperately needed for making and playing games, and devalue the result
+- commercial insterests and "safety" income expectations make programming a routine, a drag, money suck freedom and excitement out of creation process, so desperately needed for making and playing games, and devalue the result
 - DeathStarGame is a children's playground, an inspiration-driven development
 - we are bulding a spacious, epic, designed for e-sports, yet elegant and simple game for people to be inspired, somehting Jesus would play
 
 ## contents
 
-- [project in a nutshell](#project-in-a-nutshell)
+- [program in a nutshell](#program-in-a-nutshell)
 
-## project in a nutshell
+## program in a nutshell
 
-- what's the point of the project ?
+- what's the point of the program ?
     - build a game and play events(tournaments)
     - thinking over micro/mechanics: players use programming language to complete scenarios' objectives
     - designed for e-sports: users compete in tournaments
