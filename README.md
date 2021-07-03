@@ -90,3 +90,7 @@
     - no
 - runtime?
     - program's runtime is JVM, no GraalVM compilation
+- gui?
+    - cljfx/cljfx
+- db?
+    - replikativ/datahike
