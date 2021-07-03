@@ -22,7 +22,9 @@
     - <s>never stale: scenarios like extensions, can be installed via a link, each being a game of its own with its own ui</s>
     - <s>better scenarios overtime will become the standard for e-sports scene and tournaments</s>
     - should be one game, not many scenarios, a sport, designed for players to perform - one game, one of, like basketball, tennis, starcraft etc.
-    - matches: like in tennis or big starcraft/aoe2 torunaments, or basketball - players should play a match a day, bo5/bo7, give a performance, and game should be designed for players to perform, quality over quantity, a match is an event
+    - matches: like in tennis or big starcraft/aoe2 torunaments, or basketball - players should play a match a day, bo5/bo7, give a performance, and game should be 
+    designed for players to perform, quality over quantity, a match is an event
+    - game comes with no ladder - only host and connect
     - <s>peer to peer  global, decentralized
       - user computers (laptops) run the game
       - users can turn game on/off, yet it's a global program
