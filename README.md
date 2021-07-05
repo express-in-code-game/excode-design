@@ -16,6 +16,7 @@
 
 - what's the point of the program ?
     - build a game for e-sport, for players to perform <s>and play events(tournaments)</s>
+    - no noise and distructions - only the game to play
     - thinking over micro/mechanics: players use programming language to complete scenarios' objectives
     - designed for e-sports <s>users compete in tournaments</s>
     - DeathStarGame is exclusively a 1v1 game
