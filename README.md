@@ -65,6 +65,7 @@
     - players can evaluate code interactively in the REPL to explore resource and solution space
     - players have a real language to express logic, not just clicks and hotkeys
     - <s>scenarios</s> game should be designed not for fast-typer-wins, but for clearer-thinker-wins
+    - maps are generated, templates are created
 - what about events(tournaments) ?
     - <s>should be possible to host a server, tournament on your laptop
     - should be possible to select a tournament format and what scenarios will be used in which rounds
