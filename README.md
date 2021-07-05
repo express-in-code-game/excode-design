@@ -52,9 +52,9 @@
 - what kind of games ?
     - players use a programming language to build/create a composition/solution within a game <s>scenario</s>
     - <s>scenarios are created by people and are installable via a link (from github for example), best scenarios will become standard for tournaments
-    - a scenario is like a game in itself with it's own idea and objectives
-    - scenario is randomly generated at the start, but there will be no randomness afterwards, so that there will be no RNG-complaints
-    - for example
+    - a scenario is like a game in itself with it's own idea and objectives</s>
+    - <s>scenario</s> maps are generated, templates are created
+    - <s>for example
         - a scenario where players should build drones to explore a planet
         - a resource space will contain elements/parts/devices to build from, solution space will be unique location on the planet
         - players define (in code) what there drones will be and program their behaviors
