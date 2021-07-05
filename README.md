@@ -93,6 +93,6 @@
 - runtime?
     - program's runtime is JVM, no GraalVM compilation
 - gui?
-    - <s>cljfx/cljfx</s> will stem from existing programs
+    - <s>cljfx/cljfx</s> will stem from existing programs, but grow in parallel, not on top
 - db?
     - replikativ/datahike
