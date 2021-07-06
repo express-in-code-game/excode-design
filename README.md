@@ -35,7 +35,7 @@
       - like git and forks: if 8 peers are playing and host goes down, games continues
       - game is cold and efficient: the global program is formed by laptops running it only, that constantly go on and off
       - core mechanism - pubsub (gossip etc.) for network dataflow</s>
-      - game is not global - users host and connect as usual, but through peer-to-peer network, program stores data locally only, on user computer it runs on
+      - game is not global, nor decentralized - users host and connect as usual <s>, but through peer-to-peer network,</s> program stores data locally only, on user computer it runs on
     - installation:
       - <s>peer node is installed in docker, use - browser on localhost:port
       - and no installation: users can just open browser and connect to one of the nodes, 100 nodes, 10000 users</s>
