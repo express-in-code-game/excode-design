@@ -8,7 +8,6 @@
    [clojure.string]
 
    [deathstar.spec]
-   [deathstar.libp2p]
    [deathstar.cljfx]
    [deathstar.db]))
 
