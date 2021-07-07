@@ -1,0 +1,66 @@
+version: "3.7"
+
+networks:
+  starnet:
+    name: starnet
+
+volumes:
+  starnet.kafka:
+    name: starnet.kafka
+
+services:
+
+  zookeeper:
+    image: zookeeper
+    build:
+      context: ./zookeeper
+      dockerfile: ./Dockerfile
+
+  broker:
+    image: broker
+    build:
+      context: ./broker
+      dockerfile: ./Dockerfile
+
+  zookeeper1:
+    image: zookeeper
+    volumes:
+      - ./.nodes/zookeeper1/:/ctx/node
+      - type: volume
+        source:  starnet.kafka
+        target: /ctx/data
+        volume:
+          nocopy: true
+    networks:
+      - starnet
+    # user: user
+    # ports:
+    #   - 2181:2181
+    # command: tail -f /dev/null
+    command: bash f start
+    stdin_open: true
+    tty: true
+    depends_on: 
+      - zookeeper
+
+  broker1:
+    image: broker
+    volumes:
+      - ./.nodes/broker1/:/ctx/node
+      - type: volume
+        source:  starnet.kafka
+        target: /ctx/data
+        volume:
+          nocopy: true
+    # user: user
+    networks:
+      - starnet
+    ports:
+      - 9092:9092
+    # command: tail -f /dev/null
+    command: bash f start
+    stdin_open: true
+    tty: true
+    depends_on: 
+      - broker
+      - zookeeper1

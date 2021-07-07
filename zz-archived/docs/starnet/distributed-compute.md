@@ -1,0 +1,32 @@
+- Follow the Data: Product Development in Clojure - Derek Troy-West
+    - https://youtu.be/MnvtPzEH-d8
+      - https://clojure.org/news/2019/02/04/state-of-clojure-2019
+    - https://github.com/d-t-w
+    - https://github.com/troy-west
+    - https://github.com/operatr-io
+    - notes
+      - kafka is clojure-ish
+      - kafka is for immutable distributed compute
+      - industry is moving towards immutable timeseries compute
+      - distributed only care about the raw thruth of data coming into the system
+        - data locality
+        - data temporality
+        - data durability
+        - data partitioning
+      - orient yourself differently
+      - brilliant and clear explanation of distribution
+      - of what kafka does
+      - integrant
+        - "intergrant is the very best method to raising data into system state in clj world today"
+      - "backless"
+      - 100% simulated version of a product (runs in the browser) that is legitemate
+      - 0 protocols
+        - for solutions, I concur
+      - kafka
+        - programmatic model for
+        - real-time
+        - scalable
+        - available
+        - immutable
+        - distributed 
+        - compute

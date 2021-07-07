@@ -1,0 +1,17 @@
+#!/bin/bash
+
+zkserver(){
+  bin/zkServer.sh --config /ctx/node/conf "$@"
+}
+
+start(){
+  # zkserver start
+  zkserver start-foreground
+}
+
+stop(){
+  zkserver stop
+}
+
+"$@"
+

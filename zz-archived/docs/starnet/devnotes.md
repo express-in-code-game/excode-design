@@ -1,0 +1,199 @@
+- kafka
+  - https://kafka.apache.org/
+  - https://kafka-tutorials.confluent.io/
+  - https://kafka.apache.org/24/documentation/streams/developer-guide
+
+  - https://kafka.apache.org/24/javadoc/org/apache/kafka/streams/kstream/KStream.html
+  - https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
+  - https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html
+
+  - https://github.com/perkss/clojure-kafka-examples
+  - https://github.com/troy-west/kstream-examples
+
+  - https://www.confluent.io/blog/event-sourcing-using-apache-kafka/
+  - https://www.confluent.io/blog/building-a-microservices-ecosystem-with-kafka-streams-and-ksql/
+  - https://github.com/confluentinc/kafka-streams-examples/tree/4.0.0-post/src/main/java/io/confluent/examples/streams/microservices
+  - configs
+    - http://kafka.apache.org/documentation.html#configuration
+    - http://kafka.apache.org/documentation.html#topicconfigs
+
+    - http://kafka.apache.org/documentation.html#producerconfigs
+    - https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html
+
+    - http://kafka.apache.org/documentation.html#consumerconfigs
+    - https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
+  - joins
+    - https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html#joining
+    - https://www.confluent.io/blog/crossing-streams-joins-apache-kafka/
+    - https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html#ktable-ktable-equi-join
+    - https://www.confluent.io/blog/optimizing-kafka-streams-applications/
+    - https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html#streams_concepts_globalktable
+    - https://cwiki.apache.org/confluence/display/KAFKA/KIP-99%3A+Add+Global+Tables+to+Kafka+Streams
+
+- clj
+  - async
+    - https://www.infoq.com/presentations/clojure-core-async/
+      - "function chains are poor machines
+      - "good programs should be made out of processes and queues
+      - "the 'api du jours' events/calbacks - Definition of du jour. 1 : made for a particular day
+      - "external flow state
+      - https://clojure.org/news/2013/06/28/clojure-clore-async-channels
+    - https://github.com/clojure/core.async
+    - https://github.com/clojure/core.async/wiki
+    - https://github.com/clojure/core.async/wiki/Pub-Sub
+    - https://github.com/clojure/core.async/tree/master/examples
+    - https://github.com/halgari/clojure-conj-2013-core.async-examples/blob/master/src/clojure_conj_talk/core.clj
+    - https://github.com/bhauman
+      - https://rigsomelight.com/2013/07/18/clojurescript-core-async-todos.html
+        - https://github.com/bhauman/async-explore
+      - https://rigsomelight.com/2013/08/12/clojurescript-core-async-dots-game.html  
+        - https://github.com/bhauman/dotsters
+    - https://github.com/swannodette/
+      - https://github.com/swannodette/async-tests
+      - csp series
+        - http://swannodette.github.io/2013/07/12/communicating-sequential-processes
+        - http://swannodette.github.io/2013/07/31/extracting-processes
+        - http://swannodette.github.io/2013/08/17/comparative
+        - ...
+  - transducers
+    - https://blog.cognitect.com/blog/2014/8/6/transducers-are-coming
+    - https://github.com/clojure/clojure/blob/master/src/clj/clojure/core.clj#L2729
+    - https://github.com/clojure/clojure/blob/master/src/clj/clojure/core.clj#L2863
+  - spec
+    - guides
+      - https://clojure.org/guides/spec
+      - https://clojure.github.io/spec.alpha/clojure.spec.alpha-api.html
+      - https://clojure.org/guides/test_check_beginner
+        - https://github.com/clojure/test.check/blob/master/README.md
+        - https://github.com/clojure/test.check/blob/master/doc/intro.md
+        - https://github.com/clojure/test.check/blob/master/doc/generator-examples.md
+      - https://blog.taylorwood.io/2018/10/15/clojure-spec-faq.html
+    - fdef defmulti
+      - https://clojuredocs.org/clojure.spec.alpha/fdef#example-5c4b535ce4b0ca44402ef629
+    - code
+      - https://github.com/clojure/tools.deps.alpha/blob/master/src/main/clojure/clojure/tools/deps/alpha/specs.clj
+  - java.time.Instant
+    - https://stackoverflow.com/questions/36639154/convert-java-util-date-to-what-java-time-type
+  - regex
+    - https://docs.oracle.com/javase/9/docs/api/java/util/regex/Pattern.html
+  - logic
+    - http://programming-puzzler.blogspot.com/2013/03/logic-programming-is-overrated.html
+      - https://gist.github.com/Engelberg/5105806#file-logic1-clj
+      - https://gist.github.com/Engelberg/5105820#file-logic2-clj
+      - http://swannodette.github.io/2013/03/09/logic-programming-is-underrated
+      - https://gist.github.com/swannodette/5127144
+      - https://gist.github.com/swannodette/5127150
+    - https://github.com/clojure/core.logic
+    - https://github.com/clojure/core.logic/wiki
+    - https://github.com/clojure/core.logic/blob/master/src/test/clojure/clojure/core/logic
+    - https://github.com/clojure/core.logic/tree/master/src/test/cljs/cljs/core/logic
+    - https://github.com/clojure/core.logic/wiki/Features
+    - https://github.com/clojure/core.logic/wiki/Examples
+    - http://minikanren.org/
+    - https://blog.taylorwood.io/2018/05/10/clojure-logic.html
+    - https://jrheard.tumblr.com/post/43575891007/explorations-in-clojures-corelogic
+      - https://www.infoq.com/presentations/core-logic/#mainLogin/
+    - http://swannodette.github.io/
+    - https://web.archive.org/web/20130511050744/http://dosync.posterous.com/a-logic-programming-reading-list
+    - http://tgk.github.io/2012/08/finding-cliques-in-graphs-using-core-logic.html
+    - https://web.archive.org/web/20130511050720/http://dosync.posterous.com/know-your-bounds
+    - http://clojurelx.blogspot.com/2012/01/finite-state-machines-in-corelogic.html
+    - http://clojurelx.blogspot.com/2012/01/lx-in-corelogic-2-jumps-flexible.html
+    - http://gigasquidsoftware.com/chemical-computing/index.html
+
+
+  - http
+    - https://github.com/ring-clojure/ring/wiki
+    - https://github.com/pedestal
+      - http://pedestal.io/guides/index
+      - https://github.com/pedestal/pedestal/tree/master/samples
+      - https://github.com/pedestal/pedestal/tree/master/samples/jetty-web-sockets
+      - http://pedestal.io/api/pedestal.service/io.pedestal.http.html#var-default-interceptors
+      - http://pedestal.io/reference/service-map
+        - http://pedestal.io/reference/jetty
+        - http://pedestal.io/guides/your-first-api
+        - http://pedestal.io/reference/interceptors#_interceptor_return_values
+    - https://github.com/juxt/yada
+      - https://juxt.pro/yada/manual/index.html
+      - https://juxt.pro/yada/manual/index.html#server-sent-events
+    - https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events
+      - https://github.com/pedestal/pedestal/tree/master/samples/server-sent-events
+    - https://github.com/funcool/buddy-auth/tree/master/examples
+  - destructring fully qualified
+    - https://clojure.org/guides/destructuring#_namespaced_keywords
+  - sign, encrypt, auth
+    - https://funcool.github.io/buddy-sign/latest/
+    - https://funcool.github.io/buddy-sign/latest/#generate-keypairs
+    - https://funcool.github.io/buddy-auth/latest/
+    - stateless
+      - https://funcool.github.io/buddy-auth/latest/#signed-jwt
+  - sockets
+    - https://github.com/ptaoussanis/sente
+    - https://github.com/stalefruits/gniazdo
+
+- datalog
+  - datomic
+    - https://docs.datomic.com/cloud/client/client-api.html#connection
+  - crux
+    - https://github.com/juxt/crux
+    - https://opencrux.com/docs#faqs
+    - https://github.com/juxt/crux/tree/master/crux-test/test/crux
+    - crux.codec.Id
+      - https://github.com/juxt/crux/blob/master/crux-core/src/crux/codec.clj#L346
+  - datascript
+    - https://github.com/tonsky/datascript
+    - https://github.com/tonsky/datascript/wiki/API-overview
+    - https://github.com/tonsky/datascript/blob/master/test/datascript/test/upsert.cljc
+    - https://github.com/tonsky/datascript/wiki/Tips-&-tricks
+    - https://tonsky.me/blog/datascript-chat/
+    - https://github.com/kristianmandrup/datascript-tutorial/blob/master/SUMMARY.md
+
+
+
+- cljs
+  - antd
+    - 4.0 changes https://github.com/ant-design/ant-design/issues/16911
+    - https://github.com/ant-design/ant-design-aliyun-theme
+  - goog closure
+    - https://google.github.io/closure-library/api/goog.net.WebSocket.html
+      - https://github.com/google/closure-library/blob/master/closure/goog/net/websocket_test.js
+  - history
+    - https://developer.mozilla.org/en-US/docs/Web/API/History_API/Working_with_the_History_API
+    - https://github.com/juxt/bidi
+    - https://github.com/clj-commons/pushy
+  - reagent
+    - http://reagent-project.github.io/docs/master/reagent.core.html#var-cursor
+    - https://clojuredocs.org/clojure.core/add-watch
+    - https://github.com/reagent-project/reagent/blob/2027a2d8881bae0567ecf9d4c90550b064a2ad0c/doc/CreatingReagentComponents.md#appendix-b---with-let-macro
+  - render
+    - https://github.com/d3/d3
+      - https://github.com/d3/d3/wiki/Gallery
+        - https://observablehq.com/@peatroot/stars-and-constellations?collection=@observablehq/visualization
+        - https://csaladenes.wordpress.com/2015/03/10/the-global-center-of-mass-of-higher-education-university-rankings-mapped/
+          - https://blog.csaladen.es/universities%20geo/
+    - https://github.com/quil/quil
+    - https://github.com/vega/vega
+      - https://vega.github.io/vega/examples/
+      - https://vega.github.io/vega-lite/examples/
+      - https://vega.github.io/vega/tutorials/airports/
+      - https://github.com/metasoarous/oz
+    - https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg
+      - https://developer.mozilla.org/en-US/docs/Web/SVG/Element/rect
+    - https://github.com/plouc/nivo
+      - https://nivo.rocks/geomap/canvas/
+    - https://github.com/konvajs/konva
+      - https://konvajs.org/docs/react/index.html
+        - https://github.com/konvajs/react-konva
+    - https://leafletjs.com/#features
+    - https://github.com/prc5/react-zoom-pan-pinch
+    - https://github.com/chrvadala/react-svg-pan-zoom
+    
+- docker
+  - https://docs.docker.com/config/containers/resource_constraints/
+
+- browser
+  - https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion
+
+- issues
+  - "attempting to call unbound transit-json..." when ineracting with kafka from repl
+    - starnet.app.alpha.aux.serdes namespace must be imported 

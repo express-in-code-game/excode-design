@@ -1,0 +1,321 @@
+{
+    "files.exclude": {
+        "**/.git": false
+    },
+    "editor.tabSize": 2,
+    "calva.fmt.allgnMapItems": true,
+    "calva.fmt.newIndentEngine": true,
+    "explorer.confirmDragAndDrop": false,
+    "explorer.confirmDelete": false,
+    "calva.autoConnect": false,
+    "workbench.sideBar.location": "left",
+    "editor.autoClosingBrackets": "never",
+    "editor.autoClosingQuotes": "never",
+    "calva.evalOnSave": false,
+    "window.zoomLevel": -1,
+    "workbench.panel.defaultLocation": "bottom",
+    "files.autoSave": "off",
+    "LineCount.includes": [],
+    "LineCount.excludes": [
+        "**/.vscode/**",
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/static/**",
+        "**/.git/**",
+        "**/__deprecated/**"
+    ],
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "java.configuration.checkProjectSettingsExclusions": false,
+    "java.errors.incompleteClasspath.severity": "ignore",
+    "workbench.colorTheme": "Default Light+",
+    "workbench.colorCustomizations": {
+        "[-One Dark Pro Vivid]": {},
+        "[-One Dark Pro]": {
+            "sideBar.background": "#282c34",
+            // "list.activeSelectionForeground": "#e0e0e0"
+            "list.activeSelectionBackground": "#e0e0e050",
+            "sideBar.foreground" : "#b0bec5"
+        },
+        "editorError.foreground": "#ff0000",
+        "editorWarning.foreground": "#000"
+    },
+    "editor.tokenColorCustomizations": {
+        "[Default Light+]": {
+            "textMateRules": [
+                {
+                    "scope": [
+                        "constant.keyword.clojure"
+                    ],
+                    "settings": {
+                        "foreground": "#336a8a"
+                    }
+                }
+            ]
+        },
+        "[-One Dark Pro Vivid]": {
+            "functions": "#ef596f",
+            // "variables": "#ef596f"
+            // "functions": "#ef596f",
+            "variables": "#61afef",
+            "textMateRules": [
+                {
+                    "name": "Variables",
+                    "scope": "variable",
+                    "settings": {
+                        "foreground": "#61afef"
+                    }
+                },
+                {
+                    "name": "Clojure globals",
+                    "scope": [
+                        "entity.global.clojure"
+                    ],
+                    "settings": {
+                        "foreground": "#e5c07b"
+                    }
+                },
+                {
+                    "name": "Clojure symbols",
+                    "scope": [
+                        "meta.symbol.clojure"
+                    ],
+                    "settings": {
+                        //   "foreground": "#ef596f"
+                        "foreground": "#61afef"
+                    }
+                },
+                {
+                    "name": "Clojure constants",
+                    "scope": [
+                        "constant.keyword.clojure"
+                    ],
+                    "settings": {
+                        "foreground": "#2bbac5"
+                    }
+                }
+            ]
+        },
+        "[One Dark Pro]": {
+            // "functions": "#ff8f00",
+            // "functions": "#f9a825",
+            // "functions": "#c75b39",
+            "keywords": {
+                "foreground": "#705ce6",
+                // "fontStyle": "italic"
+            },
+            "comments":{
+                //   "foreground": "#75a478",
+                  "foreground": "#7d6a72"
+                  
+                  // "fontStyle": "italic"
+              },
+              "strings":{
+                  // "foreground": "#ffa726",
+                  // "foreground": "#ef5350",
+                //   "foreground": "#4db6ac",
+                //   "foreground": "#f9ee98",
+                  "foreground": "#98c379"
+                  
+                  // "fontStyle": "italic"
+              },
+              "functions": {
+                  // "foreground": "#ef5350"
+                  // "foreground": "#c88719"
+                //   "foreground": "#c88719"
+                  "foreground": "#ac885b"
+                  
+                  // "foreground": "#ff7043"
+              },
+              "numbers": {
+                //   "foreground": "#0288d1"
+                "foreground": "#81d4fa"
+
+              },
+            // "variables": "#ef596f"
+            // "functions": "#ef596f",
+            // "variables": "#56b6c2",
+            "textMateRules": [
+                {
+                    "name": "Boolean",
+                    "scope": "none",
+                    "settings": {
+                      "foreground": "#0288d1"
+                    }
+                  },
+                  {
+                    "name": "Constants",
+                    "scope": "constant",
+                    "settings": {
+                      "foreground": "#0288d1"
+                    }
+                  },
+                  {
+                      "name": "punctuation.definition",
+                      "scope": "punctuation.definition.string.begin,punctuation.definition.string.end",
+                      "settings": {
+                        "foreground": "#98c379"
+                      }
+                    },
+                  {
+                      "name": "Keywords",
+                      "scope": "keyword",
+                      "settings": {
+                        "foreground": "#cf6a4c"
+                      }
+                    },
+                {
+                    "name": "Clojure symbols",
+                    "scope": [
+                        "meta.symbol.clojure"
+                    ],
+                    "settings": {
+                        // "foreground": "#e06c75"
+                        // "foreground": "#56b6c2"
+                        // "foreground": "#90a4ae",
+                        "foreground": "#b0bec5"
+                        
+                    }
+                },
+                {
+                    "name": "Clojure globals",
+                    "scope": [
+                        "entity.global.clojure"
+                    ],
+                    "settings": {
+                        // "foreground": "#e5c07b"
+                        // "foreground": "#ef5350",
+                        "foreground": "#d46361",
+                        // "foreground": "#bb4d00",
+                        "fontStyle": "bold"
+                    }
+                },
+                {
+                    "name": "Clojure constants",
+                    "scope": [
+                        "constant.keyword.clojure"
+                    ],
+                    "settings": {
+                        // "foreground": "#56b6c2"
+                        // "foreground": "#e06c75",
+                        // "foreground": "#7986cb"
+                        "foreground": "#cf6a4c"
+                    }
+                },
+                {
+                    "name": "Control flow keywords",
+                    "scope": [
+                        "keyword.control"
+                    ],
+                    "settings": {
+                        "foreground": "#c678dd",
+                        "fontStyle": "italic"
+                    }
+                },
+                {
+                    "scope": [
+                        "keyword.operator.or.regexp",
+                        "keyword.control.anchor.regexp"
+                    ],
+                    "settings": {
+                        "foreground": "#DCDCAA"
+                    }
+                },
+            ]
+        },
+        "[-Default Dark+]": {
+            // "functions": "#ff8f00",
+            // "functions": "#f9a825",
+            // "functions": "#c75b39",
+            "keywords": {
+                "foreground": "#c678dd",
+                "fontStyle": "italic"
+            },
+            // "comments":{
+            //     "foreground": "#75a478",
+            //     // "fontStyle": "italic"
+            // },
+            "strings":{
+                // "foreground": "#ffa726",
+                "foreground": "#ef5350",
+                // "fontStyle": "italic"
+            },
+            "functions": {
+                // "foreground": "#ef5350"
+                "foreground": "#c88719"
+                // "foreground": "#ff7043"
+            },
+            "numbers": {
+                "foreground": "#66bb6a"
+            },
+            // "variables": "#ef596f"
+            // "functions": "#ef596f",
+            "variables": "#56b6c2",
+            "textMateRules": [
+                {
+                    "name": "punctuation.definition",
+                    "scope": "punctuation.definition.string.begin,punctuation.definition.string.end",
+                    "settings": {
+                      "foreground": "#98c379"
+                    }
+                  },
+                {
+                    "name": "Keywords",
+                    "scope": "keyword",
+                    "settings": {
+                      "foreground": "#56b6c2"
+                    }
+                  },
+                {
+                    "name": "Clojure globals",
+                    "scope": [
+                        "entity.global.clojure"
+                    ],
+                    "settings": {
+                        // "foreground": "#e5c07b"
+                        // "foreground": "#ef5350",
+                        "foreground": "#ef5350",
+                        // "foreground": "#bb4d00",
+                        "fontStyle": "underline"
+                    }
+                },
+                {
+                    "name": "Clojure symbols",
+                    "scope": [
+                        "meta.symbol.clojure"
+                    ],
+                    "settings": {
+                        // "foreground": "#e06c75"
+                        "foreground": "#56b6c2"
+                        
+                    }
+                },
+                {
+                    "name": "Clojure constants",
+                    "scope": [
+                        "constant.keyword.clojure"
+                    ],
+                    "settings": {
+                        // "foreground": "#56b6c2"
+                        // "foreground": "#e06c75",
+                        // "foreground": "#7986cb"
+                        "foreground": "#aed581"
+                    }
+                }
+            ]
+        }
+    },
+    "calva.syncReplNamespaceToCurrentFile": true,
+    "calva.openBrowserWhenFigwheelStarted": false,
+    "calva.highlight.commentFormStyle": {"textDecoration": "none; opacity: 1"},
+    "explorer.openEditors.visible": 0,
+    "calva.highlight.enableBracketColors": true,
+    "calva.sendAsyncOutputTo": "REPL Window",
+    "explorer.compactFolders": false,
+    "calva.prettyPrintingOptions": {
+        "enabled": true,
+        "printEngine": "pprint",
+        "width": 120
+    },
+    "calva.showDocstringInParameterHelp": true
+}
