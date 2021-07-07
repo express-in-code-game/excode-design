@@ -94,6 +94,6 @@
 - runtime?
     - program's runtime is JVM, no GraalVM compilation
 - gui and build?
-    - <s>cljfx/cljfx</s> will stem from existing programs
+    - <s>cljfx/cljfx</s> <s>will stem from existing programs</s> TBD
 - db?
-    - replikativ/datahike
+    - <s>replikativ/datahike</s> TBD
