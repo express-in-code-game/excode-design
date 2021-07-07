@@ -1,0 +1,340 @@
+- kafka
+  - https://kafka.apache.org/
+  - https://kafka-tutorials.confluent.io/
+  - https://kafka.apache.org/24/documentation/streams/developer-guide
+
+  - https://kafka.apache.org/24/javadoc/org/apache/kafka/streams/kstream/KStream.html
+  - https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
+  - https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html
+
+  - https://github.com/perkss/clojure-kafka-examples
+  - https://github.com/troy-west/kstream-examples
+
+  - https://www.confluent.io/blog/event-sourcing-using-apache-kafka/
+  - https://www.confluent.io/blog/building-a-microservices-ecosystem-with-kafka-streams-and-ksql/
+  - https://github.com/confluentinc/kafka-streams-examples/tree/4.0.0-post/src/main/java/io/confluent/examples/streams/microservices
+  - configs
+    - http://kafka.apache.org/documentation.html#configuration
+    - http://kafka.apache.org/documentation.html#topicconfigs
+
+    - http://kafka.apache.org/documentation.html#producerconfigs
+    - https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html
+
+    - http://kafka.apache.org/documentation.html#consumerconfigs
+    - https://kafka.apache.org/24/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
+  - joins
+    - https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html#joining
+    - https://www.confluent.io/blog/crossing-streams-joins-apache-kafka/
+    - https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html#ktable-ktable-equi-join
+    - https://www.confluent.io/blog/optimizing-kafka-streams-applications/
+    - https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html#streams_concepts_globalktable
+    - https://cwiki.apache.org/confluence/display/KAFKA/KIP-99%3A+Add+Global+Tables+to+Kafka+Streams
+  - pull vs push
+    - https://kafka.apache.org/documentation/#design_pull
+
+- clj
+  - async
+    - https://www.infoq.com/presentations/clojure-core-async/
+      - "function chains are poor machines
+      - "good programs should be made out of processes and queues
+      - "the 'api du jours' events/calbacks - Definition of du jour. 1 : made for a particular day
+      - "external flow state
+      - https://clojure.org/news/2013/06/28/clojure-clore-async-channels
+    - https://github.com/clojure/core.async
+    - https://github.com/clojure/core.async/wiki
+    - https://github.com/clojure/core.async/wiki/Pub-Sub
+    - https://github.com/clojure/core.async/tree/master/examples
+    - https://github.com/halgari/clojure-conj-2013-core.async-examples/blob/master/src/clojure_conj_talk/core.clj
+    - https://github.com/bhauman
+      - https://rigsomelight.com/2013/07/18/clojurescript-core-async-todos.html
+        - https://github.com/bhauman/async-explore
+      - https://rigsomelight.com/2013/08/12/clojurescript-core-async-dots-game.html  
+        - https://github.com/bhauman/dotsters
+    - https://github.com/swannodette/
+      - https://github.com/swannodette/async-tests
+      - csp series
+        - http://swannodette.github.io/2013/07/12/communicating-sequential-processes
+        - http://swannodette.github.io/2013/07/31/extracting-processes
+        - http://swannodette.github.io/2013/08/17/comparative
+        - ...
+  - transducers
+    - https://blog.cognitect.com/blog/2014/8/6/transducers-are-coming
+    - https://github.com/clojure/clojure/blob/master/src/clj/clojure/core.clj#L2729
+    - https://github.com/clojure/clojure/blob/master/src/clj/clojure/core.clj#L2863
+  - spec
+    - guides
+      - https://clojure.org/guides/spec
+      - https://clojure.github.io/spec.alpha/clojure.spec.alpha-api.html
+      - https://clojure.org/guides/test_check_beginner
+        - https://github.com/clojure/test.check/blob/master/README.md
+        - https://github.com/clojure/test.check/blob/master/doc/intro.md
+        - https://github.com/clojure/test.check/blob/master/doc/generator-examples.md
+      - https://blog.taylorwood.io/2018/10/15/clojure-spec-faq.html
+    - fdef defmulti
+      - https://clojuredocs.org/clojure.spec.alpha/fdef#example-5c4b535ce4b0ca44402ef629
+    - code
+      - https://github.com/clojure/tools.deps.alpha/blob/master/src/main/clojure/clojure/tools/deps/alpha/specs.clj
+  - java.time.Instant
+    - https://stackoverflow.com/questions/36639154/convert-java-util-date-to-what-java-time-type
+  - regex
+    - https://docs.oracle.com/javase/9/docs/api/java/util/regex/Pattern.html
+  - logic
+    - http://programming-puzzler.blogspot.com/2013/03/logic-programming-is-overrated.html
+      - https://gist.github.com/Engelberg/5105806#file-logic1-clj
+      - https://gist.github.com/Engelberg/5105820#file-logic2-clj
+      - http://swannodette.github.io/2013/03/09/logic-programming-is-underrated
+      - https://gist.github.com/swannodette/5127144
+      - https://gist.github.com/swannodette/5127150
+    - https://github.com/clojure/core.logic
+    - https://github.com/clojure/core.logic/wiki
+    - https://github.com/clojure/core.logic/blob/master/src/test/clojure/clojure/core/logic
+    - https://github.com/clojure/core.logic/tree/master/src/test/cljs/cljs/core/logic
+    - https://github.com/clojure/core.logic/wiki/Features
+    - https://github.com/clojure/core.logic/wiki/Examples
+    - http://minikanren.org/
+    - https://blog.taylorwood.io/2018/05/10/clojure-logic.html
+    - https://jrheard.tumblr.com/post/43575891007/explorations-in-clojures-corelogic
+      - https://www.infoq.com/presentations/core-logic/#mainLogin/
+    - http://swannodette.github.io/
+    - https://web.archive.org/web/20130511050744/http://dosync.posterous.com/a-logic-programming-reading-list
+    - http://tgk.github.io/2012/08/finding-cliques-in-graphs-using-core-logic.html
+    - https://web.archive.org/web/20130511050720/http://dosync.posterous.com/know-your-bounds
+    - http://clojurelx.blogspot.com/2012/01/finite-state-machines-in-corelogic.html
+    - http://clojurelx.blogspot.com/2012/01/lx-in-corelogic-2-jumps-flexible.html
+    - http://gigasquidsoftware.com/chemical-computing/index.html
+
+
+  - http
+    - https://github.com/ring-clojure/ring/wiki
+    - https://github.com/pedestal
+      - http://pedestal.io/guides/index
+      - https://github.com/pedestal/pedestal/tree/master/samples
+      - https://github.com/pedestal/pedestal/tree/master/samples/jetty-web-sockets
+      - http://pedestal.io/api/pedestal.service/io.pedestal.http.html#var-default-interceptors
+      - http://pedestal.io/reference/service-map
+        - http://pedestal.io/reference/jetty
+        - http://pedestal.io/guides/your-first-api
+        - http://pedestal.io/reference/interceptors#_interceptor_return_values
+    - https://github.com/juxt/yada
+      - https://juxt.pro/yada/manual/index.html
+      - https://juxt.pro/yada/manual/index.html#server-sent-events
+    - https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events
+      - https://github.com/pedestal/pedestal/tree/master/samples/server-sent-events
+    - https://github.com/funcool/buddy-auth/tree/master/examples
+  - destructring fully qualified
+    - https://clojure.org/guides/destructuring#_namespaced_keywords
+  - sign, encrypt, auth
+    - https://funcool.github.io/buddy-sign/latest/
+    - https://funcool.github.io/buddy-sign/latest/#generate-keypairs
+    - https://funcool.github.io/buddy-auth/latest/
+    - stateless
+      - https://funcool.github.io/buddy-auth/latest/#signed-jwt
+  - sockets
+    - https://github.com/ptaoussanis/sente
+    - https://github.com/stalefruits/gniazdo
+
+- datalog
+  - datomic
+    - https://docs.datomic.com/cloud/client/client-api.html#connection
+  - crux
+    - https://github.com/juxt/crux
+    - https://opencrux.com/docs#faqs
+    - https://github.com/juxt/crux/tree/master/crux-test/test/crux
+    - crux.codec.Id
+      - https://github.com/juxt/crux/blob/master/crux-core/src/crux/codec.clj#L346
+  - datascript
+    - https://github.com/tonsky/datascript
+    - https://github.com/tonsky/datascript/wiki/API-overview
+    - https://github.com/tonsky/datascript/blob/master/test/datascript/test/upsert.cljc
+    - https://github.com/tonsky/datascript/wiki/Tips-&-tricks
+    - https://tonsky.me/blog/datascript-chat/
+    - https://github.com/kristianmandrup/datascript-tutorial/blob/master/SUMMARY.md
+
+
+
+- cljs
+  - antd
+    - 4.0 changes https://github.com/ant-design/ant-design/issues/16911
+    - https://github.com/ant-design/ant-design-aliyun-theme
+  - goog closure
+    - https://google.github.io/closure-library/api/goog.net.WebSocket.html
+      - https://github.com/google/closure-library/blob/master/closure/goog/net/websocket_test.js
+  - history
+    - https://developer.mozilla.org/en-US/docs/Web/API/History_API/Working_with_the_History_API
+    - https://github.com/juxt/bidi
+    - https://github.com/clj-commons/pushy
+  - reagent
+    - http://reagent-project.github.io/docs/master/reagent.core.html#var-cursor
+    - https://clojuredocs.org/clojure.core/add-watch
+    - https://github.com/reagent-project/reagent/blob/2027a2d8881bae0567ecf9d4c90550b064a2ad0c/doc/CreatingReagentComponents.md#appendix-b---with-let-macro
+  - render
+    - https://github.com/d3/d3
+      - https://github.com/d3/d3/wiki/Gallery
+        - https://observablehq.com/@peatroot/stars-and-constellations?collection=@observablehq/visualization
+        - https://csaladenes.wordpress.com/2015/03/10/the-global-center-of-mass-of-higher-education-university-rankings-mapped/
+          - https://blog.csaladen.es/universities%20geo/
+    - https://github.com/quil/quil
+    - https://github.com/vega/vega
+      - https://vega.github.io/vega/examples/
+      - https://vega.github.io/vega-lite/examples/
+      - https://vega.github.io/vega/tutorials/airports/
+      - https://github.com/metasoarous/oz
+    - https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg
+      - https://developer.mozilla.org/en-US/docs/Web/SVG/Element/rect
+    - https://github.com/plouc/nivo
+      - https://nivo.rocks/geomap/canvas/
+    - https://github.com/konvajs/konva
+      - https://konvajs.org/docs/react/index.html
+        - https://github.com/konvajs/react-konva
+    - https://leafletjs.com/#features
+    - https://github.com/prc5/react-zoom-pan-pinch
+    - https://github.com/chrvadala/react-svg-pan-zoom
+    
+- docker
+  - https://docs.docker.com/config/containers/resource_constraints/
+
+- browser
+  - https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion
+
+- issues
+  - "attempting to call unbound transit-json..." when ineracting with kafka from repl
+    - cloud.app.alpha.aux.serdes namespace must be imported 
+
+
+- certificates
+  - using Letsencrypt certificate & private key with Jetty
+    - https://gist.github.com/xkr47/920ffe94f6a4c171ee59
+  - using Letsencrypt with nginx 
+    - https://www.nginx.com/blog/using-free-ssltls-certificates-from-lets-encrypt-with-nginx/
+  - mozilla SSL Configuration Generator
+    - https://community.letsencrypt.org/t/recommended-apache-config/58294/2
+    - https://ssl-config.mozilla.org/
+
+- traefik
+  - https://docs.traefik.io/
+  - https belongs to dynamic configuration
+    - https://docs.traefik.io/getting-started/configuration-overview/#the-dynamic-configuration
+  - configuration file
+    - https://docs.traefik.io/reference/static-configuration/file/
+  - "You can configure Traefik to use an ACME provider (like Let's Encrypt) for automatic certificate generation"
+    - https://docs.traefik.io/https/acme/#lets-encrypt
+    - "If certResolver is defined, Traefik will try to generate certificates based on routers Host & HostSNI rules"
+      - https://docs.traefik.io/routing/routers/#certresolver
+  - "Traefik will terminate the SSL connections (meaning that it will send decrypted data to the services)"
+    - https://docs.traefik.io/routing/routers/#tls
+    - same applies for tcp routers
+      - https://docs.traefik.io/routing/routers/#tls_1
+  - ability to include headers from the forward auth server's response in the subsequent forwarded request
+    - https://docs.traefik.io/middlewares/forwardauth/#authresponseheaders
+  - next step, add those headers to final response (so far issue open)
+    - https://github.com/containous/traefik/issues/3660
+
+
+- chrome
+  - https://developer.chrome.com/apps/fileSystem
+  - app vs extension
+    - https://developer.chrome.com/webstore/apps_vs_extensions
+      - "You can still build a standard web app running on a regular website, but make it an installable web app and you can add extension behavior to enhance the experience for those who install it"
+    - https://stackoverflow.com/questions/5341206/difference-between-chrome-apps-and-extensions
+  - removing support for apps
+    - https://blog.chromium.org/2020/01/moving-forward-from-chrome-apps.html
+  - native file sstem api from web apps
+    - https://wicg.github.io/native-file-system/
+    - https://github.com/GoogleChromeLabs/text-editor/
+
+- datomic
+  - text search
+    - https://docs.datomic.com/on-prem/query.html#fulltext
+    - example
+      - https://github.com/Datomic/mbrainz-sample/wiki/Queries#fulltext
+      - https://github.com/Datomic/mbrainz-sample/blob/master/src/clj/datomic/samples/mbrainz/rules.clj#L66
+    - limitations
+      - https://docs.datomic.com/on-prem/moving-to-cloud.html#text-search
+
+- cloudsearch
+  - https://docs.aws.amazon.com/cloudsearch/latest/developerguide/how-search-works.html
+
+- influxdb
+  - https://github.com/influxdata/influxdb
+  - https://v2.docs.influxdata.com/v2.0/query-data/get-started/query-influxdb/
+    - https://v2.docs.influxdata.com/v2.0/query-data/flux/
+
+- dgraph
+  - https://dgraph.io/docs/query-language/#full-text-search
+  - https://dgraph.io/docs/query-language/#regular-expressions
+    - "If the partial result (for subset of trigrams) exceeds 1000000 uids during index scan, the query is stopped to prohibit expensive queries"
+  - https://dgraph.io/docs/clients/#java
+    - https://github.com/dgraph-io/dgraph4j
+    - https://github.com/dgraph-io/dgraph4j/tree/master/samples/DgraphJavaSample
+  - on graphql+-
+    - https://dgraph.io/blog/post/building-native-graphql-database-dgraph/
+    - dgraph support for spec compliant graphql
+      - https://graphql.dgraph.io/docs/
+  - graphql and clojure
+    - https://graphql.org/code/#clojure
+      - https://github.com/alumbra/alumbra
+        - https://github.com/alumbra/alumbra.spec
+      - https://github.com/walmartlabs/lacinia
+      - https://github.com/tendant/graphql-clj
+
+- dgraph-client
+  - https://dgraph.io/docs/clients/
+  - https://github.com/dgraph-io/dgraph4j#creating-a-client
+  - https://godoc.org/github.com/dgraph-io/dgo#NewDgraphClient
+  - grpc api
+    - https://github.com/dgraph-io/dgo/blob/master/protos/api/api.pb.go
+
+- oauth
+  - https://en.wikipedia.org/wiki/OAuth
+  - https://oauth.net/2/
+  - https://aaronparecki.com/oauth-2-simplified/
+  - https://github.com/dexidp/dex
+    - an example https://github.com/fydrah/loginapp
+  - https://github.com/ory
+    - https://www.ory.sh/docs/ecosystem/projects
+    - https://github.com/ory/hydra
+      - https://www.ory.sh/hydra/docs/oauth2/#authenticating-users-and-requesting-consent
+    - https://github.com/ory/kratos
+      - https://www.ory.sh/kratos/docs/concepts/index/
+      - example (works) 
+        - https://www.ory.sh/kratos/docs/quickstart/
+        - https://github.com/ory/kratos-selfservice-ui-node/tree/v0.1.1-alpha.1
+      - "Each identity has one or more credentials associated with it" - indeed
+        - https://www.ory.sh/kratos/docs/concepts/credentials
+      - run jobs aftr login 
+        - https://www.ory.sh/kratos/docs/self-service/flows/user-login-user-registration#executing-jobs-after-user-login
+        - possibly, for updating central db user data (to decouple from iam's internal db)
+    - https://github.com/ory/oathkeeper
+      - https://www.ory.sh/oathkeeper/docs/pipeline/index
+    - https://github.com/ory/keto
+  - traefik related examples
+    - https://github.com/thomseddon/traefik-forward-auth
+  - https://github.com/go-authboss/authboss
+    - https://github.com/volatiletech/authboss-sample
+  - https://github.com/keycloak/keycloak
+    - https://www.keycloak.org/docs/latest/securing_apps/index.html
+
+
+- jre/jdk
+  - lightweight jre images
+    - https://stackoverflow.com/questions/53669151/java-11-application-as-lightweight-docker-image
+    - https://stackoverflow.com/questions/53669151/java-11-application-as-lightweight-docker-image/57145029#57145029
+  - https://hub.docker.com/_/openjdk
+    - https://github.com/docker-library/docs/blob/master/openjdk/README.md#supported-tags-and-respective-dockerfile-links
+  - perf experiences
+    - https://stackoverflow.com/questions/22358071/differences-between-oracle-jdk-and-openjdk
+    - https://technology.amis.nl/2018/11/23/comparing-jvm-performance-zulu-openjdk-openjdk-oracle-jdk-graalvm-ce/
+    - http://sparkjava.com/
+      - https://github.com/perwendel/spark
+      - https://medium.com/@lusardichristian/java-microservices-the-right-way-8f9d9ea2715a
+  
+- nodejs
+  - jre and nodejs
+    - https://stackoverflow.com/questions/5062614/how-to-decide-when-to-use-node-js
+  - 10 Things I Regret About Node.js - Ryan Dahl 
+    - https://youtu.be/M3BM9TB-8yA
+  - https://github.com/denoland/deno
+
+- git
+  - https://stackoverflow.com/questions/9110310/update-git-commit-author-date-when-amending/13497026
+    - git commit --amend --no-edit --date=now 
