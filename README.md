@@ -93,7 +93,7 @@
     - no
 - runtime?
     - program's runtime is JVM, no GraalVM compilation
-- gui?
+- gui and build?
     - <s>cljfx/cljfx</s> will stem from existing programs
 - db?
     - replikativ/datahike
