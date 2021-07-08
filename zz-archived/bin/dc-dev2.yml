@@ -1,0 +1,101 @@
+version: "3.8"
+
+networks:
+  base-network:
+    driver: bridge
+    name: deathstar-network
+  # ipfs-network:
+  #   driver: bridge
+  #   name: ipfs-network
+
+volumes:
+  ctx:
+    driver: local
+    driver_opts:
+      type: none
+      device: ../../
+      # device: $PWD/${WEB_APP_PATH}
+      o: bind
+  ipfs-data:
+
+services:
+
+  server:
+    image: deathstar.server
+    build:
+      context: ./server
+      dockerfile: ./dev.Dockerfile
+      args:
+        workdir:  /ctx/DeathStarGame/bin/server
+    command: tail -f /dev/null
+    # command: bash f dev
+    ports:
+      - 7001:7001
+      - 7002:7002
+      - 7003:7003
+      - 8080:8080
+      # - 8085:8080
+    networks:
+      - base-network
+    # user: 1000:1000
+    volumes:
+      - ./server/.user:/root
+      # - type: volume
+      #   source: deathstar-dir
+      #   target: /root/.deathstar
+      #   volume:
+      #     nocopy: true
+      # - ./app/.peer${PORTS_PREFIX}:/root/.deathstar
+      - type: volume
+        source: ctx
+        target: /ctx
+        volume:
+          nocopy: true
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+
+  compiler2:
+    image: deathstar.compiler2
+    build:
+      context: ./compiler2
+      dockerfile: ./dev.Dockerfile
+      args:
+        workdir: /ctx/DeathStarGame/bin/compiler2
+    command: tail -f /dev/null
+    # command: bash f dev
+    # expose:
+    #   - 7788
+    ports:
+      - 8000:8000
+      - 8001:8001
+      - 9500:9500
+      - 8899:8899
+      - 9630:9630
+    environment:
+      - RSOCKET_PORT=7001
+      - RSOCKET_PORT_SCENARIO=7002
+      - RSOCKET_PORT_PLAYER=7003
+      - SHADOWCLJS_DEVTOOLS_URL=http://localhost:9630
+      - SCENARIO_ORIGIN=http://localhost:8001
+    networks:
+      - base-network
+    # user: 1000:1000
+    volumes:
+      - ./compiler2/.user:/root
+      - type: volume
+        source: ctx
+        target: /ctx
+        volume:
+          nocopy: true
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M

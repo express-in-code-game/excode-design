@@ -1,0 +1,19 @@
+{
+	"dependencies": {
+		"@flatten-js/core": "1.2.16",
+		"antd": "4.8.4",
+		"konva": "7.2.0",
+		"react": "17.0.1",
+		"react-dom": "17.0.1",
+		"react-konva": "17.0.0-0",
+		"react-spring": "8.0.27",
+		"rsocket-core": "0.0.19",
+		"rsocket-flowable": "0.0.14",
+		"rsocket-websocket-client": "0.0.19"
+	},
+	"devDependencies": {
+		"shadow-cljs": "2.11.7",
+		"webpack": "4.44.1",
+		"webpack-cli": "3.3.12"
+	}
+}

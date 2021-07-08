@@ -1,0 +1,107 @@
+{:deps  true #_{:aliases [:cljs-dev :ui :peer]}
+ :nrepl {:host "0.0.0.0"
+         :port #shadow/env ["SHADOWCLJS_NREPL_PORT" :as :int :default 8899]}
+ :http {:port #shadow/env ["SHADOWCLJS_HTTP_PORT" :as :int :default 9630]
+        :host "0.0.0.0"}
+ :dev-http {8000 {:roots ["/ctx/DeathStarGame/bin/ui2/resources/public"]
+                  :host "0.0.0.0"}
+            8001 {:roots ["/ctx/DeathStarGame/bin/compiler2/resources/public"]
+                  :host "0.0.0.0"}}
+ :builds {:server {:target #_:node-library :node-script
+                   :main deathstar.app.main/main
+                   :exports-var deathstar.app.main/exports
+                   :output-to "/ctx/DeathStarGame/bin/app-node/resources/out/main.js"
+                   :compiler-options {:optimizations :simple
+                                      :infer-externs   false
+                                      :stable-names true
+                                      :recompile-dependents true
+                                      :source-maps true
+                                      :cross-chunk-method-motion false}
+                   :js-options
+                   {:js-provider :shadow
+                    :keep-native-requires true
+                    :keep-as-require #{}}
+                   :devtools {:repl-init-ns deathstar.app.main
+                              :repl-pprint true
+                              :autobuild true
+                              :devtools-url "http://compiler:9630"
+                              :after-load deathstar.app.main/reload}}
+
+          :ui {:target :browser
+               :output-dir "/ctx/DeathStarGame/bin/ui2/resources/public/js-out"
+               :asset-path "./js-out"
+               :module-loader true
+               :modules {:main {:entries [deathstar.ui.main]}}
+               :compiler-options {:infer-externs   false  #_:auto
+                                  :closure-warnings {:global-this :off}
+                                  :closure-defines
+                                  {deathstar.ui.main/RSOCKET_PORT #shadow/env ["RSOCKET_PORT" :as :int :default 7000]
+                                   deathstar.ui.main/SCENARIO_ORIGIN #shadow/env ["SCENARIO_ORIGIN" :default "http://localhost:8000"]}}
+               :devtools
+               {:repl-init-ns deathstar.ui.main
+                :repl-pprint true
+                :autobuild true
+                :devtools-url #shadow/env ["SHADOWCLJS_DEVTOOLS_URL" :default "http://localhost:9630"]}}
+
+          :rovers-scenario {:target :browser
+                            :output-dir "/ctx/DeathStarGame/bin/compiler2/resources/public/rovers2/js-out/scenario"
+                            :asset-path "./rovers/js-out/scenario"
+                            :module-loader true
+                            :modules {:main {:entries [github.sergeiudris.rovers.scenario.main]}}
+                            :compiler-options {:infer-externs   false  #_:auto
+                                               :closure-warnings {:global-this :off}
+                                               :closure-defines {deathstar.scenario.main/RSOCKET_PORT
+                                                                 #shadow/env ["RSOCKET_PORT_SCENARIO" :as :int :default 7000]}}
+                            :devtools {:repl-init-ns github.sergeiudris.rovers.scenario.main
+                                       :repl-pprint true
+                                       :autobuild true
+                                       :devtools-url #shadow/env ["SHADOWCLJS_DEVTOOLS_URL" :default "http://localhost:9630"]}}
+
+          :rovers-scenario-bootstrap {:target :bootstrap
+                                      :output-dir "/ctx/DeathStarGame/bin/compiler2/resources/public/rovers2/js-out/scenario-bootstrap"
+                                      :exclude #{cljs.js}
+                                      :compiler-options {:infer-externs   false #_:auto}
+                                      :entries [cljs.js github.sergeiudris.rovers.scenario.main clojure.core.async]
+                                      :macros []}
+
+          :rovers-player {:target :browser
+                          :output-dir "/ctx/DeathStarGame/bin/compiler2/resources/public/rovers2/js-out/player"
+                          :asset-path "./rovers/js-out/player"
+                          :module-loader true
+                          :modules {:main {:entries [github.sergeiudris.rovers.player.main]}}
+                          :compiler-options {:infer-externs   false  #_:auto
+                                             :closure-warnings {:global-this :off}
+                                             :closure-defines {deathstar.scenario.player.main/RSOCKET_PORT
+                                                               #shadow/env ["RSOCKET_PORT_PLAYER" :as :int :default 7000]}}
+                          :devtools {:repl-init-ns github.sergeiudris.rovers.player.main
+                                     :repl-pprint true
+                                     :autobuild true
+                                     :devtools-url #shadow/env ["SHADOWCLJS_DEVTOOLS_URL" :default "http://localhost:9630"]}}
+
+          :starnet-scenario {:target :browser
+                             :output-dir "/ctx/DeathStarGame/bin/compiler2/resources/public/starnet/js-out/scenario"
+                             :asset-path "./starnet/js-out/scenario"
+                             :module-loader true
+                             :modules {:main {:entries [github.sergeiudris.starnet.scenario.main]}}
+                             :compiler-options {:infer-externs   false  #_:auto
+                                                :closure-warnings {:global-this :off}
+                                                :closure-defines {deathstar.scenario.main/RSOCKET_PORT
+                                                                  #shadow/env ["RSOCKET_PORT_SCENARIO" :as :int :default 7000]}}
+                             :devtools {:repl-init-ns github.sergeiudris.starnet.scenario.main
+                                        :repl-pprint true
+                                        :autobuild true
+                                        :devtools-url #shadow/env ["SHADOWCLJS_DEVTOOLS_URL" :default "http://localhost:9630"]}}
+
+          :starnet-player {:target :browser
+                           :output-dir "/ctx/DeathStarGame/bin/compiler2/resources/public/starnet/js-out/player"
+                           :asset-path "./starnet/js-out/player"
+                           :module-loader true
+                           :modules {:main {:entries [github.sergeiudris.starnet.player.main]}}
+                           :compiler-options {:infer-externs   false  #_:auto
+                                              :closure-warnings {:global-this :off}
+                                              :closure-defines {deathstar.scenario.player.main/RSOCKET_PORT
+                                                                #shadow/env ["RSOCKET_PORT_PLAYER" :as :int :default 7000]}}
+                           :devtools {:repl-init-ns github.sergeiudris.starnet.player.main
+                                      :repl-pprint true
+                                      :autobuild true
+                                      :devtools-url #shadow/env ["SHADOWCLJS_DEVTOOLS_URL" :default "http://localhost:9630"]}}}}

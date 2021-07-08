@@ -1,0 +1,12 @@
+**/.cpcache
+**/.lein-repl-history
+**/.data
+**/target
+**/tmp
+.git
+**/node_modules
+**/.shadow-cljs
+**/js-out
+**/classes
+**/.peer*
+**/.user*

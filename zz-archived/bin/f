@@ -1,0 +1,165 @@
+#!/bin/bash
+
+peer(){
+  export DEATHSTAR_PEER_INDEX=$1
+  export COMPOSE_PROJECT_NAME="deathstar-peer${DEATHSTAR_PEER_INDEX}"
+  export DEATHSTAR_HTTP_PORT="308${DEATHSTAR_PEER_INDEX}"
+  export DEATHSTAR_REPL_PORT="778${DEATHSTAR_PEER_INDEX}"
+  docker-compose --compatibility \
+  -f dc-peer.yml \
+  "${@:2}"
+}
+
+peer1(){
+  peer 1 "$@"
+}
+
+peer2(){
+  peer 2 "$@"
+}
+
+peer3(){
+  peer 3 "$@"
+}
+
+peers(){
+  peer1 "$@"
+  peer2 "$@"
+  peer3  "$@"
+  peer4  "$@"
+}
+
+dev(){
+  docker-compose --compatibility \
+  -f dc-dev.yml \
+  "$@"
+}
+
+up(){
+  $1 up -d --build "${@:2}"
+}
+
+down(){
+  $1 down "${@:2}"
+}
+
+restart(){
+  $1 rm -f -s $2
+  up $1 $2
+}
+
+deepdown(){
+  down $1 -v --remove-orphans "${@:2}"
+}
+
+dc(){
+  UID_GID="$(id -u):$(id -g)" docker-compose --compatibility \
+  --env-file docker-compose.env \
+  -f docker-compose.yml \
+  "$@"
+}
+
+images(){
+  docker-compose --compatibility \
+  -f dc-images.yml \
+  build \
+  "$@"
+}
+
+release(){
+  docker-compose --compatibility \
+  -f dc-release.yml \
+  "$@"
+}
+
+
+build(){
+  # https://docs.docker.com/compose/reference/build/
+  $1 build $2 "${@:3}"
+}
+
+run(){
+  # https://docs.docker.com/compose/reference/run/
+  $1 run --service-ports $2 "${@:3}"
+}
+
+rund(){
+  # https://docs.docker.com/compose/reference/run/
+  $1 run -d --service-ports $2 "${@:3}"
+}
+
+
+runbash(){
+  # https://docs.docker.com/compose/reference/run/
+  run $1 $2 bash -c "bash;"
+}
+
+buildrun(){
+  build $1 $2
+  run $1 $2 "${@:3}"
+}
+
+mount(){
+  build $1 $2 "${@:3}"
+  runbash $1 $2
+}
+
+into(){
+  $1 exec $2 bash -c "bash;"
+}
+
+do_release(){
+  images
+  release build
+}
+
+
+dgraph(){
+  docker-compose --compatibility \
+  -f dc-dgraph.yml \
+  "$@"
+}
+
+traefik(){
+  docker-compose --compatibility \
+  -f dc-traefik.yml \
+  "$@"
+}
+
+dock(){
+  docker-compose --compatibility \
+  -f dc-dock.yml \
+  "$@"
+}
+
+
+scale(){
+  dc up -d --build --scale whoami=2
+}
+
+behold_loadbalance(){
+  curl -H Host:whoami.docker.localhost http://127.0.0.1
+}
+
+permissions(){
+  sudo chmod -R 777 volumes
+}
+
+symlinks(){
+  ln -s ../../../src containers/src
+}
+
+#### bash tests
+
+export_env_vars(){
+  export HELLO="hello"
+  # declare -x HELLO=2
+  echo $HELLO
+}
+
+test_env_vars(){
+  echo $HELLO
+}
+
+
+"$@"
