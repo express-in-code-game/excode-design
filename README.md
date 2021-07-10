@@ -45,8 +45,8 @@
     - game should be designed not for fast-typer-wins, but for clearer-thinker-wins
 - what about events(tournaments) ?
     - game is game only, no tournament creation
-- there are already lots and lots of games based on this idea, plus some more specialized (analogous to e-sports you might say) events, like ICFP and similar ones. How exactly is this different?
-    - please, share a link to such games!
+- this document is not very good presentation-wise. There are already lots and lots of games based on this idea, plus some more specialized (analogous to e-sports you might say) events, like ICFP and similar ones. How exactly is this different?
+    - please, link me to such games if possible! I've been following e-sports for about 10 years and could not find any..
     - for example 
         - this is https://liquipedia.net/starcraft2/Main_Page , probably the best resource for tournaments, and all the games there are usual suspects
         - or obviously https://www.twitch.tv/directory,  is there a category for such a game(s)?
