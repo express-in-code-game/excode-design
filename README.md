@@ -66,3 +66,5 @@
     - no
 - runtime?
     - program's runtime is JVM, no GraalVM compilation
+- does repository have releases of binaries?
+    - no, only source code and source releases and build from source via Makefile
