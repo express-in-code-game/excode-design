@@ -12,7 +12,7 @@ uberjar:
    clojure -X:depstar uberjar \
     :aot true \
     :jar target/deathstar.jar \
-    :aliases '[:core :app]' \
+    :aliases '[:core :program]' \
     :main-class deathstar.peer.main
 
 # DOCKER_DIND_IMAGE_NAME := "deathstar-dev-dind"
