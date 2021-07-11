@@ -21,6 +21,7 @@
     - designed for e-sports
     - DeathStarGame is exclusively a 1v1 game
     - should be one game, not many scenarios, a sport, designed for players to perform - one game, one of, like basketball, tennis, starcraft
+    - should be simple, complete, finite - like tennis, football, basketball, Broodwar, Battle Toads - without updates, unlike AoE2 where many civs have many details that keep on changing
     - matches: like in tennis or big starcraft/aoe2 torunaments, or basketball - players should play a match a day, bo5/bo7, give a performance, and game should be 
     designed for players to perform, quality over quantity, a match is an event
     - game comes with no ladder - only host and connect
