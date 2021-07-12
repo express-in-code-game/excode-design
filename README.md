@@ -76,3 +76,5 @@
     - no, code only
 - programmer names in readme?
     - no, repository is code only
+- license files?
+    - no, repository is code only
