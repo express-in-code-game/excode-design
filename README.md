@@ -74,5 +74,5 @@
     - no, code only
 - attribution headers in files?
     - no, code only
-- maintainer names in readme?
+- programmer names in readme?
     - no, repository is code only
