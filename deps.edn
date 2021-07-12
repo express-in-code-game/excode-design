@@ -16,11 +16,10 @@
  :aliases
  {:repl
   {:extra-deps {github.cljctools/deps-repl {:git/url "https://github.com/cljctools/deps-repl"
-                                            :sha "08283d3841c5948b0b9d36a977ebfdad111cdb2f"
-                                            :tag "v2.0.1"}
+                                            :sha "9675509eb9969e1288baf9b8a4ced95f83e3c734"}
                 nrepl/nrepl {:mvn/version "0.8.3"}
                 cider/cider-nrepl {:mvn/version "0.25.5"}}
-   :main-opts ["-m" "lambdaisland.nrepl.main"
+   :main-opts ["-m" "cljctools.deps-repl.main"
                "--init-ns" "deathstar.peer.main"
                "--port" "7788"
                "--bind" "0.0.0.0"
