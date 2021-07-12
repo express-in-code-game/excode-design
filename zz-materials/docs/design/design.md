@@ -196,10 +196,10 @@ Continuation of:
 
 ## how technically code evalution will work in the system
 
-- [ palyers still need a REPL , but game state should be advancable, recreatable, syncable and independent of ui](https://github.com/sergeiudris/deathstar.lab/blob/4412eebce46dfad0f860276a2aa8d9c0e69c53c2/docs/deathstar.ltee/as-vscode-extension.md#state-its-about-state)
-- [namepsaces, namespaces everywhere: namespaces can be discarded and re-created](https://github.com/sergeiudris/deathstar.lab/blob/4412eebce46dfad0f860276a2aa8d9c0e69c53c2/docs/deathstar.ltee/as-vscode-extension.md#how-to-def-namespaces-are-free)
-- [discarding/creting copies of palyer's namespace in clojure](https://github.com/sergeiudris/deathstar.lab/blob/4412eebce46dfad0f860276a2aa8d9c0e69c53c2/docs/deathstar.ltee/as-vscode-extension.md#discardingcreting-copies-of-palyers-namespace-in-clojure)
-- [simulation as f(state,code,time), why there is no need for cljs self-hosting](https://github.com/sergeiudris/deathstar.lab/blob/4412eebce46dfad0f860276a2aa8d9c0e69c53c2/docs/deathstar.ltee/as-vscode-extension.md#simulation-as-fstatecodetime-why-there-is-no-need-for-cljs-self-hosting)
+- [ palyers still need a REPL , but game state should be advancable, recreatable, syncable and independent of ui](https://github.com/DeathStarGame/DeathStarGameblob/4412eebce46dfad0f860276a2aa8d9c0e69c53c2/docs/deathstar.ltee/as-vscode-extension.md#state-its-about-state)
+- [namepsaces, namespaces everywhere: namespaces can be discarded and re-created](https://github.com/DeathStarGame/DeathStarGameblob/4412eebce46dfad0f860276a2aa8d9c0e69c53c2/docs/deathstar.ltee/as-vscode-extension.md#how-to-def-namespaces-are-free)
+- [discarding/creting copies of palyer's namespace in clojure](https://github.com/DeathStarGame/DeathStarGameblob/4412eebce46dfad0f860276a2aa8d9c0e69c53c2/docs/deathstar.ltee/as-vscode-extension.md#discardingcreting-copies-of-palyers-namespace-in-clojure)
+- [simulation as f(state,code,time), why there is no need for cljs self-hosting](https://github.com/DeathStarGame/DeathStarGameblob/4412eebce46dfad0f860276a2aa8d9c0e69c53c2/docs/deathstar.ltee/as-vscode-extension.md#simulation-as-fstatecodetime-why-there-is-no-need-for-cljs-self-hosting)
 - correction
   - code will be evaled on one mahcine - the host peer of that particular game : connected peers will send all the inputs and get eval results back
   - game simulations are run on the host peer as well (both main and test)

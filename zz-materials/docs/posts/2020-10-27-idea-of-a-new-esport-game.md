@@ -1,6 +1,4 @@
 # github.com/DeathStarGame: idea of a new esport game
-Date: 2020-10-27
-Author: Sergei Udris https://github.com/sergeiudris
 
 This is a raw, likely difficult to read post. Not even a post, more of a comments. But could be interesting (or maybe I'm just biased).  
 It's a rant mostly. Basically, a one-evening spit-it-out story of going from "where are no-micro e-sports?" to "what games should be?" to going for buidling such a game.   
@@ -22,9 +20,9 @@ TL;DR: game will use [IPFS](ipfs.io) peer-to-peer network, players will use prog
 - [considering new HoMM3-like game but about building/composing of elements and github-like system around it](#considering-new-homm3-like-game-but-about-buildingcomposing-of-elements-and-github-like-system-around-it)
 - [what is buidling](#what-is-buidling)
 - [tying-it-together-building-and-the-game](#tying-it-together-building-and-the-game)
-- [original notes on why use language as the gameplay](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language)
-- [game scenario ideas](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios)
-- [design sketch: peer-to-peer multiplayer game using IPFS network](https://github.com/sergeiudris/deathstar.lab/blob/b86c49d160ca729cd2ec9eeb66abbeaabf3a8577/docs/design/design.md)
+- [original notes on why use language as the gameplay](https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language)
+- [game scenario ideas](https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios)
+- [design sketch: peer-to-peer multiplayer game using IPFS network](https://github.com/DeathStarGame/DeathStarGameblob/b86c49d160ca729cd2ec9eeb66abbeaabf3a8577/docs/design/design.md)
 
 ## rant: games, sports and e-sports in 2020
 
@@ -290,8 +288,8 @@ TL;DR: game will use [IPFS](ipfs.io) peer-to-peer network, players will use prog
 - ideally games in the future - it's even now possible with global deeplerning and AI like google - to use informal language of the system for players to program behaviors and entities
 - but formal - programming - languages will always exisit, as they are a way for humans to express programs and *share* with others, the fact the computer can execute it is a sideeffect
 - it's already happening, but we'll be more and more programming droids and other systems - should not we already have a game like this ?
-- [original notes on why use language as the gameplay](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language)
-- [game scenario ideas](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios)
+- [original notes on why use language as the gameplay](https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language)
+- [game scenario ideas](https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios)
 
 ## tying it together: building and the game
 
@@ -313,7 +311,7 @@ TL;DR: game will use [IPFS](ipfs.io) peer-to-peer network, players will use prog
 - so for two minutes players observe the map and write a little amount of code, mostly they amke decisions given the unique generaion
 - the code programs or adjsuts the behavior of rover on mars so that it could visit more places
 - the player that scores the most wins
-- [game scenario ideas](https://github.com/sergeiudris/deathstar.lab/blob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios)
+- [game scenario ideas](https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios)
 - the scenarios and duration and goals - all should be configurable, so we can have a super complex scenarios as well as simple
 - an as they will be open source and user created, installable via a link, the better scenarios over time will become the standard for e-sports
 - and all the progamers will have to learn.. a real programming language, as opposed to being forced into click-grinding

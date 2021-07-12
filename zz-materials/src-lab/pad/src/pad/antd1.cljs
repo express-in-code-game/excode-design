@@ -32,8 +32,8 @@
    ["@ant-design/icons/ReloadOutlined" :default AntIconReloadOutlined]))
 
 
-; https://github.com/sergeiudris/starnet/blob/af86204ff94776ceab140208f5a6e0d654d30eba/ui/src/starnet/ui/alpha/main.cljs
-; https://github.com/sergeiudris/starnet/blob/af86204ff94776ceab140208f5a6e0d654d30eba/ui/src/starnet/ui/alpha/render.cljs
+; https://github.com/DeathStarGame/starnet/blob/af86204ff94776ceab140208f5a6e0d654d30eba/ui/src/starnet/ui/alpha/main.cljs
+; https://github.com/DeathStarGame/starnet/blob/af86204ff94776ceab140208f5a6e0d654d30eba/ui/src/starnet/ui/alpha/render.cljs
 
 (def ant-row (reagent.core/adapt-react-class AntRow))
 (def ant-col (reagent.core/adapt-react-class AntCol))

@@ -1,6 +1,6 @@
 {:paths ["src"]
  :deps {github.DeathStarGame/scenario-api-meta {:local/root  "/ctx/DeathStarGame/src/scenario-api-meta"}
-        github.sergeiudris.deathstar.lab.scenarios.getts/scenario-meta {:local/root  "../scenario-meta"}
-        github.sergeiudris.deathstar.lab.scenarios.getts/player-meta {:local/root  "../player-meta"}
-        github.sergeiudris.deathstar.lab.scenarios.getts/scenario-core {:local/root  "../scenario-core"}
-        github.sergeiudris.deathstar.lab.src/render {:local/root  "../../../src/render"}}}
+        github.DeathStarGame.deathstar-scenarios.getts/scenario-meta {:local/root  "../scenario-meta"}
+        github.DeathStarGame.deathstar-scenarios.getts/player-meta {:local/root  "../player-meta"}
+        github.DeathStarGame.deathstar-scenarios.getts/scenario-core {:local/root  "../scenario-core"}
+        github.DeathStarGame.src/render {:local/root  "../../../src/render"}}}

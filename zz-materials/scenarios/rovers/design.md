@@ -65,7 +65,7 @@ rovers on Mars
 
 ## snapshot: using reagent's run-in-reaction for state
 
-- https://github.com/sergeiudris/deathstar.lab/tree/e50a0b54ace8669907429d005571e5b4cbfa766b/scenarios/rovers
+- https://github.com/DeathStarGame/DeathStarGametree/e50a0b54ace8669907429d005571e5b4cbfa766b/scenarios/rovers
 - the problem is this
   - using derived state is not explcit and scattered,  given that we have processes,operaiotns and asynchrony
   - op ::move-rover arrives to main.cljc and then we jump to core, which for no reason is state aware

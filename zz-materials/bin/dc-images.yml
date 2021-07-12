@@ -4,10 +4,10 @@ services:
 
   # ipfs-image:
   #   # image: ipfs/go-ipfs:latest
-  #   image: local.sergeiudris/go-ipfs:v0.7.0-docker
+  #   image: local/go-ipfs:v0.7.0-docker
   #   build:
-  #     # context: https://github.com/sergeiudris/go-ipfs.git#v0.7.0-docker:.
-  #     context: https://github.com/sergeiudris/go-ipfs.git#aeeeca9ff5ad47283537d0a18ed68d86be707e2b
+  #     # context: https://github.com/go-ipfs.git#v0.7.0-docker:.
+  #     context: https://github.com/go-ipfs.git#aeeeca9ff5ad47283537d0a18ed68d86be707e2b
   #     dockerfile: ./Dockerfile
 
   ubuntu20-openjdk-clj-lein-node:

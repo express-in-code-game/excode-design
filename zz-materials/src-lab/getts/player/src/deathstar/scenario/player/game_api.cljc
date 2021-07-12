@@ -1,12 +1,12 @@
-;; (ns github.sergeiudris.deathstar-lab.scenarios.rovers.game-api
+;; (ns github.DeathStarGame.deathstar-scenarios.rovers.game-api
 ;;   (:require
 ;;    [clojure.core.async :as a :refer [chan go go-loop <! >!  take! put! offer! poll! alt! alts! close!
 ;;                                      pub sub unsub mult tap untap mix admix unmix pipe
 ;;                                      timeout to-chan  sliding-buffer dropping-buffer
 ;;                                      pipeline pipeline-async]]
 
-;;    [github.sergeiudris.deathstar-lab.scenarios.rovers.core :as rovers.core]
-;;    [github.sergeiudris.deathstar-lab.scenarios.rovers.spec :as rovers.spec]))
+;;    [github.DeathStarGame.deathstar-scenarios.rovers.core :as rovers.core]
+;;    [github.DeathStarGame.deathstar-scenarios.rovers.spec :as rovers.spec]))
 
 
 ;; (def ^:private state (rovers.core/create-state (rovers.core/generate-state-data)))
