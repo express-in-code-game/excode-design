@@ -78,3 +78,5 @@
     - no, repository is code only
 - license files?
     - no, repository is code only
+- authors?
+    - no, repo is code only
