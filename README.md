@@ -72,3 +72,5 @@
     - no, only source code and build from source
 - does repo have issues?
     - no, code only
+- attribution headers in files?
+    - no, code only
