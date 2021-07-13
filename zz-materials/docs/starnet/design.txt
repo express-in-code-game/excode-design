@@ -1,5 +1,5 @@
 
-## what
+what
 
 - Starnet
   - a board-like game
@@ -7,7 +7,7 @@
   - complete, free and open to everyone
   - to be worthy of a scene and community around
 
-## on games in general
+on games in general
 
 - games are fundamentally magic, one of the better ways for beings to interact
 - games are being 'produced', but suprisingly, there are no events to play
@@ -23,7 +23,7 @@
   - are complex and interesting enough to be worhty of a community around
   - are moneytization free, come as whole available for everyone, no forced 'if you don't play, you have limit access to updates'
 
-## observations
+observations
 
 - HoMM3
   - AI battles are repetetive
@@ -37,7 +37,7 @@
   - softer graphics, but still dark
   - amazing idea and design
 
-## user experience
+user experience
 
 - events (tournaments, matches) are at the center, home page contains official events and most upvoted
   - games tend to have reasonable duration time, so most events have estimatable start and finish time, they can be  planned for
@@ -85,9 +85,9 @@
   - players can browse game history and watch replays
   - games are also persisted in clients filesystem, can load a replay via a file
 
-## starnet game
+starnet game
 
-### story
+#story
 
   - defend starnet, one shot opportunity of preventing launch of netconrol (controldrone)
   - research, change, build, balance a missiondrone and a team (a hero and research drones)
@@ -99,7 +99,7 @@
   - entities vary, sets, tags, combinations: code,warp drives, fields, elements, fruit, self orient time .. etc.
   - characters, reserach drones start from 0
 
-### gameplay
+#gameplay
 
   - a tiled map
   - player collects varios items, chooses different options, experiencing effects to build a better missionship
@@ -108,7 +108,7 @@
   - randomness on initial generation only
   - optimal game time ~15-90 min
 
-### balance
+#balance
 
 - goal is game completeness, balance, so complete set of entities, no bloating expansions
   - entities have tags(sets): gathering organic discovery etc.
@@ -121,7 +121,7 @@
   - compute capabilities
   - decision making accuracy, energy, vision, vitality
 
-### game 0.1
+#game 0.1
 
 - players (azure and orange) start on the map, charachter is represented with a cape
 - 1 hero, 3 research drones (represented with a colored sphere)
@@ -172,11 +172,11 @@
   - energy
   - hoisting (carrying) capacity
 
-## how
+how
 
 - use repl from the start as it's the most powerful design tool, will inform the design
 
-### cloud
+#cloud
 
 - first, setup CD to the cloud - project must live
 - fixed single server instance
@@ -188,7 +188,7 @@
   - https://github.com/localstack/localstack
   - persist data via docker volumes and EBS
 
-## language of the system
+language of the system
 
 - CPS communicating sequential processes
   - https://www.infoq.com/presentations/clojure-core-async/
@@ -211,7 +211,7 @@
   - in-game events (higher throughput) flow through a dedicated kafka topic
   - game as an enetity (low throughput) is persisted without state (has a ref) and is queryable as users and other data
 
-### game state
+#game state
 
 - the game is powerful, so is the client
 - game is not computed on the server
@@ -231,7 +231,7 @@
 - game state is a record of another topic, changed on in-game events
 
 
-### assets
+#assets
 
 - use s-expressions to gen svg
 - colors, lines, shapes (for cape, spheres, facilities, skills, fruit tree etc.)
@@ -242,12 +242,12 @@
 - point is: assets are code, files are generated
 - but first: events, words, simple shapes; assets will form last
 
-### documentation
+#documentation
 
 - github repo with .md files
 - docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
 
-### steps
+#steps
 
 - setup clj cljs cljc
 - clojure.async clojure.spec test.check
@@ -261,7 +261,7 @@
 - sockets
 - simple game: tiles with values
 
-### considerations
+#considerations
 
 - figwheel main if it's less cpu consuming than shadow-cljs
 - search
@@ -492,7 +492,7 @@
 - rendering
   - precompute assets' states needed for animation, choose a state like a sprite
 
-## cloud
+cloud
 
 - system runs in the cluster
 - cluster is dynamic, opt-in: machines(nodes) join and leave
@@ -505,7 +505,7 @@
   - this way a node may host multiple systems and installation is OS-agnostic
   - agent and node should be installed as container
 
-## identity
+identity
 
 - ideally should be implemented via providers (github google twitch ..)
   - system apps should be completely unaware of identity process, only receiving user's identity (or key to get it) along with request
@@ -540,7 +540,7 @@
   - system will develop mechanisms to expire auto accounts and clear data once the oauth identity layer is operational
   - name is namespaced (as with providers): auto/user1 auto/user2 or starnetgame.io.auto/user1 
 
-## notes on implementation
+notes on implementation
 
 - datastore soultion
   - allows connections from multiple apps, querying, searching

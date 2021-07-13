@@ -1,5 +1,5 @@
 
-## on games in general
+on games in general
 
 - games are fundamentally magic, one of the better ways for beings to interact
 - games are being 'produced', but suprisingly, there are no events to play
@@ -15,7 +15,7 @@
   - are complex and interesting enough to be worhty of a community around
   - are moneytization free, come as whole available for everyone, no forced 'if you don't play, you have limit access to updates'
 
-## observations
+observations
 
 - HoMM3
   - AI battles are repetetive
@@ -29,7 +29,7 @@
   - softer graphics, but still dark
   - amazing idea and design
 
-## user experience
+user experience
 
 - events (tournaments, matches) are at the center, home page contains official events and most upvoted
   - games tend to have reasonable duration time, so most events have estimatable start and finish time, they can be  planned for
@@ -78,13 +78,13 @@
   - games are also persisted in clients filesystem, can load a replay via a file
 
 
-## documentation
+documentation
 
 - github repo with .md files
 - docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
 
 
-## cloud
+cloud
 
 - system runs in the cluster
 - cluster is dynamic, opt-in: machines(nodes) join and leave
@@ -97,7 +97,7 @@
   - this way a node may host multiple systems and installation is OS-agnostic
   - agent and node should be installed as container
 
-## language of the system
+language of the system
 
 - CPS communicating sequential processes
   - https://www.infoq.com/presentations/clojure-core-async/
@@ -109,7 +109,7 @@
   - https://github.com/clojure/core.async
 
 
-## identity
+identity
 
 - ideally should be implemented via providers (github google twitch ..)
   - system apps should be completely unaware of identity process, only receiving user's identity (or key to get it) along with request
@@ -144,7 +144,7 @@
   - system will develop mechanisms to expire auto accounts and clear data once the oauth identity layer is operational
   - name is namespaced (as with providers): auto/user1 auto/user2 or starnetgame.io.auto/user1 
 
-## notes on implementation
+notes on implementation
 
 - datastore soultion
   - allows connections from multiple apps, querying, searching

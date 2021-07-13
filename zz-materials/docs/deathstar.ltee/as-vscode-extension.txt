@@ -1,17 +1,17 @@
 
-# Death Star: search for Spok
+Death Star: search for Spok
 
 rethinking Death Star laptop event edition as vscode extension
 
 - [links to discussion and implementation](https://github.com/DeathStarGame/docs#links)
 
-## understanding desktop
+understanding desktop
 
 - latest advancement was realizing, that having a desktop app (ui), that can lauch server and nrepl as subprocesses, was the way to go
 - it superseded the docker + browser system, because Death Star: laptop event edition should be a desktop app, in the spirit of simplicity and decentralization
 - via plugins, deathstar.ltee can later acquire features of a volunteer cluster, but keeping the simple nature first
 
-## jvm or not jvm
+jvm or not jvm
 
 - since it's desktop by nature, jvm seemed a better choice, given you can do ui with it
 - jvm is simpler than node, because clj can be evaled direclty
@@ -42,7 +42,7 @@ rethinking Death Star laptop event edition as vscode extension
 - so cljs everywhere would be preferable, can it be done ? it seems it can
 
 
-## deathstar.ltee as vscode extension
+deathstar.ltee as vscode extension
 
 - vscode tabs are already subprocesses (browser tabs essentially), which can be great for Death Star: a tab can be a resource or solution space
 - Death Star main tab can be like home page
@@ -65,7 +65,7 @@ rethinking Death Star laptop event edition as vscode extension
     - all key abstractions are already in place: graphics, window resizing and other behavior, tabs, other extensions, editor etc.
     - when thinking about doing Death Star ltee on jvm, all those came to mind as the first thing to do; but with vscode, you start working on the value of the game immediately
 
-## nrepl
+nrepl
 
 - to not rush to any conlusions, it's unclear exactly how to do, but cljs-everywhre is doable
 - cljs compiler and state need to be understood, and how to create new compiler sessions etc.
@@ -75,7 +75,7 @@ rethinking Death Star laptop event edition as vscode extension
 - boom, beatch
 
 
-## or: vscode + background jvm process
+or: vscode + background jvm process
 
 - vscode starts and extension works as it does
 - but it starts a background jvm for whatever can only be done in clojure
@@ -93,7 +93,7 @@ rethinking Death Star laptop event edition as vscode extension
         - if it's Dockerfile (or docker image), docker will be required
 
 
-## repls and tabs
+repls and tabs
 
 - an example state of the editor when playing the game
     - left side has explorer open (game repo), and a {current-game-hash}.cljs file tab
@@ -109,7 +109,7 @@ rethinking Death Star laptop event edition as vscode extension
 - so player if free to get fresh tabs/repls, change reosurce and soltuion space (for example, when changing a file, each space has it's own generated file/ns)
 
 
-## understanding nrepl, clj repl, cljs repl and shadow-cljs: Death Star tabs are like shadow-cljs builds
+understanding nrepl, clj repl, cljs repl and shadow-cljs: Death Star tabs are like shadow-cljs builds
 
 - steps of evaluating cljs code via extension (shadow-cljs example)
     - run multiple builds on shadow's jvm: :build1 :build2 :build3
@@ -147,7 +147,7 @@ rethinking Death Star laptop event edition as vscode extension
     - so it's similar shadow, execpt in self-hosted env we have analyzer cache that is used for initial compiler states
 
 
-## how to approach creating a multiple-tabs-nrepl environment for the game ?
+how to approach creating a multiple-tabs-nrepl environment for the game ?
 
 - jvm is not the issue: it's a different kind of functionality needed for the game, shadow-cljs does not cut it
 - first, it should be built game specific, and from that a generic abstraction (tool) may appear
@@ -161,7 +161,7 @@ rethinking Death Star laptop event edition as vscode extension
 
 
 
-## thinking nodejs
+thinking nodejs
 
 - what apps deathstar builds
     - extension itself
@@ -196,7 +196,7 @@ rethinking Death Star laptop event edition as vscode extension
     - if possible: start vscode headless instance to get vscode.api within the server (for file access and such)?
 
 
-## server conundrum: nodejs or jdk, again
+server conundrum: nodejs or jdk, again
 
 - since the system requires a standlaone server, the question arises: why node? or why jdk?
 - why node
@@ -225,7 +225,7 @@ rethinking Death Star laptop event edition as vscode extension
     - it's either jpackaged biinary on github.releases or docker image on docker hub
     - docker is fine to start with
 
-## beyond jvm just for server: vscode + jvm
+beyond jvm just for server: vscode + jvm
 
 - if only host runs jvm, there is no way to leverage tooling such as nrepl
 - so the first-step solution (before these abstraction can be run on nodejs for example) is to run both vscode and jvm and distribute operations accordingly
@@ -235,7 +235,7 @@ rethinking Death Star laptop event edition as vscode extension
 - yet, overtime abstraction may migrate to a different runtime
 
 
-## vscode + jvm design
+vscode + jvm design
 
 
 - vscode extension
@@ -266,14 +266,14 @@ rethinking Death Star laptop event edition as vscode extension
     - like that
 
 
-## state: it's not about a repl into tab, it's about runtime-less language, data, state
+state: it's not about a repl into tab, it's about runtime-less language, data, state
 
-#### competetive game
+competetive game
 
 - the goal of the game are events, players playing and competing
 - for any game to be competetive, game state should be syncronized and be independent of player's actions (at least consensus)
 
-#### understanding vscode tab: you cannot sync state or advance it
+understanding vscode tab: you cannot sync state or advance it
 - when vscode tab goes into background, it suspends even message passing
 - say multiple players are playing, how would it look like
     - say, every tab can eval code
@@ -285,14 +285,14 @@ rethinking Death Star laptop event edition as vscode extension
     - so when a simulation runs (palyers code in action), somewhere a source of truth (state) must be formed
         - and with tab-REPL approach it is only possible to rely on an open tab somewhere to run the whole simulation and get the state and then sync it; that's not suitable for competetive game
 
-#### problems with REPL, tab, self hosting and tools
+problems with REPL, tab, self hosting and tools
 
 - in short: you cannot simply give a player a REPL into a js environemt (isolated tab,so they can crash it and reload)
 - shadow-cljs is not usable programmatically and it's fair: it's not designed for it
 - figwheel is not a solution either - simpler to use clojurescript compiler with async, new :bundle taregt and webpack
 - building from sratch a cljs build tool (sol) would be cool, but it does not eventually solve the non-stable nature of vscode tabs
 
-#### state, it's about state
+state, it's about state
 - what is the solution then ? palyers still need a REPL , but game state should be advancable, recreatable, syncable and independent of ui 
 - data, data, data: advancing (changing) state approach
     - players eval code, but this code should be clojure common - runtime independent
@@ -302,7 +302,7 @@ rethinking Death Star laptop event edition as vscode extension
     - what the eval, can be run on jvm, nodejs, in the browser or elswhere
     - data, state, logic, processes, channels
 
-#### so what is vscode tab then ? what is sceanrio then ?
+so what is vscode tab then ? what is sceanrio then ?
 
 - vscode tab is a renderer: a sideeffect, that should be disposable and should not affect the state of the game; and it is
 - scenario with runtime-independent approach will consist of two parts
@@ -310,7 +310,7 @@ rethinking Death Star laptop event edition as vscode extension
     - runtime-independent code for advacing state and generating data
     - runtime-independent process (!!! yes, with core async) that provides game-logic api: who wins/loses depending on state and data
 
-#### players evalution, networking and synchronyzation
+players evalution, networking and synchronyzation
 
 - we have both runtimes (all three actually): vsocde extension runs a jvm worker, which hosts a server
 - game state resides on the server and is synced also to every worker (so each player's jvm has game state)
@@ -326,11 +326,11 @@ rethinking Death Star laptop event edition as vscode extension
 - worker/server (the Death Star game, these module will run on both) keep state (data) and advance/replay etc.
 - language, data, state
 
-#### sending code or state changes
+sending code or state changes
 
 - code first (see what's what), or state if needed
 
-#### how to def: namespaces are free
+how to def: namespaces are free
 
 - on the worker, a player will get their namespace (so the can def as much as needed)
 - namespaces can be discarded and re-created
@@ -341,11 +341,11 @@ rethinking Death Star laptop event edition as vscode extension
 - then that state is synced with the server and other's
 - players experimentation state is also synced with others continuosly - so everyone sees what others are up to
 
-#### what tab is
+what tab is
 
 - tab is a glorified renderer over channel
 
-#### discarding/creting copies of palyer's namespace in clojure
+discarding/creting copies of palyer's namespace in clojure
 
 - so player get's a generic nrepl into jvm (boom, boom, boom!! oh, pain is gone..)
 - into their namespace
@@ -353,18 +353,18 @@ rethinking Death Star laptop event edition as vscode extension
 - so player could start a-new
 - but: only state is what matters, and it will be isolated and synced 
 
-#### evalution
+evalution
 
 - evalution is an event, an input, an action (like a click or press of a button)    
 
 
-#### possiblity: syncing players' code file
+possiblity: syncing players' code file
 
 - so on interval a player's file is read and sent to the others (no need to sync anything, jsut send)
 - and if a player chooses, they can open an editor tab (literaly, a file on their disk), that is constatnly re-written (as it comes over network)
 - it's an option, a thing to consider for observing the game - to allow observers to see player's code (in addition to graphics in the tab)
 
-#### how to have independent switchable game states (for each player) in one render-tab ?
+how to have independent switchable game states (for each player) in one render-tab ?
 - approaches
     - namespaces
         - each player's state is synced and arrives and is applied to it's namespace in that render-tab
@@ -378,7 +378,7 @@ rethinking Death Star laptop event edition as vscode extension
         - scenario's rendering is aware that there will be multiple players
 - to keep in mind: scenario should be powerful, free, even if it means more logic
 
-#### render-tab: using it for both game ui and scneario rendering
+render-tab: using it for both game ui and scneario rendering
 
 - hear me out
 - render tab has it's own ui (lobby, actions etc.), namepsaces and tabs (for example, for each player's view)
@@ -387,14 +387,14 @@ rethinking Death Star laptop event edition as vscode extension
 - can iframe communicate with parent documnent ? messaging ? need to be checked
 - the point: it can be single tab approach, which would be better use-wise (code on the left, ui on the right)
         
-#### render-tab: separete tab for game ui and ability to open multiple tabs for scneario states (for each player)
+render-tab: separete tab for game ui and ability to open multiple tabs for scneario states (for each player)
 
 - for example, top-right quater has game ui (lobby and other, complete app)
 - inside that app you can perform operation "open player2 (3,4,5..) game state"
 - in the bottom-right quater in addition to your tab opens the second (3,4,5..) tab for other players
 - so the question: what is better - react tabs and iframes or vscode tabs
 
-#### render-tab: iframes vs multiple vscode-tabs
+render-tab: iframes vs multiple vscode-tabs
 
 - because extension contorls state (and tabs): it keeps data exchange open at all times
 - but with iframes, game ui will be in charge of iframes, which is wrong: it's just a render-input mechanism, extension has the state
@@ -403,7 +403,7 @@ rethinking Death Star laptop event edition as vscode extension
 - with iframes there is more control over ui: certain elements can be absolute-positioned on top of iframes so it's non-limiting ui-wise
 - yes, consider proxing from iframes
 
-#### render-tab: game ui and scenario share the dom
+render-tab: game ui and scenario share the dom
 
 - game ui renders scenario into a section
 - to be precise, it's the sceanrio that is in charge (via api/channels)
@@ -412,7 +412,7 @@ rethinking Death Star laptop event edition as vscode extension
 - but it's the extension that starts the scenario process (but scenario renders itself into a section by id)
 - so extension is a process, render-tab is a process and sceanrio comes in as a process
 
-## simulation as f(state,code,time), why there is no need for cljs self-hosting
+simulation as f(state,code,time), why there is no need for cljs self-hosting
 
 - all happens on the worker
 - player has a discardable/restorable namespace with its state
@@ -439,13 +439,13 @@ rethinking Death Star laptop event edition as vscode extension
     - but ns and variables exist only where the simulation needs to run and where code is submitted - on the worker (and server)
 
 
-## inputs (operations) from scenario's ui (if any) should map to programmatic api unequivocally
+inputs (operations) from scenario's ui (if any) should map to programmatic api unequivocally
 
 - any even from the api should map exactly to an opeation exposed programmatically
 - if a player can move something with mouse it should be available from the repl as well: (move {:somehting :x :y}) 
 
 
-## runtimeless abstractions - user and hub, extension/worker/server - and why worker and server are single abstraction: server
+runtimeless abstractions - user and hub, extension/worker/server - and why worker and server are single abstraction: server
 
 - the initial thinking was: woker is extension's subrpocess, that provides jvm runtime, and server is a separate abstraction for multiplayer
 - but, this is incorrect
@@ -480,7 +480,7 @@ rethinking Death Star laptop event edition as vscode extension
     - you can even not start your own server, but to connect only; but to play (even offline) you always need a running server - no problem, extension will start/stop it as child_process
 
 
-## multiplayer(hub), gamestate and submitting code
+multiplayer(hub), gamestate and submitting code
 
 - extesion reads files and sends to the server (hub)
 - gamestate can either be a channel (an process(s)) of its own, or be hub's dependency
@@ -489,7 +489,7 @@ rethinking Death Star laptop event edition as vscode extension
 - and hub has references(channels) of runnig simultations by uuid - so gamestate is generic system that runs code and sceanrios
 - * scenario loader will be standalone as well
 
-## multiplayer simulation
+multiplayer simulation
 
 - simultaion is a processes, provided by sceanrio
 - with single-plaer simmulation each runs on its own and players score
@@ -498,14 +498,14 @@ rethinking Death Star laptop event edition as vscode extension
     - and it runs each players code at each step: (player1-fn ) (player2-fn) .. against their part of state
     - so on each simulation step every palyer's respective code is applied and we get the resulting scenario state (for example, all new positions of all rovers)
 
-## how gamestate will run submitted code (files)
+how gamestate will run submitted code (files)
 
 - all files are passed to gamestate, changed if needed and evaled - so that new namespaces for that version are created
 - then vars (in those generated namespaces) are passed to multiplayer simmulation as args
 - for example, generate new ns name by using base and gensym: (gensym "deathstar.scenario.rovers1.player") -> deathstar.scenario.rovers1.player67
 - after simulation completes, sync state with user-side and use ns-unmap or remove-ns
 
-## request, response over socket: http is needed, gui as render-input only
+request, response over socket: http is needed, gui as render-input only
 
 - you cannot do request-repospose over sockets (alas), only inside a runtime
 - implementing your own is out of the question - its insane to re=invent the wheel, http already exists
@@ -521,7 +521,7 @@ rethinking Death Star laptop event edition as vscode extension
 - this way input processing is also runtime-less ( will be run on node, but is non-specific)
 - so user-side and server-side communcate via http and socket stream - socket stream is used for gamestate updates
 
-## http as a channel for values
+http as a channel for values
 
 - mapping spec-validated runtime-less values like {:op ::spec/foo :data {:a 1}} to rest makes no sense
 - and graphql is showing that you want to use http as a channel for queries(requests)
@@ -531,13 +531,13 @@ rethinking Death Star laptop event edition as vscode extension
     - use one endpoint /api and post values as you would put! onto a channel
     - all requests go into  a proc(or maybe parallelsim will be added later) and is handled as usual : as op and value 
 
-#### back to worker: as the first step, every player needs a local worker to have their own nrepl connection
+back to worker: as the first step, every player needs a local worker to have their own nrepl connection
 
 - simple: you cannot intercept editor-nrepl communication, so there is no way to identify the connection on server side
 - if all players connect to server's nrepl, they will each get a session, but no way to identify players
 - with local node, it's possible
 
-## wrong: right now, the player can be idetified by unique generated namespace via first eval op (in-ns 'deathstar.scenario.rovers1-e123edn)
+wrong: right now, the player can be idetified by unique generated namespace via first eval op (in-ns 'deathstar.scenario.rovers1-e123edn)
 
 - in theory, possible to map such op to nrepl's session
 - when (in-ns) arrives, that ns is the id of the player
@@ -547,7 +547,7 @@ rethinking Death Star laptop event edition as vscode extension
 - * possible that mult will provide api (a channel) to attach ceratin data (id) to nrepl ops
 
 
-## there is no gui: there is extension and renderer
+there is no gui: there is extension and renderer
 
 - state exists on extension, and it is specced using extension.spec, like list of settings files, connections etc.
 - that state's spec - is needed inside gui to access data keys (they will be fully qualified)
@@ -562,7 +562,7 @@ rethinking Death Star laptop event edition as vscode extension
     - extension has a spec with input|, that is processed alongside cmd| - both are user inputs, representing extension ops
     - gui is a renderer
 
-## player profiles: profile = ns = dir, editor window per profile
+player profiles: profile = ns = dir, editor window per profile
 
 - each players config file(s) and game code resides within a directory (ns, profile)
 - that directory contains, for example, _deathstar.edn - config of tht profile (same as deps.edn or pom or package.json)
@@ -571,21 +571,21 @@ rethinking Death Star laptop event edition as vscode extension
     - first, on extension activation, find deathstar.edn and apply
     - later upgrade: if multiple are opened, the user should be able to select profile from a menu
 
-## starting the server: from extension or on its own? should there be server config in deathstar.edn?
+starting the server: from extension or on its own? should there be server config in deathstar.edn?
 
 - first step - building the edition with server starting on its own
 - focus on the game and events
 - as the next step, server will be able to be started from extension (either using cli and child_processes or preferably docker http api)
 - so deathstar.edn contains only data about server to connect to, no server launch options
 
-## hub operaions (e.g. list-users) should seemlessly use both http and socket channels (which are just pipes)
+hub operaions (e.g. list-users) should seemlessly use both http and socket channels (which are just pipes)
 
 - when http-chan is used for request, the response is piped to hub.chan/ops| on the userside
 - same should be for socket events (updates): hub will broadcast to all users fresh user-list using {::hub.chan/user-list :response} operation
 - it will go over the socket, but value will end up in the same channel as if it was requested via http-chan
 - bottom line: http and socket are just piping for abstract operaions, so "how" the value arrives is unimportant, it is all the same for proc-ops
 
-## scenario's gui inputs are code to evaled within the same nrepl session that player uses from the file
+scenario's gui inputs are code to evaled within the same nrepl session that player uses from the file
 
 - any operation in scenario ui (hover to get info, select ...) is direclty using gam api (same that player uses from repl)
 - e.g. hovering is something like (find-entity ..) etc.
@@ -599,7 +599,7 @@ rethinking Death Star laptop event edition as vscode extension
     - first version of deathstar.ltee will not use any inputs outside of nrepl evals, ui is for rendering/representing data that is part of game state
     - game states are streamed to scenario's gui over socket in full
 
-## hub and users: hub knows only its own operations, if hub needs to send a value to user(s), it is always one of hub's operation
+hub and users: hub knows only its own operations, if hub needs to send a value to user(s), it is always one of hub's operation
 
 - the question is this: should remote(user) be an abstraction with its own channel api? no
 - hub is an abstacration, that has 100% operations
@@ -614,7 +614,7 @@ rethinking Death Star laptop event edition as vscode extension
     - it would iterate over map/coll of {user chan} and do (hub.chan/op {:user-list :response} user-list user-channel|)
     - or within a game, hub would similarly broadcast only to users within the game
 
-## user as channel, :user-connect, :user-join and why hub.tap.remote should have a recv| = user| = hub-stream|
+user as channel, :user-connect, :user-join and why hub.tap.remote should have a recv| = user| = hub-stream|
 
 - user first connects to hub (as anonymous connection) - this is :user-connected operation  in hub.chan
     - this is exactly what happens when socket connects and send| for that user is provided
@@ -631,7 +631,7 @@ rethinking Death Star laptop event edition as vscode extension
     - so it is not part of hub.chan api, it's an argument ro :user-connected
     - tap.remote has no chan api, so it will an arg to proc-ops
 
-## hub and userside abstractions: extension(runtime) should be abstracted into a channel
+hub and userside abstractions: extension(runtime) should be abstracted into a channel
 
 - hub can emit operation/request :create-files on game start (and it expects a confirmation/fail from the userside)
 - so stream of hub events is not one-sided: confirmations are needed
@@ -648,7 +648,7 @@ rethinking Death Star laptop event edition as vscode extension
     - it either can repeat the request(or, userside will resend without the 2 request) or it can change the score for that user to 0 for that simulation run
     - point is, hub and userside act as a system
 
-## hub is the system, userside is state sink and input stream like renderer is for userside
+hub is the system, userside is state sink and input stream like renderer is for userside
 
 - abstract runtime away as a process with a chan api (fs, show-info, render)
 - hub perfroms those ops over user channel
@@ -660,7 +660,7 @@ rethinking Death Star laptop event edition as vscode extension
     - hub can make requests to the user-side, the only way to do so is socket with operation ids
     - and if such meachanism - request/response over socket - is needed for the system, it would be simpler to use it instead of both socket and http
 
-## rethinking is needed: users should be able to intstall game as one thing and run/play scenarios offline
+rethinking is needed: users should be able to intstall game as one thing and run/play scenarios offline
 
 - after installing Starcraft, it's clear how important it is to be able to run/play the game offline, independently
 - and game should be *a* thing, intall-launch-try a scenario
@@ -686,31 +686,31 @@ rethinking Death Star laptop event edition as vscode extension
     - we could make user-side as jpackaged app with its own editor and options to use external editor
     - ...
 
-## importance of react for rendering
+importance of react for rendering
 
 - cannot be underestimated: react, antd and other tools are not a minor thing, they cannot be replaced with javafx
 - rendering of game app ui and scenarios should be done with react or an equal/better alternative, which there are none
 
-## implementing nrepl on node: this is waht stands in between vscode extension and complete offline-playable game
+implementing nrepl on node: this is waht stands in between vscode extension and complete offline-playable game
 
 - if there is a possibility of loauching an nrepl on node, than it would be possilbe to have the complete game in vscode(electron)
 - what does server do in that case? sysching state and events db? maybe only sysching state, so events can be hosted against AI
 - but that is again the server: just lauched locally! so it's not about server not doing somehting, it's about game app being capable of running the server
 - should every palyer have their own repl or connect to server? be it local or remote?
 
-## jpakceged java app with embeded webengine for rendering gui in react
+jpakceged java app with embeded webengine for rendering gui in react
 
 - it's like electron, but on jvm
 - then again, nrepl needs work (it's not programmable enough, might require forking, and it's simpler to implement it properly, runtime-less, for node/jvm)
 - it does not have an editor: some *have to implement an embedded editor for the game* and have an optional external editor
 - external database is still not cross-paltform launchable without docker, so this "one jvm app for local and server" dies if there is no proper jvm-embedded db
 
-## again again again: it is always a server, lcoal or remote, explicit or implicit, always 0, 1 or more
+again again again: it is always a server, lcoal or remote, explicit or implicit, always 0, 1 or more
 
 - regardless of runtimes etc., we always connect to the server - local or remote
 - we can play offline by lauching (implicitley) a server, connecting to it and running/playing scenarios as 1 player
 
-## one app dilemma: it's either vscode + hosted nrepl + nodejs server, or jpackaged app + make-embedded-editor
+one app dilemma: it's either vscode + hosted nrepl + nodejs server, or jpackaged app + make-embedded-editor
 
 - if vscode
     - need to make a hostable nrepl
@@ -721,7 +721,7 @@ rethinking Death Star laptop event edition as vscode extension
     - make your own editor
     - embedded db for jvm
 
-## jvm app with webengine rendering: electron-like, but on jvm
+jvm app with webengine rendering: electron-like, but on jvm
 
 - that would allow to use npm libs for all gui and making an embeded editor for the game
 - it's jvm, but rendering done with browser tabs; possible ? why not electron?
@@ -729,7 +729,7 @@ rethinking Death Star laptop event edition as vscode extension
     - if "one app", than server needs to be embedded (for multithreading)
     - nodejs threads? how important is jvms multitheading?
 
-## what was missing in understanding: it should be jvm, but with js renderer for gui
+what was missing in understanding: it should be jvm, but with js renderer for gui
 
 - it should be jvm desktop app with embedded db
 - but instaed of javafx etc., web browser tabs (like in electron) should be used for rendering/input stream
@@ -740,13 +740,13 @@ rethinking Death Star laptop event edition as vscode extension
     - how will tab (js render page) communicate with the app?
     - how to do it so that whole gui (like in electron) is js-based ?
 
-## external editor first for jvm one-app
+external editor first for jvm one-app
 
 - first, use external editor (e.g. vsocde)
 - once the game works as with extenral editor, it would be possible to add embedded editor
 - this would allow for design to stay decoupled and file-driven
 
-## when to launch server: always, server is integral part of user app
+when to launch server: always, server is integral part of user app
 
 - since the objective is one-app, user should always be able to play scenarios offline (locally)
 - that means, that server must always be luanched as part of the app and we could select scenarios and play offline
@@ -759,7 +759,7 @@ rethinking Death Star laptop event edition as vscode extension
     - so that if we want to play online-only (on a remote server), less resources are used
 - but: we don't care about memeory, only CPU
 
-## distribution: uberjars and beyond
+distribution: uberjars and beyond
 
 - the goal is proper user experience with installable/ auto-updateable app, like electron provides (and probably Qt etc.)
 - to note, as it already works out-of-the-box, uberjars can be launched via double click, so users can download the binary and launch by simply clicking
@@ -770,7 +770,7 @@ rethinking Death Star laptop event edition as vscode extension
     - as the basic, GUI can inform user that new version is available
     - we can click and download a new binary and can inform "stop the app, launch the new binary"
 
-## desktop app as a composition of apps(services/processes)
+desktop app as a composition of apps(services/processes)
 
 - explore the possibility of app being comprised of apps, some may run constantly in the background
 - it would act like docker, exposigin some kind of api, so that leading processes can access the system and start/stop other apps
@@ -778,14 +778,14 @@ rethinking Death Star laptop event edition as vscode extension
 - obviously, such code can be part of the app itself and processes can be core.asycn processes, so this can be achieved programmatically
 - but from distribution stadnpoint and ability to have background processes, there may be existing soltuions/approaches that would be better 
 
-## mistake: premature optimization, first step should clearly be single jvm with server app started/stopped in main/ops
+mistake: premature optimization, first step should clearly be single jvm with server app started/stopped in main/ops
 
 - simple: the first edition of the game (features and everything should be built)
 - preserve namespaces, abstractions, decoupling using channels, but within a single jvm
 - as it is the optimal way of delivering the working app
 - next will be next
 
-## why user app (gui) should be dekstop at all, not a browser app?
+why user app (gui) should be dekstop at all, not a browser app?
 
 - because file system
 - users need to be able to edit code files and opt to maintain their game hsitory on a repo
@@ -796,7 +796,7 @@ rethinking Death Star laptop event edition as vscode extension
 - if we don't do files at all, and give user text-area per game and then discard, it will evetually lead to "we need a button to save...", so we'll be back on ugly-fs again
 - if we want to store game files in a repo and not implement our github, the user app (ui) should have access to file system, which makes it an editor and a desktop app
 
-## we want reagent, we want the ui done with web tools, give user (us) the web page for gui
+we want reagent, we want the ui done with web tools, give user (us) the web page for gui
 
 - it's not just about "can we have react(reagent) for javafx", because nobody knows javafx
 - the game wants to embrace the most used programming medium - the browser page - with all it's tooling
@@ -808,7 +808,7 @@ rethinking Death Star laptop event edition as vscode extension
 - funcdamentally, ideally, a sceario gui is exactly a program to be run in a browser page enviroment, using react and familiar web
 
 
-## jvm desktop app vs electron + docker/jvm dilemma, if we require user to have jvm, why not docker? 
+jvm desktop app vs electron + docker/jvm dilemma, if we require user to have jvm, why not docker? 
 
 - step by step, logical:
 - we want and need desktop app, because file system; so editor
@@ -834,13 +834,13 @@ rethinking Death Star laptop event edition as vscode extension
 - bottom line question: if we require user to have jvm, why not docker? 
 
 
-## explicit server data: stored in repo in .server dir and excluded in .gitignore
+explicit server data: stored in repo in .server dir and excluded in .gitignore
 
 - when the game is launched, we open - like with editor - a directory, a player's repo, and that's an "instance"
 - server data may be stored in a `.server` dir or similar and be excluded in gitignore
 - so the system does not create implicit directories somewhere for data, rather the player's namespace is the root
 
-## don't start the server from gui from the beginning, but incrementally
+don't start the server from gui from the beginning, but incrementally
 
 - start it explicitly in docker, same as in dev, in GUI select servers from dropdown
 - the way of jvm app means essentially rebuilding an editor, but the goal is to make the game
@@ -861,7 +861,7 @@ rethinking Death Star laptop event edition as vscode extension
     - natural question at this moment: well, should not that be a press of a button? both docker installation and starting the server?
     - so reaction will be: this is a bad design, misinformation - "can't even play a scneario without some heavy manual setup" 
 
-## game is an editor extension, always, either we build one or use existing
+game is an editor extension, always, either we build one or use existing
 
 - the fundamental design characteristic of Death Star is that we open a directory on disk with files, create code files for games
 - it's a repo, a folder on operatin system, just like any other src ocde repo, but this one has game files
@@ -872,7 +872,7 @@ rethinking Death Star laptop event edition as vscode extension
 - it's an editor first, always
 
 
-## focus on the what, being able to play scenarios and events, for pros, embrace great tools, compose system of elements (vscode extension + server in docker), go from many to one
+focus on the what, being able to play scenarios and events, for pros, embrace great tools, compose system of elements (vscode extension + server in docker), go from many to one
 
 - docker and vscode extension allow and inform a decoupled design, thinking
 - the single jvm app may not be incorrect after all, but: the mistake is to start with it
@@ -891,7 +891,7 @@ rethinking Death Star laptop event edition as vscode extension
     - however, at this point the components are known and a new design - for a single jvm or aother - can be developed
 - don't build well-made tools, build the game - scenarios and events 
 
-## vscode extension + server is perfect
+vscode extension + server is perfect
 
 - we don't want to build an editor, we want the game, scenarios and tournaments
 - server is always a standalone app (subprocess or not)
@@ -902,11 +902,11 @@ rethinking Death Star laptop event edition as vscode extension
 - so we have a luxury of the best editor out there that happens to have all the desired qualities - web gui with react, clojure-compatible runtime of nodejs/browser
 - and further down the road, we are free to automate downloading/laucnhing server and isnalling what's needed right in the game's gui
 
-## leverage deps tool to install scenarios
+leverage deps tool to install scenarios
 
 - for downloading/storing scenarios see how to leverage deps
 
-## since extension (user app) is a remote renderer/input collection/state sink, and server is the system, identity is needed
+since extension (user app) is a remote renderer/input collection/state sink, and server is the system, identity is needed
 
 - just uisng a uuid and ephemeral connection may end up swaying system development into patches and tricks that would not be simpler/faster
 - say, we launch the server, no we want to download scenarios or remove a player, how do we know who is the host/responsible?
@@ -924,7 +924,7 @@ rethinking Death Star laptop event edition as vscode extension
 - we want to build the playable game, but will bag of workarounds instead of identity/database actually speed up? they definately free thinking up and allow to design the system, that's for sure
 - can we do both: think palyer-to-player, simply, but build properly? kind of appraoch building thouroughly, but step out (by imaging the system without generic layers) and design free-mindedly? 
 
-## bold: store user files on the server? consider providing browser GUI?
+bold: store user files on the server? consider providing browser GUI?
 
 - let's be bold and even consider this
 - we can store all game files, from all users on the server, with proper identity layer
@@ -937,7 +937,7 @@ rethinking Death Star laptop event edition as vscode extension
     - simple: system can me made work (with files and everything - EVERYTHING), just without the REPL
     - and this is toatally fine and superb, as it can be cleanly added/developed later
 
-## yes, server and browser tab, best design and user experience
+yes, server and browser tab, best design and user experience
 
 - see above and project talk # 4 on project's youtube channel
 

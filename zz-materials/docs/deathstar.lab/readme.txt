@@ -1,7 +1,7 @@
-# deathstar.lab
+deathstar.lab
 a contributor's lab for DeathStarGame project https://github.com/DeathStarGame/DeathStarGame
 
-## notes
+notes
 
 - [2020-10-27 github.com/DeathStarGame: idea of a new esport game](https://github.com/DeathStarGame/DeathStarGameblob/4ebb0cfdef97ca52f6ee5101022ad42cc8e000c2/posts/2020-10-27-idea-of-a-new-esport-game.md)
 - [notes on game tournaments, events](https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/cloud-native-system/design.md#user-experience)

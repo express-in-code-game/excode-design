@@ -1,4 +1,4 @@
-## we need to think/create/build the project features - events,scenarios
+we need to think/create/build the project features - events,scenarios
 
 - the thinking/building torunaments and events should be unlocked
 - we can either design graphically/express in words all waht system does - purely in docs
@@ -25,7 +25,7 @@
 - bottom line: we need to either draw/describe the whole system without code, or build it properly, with idenetity and multiplayer, but via layers
 - tournamets, events, scenarios, user and player experience - those should be a daily focus, not tools/lack of abstactions/tools
 
-## system is simple: IPFS peers and decentralized distirbuted graph db  
+system is simple: IPFS peers and decentralized distirbuted graph db  
 
 - peers already solved by IPFS
 - db

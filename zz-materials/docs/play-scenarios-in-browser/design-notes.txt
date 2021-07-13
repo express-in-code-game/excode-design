@@ -6,7 +6,7 @@ Continuation of:
 - [../deathstar.ltee/as-vscode-extension.md](../deathstar.ltee/as-vscode-extension.md)
 - [../deathstar.ltee/design-notes.md](../deathstar.ltee/design-notes.md)
 
-## app design
+app design
 
 <img height="512px" src="./svg/2020-10-25-extensions.svg"></img>
 
@@ -75,7 +75,7 @@ Continuation of:
     - we can send that peer id manually to others (email,chat) and they should be able to connect to our browser tab
     - now it's possible to exchange messages bidirectionally, with players being connected to our tab (many-to-one)
 
-#### realizing: it should be an app around IPFS node
+realizing: it should be an app around IPFS node
 
 - IPFS node is identity and networking
   - given the design above, we communicate as peers via IPFS

@@ -1,9 +1,9 @@
-## what it is
+what it is
 
 - players build/compose/create compositions/solutions using a language
 - players express/describe a program/logic/expression using a language
 
-## name
+name
 
 - Death Star Game
 
@@ -15,14 +15,14 @@ And it's juicy and fun.
 Plus, Death Star resembles a computer system.
 Not to mention, the theme - perfect for the programming game - droids, space and stuff like that. But not limiting.
 
-## name attempts
+name attempts
 
 - express-in-langage (eil expil exlan exilan)
 - express-in-code (eic excode incode in-code)
 - express-via/in-a-language (eval)
 - declare/define/write-in-code
 
-## words
+words
 
     - build bild
     - solutiion

@@ -1,6 +1,6 @@
 rovers on Mars
 
-## scenario program and player program
+scenario program and player program
 
 - goal of the rover is to score highest by visiting most points
 - rover has a radius of vision, where it sees points and chooses which one to move towards
@@ -18,20 +18,20 @@ rovers on Mars
 - now, we players see the whole map from the start
 - and although we cannot use that data when scenario program asks for next move, it's still possible to program rover to move in the general direction we see visually on the map, but rover does not
 
-## simulation cycle: write program - rover takes 10 steps - adjust program - next 10 steps
+simulation cycle: write program - rover takes 10 steps - adjust program - next 10 steps
 
 - we write a program (logic to make decison about next position) for 1min
 - then scenario runs simulation for 10 steps/ticks - we see it on the map
 - we have another minute to adjust rover's program for the next part of the journey
 - write program - rover takes 10 steps - adjust program - next 10 steps - ...
 
-## distance and energy instead of paths
+distance and energy instead of paths
 
 - rovers sees locations and visits them
 - energy spent is proportional to distance (and also field interference - so line and circle intersection)
 - visting locations changes rover's state
 
-## multiple rovers: solution to the problem of 'why not just click-draw a path for the rover'
+multiple rovers: solution to the problem of 'why not just click-draw a path for the rover'
 
 - if we have a single rover, and it  needs to find it's path, we instinctively (and correctly) want to specify the path for the rover
 - if so, it seems pointless to program rover to choose the path when we can (and in reality we do) draw a path
@@ -45,7 +45,7 @@ rovers on Mars
   - we have limited time and we must modify their program so all of them visited maximum number of locations (or found that something, plot thickens)
 - this way we don't look at a rover, but rather think "what program would be most optimal for the current scenario goal given all 4 rovers' positions"
 
-## multiple rovers: goals and strategies
+multiple rovers: goals and strategies
 
 - objectives
   - reach one location with any of the rovers (find that something)
@@ -56,14 +56,14 @@ rovers on Mars
     - if scenario's generated objective is to react , player may choose to make program work best for that rover (which we see on the map) and let others fails
   - make program generic, giving a couple of rovers a chance to reach location(s)
 
-## player sends a list of 10 high level operations
+player sends a list of 10 high level operations
 
 - each op is an option map to a function
 - scenario does not send data, player defined ops are from looking at the map
 - somehow think about using logic or predicates as part of data
 - once scenario receives data, it advances rover ten steps, players have another minute to think/adjust their op list
 
-## snapshot: using reagent's run-in-reaction for state
+snapshot: using reagent's run-in-reaction for state
 
 - https://github.com/DeathStarGame/DeathStarGametree/e50a0b54ace8669907429d005571e5b4cbfa766b/scenarios/rovers
 - the problem is this

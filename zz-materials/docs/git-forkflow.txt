@@ -1,11 +1,11 @@
-## merging on github
+merging on github
 
 - use rebase pull request, it will put incoming commit after the last commit
 - say upstream has commits `1-2-5` where numbers represetn time of commits
 - and a fork has `1-2-3-4`
 - after merge it will be `1-2-5-3-4`, and `3 4` commit hashes will change, as we wanted
 
-## updating local fork afterwards
+updating local fork afterwards
 
 - say, when all that happened fork added another commit and has `1-2-5-6`, wheres upstream has `1-2-5-3-4`
 - we do
@@ -17,18 +17,18 @@ git rebase -i upstream/main
 ```
 - it will show us only commit `6`, and after rebase it will be `1-2-5-3-4-6`, which is the desired outcome
 
-## updating manually
+updating manually
 
 - it's the same
 - we clone the fork, add upstream, rebase onto it fork's changes and push to upstream
 - the only difference from fork author is that we have credentials to push to upstream repo
 - github does that with rebase pull request, except manually we even can squash commits (but unnecessary - fork author should do that and conflicts)
 
-## conflicts: reoslving is up to fork/PR author
+conflicts: reoslving is up to fork/PR author
 
 - simple: before creating a pull request or indicating that fork can be merged, fork author should rebase on top of upstream and resolve conflicts if any
 
-## many people, one project: using a branch(s) as a personal lab, hashes as snapshots
+many people, one project: using a branch(s) as a personal lab, hashes as snapshots
 
 - there is `upstream` repo https://github.com/DeathStarGame/DeathStarGame
 - a contributor forks, and creates a `design` branch or `lab` branch or uses `main` for that and `upstream` branch to prepare pull requests
@@ -53,23 +53,23 @@ git rebase -i upstream/main
   - well, it's trivial - it is exaclty our fork (plus some files)
   - and if we need a snaphost, we can clone in another dir and checkout hash (see both in the editor)
 
-## git how to merge only certain directories from fork
+git how to merge only certain directories from fork
 
 - https://stackoverflow.com/questions/449541/how-can-i-selectively-merge-or-pick-changes-from-another-branch-in-git
   - https://jasonrudolph.com/blog/2009/02/25/git-tip-how-to-merge-specific-files-from-another-branch/
 
-## git pull from fork
+git pull from fork
 
 - Git rebase from remote fork repo
   - https://gist.github.com/ravibhure/a7e0918ff4937c9ea1c456698dcd58aa
 
-## git attributes to ingore files on merge
+git attributes to ingore files on merge
 
 - https://stackoverflow.com/questions/15232000/git-ignore-files-during-merge
   - https://git-scm.com/book/en/v2/Customizing-Git-Git-Attributes#_merge_strategies
 - https://medium.com/@porteneuve/how-to-make-git-preserve-specific-files-while-merging-18c92343826b
 
-## how to merge pull requests from github without merge commits 
+how to merge pull requests from github without merge commits 
 
 - question is: how to avoid using patches, yet be able to "merge" github pull requets
 - we cannot use github ui
@@ -102,7 +102,7 @@ git checkout main # this should be exaclty our upstream main, so we can even do 
 git push upstream main:main # pay attention, as we are using oringin/main to push to upstream, so it should be in sync
 ```
 
-## git patches
+git patches
 
 - https://clojurescript.org/community/patches
   - https://github.com/clojure/clojurescript/wiki/Patches
@@ -125,7 +125,7 @@ git push upstream main:main # pay attention, as we are using oringin/main to pus
     - so patches = rebase 
     - if we use git 2.29 + to do `git rebase -i upstream/main --committer-date-is-author-date` we rewrite all our hashes, but committer dates are preserved, but what's the point? hash history is broken
 
-## git.git workflow
+git.git workflow
 
 - gitworkflows Documentation - Git
   - https://git-scm.com/docs/gitworkflows#:~:text=The%20important%20difference%20is%20that,while%20everyone%20else%20sends%20patches.
@@ -133,7 +133,7 @@ git push upstream main:main # pay attention, as we are using oringin/main to pus
   - > If the maintainer tells you that your patch no longer applies to the current upstream, you will have to rebase your topic (you cannot use a merge because you cannot format-patch merges):
   - > You can then fix the conflicts during the rebase. Presumably you have not published your topic other than by mail, so rebasing it is not a problem.
 
-## linux kernel git workflow
+linux kernel git workflow
 
 - https://stackoverflow.com/questions/30268332/why-does-the-linux-kernel-repository-have-only-one-branch/30268416
   - https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
@@ -144,7 +144,7 @@ git push upstream main:main # pay attention, as we are using oringin/main to pus
   - https://www.kernel.org/doc/html/latest/maintainer/rebasing-and-merging.html#:~:text=Merging%20is%20a%20common%20operation,nearly%209%25%20of%20the%20total.&text=The%20kernel%20is%20not%20such,most%20likely%2C%20lead%20to%20trouble.
 
 
-## thinking: rebase for upstream, merge for lab
+thinking: rebase for upstream, merge for lab
 
 - we rebase and pick commits from lab and generate a new patch commit onto our fork's main branch
 - that commit does not exist anywhere yet
@@ -159,7 +159,7 @@ git push upstream main:main # pay attention, as we are using oringin/main to pus
 - and to go from lab to upstream, we go rebase,squash again
 
 
-## DeathStarGame forkflow
+DeathStarGame forkflow
 
 - `upstream` - is the source of the project, the https://github.com/DeathStarGame/DeathStarGame
 - fork, create your `fork/lab` branch, commit at your pace but with respect: lab is our space as contirbutors, history of lab branch matters for consistency of links, so rebase wisely and as you go
@@ -172,7 +172,7 @@ git push upstream main:main # pay attention, as we are using oringin/main to pus
 - AND - the key moment - we `merge` `upstream/main` into our `fork/lab`, resolving conflicts if needed, so that everybody's unique lab now has the latest version of the project
 - we are not limited to 2 branches, but these 2 should be the core/key branches , others are at fork's owner heart's content
 
-## fork is a fork, lab repo is lab repo
+fork is a fork, lab repo is lab repo
 
 - project repo (any repo) must not have `lab` branches
 - fork contains contributor's take on the project and other branches (views) as needed
@@ -180,7 +180,7 @@ git push upstream main:main # pay attention, as we are using oringin/main to pus
 - talk about it in a video https://www.youtube.com/watch?v=ND4PRp9GLJs
 
 
-## forkflow
+forkflow
 
 - fork, do stuff in `main`, rebase-squash into a nice commit, create a branch for PR like `main-PR` and create a PR on github
 - maintainer will see the PR and will clone `main-PR` branch and add that change onto the tip of projects `main` (via a new rebase)
@@ -192,7 +192,7 @@ git push upstream main:main # pay attention, as we are using oringin/main to pus
   - yes, we create an additional merge commit, but - it will be eventually rebase-squashed
   - but before that happens, that gives us a linear local history *before* we are ready for rebase, but already want changes (without the need for deceiving --committer-date-is-author-date)
 
-## rebasing and merging: both are weclome
+rebasing and merging: both are weclome
 
 - rebase for local cleanup, merges for else
 - https://www.kernel.org/doc/html/latest/maintainer/rebasing-and-merging.html#rebasing-and-merging

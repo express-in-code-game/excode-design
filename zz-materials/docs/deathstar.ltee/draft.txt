@@ -1,5 +1,5 @@
 
-## on being able to play events before the volunteer auto cluster (origin) exists
+on being able to play events before the volunteer auto cluster (origin) exists
 
 - auto-cluster is a higher level abstraction that is closer to an ideal tool, but not a blockng requirement
 - the goal, clearly is to have events , so what's the approach ?
@@ -14,7 +14,7 @@
 - system can be hosted on a laptop with ease, should be designed efficiently, don't do what client machines can
     - e.g. host should only transfer game events data, with derived state being computed on the clients
 
-## no need for editor extensions: a directory with subdirs and files, edit with any editor
+no need for editor extensions: a directory with subdirs and files, edit with any editor
 
 - game will use  a directory  (user's choice, can be a persistent git repo) to store code files
 - game will create a uniquely named subdir for each game (even on restart)
@@ -27,13 +27,13 @@
 - files will be read by the game, it's up to the player to edit and save on time
 - REPL server should be local, apply updates from upstream and handle expression evaluations 
 
-## scenario leads the way
+scenario leads the way
 
 - scenario chooses and implements ui and win conditions, game flow
 - it complies to game apis and uses them to read/eval code etc.
 - this way scenarios stay diverse and unbounded, decoupling general concerns from a scneario's gameplay
 
-## drafts
+drafts
 
 - Blizzards War Chest league is an absolutely brilliant event
     - https://liquipedia.net/starcraft2/War_Chest_Team_League
@@ -49,9 +49,9 @@
 - definately drafts should be a key element of Death Star Game
 
 
-## scenarios
+scenarios
 
-#### battle
+battle
 
 - units like in rts, but with more hp (like heroes)
 - initial position may be random, but mirrored
