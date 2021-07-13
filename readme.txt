@@ -1,9 +1,8 @@
-
-# DeathStarGame
+DeathStarGame
 
 - the game, multiplayer, ever non-commercial money-free program
 
-## ever free and non-commercial
+ever free and non-commercial
 
 - DeathStarGame is *ever any-money-concerns-free program*, openly created and contributed
 - it's not a org, not a project, not a namespace - it's just a program
@@ -12,7 +11,7 @@
 - DeathStarGame is a children's playground, an inspiration-driven development
 - we are bulding a spacious, epic, designed for e-sports, yet elegant and simple game for players to perform, somehting Jesus would play
 
-## program in a nutshell
+program in a nutshell
 
 - what's the point of the program ?
     - build a game for e-sport, for players to perform
