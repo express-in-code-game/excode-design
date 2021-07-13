@@ -8,8 +8,6 @@ Continuation of:
 
 app design
 
-<img height="512px" src="./svg/2020-10-25-extensions.svg"></img>
-
 - extensions self "register" - perform needed ops using deathstar.ext.main.chan api, main has app's db(state) and exposes ops
   - e.g. (ext.main.chan/add-tab ops{name 'resolvable-symbol-to-renderer ..}) - assoc symbol into db atom and we see gui updated with for example new tab
   (ext.main.chan/another-state-changing-op..)
@@ -87,8 +85,6 @@ realizing: it should be an app around IPFS node
   - webwrokers cannot talk to each other
   - it's fragile long term, but since we've realized it's IPFS node, we can talk to it from app as well
 - it should be a docker deployment or a way to turn it into installable binary with web gui
-
-<img height="512px" src="./svg/2020-10-26-IPFS-peers.svg"></img>
 
 - it's possible to launch several containers/deployments on one machine for multiplayer development
 - user does not need to install IPFS - as the instance comes with IPFS node
