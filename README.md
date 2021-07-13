@@ -24,6 +24,7 @@
     - should be simple, complete, finite - like tennis, football, basketball, Broodwar, Battle Toads - without updates, unlike AoE2 where many civs have many details that keep on changing
     - matches: like in tennis or big starcraft/aoe2 torunaments, or basketball - players should play a match a day, bo5/bo7, give a performance, and game should be 
     designed for players to perform, quality over quantity, a match is an event
+    - match duration time is like in tennis - not fixed
     - game comes with no ladder - only host and connect
     - no chat in the program, only the game
     - game is not global, nor decentralized - users host and connect as usual, program stores data locally only, on user computer it runs on
