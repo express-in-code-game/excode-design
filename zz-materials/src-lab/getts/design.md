@@ -1,9 +1,9 @@
 
-- <s>mouse only
+- mouse only
 - in time, select a path (connect locations to visit)
 - aliens gotta be featured
 - a hero wants to get to the ship
-- so like HoMM3, but about visting places</s>
+- so like HoMM3, but about visting places
 
 - no, outside of DeathStarGame's deisgn
 - players exchage programs and use porgramming lanugage as the api

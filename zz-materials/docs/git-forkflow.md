@@ -30,7 +30,7 @@ git rebase -i upstream/main
 
 ## ~~many people, one project: using a branch(s) as a personal lab, hashes as snapshots~~
 
-- <s>there is `upstream` repo https://github.com/DeathStarGame/DeathStarGame
+- there is `upstream` repo https://github.com/DeathStarGame/DeathStarGame
 - a contributor forks, and creates a `design` branch or `lab` branch or uses `main` for that and `upstream` branch to prepare pull requests
 - contirbutor's branches are their choice and effectively are unrelated histories, and are never merged
 - they are like repos, but as part of the same repo
@@ -51,7 +51,7 @@ git rebase -i upstream/main
 - but that's fine, we can always delete `usptream` branch and copy it from upstream repo itself
 - how to have `~/code/` contain both `DeathStarGame` and `cljctools`
   - well, it's trivial - it is exaclty our fork (plus some files)
-  - and if we need a snaphost, we can clone in another dir and checkout hash (see both in the editor)</s>
+  - and if we need a snaphost, we can clone in another dir and checkout hash (see both in the editor)
 
 ## git how to merge only certain directories from fork
 
@@ -146,7 +146,7 @@ git push upstream main:main # pay attention, as we are using oringin/main to pus
 
 ## ~~thinking: rebase for upstream, merge for lab~~
 
-- <s>we rebase and pick commits from lab and generate a new patch commit onto our fork's main branch
+- we rebase and pick commits from lab and generate a new patch commit onto our fork's main branch
 - that commit does not exist anywhere yet
 - then we rebase-merge lineraly into upstream's main branch, generating a new hash again (we have a choice to lie or not with --committer-date-is-author-date)
 - at this point
@@ -156,12 +156,12 @@ git push upstream main:main # pay attention, as we are using oringin/main to pus
   - now some more patches like that happen to upstream/main and now our `fork/lab` does not have the code, only fork/main does (because it's a mirror)
   - on branch fork/lab we do actual git merge with mereg commit: git merge upstream/main or origin/main, adding all the changes from upstream reapo into our branch and creating an extra merge commit
 - that allows to take changes from upstream into lab
-- and to go from lab to upstream, we go rebase,squash again</s>
+- and to go from lab to upstream, we go rebase,squash again
 
 
 ## ~~DeathStarGame forkflow~~
 
-- <s>`upstream` - is the source of the project, the https://github.com/DeathStarGame/DeathStarGame
+- `upstream` - is the source of the project, the https://github.com/DeathStarGame/DeathStarGame
 - fork, create your `fork/lab` branch, commit at your pace but with respect: lab is our space as contirbutors, history of lab branch matters for consistency of links, so rebase wisely and as you go
 - `fork/main` is a mirror of DeathStarGame repo, it is the actual fork
 - `fork/lab` should have a `lab` directory or other that do not collide with any dirs or files inside `upstream/main` repo, and commits should be separate for both (so that during rebase we can pick only non-lab, actually valuable commits)
@@ -170,7 +170,7 @@ git push upstream main:main # pay attention, as we are using oringin/main to pus
 - the maintainer of `upstream` does the rebase of those changes on top of main (creating new hash because there can be more changes and chooses whether or not to --committer-date-is-author-date, better not - author date exists already, committer can be different)
 - now `upstream` has the changes and all the forks need to rebase their `fork/main` onto `upstream/main` - now everyone has the latest version of the project as part of their fork
 - AND - the key moment - we `merge` `upstream/main` into our `fork/lab`, resolving conflicts if needed, so that everybody's unique lab now has the latest version of the project
-- we are not limited to 2 branches, but these 2 should be the core/key branches , others are at fork's owner heart's content</s>
+- we are not limited to 2 branches, but these 2 should be the core/key branches , others are at fork's owner heart's content
 
 ## fork is a fork, lab repo is lab repo
 
