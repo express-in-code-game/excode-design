@@ -65,6 +65,5 @@ IPFS/libp2p is for users/peers netwroking, while browser and docker apps still n
 
 imagining stuff: rsocket and netifi+traefik-like router 
 
-<img height="648px" src="./svg/2020-10-22-rsocket.svg"></img>
 
 
