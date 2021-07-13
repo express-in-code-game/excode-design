@@ -28,7 +28,7 @@ git rebase -i upstream/main
 
 - simple: before creating a pull request or indicating that fork can be merged, fork author should rebase on top of upstream and resolve conflicts if any
 
-## ~~many people, one project: using a branch(s) as a personal lab, hashes as snapshots~~
+## many people, one project: using a branch(s) as a personal lab, hashes as snapshots
 
 - there is `upstream` repo https://github.com/DeathStarGame/DeathStarGame
 - a contributor forks, and creates a `design` branch or `lab` branch or uses `main` for that and `upstream` branch to prepare pull requests
@@ -144,7 +144,7 @@ git push upstream main:main # pay attention, as we are using oringin/main to pus
   - https://www.kernel.org/doc/html/latest/maintainer/rebasing-and-merging.html#:~:text=Merging%20is%20a%20common%20operation,nearly%209%25%20of%20the%20total.&text=The%20kernel%20is%20not%20such,most%20likely%2C%20lead%20to%20trouble.
 
 
-## ~~thinking: rebase for upstream, merge for lab~~
+## thinking: rebase for upstream, merge for lab
 
 - we rebase and pick commits from lab and generate a new patch commit onto our fork's main branch
 - that commit does not exist anywhere yet
@@ -159,7 +159,7 @@ git push upstream main:main # pay attention, as we are using oringin/main to pus
 - and to go from lab to upstream, we go rebase,squash again
 
 
-## ~~DeathStarGame forkflow~~
+## DeathStarGame forkflow
 
 - `upstream` - is the source of the project, the https://github.com/DeathStarGame/DeathStarGame
 - fork, create your `fork/lab` branch, commit at your pace but with respect: lab is our space as contirbutors, history of lab branch matters for consistency of links, so rebase wisely and as you go

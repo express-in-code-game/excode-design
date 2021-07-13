@@ -154,7 +154,7 @@
     - https://github.com/libp2p/go-libp2p/blob/v0.11.0/p2p/host/basic/basic_host.go#L793
 - will explore further to make it so that all docker networks are within  `core/coreapi/swarm#LocalAddrs`.
 - the focus is on [`AllAddrs`](https://github.com/libp2p/go-libp2p/blob/v0.11.0/p2p/host/basic/basic_host.go#L793), this where IPs get filtered out.
-~~*There is always a monkey-patch option of making `core/coreapi/swarm#LocalAddrs` return merged `InterfaceListenAddresses` and `AllAddrs`, but this is a hack we need to avoid.~~ (would not matter, coreapi/swarm has no effect on actual discovery)
+*There is always a monkey-patch option of making `core/coreapi/swarm#LocalAddrs` return merged `InterfaceListenAddresses` and `AllAddrs`, but this is a hack we need to avoid. (would not matter, coreapi/swarm has no effect on actual discovery)
 
 
 ## IPFS sending messages from peer to peer directly

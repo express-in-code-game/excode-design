@@ -115,7 +115,7 @@ Continuation of:
 - so can scanerios be built as apps interacting with DeathStarGame apis
 - if scenario is installed as a regular dep, deos it mean (require-ing) it in jvm builder and adding a :build target and compiling renderer in shadow-cljs builder?
 
-## ~~yes, scenarios should be apps, spinned up in containers~~
+## yes, scenarios should be apps, spinned up in containers
 
 - we are already in docker
 - sceanrio creaters should be elevated to building real apps
@@ -135,7 +135,7 @@ Continuation of:
   - one we done, we can copy the code from the system on PC and put into a repo or smth
 
 
-## ~~sceanrio ui as iframe inside game ui~~
+## sceanrio ui as iframe inside game ui
 
 - from user experience, we need to see player's scenario views and a combined view, meaning being able to switch between multiple small tabs (or open them alongide each other) inside single browser tab
 - if scencario gui is an app, openable even in a standlone tab, it should be used by the as iframe
@@ -268,7 +268,7 @@ Continuation of:
 - this agent should be written as sorf of a plugin, that compiles into a dependency and forked js-ipfs launches it in one place somewhere (and gives all the runtime refs as args)
 - this way fork can move along with js-ipfs, getting updates from upstream
 
-## ~~peer process should be part of jvm-app: evolve into better development flow (away from restarting the jvm), less moving parts, and app will deal with filesystem already~~
+## peer process should be part of jvm-app: evolve into better development flow (away from restarting the jvm), less moving parts, and app will deal with filesystem already
 
 <img height="512px" src="./svg/2020-11-13-libp2p.svg"></img>
 
@@ -287,7 +287,7 @@ Continuation of:
 - and it is great to build those as processes, but be able to handle main async flow around these abstractions inside a single runtime with core.async
 - so by design of the peer, libp2p peer process should be part of the jvm-app
 
-## ~~one app, one jvm: game is the focus, not development~~
+## one app, one jvm: game is the focus, not development
 
 <img height="512px" src="./svg/2020-11-14-one-app-one-jvm.svg"></img>
 
@@ -311,7 +311,7 @@ Continuation of:
   - or use db for that and kind of "login" into that player's profile via db 
 - random ports and mDNS: use libp2p's random ports feature so that app instances can find each other naturally
 
-## ~~use browser gui instead of javafx: one app with gui in browser on localhost:port~~
+## use browser gui instead of javafx: one app with gui in browser on localhost:port
 
 <img height="512px" src="./svg/2020-11-15-one-app-one-jvm.svg"></img>
 
@@ -323,7 +323,7 @@ Continuation of:
 - jvm-app running inside container **can be easily run as uberjar on any system**
 - it's a single app that has a renderer in browser on localhost:port
 
-## ~~libp2p as embedded nodejs process into jvm~~
+## libp2p as embedded nodejs process into jvm
 
 <img height="512px" src="./svg/2020-11-16-one-app-one-jvm.svg"></img>
 
@@ -576,18 +576,18 @@ Continuation of:
   - and iframe or app - no difference: *closing the page is the same as turning pc off or shutting the app down*
   - and since the game is like upstream and forks, everyone's game results will be submitted, and players by trust decide(select) which are true 
 
-## ~~browser pages as execution environment: need to actually do what browser does with tabs~~
+## browser pages as execution environment: need to actually do what browser does with tabs
 
 - iframes are limited in terms of processes (not necesserily a thread pool, not necesserily a process)
 - app shoud actually run a browser itself  - like electoron does - and open literal browser tabs(pages) but layout out cusomly as antd tabs of sorts
 - so it's puppeteer, but pages do actaully render
 - electron has Browser, which is `<webview>` tag - but is it limited as VScode's weview?
 
-## ~~rsocket-page-transport~~
+## rsocket-page-transport
 
 - implement a trasnport to use rsocket protocol into the page
 
-## ~~it's desktop, it's pages~~
+## it's desktop, it's pages
 
 - browser page is our execution environment
 - so iframes is not that
@@ -661,7 +661,7 @@ Continuation of:
 - so it's multiplayer first, peers and pubsub, ability to find other players automatically , ability to play and install scenarios; then we elevate scenarios to awesome
 
 
-## ~~programmatic approach to system processes: we need to handle starts/stops/removes and all other linux operations from within a cljc program~~
+## programmatic approach to system processes: we need to handle starts/stops/removes and all other linux operations from within a cljc program
 
 - here is the starting point: we need to start/stop scenario compiler (shadow-cljs) from within the system, and grom cljc program, not shell (becase asynchrony and sanity)
 - if it runs in a separate container, we need to run inside it and agnet porgam and rsocket into it to ... - makes no sense, then we could just run everyhting in one container, and start/stop processes using shell/cp_process
@@ -746,7 +746,7 @@ Continuation of:
 - regardless, we can reason "this player's program tends to take scan as the 3 step and prefers low power/high repair locations" etc.
 - scenario is parameterized (send ops step by step, or 5/10/n at once), but it can always be played just data (players choose to compute smth from data or jsut tweak ops in the response list)
 
-## ~~scenario-api should be a seprate program~~
+## scenario-api should be a seprate program
 
 - we need a game loop - a process where every cycle counts as the game step
 - this way it is possible on every cycle to remove effects that expire
@@ -860,7 +860,7 @@ Continuation of:
 - does it make any sense? or is it a unneccessary complexity? and better to design one peer per node, one identity per node?
 - but in theory, this is correct: as identity is decoupled from the program
 
-## ~~going for the game as it should be - identity, global, decentralized, esport - no intermidiaries, no 'first this'~~
+## going for the game as it should be - identity, global, decentralized, esport - no intermidiaries, no 'first this'
 
 - we need identity and we want the new esport
 - the program - DeathStarGame - should allow to go online and see torunaments, join create
@@ -985,7 +985,7 @@ Continuation of:
   - so tournament needs those, and create close (to write to its won log)
   - so app can use app.tournament.chan ops, but with its own logic
 
-## ~~kvstore for the app and tournament/game/scenario processes, eventlog for scneario game loop~~
+## kvstore for the app and tournament/game/scenario processes, eventlog for scneario game loop
 
 - the puzzle with eventlogs is how to go from log to to state when app starts
 - what we wnat is to see thewhich tournaments are there
@@ -1027,7 +1027,7 @@ Continuation of:
 - so on page mount we would start page process and on unmount close it
 - the key is: page is a process (same as app has processes for every page)
 
-## ~~scenario is one program, that evals code and runs player processes, everything scenario is in the browser~~
+## scenario is one program, that evals code and runs player processes, everything scenario is in the browser
 
 - we have an editor as part of ui (monaco,ace ...)
 - scenario can eval code
@@ -1037,26 +1037,26 @@ Continuation of:
 - sceanrio program talks to player program(s) (processes)
 - when another peer evals, that code is sent to others and is evaled as part of their namespace in that scenario program
 
-## ~~submitting code: scenario has the timer (game process), it notifies ui and ui makes request to the app~~
+## submitting code: scenario has the timer (game process), it notifies ui and ui makes request to the app
 
 - in case of rsocket, every ui page regardless of path has an rsocket connection to the same app
 - if we open multiple scenario pages, each having an rsocket connection, app cannot request-response (unless some logic which seems unfit)
 - so instead, since we're using iframes and scenario runs in an iframe and it has the timings, it notifies ui process and it in turn sends data to the app using request-response
 - so ui always uses request-response or request-stream (rsocket or http), while app does not need to ask ui questions
 
-## ~~game should be an installable app (electron) with ui being in the browser~~
+## game should be an installable app (electron) with ui being in the browser
 
 - app comes with ipfs daemon, serves ui on a random port or defined in config
 - app icon in tray should have a context menu with "open ui" which opens ui in the browser, check for updates
 - data should be in ~/.deathstar/port or ~/.deathstar/peer1 .. (each dir should have a config file)
 - app serves ui using express, and also use http for requests from ui? nah, we can use rsocket
 
-## ~~one installation, multiple windows like vscode (per peer)~~
+## one installation, multiple windows like vscode (per peer)
 
 - each window is an instance of app (same as vscode), each window is independent and represents a peer
 - we can even porgrammatically launch app in dev mode with multiple widnows pre-opened for each peer
 
-## ~~one installation, multiple headless windows and ui in the browser~~
+## one installation, multiple headless windows and ui in the browser
 
 - each window is headless an is a peer, complete instance of app
 - each window has an http server that serves ui into the browser
@@ -1064,7 +1064,7 @@ Continuation of:
 - hm, but would each iframe use it's own process? so we can have antd tabs, yes, but scenario iframes could use (docs say not guaranteed) use multiple procs
 - or: use electrons embedded windows?
 
-## ~~it still should be a desktop app ui (windows)~~
+## it still should be a desktop app ui (windows)
 
 - we can use webview tag (bad or not) or BrwoserView when a renderer(standalone process) is needed
 - each window is a peer
@@ -1135,7 +1135,7 @@ Continuation of:
 - so playing and creating is part of the system, as we build this mechanism first and use it to create sceanrios; so system essences the build tools and dep tool to create and play games
 - we are not squezing ourselves into a binary, but are damn happy to have docker and are building a spacious system to run build tools, db, ipfs for the purposes of the game
 
-## ~~player programs: isolated runtimes vs code validation with macros~~
+## player programs: isolated runtimes vs code validation with macros
 
 - the question is: if e.g. 8 players are in the game, how each peer should see their game map?
 - so far the design is to run an iframe with scenario app(program) for each peer, so it will be 8 iframes
@@ -1147,7 +1147,7 @@ Continuation of:
   - sounds unvalidatable - because each sceanrio will have it's own api
 - with runtimes its straightforward and elegant (although not very efficient), the only thing to monitor is player program's memory/cpu usage (potential infinite loops), but still need monitoriing is needed
 
-## ~~we can have a jvm for running scenario programs (runtimeless) along main nodejs app, then scenario is core + browser state renderer~~
+## we can have a jvm for running scenario programs (runtimeless) along main nodejs app, then scenario is core + browser state renderer
 
 - we can run all scenario programs on a single jvm (while preserving nodejs app)
 - if some scenario crashes the jvm, we simply restart it (nodejs app keeps on going)
@@ -1155,21 +1155,21 @@ Continuation of:
 - player programs (processes) respond to scenario program and it's state changes, we push it to nodejs app and then to ui to render
   - so each scenario has a renderer, other than that  it's cljc
 
-## ~~we cannot validate against inifinite loops (because it can depend on a runtime value)~~
+## we cannot validate against inifinite loops (because it can depend on a runtime value)
 
 - what is a way to terminate such process?
 
-## ~~scenario can use game's validation api to check code~~
+## scenario can use game's validation api to check code
 
 - game is not aware of scenario's world
 - so sceanrio should use an api or decalre (basically the same) a certain predefinded by game type of player's code "fucntions only" or "with processes"
 
-## ~~it means limiting: player code is not necessarily a program, but certain data/code that scenario expects~~
+## it means limiting: player code is not necessarily a program, but certain data/code that scenario expects
 
 - unlike runtimes, where a player program should only implement an api and respond to requests
 - with code validation, it becomes about limiting what a player can write (code), and it's not a program
 
-## ~~if we can validate player's code and use a single jvm, it becomes again about namespaces and state, scenario exposes an api~~
+## if we can validate player's code and use a single jvm, it becomes again about namespaces and state, scenario exposes an api
 
 - every scenario needs to have its own namespace
 - scenario exposes e.g. (generate-data) function, so that jvm app can generate data once and same immutable value(ref) is used by every namespace (for every peer)
@@ -1179,12 +1179,12 @@ Continuation of:
   - even if data is generated on the jvm, it still would mean the same memory footrpint after it is sent to the renderer, because each has it's own iframe
   - the diff is that player's state can be swapped/merged into the same renderer(iframe)
 
-## ~~if jvm is used for evalutaion and scenarios, rsocket is not needed~~
+## if jvm is used for evalutaion and scenarios, rsocket is not needed
 
 - nodejs app will request stream of state updates
 - and from system design standpoint, it seems better if only one can make requests (clearer decoupling)
 
-## ~~wrong on jvm scnearios: it's almost the same as running in browser pages, but without isolation~~
+## wrong on jvm scnearios: it's almost the same as running in browser pages, but without isolation
 
 - scenario renderer runs in iframe, and it will occupy as much memory as full scenario running in an iframe, because we send the same data to it
 - does not matter that we would generate on jvm - after data is sent, the iframe will be exactly a full scenario program
@@ -1193,14 +1193,14 @@ Continuation of:
 - so the question is rather: how to render player's states (and should we?) using the same one or few iframes (so 8-16 players would still use the same several iframes)
 - so it's about the scenario program design (and base scenario program)
 
-## ~~once again the main key two features: adding scenarios and multiplayer~~
+## once again the main key two features: adding scenarios and multiplayer
 
 - it should be possible to add your own scenario
 - and we should be able to play over network
 - so the actual starting point is not multiplayer, but list of scenarios and installing/playing a scenario
 
 
-## ~~what if launching a scenario was spinning up a jvm?~~
+## what if launching a scenario was spinning up a jvm?
 
 - we would spin up a jvm or remove namespaces from previous scneario and deps-install them for a new scenario
 - scenario would expose http api (but it would abstracted by the game into high level game api, so scenario code deos the least)
@@ -1215,7 +1215,7 @@ Continuation of:
 - if code is run individually only, this is an issue, but if code runs on every peer, than, as noted above - game is like forks, so everyone sees each result and by trust choose which is true
 
 
-## ~~nrepl has sessions, each being a Thread with its own state, so it is possible to have elvauation contexts on the same jvm~~
+## nrepl has sessions, each being a Thread with its own state, so it is possible to have elvauation contexts on the same jvm
 
 - a session uses clojure.lang.DynamicClassLoader.  https://github.com/nrepl/nrepl/blob/master/src/clojure/nrepl/middleware/session.clj#L41
 - which means if classes can possibly be loaded per session
@@ -1223,7 +1223,7 @@ Continuation of:
 - still, evalution contexts are possible, that's how nrepl works
 
 
-## ~~even firendly games should be public events~~
+## even firendly games should be public events
 
 - events and tournament should not be part of the game, but rather an it's onw system (like github, liquipedia)
 - even more: we should find an existing system (github twitter liquipidia etc.) and within it be able to create our own "ATP tour" or SC2 global points type of yearly system

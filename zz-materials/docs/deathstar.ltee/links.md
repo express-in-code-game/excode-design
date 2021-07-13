@@ -247,14 +247,14 @@ The packaging tool will depend upon platform-specific tools.
 - Multiplayer Pac-Man with RSocket - Oleh Dokuka 2019-07
     - https://www.youtube.com/watch?v=ORhUXpO5Ijk
 
-## ~~IAP (internet application protocol)~~
+## IAP (internet application protocol)
 
 - https://www.google.com/search?q=http+protocol+alternatives+for+microservices
 - http://tutorials.jenkov.com/iap/index.html
 - https://www.infoq.com/articles/IAP-Fast-HTTP-Alternative/
     - http://tutorials.jenkov.com/iap/why-http2-and-websockets-are-not-enough.html
 
-## ~~stomp~~
+## stomp
 
 - https://www.rabbitmq.com/web-stomp.html
 - https://stomp.github.io/stomp-specification-1.2.html

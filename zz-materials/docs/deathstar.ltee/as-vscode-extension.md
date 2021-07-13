@@ -184,7 +184,7 @@ rethinking Death Star laptop event edition as vscode extension
     - deathstar ui tabapp
         - Death Star interface app
 - how tabapp becomes a scenario
-    - ~~Death Star keeps state of a running scenario (later will be persisted on disk/db)~~
+    - Death Star keeps state of a running scenario (later will be persisted on disk/db)
         - nah, it is done on the server
     - extension starts scenario worker and tabapp, sends scenario code to both, cide is evaled, processes are started
 - generation

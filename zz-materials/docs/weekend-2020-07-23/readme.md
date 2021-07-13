@@ -249,7 +249,7 @@ The repo https://github.com/express-in-code-game/lab.weekend-2020-07-23 will be 
 - how about
     - screw db: no need for the weekend two much mess with schemas and stuff
     - check out java-based desktop alternative to electron ? that would be nice, althow won't have the reach of web tools (would mean no html5,react,antd)
-- ~~connecting from editor to get intellisense when editing the file with the game code~~
+- connecting from editor to get intellisense when editing the file with the game code
     - game ui exposes a host:port for nrepl server running locally, player connects editor
     - game dir contains subdirs with generated names, each contains files; both client and editor read those files
     - and it is the client app, that starts a build with an nrepl (so project.clj for example is part of the client, with repl namepsace being subtitued for each new game)
