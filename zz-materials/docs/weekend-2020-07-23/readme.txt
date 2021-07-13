@@ -51,7 +51,7 @@ design
 
 notes
 
-#scenario
+scenario
 
 - start with a more simple/basic scenario
 - simulteneous turns (say, 1min), for ease of learning players must press 'ready' before runs
@@ -67,7 +67,7 @@ notes
     - there are obstacles: traps stones sands fields and other stuff
     - players write fn (or fns) to define droids behavior that is used, say, for three turns: 1min think -> 3turns run -> 1min change logic -> 3 turns run ...
 
-#exts
+exts
 
 - base
 - connect
@@ -81,7 +81,7 @@ notes
 - server
 - settings
 
-#walkthrough 5
+walkthrough 5
 
 - "LAN" identity
     - app has uuid (in settings.edn), it is user's identity; user can gen new uuid
@@ -99,7 +99,7 @@ notes
     - redraw canvas-only from repl, with comform
     - networking, players move a cirlce on canvas
 
-#walkthrough 4: define system as channels, values, channels api/protocols
+walkthrough 4: define system as channels, values, channels api/protocols
 
 - channels and values, channels and values everywhere
 - channels should be on the system level, 'static'
@@ -119,7 +119,7 @@ notes
             - but manually calling spec inside a macro does work, solves the problem
                 - like it is done with clojure.core/assert-args
 
-#walkthrough 3: processes and queues
+walkthrough 3: processes and queues
 
 - "functions make poor machines" Rich Hickey ~2013
 - why editors, apps, systems fail ? because it is inherently complex to build using functions when it's not a library
@@ -176,7 +176,7 @@ notes
         - case closed, meta not needed
 
 
-#walkthrough 2
+walkthrough 2
 
 - simpler
     - choose a gui environment
@@ -210,7 +210,7 @@ notes
     - join/leave, connect/disconn to the game are part of the game (system)
     - scenario does its own ui, config, veto, start/stop, load code on interval (using system's api)
 
-#walkthrough 1
+walkthrough 1
 
 - make cljs browser app (from previous labs, comprised of extensions, that uses antd) work in electron
 - so it was possible to navigate and add extensions(= views), so now it's like browser app but in electron
