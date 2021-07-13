@@ -3,7 +3,7 @@ Death Star: search for Spok
 
 rethinking Death Star laptop event edition as vscode extension
 
-- [links to discussion and implementation](https://github.com/DeathStarGame/docs#links)
+- links to discussion and implementation https://github.com/DeathStarGame/docs#links
 
 understanding desktop
 
@@ -487,7 +487,7 @@ multiplayer(hub), gamestate and submitting code
 - I think, it is better to run a more generic version of gamestate abstraction over gamestate channel, on par with the hub process
 - so hub processes forwards operaitions over to gamestate over channel
 - and hub has references(channels) of runnig simultations by uuid - so gamestate is generic system that runs code and sceanrios
-- * scenario loader will be standalone as well
+- scenario loader will be standalone as well
 
 multiplayer simulation
 
@@ -544,7 +544,7 @@ wrong: right now, the player can be idetified by unique generated namespace via 
 - for example, suffix can be first 5-7 characters from players uuid (or symly gensym that is mapped to uuid)
 - it is still better than worker -> server-worker synchronization
 - and long-term this is more elegant design-wise
-- * possible that mult will provide api (a channel) to attach ceratin data (id) to nrepl ops
+- possible that mult will provide api (a channel) to attach ceratin data (id) to nrepl ops
 
 
 there is no gui: there is extension and renderer
@@ -663,8 +663,8 @@ hub is the system, userside is state sink and input stream like renderer is for 
 rethinking is needed: users should be able to intstall game as one thing and run/play scenarios offline
 
 - after installing Starcraft, it's clear how important it is to be able to run/play the game offline, independently
-- and game should be *a* thing, intall-launch-try a scenario
-- the game needs an editor, so if game is not an extension to an editor, it hsould have its own *and* option to use external
+- and game should be a thing, intall-launch-try a scenario
+- the game needs an editor, so if game is not an extension to an editor, it hsould have its own and option to use external
     - both editors use files, so there is no hard dependency on your own editor, it's a choice, but a palyer can play from the get-go, and pros can opt for a diff editor later
 - game running locally and user experience
     - it's crucial
@@ -702,7 +702,7 @@ jpakceged java app with embeded webengine for rendering gui in react
 
 - it's like electron, but on jvm
 - then again, nrepl needs work (it's not programmable enough, might require forking, and it's simpler to implement it properly, runtime-less, for node/jvm)
-- it does not have an editor: some *have to implement an embedded editor for the game* and have an optional external editor
+- it does not have an editor: some have to implement an embedded editor for the game and have an optional external editor
 - external database is still not cross-paltform launchable without docker, so this "one jvm app for local and server" dies if there is no proper jvm-embedded db
 
 again again again: it is always a server, lcoal or remote, explicit or implicit, always 0, 1 or more
@@ -750,8 +750,8 @@ when to launch server: always, server is integral part of user app
 
 - since the objective is one-app, user should always be able to play scenarios offline (locally)
 - that means, that server must always be luanched as part of the app and we could select scenarios and play offline
-- deisgn-wise it could be abstracted as user always having a list of servers to choose from, the first and deafult always being `local`
-- one the game is installed and launched, user can see (in file or in gui) a list fo servers constisting of `local` option only
+- deisgn-wise it could be abstracted as user always having a list of servers to choose from, the first and deafult always being local
+- one the game is installed and launched, user can see (in file or in gui) a list fo servers constisting of local option only
 - then the user can add more endpoints (servers)
 - yes, we access the server only via socket/http, but it's always launched, otherwise the one-app is incomplete
 - OTOH, if we don't want to occupy those resources (http server, nrepl server, database), we could wait for user to actually want to play offline
@@ -766,7 +766,7 @@ distribution: uberjars and beyond
 - it's not a solution, but a clear already existing/working distribution mechanism
     - install java (jvm)
     - double click the downloaded artifact (uberjar)
-- but that's not *the* solution, as the app needs to be updated
+- but that's not the solution, as the app needs to be updated
     - as the basic, GUI can inform user that new version is available
     - we can click and download a new binary and can inform "stop the app, launch the new binary"
 
@@ -837,7 +837,7 @@ jvm desktop app vs electron + docker/jvm dilemma, if we require user to have jvm
 explicit server data: stored in repo in .server dir and excluded in .gitignore
 
 - when the game is launched, we open - like with editor - a directory, a player's repo, and that's an "instance"
-- server data may be stored in a `.server` dir or similar and be excluded in gitignore
+- server data may be stored in a .server dir or similar and be excluded in gitignore
 - so the system does not create implicit directories somewhere for data, rather the player's namespace is the root
 
 don't start the server from gui from the beginning, but incrementally
@@ -868,7 +868,7 @@ game is an editor extension, always, either we build one or use existing
 - playing Death Star is editing files on disk in that repo, so we always open a dir and see file tree - we are in an editor
 - and editor comes first, game gui and features are an extension
 - yes, we can say game comes first and editor is an extension, but this would be a design mistake, as there is language and files first and we play a compepteive game around that
-- Death Star game idea is an *extension* of programming, turning editing code into a money-free e-sports scene with unlimited scenarios for an open source game system
+- Death Star game idea is an extension of programming, turning editing code into a money-free e-sports scene with unlimited scenarios for an open source game system
 - it's an editor first, always
 
 
@@ -944,4 +944,4 @@ yes, server and browser tab, best design and user experience
 ---
 
 This document is complete.
-Continuation of project design notes is in [./design-notes.md](./design-notes.md)
+Continuation of project design notes is in ./design-notes.md

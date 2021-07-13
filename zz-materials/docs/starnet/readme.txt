@@ -3,7 +3,7 @@ starnet
 - turn-based game
 - inspired by HoMM3 AoE Hearthstone-BG 
 
-* archived
+archived
 
 - this repo is essentially building the game as a cloud-native system
 - code is kept for reference
