@@ -80,3 +80,5 @@ program in a nutshell
     - no, repository is code only
 - authors?
     - no, repo is code only
+- releases?
+    - no, commit hashes as points
