@@ -82,3 +82,5 @@ program in a nutshell
     - no, repo is code only
 - releases?
     - no, commit hashes as points
+- update notifications?
+    - no
