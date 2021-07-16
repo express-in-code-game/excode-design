@@ -77,6 +77,8 @@ program in a nutshell
   - JVM is downloaded into repo's dir for use by build or run
 - can program be run from source?
   - program can be run from source with one cli command
+- does repo have issues?
+    - no, code only
 - attribution headers in files?
     - no, code only
 - programmer names in readme?
