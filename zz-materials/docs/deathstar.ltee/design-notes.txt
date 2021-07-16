@@ -18,6 +18,8 @@ explore the idea of building without sockets for simplicity
 
 thinking how to use graphql, async ops with status, app logic
 
+<img height="512px" src="./svg/2020-10-16-graphql.svg"></img>
+
 explore existing self-hostable systems with sane design, re-purpose for the game
 
 - consider systems out there that have all the intangibles - graph data layer, identity, ops, logic in a decoupled apps,reverse-proxy, simplicity...

@@ -20,6 +20,8 @@ we need to think/create/build the project features - events,scenarios
 - with that, how would we develop locally? well, peers seems to be perfect for that, if we run them in docker
     - because every such peer in docker container will have a separate port, like localhost:3001, so we can open a tab per player and auth (identity) would not conflict
 
+<img  height="512px" src="./svg/2020-10-14-ipfs-peers-in-docker.svg"></img>
+
 - bottom line: we need to either draw/describe the whole system without code, or build it properly, with idenetity and multiplayer, but via layers
 - tournamets, events, scenarios, user and player experience - those should be a daily focus, not tools/lack of abstactions/tools
 
