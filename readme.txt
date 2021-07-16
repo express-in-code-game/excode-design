@@ -4,7 +4,7 @@ DeathStarGame
 
 ever free and non-commercial
 
-- DeathStarGame is ever any-money-concerns-free program, openly created and contributed
+- DeathStarGame is *ever any-money-concerns-free program*, openly created and contributed
 - it's not a org, not a project, not a namespace - it's just a program
 - no funds, no pots, purely volunteer creating process, no strings attached or hidden
 - commercial insterests and "safety" income expectations make programming a routine, a drag, money suck freedom and excitement out of creation process, so desperately needed for making and playing games, and devalue the result

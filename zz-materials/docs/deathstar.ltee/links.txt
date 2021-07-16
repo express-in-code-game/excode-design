@@ -44,15 +44,15 @@ vscode error : Proposed api on trying to log some vscode ref
 
 - happens when (println {:context vscode-context-ref)
 
-
+```
 Error: [https://github.com/DeathStarGame/deathstar.ltee.deathstar.ltee]: Proposed API is only available when running out of dev or with the following command line switch: --enable-proposed-api https://github.com/DeathStarGame/deathstar.ltee.deathstar.ltee    at a (/usr/share/code/resources/app/out/vs/workbench/services/extensions/node/extensionHostProcess.js:605:324)    at Object.checkProposedApiEnabled (/usr/share/code/resources/app/out/vs/workbench/services/extensions/node/extensionHostProcess.js:605:686)    at Object.get logUri [as logUri] (/usr/share/code/resources/app/out/vs/workbench/services/extensions/node/extensionHostProcess.js:876:651)
-
+```
 
 - or same but for js/console.log 
 
-
+```
 [Extension Host] Unable to log remote console arguments Output omitted for an object that cannot be inspected ('Error: [https://github.com/DeathStarGame/deathstar.ltee.deathstar.ltee]: Proposed API is only available when running out of dev or with the following command line switch: --enable-proposed-api https://github.com/DeathStarGame/deathstar.ltee.deathstar.ltee')
-
+```
 
 - simple, but deadly - as it's unclear what causes it
 - takeaway: don't log left and right vscode stuff
@@ -142,11 +142,11 @@ java 14 jpackage
 
 - https://openjdk.java.net/jeps/343
 - it's called cross-compilation, and jpackage by design does not support it
-
+```
 There will be no support for cross compilation. 
 For example, in order to create Windows packages one must run the tool on Windows. 
 The packaging tool will depend upon platform-specific tools.
-
+```
 - electron's aprroach
     - https://www.electron.build/multi-platform-build
 

@@ -28,7 +28,7 @@ exlpicit channel mappings in main
 - if channel should come from another namespace, it should be passed as simple keyword in main, mapped from fully-qualified to simple
 - in other words, proc knows its own channels and can destructure them. Other channel arguments are mapped explciitly in main and passsed as additional args
 
-
+```clojure
 
 (ns foo.api)
 
@@ -73,7 +73,7 @@ exlpicit channel mappings in main
               (merge channels {:other| (::bar.api/send| channels ) })              
 )
 
-
+```
 
 - unless (regarding importing bar.spec in foo.api)
   - instead, op and vl functions can be passed as args as well
@@ -186,7 +186,7 @@ impl.api and chan.api: the approach to channels and values with having a program
     - and foo isntance as passed as explicit arg to proc-ops (as it's not standard) and should be explicit
 - what foo.chan_api looks like
 
-
+```clojure
 
 foo.chan_api
 
@@ -213,7 +213,7 @@ bar.impl
 
 
 
-
+```
 
 - this api can represent abstractions anywhwere, no clash of dependencies
 - so a jvm runtime can import foo/meta and use programmatic api, yet values are conveyed over channels
@@ -339,8 +339,8 @@ channel api taps (e.g. hub.tab.remote ): tap into chan-api channel traffic to fo
 
 static mults "just in case" are incorrect, should be removed from  deathstar, cljctools, mult; instead use dynamic pipes, mults etc. in mains
 
-- using static mults do not solve/provide any wiring/piping abilities to the system
-- instead of using merge to substitute channels in main, dynamic pipe should be used after clean initial definition of channels
+- using static `mult`s do not solve/provide any wiring/piping abilities to the system
+- instead of using `merge` to substitute channels in main, dynamic `pipe` should be used after clean initial definition of channels
 - case of logging, events
   - explicitely create mult + taps in main, or pipe + map
 - case of host-evt| 

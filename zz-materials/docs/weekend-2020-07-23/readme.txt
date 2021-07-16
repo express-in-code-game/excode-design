@@ -268,7 +268,7 @@ notes
     - then user code file is read, user's api is applied/used in soltuion space code, graphics render the user-code-included solution space
     - wait, why sessions? what about one session (at first), different namesapces (soltuion,resource, user code)
     - this way, lein can be started from shell after files are generated, and client only reads/writes files, no nrepl control
-- heck, for the weekend: no intellisense!!! just write/read files (as text), keep client simple, focus on the scenario fun-ness and graphics
+- *heck, for the weekend: no intellisense!!! just write/read files (as text), keep client simple, focus on the scenario fun-ness and graphics*
     - so players can see the resource and solution spaces in gui (hover and click), can edit code with no repl connection yet
     - scenario GUI may be simple DOM elements even, with emphasis on values (numbers, names); so like a schema, and then , say, rover (a dot/square/img) moves on the grid with simpliest animation
 - order

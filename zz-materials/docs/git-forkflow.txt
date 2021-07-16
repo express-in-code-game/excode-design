@@ -1,21 +1,21 @@
 merging on github
 
 - use rebase pull request, it will put incoming commit after the last commit
-- say upstream has commits 1-2-5 where numbers represetn time of commits
-- and a fork has 1-2-3-4
-- after merge it will be 1-2-5-3-4, and 3 4 commit hashes will change, as we wanted
+- say upstream has commits `1-2-5` where numbers represetn time of commits
+- and a fork has `1-2-3-4`
+- after merge it will be `1-2-5-3-4`, and `3 4` commit hashes will change, as we wanted
 
 updating local fork afterwards
 
-- say, when all that happened fork added another commit and has 1-2-5-6, wheres upstream has 1-2-5-3-4
+- say, when all that happened fork added another commit and has `1-2-5-6`, wheres upstream has `1-2-5-3-4`
 - we do
-
+```shell
 git remote add upstream https://github.com/DeathStarGame/DeathStarGame
 git fetch upstream
 git rebase -i upstream/main
 
-
-- it will show us only commit 6, and after rebase it will be 1-2-5-3-4-6, which is the desired outcome
+```
+- it will show us only commit `6`, and after rebase it will be `1-2-5-3-4-6`, which is the desired outcome
 
 updating manually
 
@@ -30,26 +30,26 @@ conflicts: reoslving is up to fork/PR author
 
 many people, one project: using a branch(s) as a personal lab, hashes as snapshots
 
-- there is upstream repo https://github.com/DeathStarGame/DeathStarGame
-- a contributor forks, and creates a design branch or lab branch or uses main for that and upstream branch to prepare pull requests
+- there is `upstream` repo https://github.com/DeathStarGame/DeathStarGame
+- a contributor forks, and creates a `design` branch or `lab` branch or uses `main` for that and `upstream` branch to prepare pull requests
 - contirbutor's branches are their choice and effectively are unrelated histories, and are never merged
 - they are like repos, but as part of the same repo
 - they are better than copying into directories (to make snapshots) because all is needed is to create a branch for snapshot and checkout a  new one from any point in history
-- there is the main/lab/design branch that should be the deafult, so when we open contirbutor's repo we see there current state of mind
-- and an upstream branch is where we manually copy/rebase/merge somehow files selectively from or lab branch while keeping notes and design
+- there is the `main/lab/design` branch that should be the deafult, so when we open contirbutor's repo we see there current state of mind
+- and an `upstream` branch is where we manually copy/rebase/merge somehow files selectively from or lab branch while keeping notes and design
 - so it's branches over copying repos and project.lab repo
 - a couple more notes:
   - it's elegant, as all our creating process is within one repo, yet still linkable and persistent (we can link to branches, they are like subdirectories of repo)s
   - it's findable: again, we only need to find a fork and can see the whole picture
   - and we clone with a custom name to be able to open multiple snapshots in the editor simultenenously
 - the docs and notes stay persistent, while implementations may be snaphostted, experimented
-  - so our main/design branch has a consistent notes, docs (we don't delete those) but a changing src (we snapshot it, anc can delete-continue or checkout from point
+  - so our `main/design` branch has a consistent notes, docs (we don't delete those) but a changing src (we snapshot it, anc can delete-continue or checkout from point
   - but: we cannot simply checkout back in time, we'll lose notes, so better to move-delete-move and keep links/branches for snaphosts (better just hashes, can be checkout out the same)
-- so essentailly, our for has only ever two branches - main and upstream, everyhting else are links to hashes
-- we can consider lab subdir flow: keep all personal/experimetal files in lab directory, so that we can easier select/exclude on merge into upstream, and upstream goes into pull requests
-- since we'll rebase only into upstream, this boils down to copying ; if we can somehow do it via interactive rebase - cool, but there is always a danger of accidentally commiting something from lab dir
-- but that's fine, we can always delete usptream branch and copy it from upstream repo itself
-- how to have ~/code/ contain both DeathStarGame and cljctools
+- so essentailly, our for has only ever **two** branches - `main` and `upstream`, everyhting else are links to hashes
+- we can consider `lab` subdir flow: keep all personal/experimetal files in `lab` directory, so that we can easier select/exclude on merge into `upstream`, and `upstream` goes into pull requests
+- since we'll rebase only into upstream, this boils down to copying ; if we can somehow do it via interactive rebase - cool, but there is always a danger of accidentally commiting something from `lab` dir
+- but that's fine, we can always delete `usptream` branch and copy it from upstream repo itself
+- how to have `~/code/` contain both `DeathStarGame` and `cljctools`
   - well, it's trivial - it is exaclty our fork (plus some files)
   - and if we need a snaphost, we can clone in another dir and checkout hash (see both in the editor)
 
@@ -82,14 +82,14 @@ how to merge pull requests from github without merge commits
     - rebase - it rewrites history, so the PR author needs to rebase/push force those new commit from master onto his main, because it's a new hash
       - rebase should be used only for local cleanup
 - well, the approach is outlined here https://stackoverflow.com/questions/16358418/how-to-avoid-merge-commit-hell-on-github-bitbucket
-
+```shell
 # see PR on github
 # like with patches, we'll use command line
 
 # to our fork repo we add the PR contributor's fork 
 git remote add contributor_name https://github.com/contributor_name/DeathStarGame
 git fetch contributor_name main # simulating a patch: create a local "immutable" version of a comtibutor PR branch
-git fetch upstream # be sure upstream is updated  and only one person should merge at a time
+git fetch upstream # be sure upstream is updated  **and only one person should merge at a time
 git checkout main # this should be exaclty our upstream main, so we can even do git checkout -b upstream upstream/main
 --git merge --ff-only contributor_name/main # if should work, if github shows that PR is mergeable, otherwise note in PR that there is conflict
 # no, that won't work, becase upstream may have new changes
@@ -100,7 +100,7 @@ git checkout main # this should be exaclty our upstream main, so we can even do 
 # otherwise, to keep commit times we have to .. 
 
 git push upstream main:main # pay attention, as we are using oringin/main to push to upstream, so it should be in sync
-
+```
 
 git patches
 
@@ -116,14 +116,14 @@ git patches
     - the commit was made on AUg 13 and had presumably hash efb5c5d2
     - but it was sent on Sep 17 and sometime (unknown, untrackable with github) was applyed to repo
     - the authorship, including commit date is taken from patch file, so github shows "AUg 13"
-    - but a new commit is created, with a hash relevant to that the repo at the moment of patch application
-    - it's basically a rebase, which is literally that: replaying (read 'commiting' as if git commit) changes onto curent branch
+    - but a *new* commit is created, with a hash relevant to that the repo at the moment of patch application
+    - it's basically a rebase, which is literally that: replaying (read *commiting* as if git commit) changes onto curent branch
     - so the date - Aug 13 - and the way we see that commit is not the "time" of the hash (such thing doesn't exist)
     - it's like doing rebase with --committer-date-is-author-date, so we do create a new commit but use author's date for commit 
       - and yes, git am has tthe same option https://git-scm.com/docs/git-am#Documentation/git-am.txt---committer-date-is-author-date
       - > This allows the user to lie about the committer date by using the same value as the author date.
     - so patches = rebase 
-    - if we use git 2.29 + to do git rebase -i upstream/main --committer-date-is-author-date we rewrite all our hashes, but committer dates are preserved, but what's the point? hash history is broken
+    - if we use git 2.29 + to do `git rebase -i upstream/main --committer-date-is-author-date` we rewrite all our hashes, but committer dates are preserved, but what's the point? hash history is broken
 
 git.git workflow
 
@@ -153,7 +153,7 @@ thinking: rebase for upstream, merge for lab
   - our fork/lab has a lot of commits, some which were picked and squashed into a commit and it is on fork/main branch
   - we went and rebase-merged this commit on top of upstream/main branch, so the patch has been delivered to the source branch
   - everybody now have to rebase their fork/main branches onto upstream/main, which is by design
-  - now some more patches like that happen to upstream/main and now our fork/lab does not have the code, only fork/main does (because it's a mirror)
+  - now some more patches like that happen to upstream/main and now our `fork/lab` does not have the code, only fork/main does (because it's a mirror)
   - on branch fork/lab we do actual git merge with mereg commit: git merge upstream/main or origin/main, adding all the changes from upstream reapo into our branch and creating an extra merge commit
 - that allows to take changes from upstream into lab
 - and to go from lab to upstream, we go rebase,squash again
@@ -161,20 +161,20 @@ thinking: rebase for upstream, merge for lab
 
 DeathStarGame forkflow
 
-- upstream - is the source of the project, the https://github.com/DeathStarGame/DeathStarGame
-- fork, create your fork/lab branch, commit at your pace but with respect: lab is our space as contirbutors, history of lab branch matters for consistency of links, so rebase wisely and as you go
-- fork/main is a mirror of DeathStarGame repo, it is the actual fork
-- fork/lab should have a lab directory or other that do not collide with any dirs or files inside upstream/main repo, and commits should be separate for both (so that during rebase we can pick only non-lab, actually valuable commits)
-- once changes in fork/lab are ready, we update our upstream/main and fork lab branch into a tmp branch (lab1) and do git rebase -i upstream/main creating one squash commit
-- then we create a pull request on github from our fork/main into upstream/main
-- the maintainer of upstream does the rebase of those changes on top of main (creating new hash because there can be more changes and chooses whether or not to --committer-date-is-author-date, better not - author date exists already, committer can be different)
-- now upstream has the changes and all the forks need to rebase their fork/main onto upstream/main - now everyone has the latest version of the project as part of their fork
-- AND - the key moment - we merge upstream/main into our fork/lab, resolving conflicts if needed, so that everybody's unique lab now has the latest version of the project
+- `upstream` - is the source of the project, the https://github.com/DeathStarGame/DeathStarGame
+- fork, create your `fork/lab` branch, commit at your pace but with respect: lab is our space as contirbutors, history of lab branch matters for consistency of links, so rebase wisely and as you go
+- `fork/main` is a mirror of DeathStarGame repo, it is the actual fork
+- `fork/lab` should have a `lab` directory or other that do not collide with any dirs or files inside `upstream/main` repo, and commits should be separate for both (so that during rebase we can pick only non-lab, actually valuable commits)
+- once changes in `fork/lab` are ready, we update our `upstream/main` and fork `lab` branch into a tmp branch (`lab1`) and do `git rebase -i upstream/main` creating one squash commit
+- then we create a pull request on github from our `fork/main` into `upstream/main`
+- the maintainer of `upstream` does the rebase of those changes on top of main (creating new hash because there can be more changes and chooses whether or not to --committer-date-is-author-date, better not - author date exists already, committer can be different)
+- now `upstream` has the changes and all the forks need to rebase their `fork/main` onto `upstream/main` - now everyone has the latest version of the project as part of their fork
+- AND - the key moment - we `merge` `upstream/main` into our `fork/lab`, resolving conflicts if needed, so that everybody's unique lab now has the latest version of the project
 - we are not limited to 2 branches, but these 2 should be the core/key branches , others are at fork's owner heart's content
 
 fork is a fork, lab repo is lab repo
 
-- project repo (any repo) must not have lab branches
+- project repo (any repo) must not have `lab` branches
 - fork contains contributor's take on the project and other branches (views) as needed
 - personal notes and research and design should have their own repo(s) - consistent, linkable and independent
 - talk about it in a video https://www.youtube.com/watch?v=ND4PRp9GLJs
@@ -182,15 +182,15 @@ fork is a fork, lab repo is lab repo
 
 forkflow
 
-- fork, do stuff in main, rebase-squash into a nice commit, create a branch for PR like main-PR and create a PR on github
-- maintainer will see the PR and will clone main-PR branch and add that change onto the tip of projects main (via a new rebase)
+- fork, do stuff in `main`, rebase-squash into a nice commit, create a branch for PR like `main-PR` and create a PR on github
+- maintainer will see the PR and will clone `main-PR` branch and add that change onto the tip of projects `main` (via a new rebase)
 - it is exaclty like using git patches - once fork's branch is cloned, it is an "immutable" locally availble patch at the moment of rebase-merge
-- once changes are added, PR will automatically closed - so no need to use github ui for rebase-merge (because locally it's an immutable patch and we have other options), you can remove main-PR branch 
-- during all of that you could have been making further changes on your fork/main branch nad now it has new commits
-- once you need changes from upstream, rebase your fork/main onto upstream/main - it means take the projects main branch and replay your changes on top of it
-- another approach - merge changes from usptream/main into your fork/main
+- once changes are added, PR will automatically closed - so no need to use github ui for rebase-merge (because locally it's an immutable patch and we have other options), you can remove `main-PR` branch 
+- during all of that you could have been making further changes on your `fork/main` branch nad now it has new commits
+- once you need changes from upstream, rebase your `fork/main` onto `upstream/main` - it means take the projects `main` branch and replay your changes on top of it
+- another approach - merge changes from `usptream/main` into your `fork/main`
   - yes, we create an additional merge commit, but - it will be eventually rebase-squashed
-  - but before that happens, that gives us a linear local history before we are ready for rebase, but already want changes (without the need for deceiving --committer-date-is-author-date)
+  - but before that happens, that gives us a linear local history *before* we are ready for rebase, but already want changes (without the need for deceiving --committer-date-is-author-date)
 
 rebasing and merging: both are weclome
 

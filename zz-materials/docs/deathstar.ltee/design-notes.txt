@@ -1,10 +1,10 @@
 
 This document is a linear continuation of:
 
-- ../cloud-native-system/design.md
-- ../search-for-the-game.md 
-- ../origin-cluster/origin-cluster.md 
-- ./as-vscode-extension.md
+- [../cloud-native-system/design.md](../cloud-native-system/design.md)
+- [../search-for-the-game.md](../search-for-the-game.md)
+- [../origin-cluster/origin-cluster.md](../origin-cluster/origin-cluster.md)
+- [./as-vscode-extension.md](./as-vscode-extension.md)
 
 switch account feature like in youtube
 
@@ -34,7 +34,7 @@ app should be an extension of the system
 
 apps are esentailly processes (intances), so they never talk via http, only via queue/peer abstactions
 
-- if app needs to perform operation on another app, it does so by abstract request/push to central thingy: "hey, system, so this", not to each other
+- if app needs to perform operation on another app, it does so by abstract request/push to *central* thingy: "hey, system, so this", not to each other
 
 identity: provider auth contradicts the design of deathstar.ltee, so identity is always self
 

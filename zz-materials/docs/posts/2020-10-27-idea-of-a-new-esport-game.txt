@@ -2,7 +2,7 @@ github.com/DeathStarGame: idea of a new esport game
 
 This is a raw, likely difficult to read post. Not even a post, more of a comments. But could be interesting (or maybe I'm just biased).  
 It's a rant mostly. Basically, a one-evening spit-it-out story of going from "where are no-micro e-sports?" to "what games should be?" to going for buidling such a game.   
-TL;DR: game will use IPFS ipfs.io peer-to-peer network, players will use programming lang to program game enteties, users can create their own scenarios and install via a git link.  
+TL;DR: game will use [IPFS](ipfs.io) peer-to-peer network, players will use programming lang to program game enteties, users can create their own scenarios and install via a git link.  
 "Is there somehting to try/check?" - No. Not yet. As of 2020-10-27, it is still an idea.    
 
 project
@@ -11,31 +11,31 @@ project
 
 content
 
-- rant: games, sports and e-sports in 2020
-- rant: enjoying watching e-sports on twitch.tv
-- thinking what kind of games is missing
-- what would the actual software sysmtem look like? like github
-- first instinct - turn-based game like Heroes of Might and Magic
-- rant: e-sports games are about control and not about composing/buidling
-- considering new HoMM3-like game but about building/composing of elements and github-like system around it
-- what is buidling
-- tying-it-together-building-and-the-game
-- original notes on why use language as the gameplay https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language
-- game scenario ideas https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios
-- design sketch: peer-to-peer multiplayer game using IPFS network https://github.com/DeathStarGame/DeathStarGameblob/b86c49d160ca729cd2ec9eeb66abbeaabf3a8577/docs/design/design.md
+- [rant: games, sports and e-sports in 2020](#rant-games-sports-and-e-sports-in-2020)
+- [rant: enjoying watching e-sports on twitch.tv](#rant-enjoying-watching-e-sports-on-twitchtv)
+- [thinking what kind of games is missing](#thinking-what-kind-of-games-is-missing)
+- [what would the actual software sysmtem look like? like github](#what-would-the-actual-software-sysmtem-look-like-like-github)
+- [first instinct - turn-based game like Heroes of Might and Magic](#first-instinct---turn-based-game-like-heroes-of-might-and-magic)
+- [rant: e-sports games are about control and not about composing/buidling](#rant-e-sports-games-are-about-control-and-not-about-composingbuidling)
+- [considering new HoMM3-like game but about building/composing of elements and github-like system around it](#considering-new-homm3-like-game-but-about-buildingcomposing-of-elements-and-github-like-system-around-it)
+- [what is buidling](#what-is-buidling)
+- [tying-it-together-building-and-the-game](#tying-it-together-building-and-the-game)
+- [original notes on why use language as the gameplay](https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language)
+- [game scenario ideas](https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios)
+- [design sketch: peer-to-peer multiplayer game using IPFS network](https://github.com/DeathStarGame/DeathStarGameblob/b86c49d160ca729cd2ec9eeb66abbeaabf3a8577/docs/design/design.md)
 
 rant: games, sports and e-sports in 2020
 
 - games are a thing, fundamentally
 - playing real sports games (football, frisbee, basketball, hide and seek - whatever) or e-sports
-- the difference is in an opportunity to participate: with real sports we're just viewers, or at best can play on a playgorund or in a minor league
+- the difference is in an *opportunity to participate*: with real sports we're just viewers, or at best can play on a playgorund or in a minor league
 - there is no global basketball league or foorball - only events every so many years, and only for pros
 - because sports are "geographically bound", as we all were... before the miracle of Internet emerged
 - I can't emphasize enough - especially with the possiblities we have in 2020 - what a wonder Internet is: we are no longer geographically bound, and it happens with the speed of light, literally
-- that's why we have such marvellous world-level systems: google, youtube, wikipedia, github, twitch  - which are instantaneously searchable, communicatable, freely participatable globally
+- that's why we have such marvellous world-level systems: google, youtube, wikipedia, github, twitch  - which are *instantaneously* searchable, communicatable, freely participatable globally
 - yeah, this systems may have regional quirks, but from a user's perspective  - they are global
-- adding the two - light-speed fast Internent and the idea of sports, competetion - we get e-sports: global planetary sports and tournaments that we can not only watch but have an option to participate
-- participate on a planetary scale: can sign up, go up the ranks within a global tournament system, with best players competing in a seasonal finals tourney
+- adding the two - light-speed fast Internent and the idea of sports, competetion - we get e-sports: global planetary sports and tournaments that we can not only watch but have an option to *participate* 
+- *participate*  on a planetary scale: can sign up, go up the ranks within a global tournament system, with best players competing in a seasonal finals tourney
 - great - we have Internet, abundunce and continous growth of software, open source is thriving and leading, and we have e-sports allowing us to play causally, and/or compete, and/or watch
 - awesome, surely, there are computer games and e-sports for all tastes...
 - well, this is https://liquipedia.net/ - a wikipedia for e-sports events
@@ -59,8 +59,8 @@ rant: games, sports and e-sports in 2020
 - will add to this list a few more popular games from http://twitch.tv/directory/ 
     - Teamfight Tactics
 - and oh yeah, new AAA RTS game has been announced 
-    - Frost Giant Studios RTS https://www.reddit.com/r/Games/comments/jeronr/frost_giant_studios_new_studio_staffed_by/
-    - in this talk https://www.reddit.com/r/starcraft/comments/jfvwg6/new_aaa_rts_frost_giant_devs_answer_all_your/ they discuss whether or not their RTS will have 3 or 4 races..
+    - [Frost Giant Studios RTS](https://www.reddit.com/r/Games/comments/jeronr/frost_giant_studios_new_studio_staffed_by/)
+    - in this [talk](https://www.reddit.com/r/starcraft/comments/jfvwg6/new_aaa_rts_frost_giant_devs_answer_all_your/) they discuss whether or not their RTS will have 3 or 4 races..
 - almost all games listed above are either (with the exception of turn-based games which are different)
     - RTS or RTS-like game demanding fast repetitive micro mechanics (mouse clicking) and screen switching, to be good - click-grind for hours or be trash
     - a shooter (open world or not) - again, micro (mouse-clicking), and the bigger e-sport is, the more it comes down to who better moves mouse and clicks
@@ -112,10 +112,10 @@ rant: enjoying watching e-sports on twitch.tv
 - same with watching TheViper player AoE2 or Kripp play Hearthstone and its early tournaments  - was a radically different experience, open friendly environment
 - but: I've never played
 - as much as I love communities (people, players, events, competetion) and consider myself part of it, I hate games and find them unplayable unless total submergence
-- hate micro and one type of gameplay, and repetetive nature of games in SC2 - same map, same actions, who exectues better - it's a legendary game but it is cruel
+- hate micro and one type of gameplay, and repetetive nature of games in SC2 - same map, same actions, who exectues better - it's a legendary game but it is *cruel*
 - AoE2 at least have random map generation, which in m books is a must
-- moreover, SC2 from the beginnning - due to genre and its design around micro - has regional servers
-- despite having global Internet and being able to bypass geography we are back to being regionalized
+- moreover, SC2 from the beginnning - due to genre and its design around micro - has *regional servers*
+- despite having *global Internet* and being able to bypass geography we are back to being *regionalized*
 - we have Internet, global streaming, great communities of people wanting to play and compete, but the design of games drives us back into islands and mostly watching
 - insane
 
@@ -163,7 +163,7 @@ what would the actual software sysmtem look like? like github
 - and the ui and user experience with tournaments should be light and spacious, and the best example of such system is github.com
 - in my opnion, as if now, it's the best system in terms of user experience, ui and temple-like nature and spirit of the project; github is unprecedented
 - the game system that we want should be mostly github, with a mix of wikipedia and liquipedia.net - those have amazing but simple wiki pages for brackets and tournaments
-- in comparison to ESL https://play.eslgaming.com/starcraft/global/sc2/open/1on1-series-europe/cup-1/bracket/?contestantId=4742043 official website for sc2 tourneys which an ungly abomination close to linkedin in being an antisoftware
+- in comparison to [ESL](https://play.eslgaming.com/starcraft/global/sc2/open/1on1-series-europe/cup-1/bracket/?contestantId=4742043) official website for sc2 tourneys which an ungly abomination close to linkedin in being an antisoftware
 - imagine a github-like with wiki flavour system where users are players, where events and games are sort of like repos ...
 - point is: user experince-wise it's github, we open it in browser, but focused on games and tournaments
 
@@ -226,14 +226,14 @@ considering new HoMM3-like game but about building/composing of elements and git
 - like in real sports, it's about characters and stories around the game, stats, the game is actually secondary
 - so ok, every game is a fixed never changin story, with it's unique gameplay and we can only ever realistically compete in one game.. not ideal
 - and if you watch streams - really watch streams on twitch - you know, that people are mostly bored and wait for the next game to come out
-- and with one-time-adventure  games or open world games - that's fine, that's by design, but they are not e-sports
+- and with one-time-adventure  games or open world games - that's fine, that's by design, but *they are not e-sports*
 - to be clear
     - we started thinking about our own HoMM3-like game
     - but we see the limitation - it's just one fixed world
     - and if it becomes and e-sport, it means players will have to learn that fixed world and be best at just this one world, which is so limiting by design..
     - if games are like movies, existing e-sports are designed to enclose players inside one sceanrio for years
     - and with HoMM3 like game we're gonna do the same - just make another one-fixed-world
-- well, let's make a system like we want, but allow for users to create their own games - this way we'll have one system, but many games
+- well, let's make a system like we want, but allow for users to create *their own games* - this way we'll have *one system, but many games*
 - ok, so we'll build our own HoMM3 like game and other people will build theirs and for each tournament players will be able to select games they want to use in groups and brackets
 - yeah but wait, why aren't there such torunaments already? using different existing games? well, there were such mixed events - for example, players played Starcarft and Warctaft.., but it never became a norm
 - why? first, it's difficult to learn those games - each has unique gameplay
@@ -286,10 +286,10 @@ what is buidling
 - compare it to real programming language that generations of people put their heart and knowledge into, which one can be a foundation of a popular and long-living e-sport?
 - clicking and hotkeys are also a languge, but it's limited to control only: tell units to do this, go here, with shift+click (draw a path for unit to move along) being the closest thing to programming
 - ideally games in the future - it's even now possible with global deeplerning and AI like google - to use informal language of the system for players to program behaviors and entities
-- but formal - programming - languages will always exisit, as they are a way for humans to express programs and share with others, the fact the computer can execute it is a sideeffect
+- but formal - programming - languages will always exisit, as they are a way for humans to express programs and *share* with others, the fact the computer can execute it is a sideeffect
 - it's already happening, but we'll be more and more programming droids and other systems - should not we already have a game like this ?
-- original notes on why use language as the gameplay https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language
-- game scenario ideas https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios
+- [original notes on why use language as the gameplay](https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language)
+- [game scenario ideas](https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios)
 
 tying it together: building and the game
 
@@ -311,7 +311,7 @@ tying it together: building and the game
 - so for two minutes players observe the map and write a little amount of code, mostly they amke decisions given the unique generaion
 - the code programs or adjsuts the behavior of rover on mars so that it could visit more places
 - the player that scores the most wins
-- game scenario idea https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios
+- [game scenario ideas](https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios)
 - the scenarios and duration and goals - all should be configurable, so we can have a super complex scenarios as well as simple
 - an as they will be open source and user created, installable via a link, the better scenarios over time will become the standard for e-sports
 - and all the progamers will have to learn.. a real programming language, as opposed to being forced into click-grinding
