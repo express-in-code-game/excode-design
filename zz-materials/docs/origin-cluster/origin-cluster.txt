@@ -1,11 +1,11 @@
 
-origin: a volunteer automated cluster
+# origin: a volunteer automated cluster
 
-rationale
+## rationale
 
 - make a kubernetes/swarm alternative, simpler, and designed differently
 
-design notes
+## design notes
 
 - existing solutions 
   - take an approach of control and predefined role nodes

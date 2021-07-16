@@ -1,11 +1,11 @@
-tie-fighter
+# tie-fighter
 a quiz/trivia game, peer-to-peer global decentralized, always simple and entirely free
 
-archived
+## archived
 
 - shame
 
-about
+## about
 
 - tie-fighter is smaller, it's a scout of Death Star https://github.com/DeathStarGame/DeathStarGame
 - peer-to-peer global decentralized: users that have the app running form the global network for playing

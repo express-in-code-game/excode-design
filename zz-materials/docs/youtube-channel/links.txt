@@ -1,4 +1,4 @@
-video editing software
+## video editing software
 
 - https://www.quora.com/What-video-editing-software-do-YouTubers-use
 - https://www.reddit.com/r/VideoEditing/comments/29tliy/best_editing_software/
@@ -9,11 +9,11 @@ video editing software
 - https://itsfoss.com/open-source-video-editors/
 - https://www.reddit.com/r/Filmmakers/comments/2xs2w0/is_it_realistically_possible_to_put_a_movie/
 
-VSE
+## VSE
 
 - VSE stands for "video sequence editor"
 
-davinci resolve
+## davinci resolve
 
 - https://www.blackmagicdesign.com/products/davinciresolve/
 - video guides
@@ -25,19 +25,19 @@ davinci resolve
         - https://forum.blackmagicdesign.com/viewtopic.php?t=95123
     - so it's not jvm/ubutnu specific (since davinci gui is alegedly Qt based)
 
-openshot
+## openshot
 
 - https://github.com/OpenShot
 
-kdenlive
+## kdenlive
 
 - https://github.com/KDE/kdenlive
 
-shotcut
+## shotcut
 
 - https://github.com/mltframework/shotcut
 
-olive
+## olive
 
 - https://github.com/olive-editor/olive
 - guides
@@ -49,7 +49,7 @@ olive
     - https://www.patreon.com/posts/40542621
 
 
-blender as video editor
+## blender as video editor
 
 - https://www.reddit.com/r/freesoftware/comments/3wml9o/shotcut_vs_openshot/
     - https://www.youtube.com/watch?v=yjTn8GsRk48 from 2014
@@ -64,7 +64,7 @@ blender as video editor
     - example film done with blender vse
         - https://www.youtube.com/watch?v=F319FkKEImA
 
-blender is a no-option
+#### blender is a no-option
 
 - custom nowhere else used ui in a low level language cannot allow virant development of video editor
 - the complexity of target functionality of such software is enough in itself, not upgrading to modern ui means tight coupling
@@ -74,7 +74,7 @@ blender is a no-option
 - but as it currently (2020) stands, all video editors are completely GUI based, and that should be embraced
 - given that, a better/simpler editor that is popular and widely used should be picked, so that there are examples/guides on how to edit videos
 
-obs multi cording (recording sources into separate files)
+## obs multi cording (recording sources into separate files)
 
 - OBS seems to not have multicording support
     - https://obsproject.com/forum/threads/can-obs-record-multiple-video-tracks.52690/

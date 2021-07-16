@@ -1,15 +1,15 @@
-github.com/DeathStarGame: idea of a new esport game
+# github.com/DeathStarGame: idea of a new esport game
 
 This is a raw, likely difficult to read post. Not even a post, more of a comments. But could be interesting (or maybe I'm just biased).  
 It's a rant mostly. Basically, a one-evening spit-it-out story of going from "where are no-micro e-sports?" to "what games should be?" to going for buidling such a game.   
 TL;DR: game will use [IPFS](ipfs.io) peer-to-peer network, players will use programming lang to program game enteties, users can create their own scenarios and install via a git link.  
 "Is there somehting to try/check?" - No. Not yet. As of 2020-10-27, it is still an idea.    
 
-project
+## project
 
 - https://github.com/DeathStarGame
 
-content
+## content
 
 - [rant: games, sports and e-sports in 2020](#rant-games-sports-and-e-sports-in-2020)
 - [rant: enjoying watching e-sports on twitch.tv](#rant-enjoying-watching-e-sports-on-twitchtv)
@@ -24,7 +24,7 @@ content
 - [game scenario ideas](https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios)
 - [design sketch: peer-to-peer multiplayer game using IPFS network](https://github.com/DeathStarGame/DeathStarGameblob/b86c49d160ca729cd2ec9eeb66abbeaabf3a8577/docs/design/design.md)
 
-rant: games, sports and e-sports in 2020
+## rant: games, sports and e-sports in 2020
 
 - games are a thing, fundamentally
 - playing real sports games (football, frisbee, basketball, hide and seek - whatever) or e-sports
@@ -94,7 +94,7 @@ rant: games, sports and e-sports in 2020
     - and later, we'll get to this moment again: control vs buidling/composing and what is buidling and how to make an e-sports out of it, still allowing for control
     - we'll stop looking at games as control this and that and instead will think about building from elements, using the knowledge of humanity for that, giving game entities beahvior rather than directions
 
-rant: enjoying watching e-sports on twitch.tv
+## rant: enjoying watching e-sports on twitch.tv
 
 - indeed, in 2020 twitch.tv is the place to watch game streams and tournaments
 - personally, I've been watching and following Starcraft 2, Age of Empires 2 since 2011
@@ -119,7 +119,7 @@ rant: enjoying watching e-sports on twitch.tv
 - we have Internet, global streaming, great communities of people wanting to play and compete, but the design of games drives us back into islands and mostly watching
 - insane
 
-thinking what kind of games is missing
+## thinking what kind of games is missing
 
 - we are standing on the shoulders of giants - Internet, Unix, games, e-sports.. - and that is remarkable, no need to reinvent the wheel
 - networking and e-sports are a reality already, but the games are dark and micro heavy and regionalization is still a thing
@@ -157,7 +157,7 @@ thinking what kind of games is missing
 - we have game ideas, but we don't have a system to unite them into an e-sports
 - DeathStarGame project will be one of such new game systems built for e-sports, with link-installable sceanrios, free, non-commercial and global
 
-what would the actual software sysmtem look like? like github
+## what would the actual software sysmtem look like? like github
 
 - at this point we know that we want a no-micro spacious think-focused, turn-based global game and e-sports
 - and the ui and user experience with tournaments should be light and spacious, and the best example of such system is github.com
@@ -167,7 +167,7 @@ what would the actual software sysmtem look like? like github
 - imagine a github-like with wiki flavour system where users are players, where events and games are sort of like repos ...
 - point is: user experince-wise it's github, we open it in browser, but focused on games and tournaments
 
-first instinct - turn-based game like Heroes of Might and Magic
+## first instinct - turn-based game like Heroes of Might and Magic
 
 - well, HoMM3 is a great game, the best yet, in my opinion
 - so what if we were to make a similar game, but in browser? and a github like system around it? would be amazing
@@ -178,7 +178,7 @@ first instinct - turn-based game like Heroes of Might and Magic
 - honestly, it's pretty much a great idea, and such e-sport github-like gobal system was out there, I would be playing already
 - except for: control contorl control
 
-rant: e-sports games are about control and not about composing/buidling
+## rant: e-sports games are about control and not about composing/buidling
 
 - I held a guitar in my hands and even played some cords, but that's about
 - but hearing music by say John Williams, who would not have this feeling of awe and a wish to be able to compose like that?
@@ -201,7 +201,7 @@ rant: e-sports games are about control and not about composing/buidling
 - having a mindset of: solve better, build better, define better behaviour, score more points because you composition/build performs better
 - you may already understand where this is going
 
-considering new HoMM3-like game but about building/composing of elements and github-like system around it
+## considering new HoMM3-like game but about building/composing of elements and github-like system around it
 
 - well, what is HoMM3 like and what do we take change
 - HoMM3 has 7-10 castles - basically factions/civilizatoins - and different armies for every castle
@@ -251,7 +251,7 @@ considering new HoMM3-like game but about building/composing of elements and git
 - how do we make the game about creating, buidling? not about learning castles in HoMM3 or how much damage a marine does in Starcraft? 
 - what is building?
 
-what is buidling
+## what is buidling
 
 - that's where we find ourselves - we wanted a HoMM3 like game and github-like global e-sports system
 - and we find ourselves despirited by the idea of making custom worlds and rules
@@ -291,7 +291,7 @@ what is buidling
 - [original notes on why use language as the gameplay](https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#building-is-about-developing-a-language)
 - [game scenario ideas](https://github.com/DeathStarGame/DeathStarGameblob/c2231ab989d46aa056765d8190f0f4e0bad848c4/docs/search-for-the-game.md#examples-of-scenarios)
 
-tying it together: building and the game
+## tying it together: building and the game
 
 - so we want a github-like global e-sports system
 - with users being able to create games and better games becoming the standard

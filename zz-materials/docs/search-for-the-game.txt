@@ -1,5 +1,5 @@
 
-what
+## what
 
 - Starnet
   - a board-like game
@@ -7,7 +7,7 @@ what
   - complete, free and open to everyone
   - to be worthy of a scene and community around
 
-on games in general
+## on games in general
 
 - games are fundamentally magic, one of the better ways for beings to interact
 - games are being 'produced', but suprisingly, there are no events to play
@@ -23,7 +23,7 @@ on games in general
   - are complex and interesting enough to be worhty of a community around
   - are moneytization free, come as whole available for everyone, no forced 'if you don't play, you have limit access to updates'
 
-observations
+## observations
 
 - HoMM3
   - AI battles are repetetive
@@ -37,7 +37,7 @@ observations
   - softer graphics, but still dark
   - amazing idea and design
 
-user experience
+## user experience
 
 - events (tournaments, matches) are at the center, home page contains official events and most upvoted
   - games tend to have reasonable duration time, so most events have estimatable start and finish time, they can be  planned for
@@ -84,7 +84,7 @@ user experience
   - players can browse game history and watch replays
   - games are also persisted in clients filesystem, can load a replay via a file
 
-game world
+## game world
 
 - defend starnet, one shot opportunity of preventing launch of netconrol (controldrone)
 - research, change, build, balance a missiondrone and a team (a hero and research drones)
@@ -96,7 +96,7 @@ game world
 - entities vary, sets, tags, combinations: code,warp drives, fields, elements, fruit, self orient time .. etc.
 - characters, reserach drones start from 0
 
-game features
+## game features
 
 - a tiled map
 - player collects varios items, chooses different options, experiencing effects to build a better missionship
@@ -105,7 +105,7 @@ game features
 - randomness on initial generation only
 - optimal game time ~15-90 min
 
-game completeness
+## game completeness
 
 - game completeness, balance, so complete set of entities, no bloating expansions
   - entities have tags(sets): gathering organic discovery etc.
@@ -118,7 +118,7 @@ game completeness
   - compute capabilities
   - decision making accuracy, energy, vision, vitality
 
-gameplay
+## gameplay
 
 - players (azure and orange) start on the map, charachter is represented with a cape
 - 1 hero, 3 research drones (represented with a colored sphere)
@@ -169,7 +169,7 @@ gameplay
   - energy
   - hoisting (carrying) capacity
 
-assets
+## assets
 
 - use s-expressions to gen svg
 - colors, lines, shapes (for cape, spheres, facilities, skills, fruit tree etc.)
@@ -180,13 +180,13 @@ assets
 - point is: assets are code, files are generated
 - but first: events, words, simple shapes; assets will form last
 
-documentation
+## documentation
 
 - github repo with .md files
 - docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
 
 
-system design
+## system design
 
 - CPS communicating sequential processes
   - https://www.infoq.com/presentations/clojure-core-async/
@@ -209,7 +209,7 @@ system design
   - games are autosaveed on the client as well: to file system via browser extension
   - if server goes down, game can be restored from save files
 
-identity
+## identity
 
 - ideally should be implemented via providers (github google twitch ..)
   - system apps should be completely unaware of identity process, only receiving user's identity (or key to get it) along with request
@@ -230,7 +230,7 @@ identity
 
 
 
-notes on implementation
+## notes on implementation
 
 - figwheel main if it's less cpu consuming than shadow-cljs
 - search
@@ -468,7 +468,7 @@ notes on implementation
 - consider electron
 
 
-starnet gameplay 20-06-02
+# starnet gameplay 20-06-02
 
 - map, entities and even som eprinciples are generated, and may be as unique as uuids/hashes: so basically, every game (set) is unique
 - player don't focus on collecting or moving, but rather on assembling, solving
@@ -482,7 +482,7 @@ starnet gameplay 20-06-02
 - the better/clearer a player thinks, the more games they will come up with a functioning system/composition
 
 
-notes
+# notes
 
 - no portion-feeding
   - game map should be visible/open-to-understanding from the beginning
@@ -495,7 +495,7 @@ notes
 
 
 
-building is about developing a language
+# building is about developing a language
 
 When we build, we describe the phenomena using words, and compose those to achieve the desirable result.
 
@@ -614,7 +614,7 @@ For example, say the scenario consists of 3-2-1-1 minutes rounds. During the fir
 That is completely fine for observing, as the observer can fully interact with the reosurce and solution space.
 After the first round, players current solution exists and can be always observed.
 
-Examples of scenarios:
+## Examples of scenarios:
 
 Droids.
 See above.
@@ -666,7 +666,7 @@ The more specific you build is for the round, the harder it will be to adapt to 
 It means, that the player who builds more generacally and parametarized will succeed more, as they will be able to adapt their code faster and accomplish more within each round.
 The point of the scenario is: playing a longer game, where you build a more sophiscticated more generic  multi-purporse solution.
  
-Approach to creating the game, game evolution.
+## Approach to creating the game, game evolution.
 A better way is to build around diverse scenarios.
 Instead of creating one-all-incompassing scenario, use multiple scenarios within a match, tournament.
 For example, game comes with a number of default scenarios, each being quite simple and specific, but unique in terms of graphics and reosurce/solution space organization.
