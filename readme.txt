@@ -70,6 +70,12 @@ program in a nutshell
     - program's runtime is JVM, no GraalVM compilation
 - does repository have releases of binaries?
     - no, only source code and build from source
+- how program is built from source?
+  - build tool - jpackage, build is done with one cli command
+- if JVM is missing?
+  - JVM is downloaded into repo's dir for use by build or run
+- can program be run from source?
+  - program can be run from source with one cli command
 - does repo have issues?
     - no, code only
 - attribution headers in files?
