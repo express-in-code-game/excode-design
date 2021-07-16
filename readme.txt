@@ -26,6 +26,7 @@ program in a nutshell
     - match duration time is like in tennis - not fixed
     - game comes with no ladder - only host and connect
     - no chat in the program, only the game
+    - no usernames in the game - only colors
     - game is not global, nor decentralized - users host and connect as usual, program stores data locally only, on user computer it runs on
     - installation:
       - desktop program
