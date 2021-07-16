@@ -87,7 +87,7 @@ user experience
 
 starnet game
 
-story
+#story
 
   - defend starnet, one shot opportunity of preventing launch of netconrol (controldrone)
   - research, change, build, balance a missiondrone and a team (a hero and research drones)
@@ -99,7 +99,7 @@ story
   - entities vary, sets, tags, combinations: code,warp drives, fields, elements, fruit, self orient time .. etc.
   - characters, reserach drones start from 0
 
-gameplay
+#gameplay
 
   - a tiled map
   - player collects varios items, chooses different options, experiencing effects to build a better missionship
@@ -108,7 +108,7 @@ gameplay
   - randomness on initial generation only
   - optimal game time ~15-90 min
 
-balance
+#balance
 
 - goal is game completeness, balance, so complete set of entities, no bloating expansions
   - entities have tags(sets): gathering organic discovery etc.
@@ -121,7 +121,7 @@ balance
   - compute capabilities
   - decision making accuracy, energy, vision, vitality
 
-game 0.1
+#game 0.1
 
 - players (azure and orange) start on the map, charachter is represented with a cape
 - 1 hero, 3 research drones (represented with a colored sphere)
@@ -176,7 +176,7 @@ how
 
 - use repl from the start as it's the most powerful design tool, will inform the design
 
-cloud
+#cloud
 
 - first, setup CD to the cloud - project must live
 - fixed single server instance
@@ -211,7 +211,7 @@ language of the system
   - in-game events (higher throughput) flow through a dedicated kafka topic
   - game as an enetity (low throughput) is persisted without state (has a ref) and is queryable as users and other data
 
-game state
+#game state
 
 - the game is powerful, so is the client
 - game is not computed on the server
@@ -231,7 +231,7 @@ game state
 - game state is a record of another topic, changed on in-game events
 
 
-assets
+#assets
 
 - use s-expressions to gen svg
 - colors, lines, shapes (for cape, spheres, facilities, skills, fruit tree etc.)
@@ -242,12 +242,12 @@ assets
 - point is: assets are code, files are generated
 - but first: events, words, simple shapes; assets will form last
 
-documentation
+#documentation
 
 - github repo with .md files
 - docs, anouncements, release notes: simple dirs with index.md containing links to file per posting
 
-steps
+#steps
 
 - setup clj cljs cljc
 - clojure.async clojure.spec test.check
@@ -261,7 +261,7 @@ steps
 - sockets
 - simple game: tiles with values
 
-considerations
+#considerations
 
 - figwheel main if it's less cpu consuming than shadow-cljs
 - search
