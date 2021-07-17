@@ -6,7 +6,7 @@ repl(){
 
 
 main(){
-  clojure
+  clojure -M:main
 }
 
 
