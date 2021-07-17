@@ -95,5 +95,7 @@ program in a nutshell
   - one branch - main - and forks
 - rebase or merge?
   - merge
+- words not to use?
+  - refactor, fix, update, util(s), helper, play with, controller/manager, factory, wrap, etc, misc, cleanup, service, org
 - pull requests?
   - github, but merge from command line, no programmer names - --ff or 'from fork/main into upstream/main'
