@@ -93,5 +93,7 @@ program in a nutshell
     - no
 - how many branches repo has?
   - one branch - main - and forks
+- rebase or merge?
+  - merge
 - pull requests?
   - github, but merge from command line, no programmer names - --ff or 'from fork/main into upstream/main'
