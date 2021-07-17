@@ -98,6 +98,6 @@ program in a nutshell
 - words not to use?
   - refactor, fix, update, util(s), helper, play with, controller/manager, factory, wrap, etc, misc, cleanup, service, org
 - nesting?
-  - no nesting - all files are flat on one level - src/deathstar
+  - no nesting - all files are flat on one level - src/DeathStarGame
 - pull requests?
   - github, but merge from command line, no programmer names - --ff or 'from fork/main into upstream/main'
