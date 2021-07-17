@@ -91,3 +91,5 @@ program in a nutshell
     - no, commit hashes as points
 - update notifications?
     - no
+- how many branches repo has?
+  - one branch - main - and forks
