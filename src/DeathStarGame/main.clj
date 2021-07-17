@@ -14,11 +14,7 @@
    [taoensso.timbre :as log]
    [taoensso.timbre.appenders.3rd-party.rotor]
 
-   [cljctools.fs.runtime.core :as fs.runtime.core]
-
-   [DeathStarGame.spec]
-   [DeathStarGame.cljfx]
-   [DeathStarGame.db]))
+   [cljctools.fs.runtime.core :as fs.runtime.core]))
 
 (println "clojure.compiler.direct-linking" (System/getProperty "clojure.compiler.direct-linking"))
 (clojure.spec.alpha/check-asserts true)
