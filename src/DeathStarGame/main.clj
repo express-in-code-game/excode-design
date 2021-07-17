@@ -1,4 +1,4 @@
-(ns deathstar.main
+(ns DeathStarGame.main
   (:gen-class)
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >! <!! >!!  take! put! offer! poll! alt! alts! close!
@@ -7,9 +7,9 @@
                                      pipeline pipeline-async]]
    [clojure.string]
 
-   [deathstar.spec]
-   [deathstar.cljfx]
-   [deathstar.db]))
+   [DeathStarGame.spec]
+   [DeathStarGame.cljfx]
+   [DeathStarGame.db]))
 
 (defn -main [& args]
   (println ::-main)
@@ -21,4 +21,4 @@
       (System/exit 0))
 
     (<!! (go
-           (deathstar.cljfx/start)))))
+           (DeathStarGame.cljfx/start)))))

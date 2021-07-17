@@ -11,7 +11,7 @@
                             :sha "ec3c34e619b2408026b9f2e2ff8665bebf70bf56"}
         io.replikativ/datahike {:mvn/version "0.3.6"}}
 
- :main-opts ["-m" "deathstar.main"]
+ :main-opts ["-m" "DeathStarGame.main"]
 
  :aliases
  {:repl
@@ -20,7 +20,7 @@
                 nrepl/nrepl {:mvn/version "0.8.3"}
                 cider/cider-nrepl {:mvn/version "0.25.5"}}
    :main-opts ["-m" "cljctools.deps-repl.main"
-               "--init-ns" "deathstar.peer.main"
+               "--init-ns" "DeathStarGame.main"
                "--port" "7788"
                "--bind" "0.0.0.0"
                "--middleware" "cider.nrepl/cider-middleware"]}

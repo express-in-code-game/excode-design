@@ -1,4 +1,4 @@
-(ns deathstar.spec
+(ns DeathStarGame.spec
   (:require
    [clojure.spec.alpha :as s]))
 

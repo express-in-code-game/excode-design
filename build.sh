@@ -13,9 +13,9 @@ main(){
 uberjar(){
   clojure -X:depstar uberjar \
     :aot true \
-    :jar target/deathstar.jar \
+    :jar target/DeathStarGame.jar \
     :aliases '[:core :program]' \
-    :main-class deathstar.peer.main
+    :main-class DeathStarGame.main
 }
 
 "$@"

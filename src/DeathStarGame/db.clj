@@ -1,4 +1,4 @@
-(ns deathstar.db
+(ns DeathStarGame.db
   (:require
    [clojure.core.async :as a :refer [chan go go-loop <! >! <!! >!!  take! put! offer! poll! alt! alts! close! onto-chan!
                                      pub sub unsub mult tap untap mix admix unmix pipe
@@ -6,7 +6,6 @@
                                      pipeline pipeline-async]]
    [clojure.java.io :as io]
    [cljctools.bytes.runtime.core :as bytes.runtime.core]
-   [cljctools.codec.runtime.core :as codec.runtime.core]
    [cljctools.bittorrent.spec :as bittorrent.spec]
    [datahike.api]
    [taoensso.timbre :as log]
@@ -26,7 +25,7 @@
 (comment
 
   (require
-   '[deathstar.db :as find.db]
+   '[DeathStarGame.db]
    '[datahike.api]
    :reload)
 
