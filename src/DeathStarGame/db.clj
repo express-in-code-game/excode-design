@@ -5,8 +5,6 @@
                                      timeout to-chan  sliding-buffer dropping-buffer
                                      pipeline pipeline-async]]
    [clojure.java.io :as io]
-   [cljctools.bytes.runtime.core :as bytes.runtime.core]
-   [cljctools.bittorrent.spec :as bittorrent.spec]
    [datahike.api]
    [taoensso.timbre :as log]
    [taoensso.timbre.appenders.3rd-party.rotor]))
