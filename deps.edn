@@ -15,7 +15,11 @@
  :main-opts ["-m" "DeathStarGame.main"]
 
  :aliases
- {:repl
+ {:main
+  {:jvm-opts ["-Dclojure.compiler.direct-linking=true"]
+   :main-opts ["-m" "DeathStarGame.main"]}
+
+  :repl
   {:extra-deps {github.cljctools/deps-repl {:git/url "https://github.com/cljctools/deps-repl"
                                             :sha "9675509eb9969e1288baf9b8a4ced95f83e3c734"}
                 nrepl/nrepl {:mvn/version "0.8.3"}
