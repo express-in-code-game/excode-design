@@ -7,6 +7,8 @@
                                      pipeline pipeline-async]]
    [clojure.string]
 
+   [cljctools.fs.runtime.core :as fs.runtime.core]
+
    [DeathStarGame.spec]
    [DeathStarGame.cljfx]
    [DeathStarGame.db]))

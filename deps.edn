@@ -9,7 +9,8 @@
 
         github.cljfx/cljfx {:git/url "https://github.com/cljfx/cljfx"
                             :sha "ec3c34e619b2408026b9f2e2ff8665bebf70bf56"}
-        io.replikativ/datahike {:mvn/version "0.3.6"}}
+        io.replikativ/datahike {:mvn/version "0.3.6"}
+        github.cljctools.cljctools/fs-jvm {:local/root "../cljctools/fs-jvm"}}
 
  :main-opts ["-m" "DeathStarGame.main"]
 
