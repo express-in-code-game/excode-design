@@ -107,3 +107,5 @@ program in a nutshell
   - github, but merge from command line, no programmer names - --ff or 'from fork/main into upstream/main'
 - programmer names or emails in commit history?
   - no, repo is code only
+- public programmers?
+  - no, repo is code only
