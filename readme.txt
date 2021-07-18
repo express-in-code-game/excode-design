@@ -100,7 +100,7 @@ program in a nutshell
 - rebase or merge?
   - merge
 - words not to use?
-  - refactor, fix, update, util, helper, play with, controller/manager, factory, wrap, etc, misc, cleanup, service, org, todo, archive, trash, maintainer
+  - refactor, fix, update, util, helper, play with, controller/manager, factory, wrap, etc, misc, cleanup, service, org, todo, archive, trash, maintainer, test, alpha
 - nesting?
   - no nesting - all files are flat on one level - src/DeathStarGame
 - pull requests?
