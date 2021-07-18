@@ -1,0 +1,5 @@
+[user]
+	email = DeathStarGame@program
+	name = DeathStarGame
+
+# git config --local include.path ../.gitconfig
