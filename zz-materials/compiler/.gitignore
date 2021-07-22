@@ -1,6 +1,0 @@
-node_modules/
-.cpcache/
-.shadow-cljs/
-resources/public/js-out/
-package-lock.json
-volumes/

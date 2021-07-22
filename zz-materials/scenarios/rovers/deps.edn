@@ -1,3 +1,0 @@
-{:paths ["src"]
- :deps {github.DeathStarGame.deathstar-scenarios.rovers/scenario-main {:local/root "./scenario-main"}
-        github.DeathStarGame.deathstar-scenarios.rovers/player-main {:local/root "./player-main"}}}

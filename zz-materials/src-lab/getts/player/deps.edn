@@ -1,4 +1,0 @@
-{:paths ["src"]
- :deps {github.DeathStarGame.deathstar-scenarios.getts/player-meta {:local/root  "../player-meta"}
-        github.DeathStarGame.deathstar-scenarios.getts/scenario-meta {:local/root  "../scenario-meta"}
-        github.DeathStarGame.deathstar-scenarios.getts/scenario-core {:local/root  "../scenario-core"}}}

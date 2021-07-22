@@ -1,8 +1,0 @@
-{:paths ["src"]
- :deps {github.DeathStarGame.deathstar-scenarios/rovers2
-        {:local/root  "/ctx/deathstar-scenarios/scenarios/rovers2"}
-        #_{:git/url "https://github.com/DeathStarGame/deathstar-scenarios"
-           :sha "988b8191c6b31ece0cfcef6d15111efda999f262"
-           :deps/root "./scenarios/rovers-render"}
-        #_github.DeathStarGame.deathstar-scenarios/starnet
-        #_{:local/root  "/ctx/deathstar.lab/scenarios/starnet"}}}
